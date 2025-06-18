@@ -38,7 +38,6 @@ class ChatEditor extends ConsumerStatefulWidget {
 
 class _ChatEditorState extends ConsumerState<ChatEditor> {
   EditorState textEditorState = EditorState.blank();
-  // late EditorScrollController scrollController;
   StreamSubscription<EditorTransactionValue>? _updateListener;
   final ValueNotifier<bool> _isInputEmptyNotifier = ValueNotifier(true);
   Timer? _debounceTimer;
@@ -46,12 +45,10 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
   @override
   void initState() {
     super.initState();
-    // scrollController = EditorScrollController(editorState: textEditorState);
     _updateListener?.cancel();
     // listener for editor input state
     _updateListener = textEditorState.transactionStream.listen((data) {
       _editorUpdate(data.$2);
-      // _updateContentHeight();
     });
 
     WidgetsBinding.instance.addPostFrameCallback((_) => _loadDraft());
@@ -102,21 +99,8 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
 
     final body = msgContent.body();
     if (body.isEmpty) return;
-    // clear the editor first
-    textEditorState.clear();
 
-    final docNode = textEditorState.getNodeAtPath([0]);
-    if (docNode == null) return;
-
-    // process text and apply mention attributes , if any
-    textEditorState.toMentionPills(body, docNode);
-
-    final text = docNode.delta?.toPlainText() ?? '';
-    final pos = Position(path: [0], offset: text.length);
-    textEditorState.updateSelectionWithReason(
-      Selection.collapsed(pos),
-      reason: SelectionUpdateReason.uiEvent,
-    );
+    textEditorState.replaceContent(body, msgContent.formattedBody());
   }
 
   void _editorUpdate(Transaction data) {
@@ -147,7 +131,6 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
       final chatEditorState = ref.read(chatEditorStateProvider.notifier);
       chatEditorState.unsetActions();
       textEditorState.clear();
-      final body = draft.plainText();
       draft.eventId().map((eventId) {
         final draftType = draft.draftType();
         final msgsList =
@@ -167,16 +150,12 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
         }
       });
 
-      if (body.trim().isEmpty) return;
+      final htmlBody = draft.htmlText();
+      final fallbackPlain = draft.plainText();
 
-      final transaction = textEditorState.transaction;
-      final docNode = textEditorState.getNodeAtPath([0]);
-      if (docNode == null) return;
-      transaction.replaceText(docNode, 0, docNode.delta?.length ?? 0, body);
-      final pos = Position(path: [0], offset: body.length);
-      transaction.afterSelection = Selection.collapsed(pos);
-      textEditorState.apply(transaction);
-      _log.info('compose draft loaded for room: ${widget.roomId}');
+      textEditorState.replaceContent(fallbackPlain, htmlBody);
+
+      _log.info('compose text draft loaded for room: ${widget.roomId}');
     }
   }
 
@@ -285,7 +264,6 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
         shrinkWrap: false,
         disableAutoScroll: false,
         editorState: textEditorState,
-        // scrollController: scrollController,
         maxHeight: MediaQuery.sizeOf(context).height * 0.2,
         minHeight: 24,
         onChanged: (body, html) {

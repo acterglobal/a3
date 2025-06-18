@@ -4,19 +4,19 @@ import 'dart:math';
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/toolkit/buttons/user_chip.dart';
-import 'package:acter/common/toolkit/html_editor/mentions/commands/backspace_for_mentions.dart';
+import 'package:acter/common/toolkit/html/utils.dart';
+import 'package:acter/common/toolkit/html_editor/mentions/commands/mention_movements.dart';
 import 'package:acter/common/toolkit/html_editor/mentions/mention_detection.dart';
 import 'package:acter/config/constants.dart';
-import 'package:acter/common/toolkit/html_editor/mentions/models/mention_attributes.dart';
-import 'package:acter/common/toolkit/html_editor/mentions/models/mention_type.dart';
 import 'package:acter/common/toolkit/html_editor/services/constants.dart';
 import 'package:acter/common/toolkit/html_editor/mentions/mention_shortcuts.dart';
+import 'package:acter/features/deep_linking/parse_acter_uri.dart';
 import 'package:acter/features/deep_linking/types.dart';
 import 'package:acter/features/deep_linking/widgets/inline_item_preview.dart';
 import 'package:acter/features/room/widgets/room_chip.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show MsgContent;
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
 final _log = Logger('a3::common::html_editor');
@@ -47,165 +47,67 @@ AppFlowyEditorMarkdownCodec defaultMarkdownCodec =
       ],
     );
 
-// contains final input string with mentions processed and mentions
-typedef MentionParsedText = (String, List<MentionAttributes>);
-
 extension ActerEditorStateHelpers on EditorState {
-  // helper to parse mentions to markdown/html format
-  MentionParsedText toMentionText(String plainText, String? htmlText) {
-    List<MentionAttributes> mentionAttributes = [];
-
-    // Get the base text
-    var processedText = htmlText ?? plainText;
-
-    // Process mentions
-    int index = 0;
-    while (true) {
-      final node = document.nodeAtPath([index]);
-      if (node == null) break;
-
-      final delta = node.delta;
-      if (delta != null) {
-        for (final op in delta) {
-          if (op.attributes != null && op.attributes?['@'] != null) {
-            final mention = op.attributes!['@'] as MentionAttributes;
-            final displayText =
-                mention.displayName ?? mention.mentionId.substring(1);
-            final replacement =
-                htmlText != null
-                    ? '<a href="https://matrix.to/#/${mention.mentionId}">@$displayText</a>'
-                    : '[@$displayText](https://matrix.to/#/${mention.mentionId})';
-            processedText = processedText.replaceFirst(
-              userMentionMarker,
-              replacement,
-            );
-            mentionAttributes.add(mention);
-          }
-        }
-      }
-      index++;
-    }
-
-    // Remove only trailing <br> tag if it exists
-    if (processedText.endsWith('<br>')) {
-      processedText = processedText.substring(
-        0,
-        processedText.length - '<br>'.length,
-      );
-    }
-
-    return (processedText.trimRight(), mentionAttributes);
-  }
-
-  void toMentionPills(String text, Node targetNode) {
-    final userMatches = userMentionRegExp.allMatches(text);
-    List<(int, int, String, String, MentionType)> allMentions = [];
-
-    for (final match in userMatches) {
-      final displayName = match.group(1);
-      final userId = match.group(2);
-      if (userId != null && displayName != null) {
-        allMentions.add((
-          match.start,
-          match.end,
-          userId,
-          displayName,
-          MentionType.user,
-        ));
-      }
-    }
-
-    bool hasMentions = allMentions.isNotEmpty;
-    if (!hasMentions) {
-      // no mentions found,insert plain text and return as it is
-      final transaction = this.transaction;
-      transaction.replaceText(targetNode, 0, 0, text);
-      apply(transaction);
-      return;
-    }
-    // else continue with processing mentions
-    // sort positions in reverse order to avoid index shifting
-    allMentions.sort((a, b) => b.$1.compareTo(a.$1));
-
-    // replace all matches with markers
-    for (final mention in allMentions) {
-      final start = mention.$1;
-      final end = mention.$2;
-
-      if (start >= 0 && end <= text.length && start < end) {
-        text = text.replaceRange(start, end, userMentionMarker);
-      }
-    }
-
-    final transaction = this.transaction;
-    transaction.replaceText(targetNode, 0, 0, text);
-    apply(transaction);
-
-    final targetNodeText = targetNode.delta?.toPlainText() ?? '';
-
-    // find all marker positions
-    final markerPositions = <int>[];
-    for (int i = 0; i < targetNodeText.length; i++) {
-      if (targetNodeText[i] == userMentionMarker) {
-        markerPositions.add(i);
-      }
-    }
-
-    // now apply attributes
-    if (markerPositions.isNotEmpty) {
-      for (int i = 0; i < allMentions.length; i++) {
-        if (i >= markerPositions.length) break;
-
-        final (_, _, mentionId, displayName, type) = allMentions[i];
-        final position = markerPositions[i];
-        final typeStr =
-            type == MentionType.user ? userMentionChar : roomMentionChar;
-
-        final replaceTransaction = this.transaction;
-        replaceTransaction.replaceText(
-          targetNode,
-          position,
-          1,
-          userMentionMarker,
-          attributes: {
-            typeStr: MentionAttributes(
-              type: type,
-              mentionId: mentionId,
-              displayName: displayName,
-            ),
-            'inline': true,
-          },
-        );
-        apply(replaceTransaction);
-      }
-    }
-  }
-
   String intoMarkdown({AppFlowyEditorMarkdownCodec? codec}) {
-    return (codec ?? defaultMarkdownCodec).encode(document);
+    return (codec ?? defaultMarkdownCodec).encode(document).trim();
   }
 
   String intoHtml({AppFlowyEditorHTMLCodec? codec}) {
     return (codec ?? defaultHtmlCodec).encode(document);
   }
 
+  static EditorState fromContent(String fallbackPlain, String? properHtml) =>
+      EditorState(
+        document: defaultHtmlCodec.decode(
+          properHtml != null && properHtml.isNotEmpty
+              ? properHtml
+              : minimalMarkup(fallbackPlain),
+        ),
+      );
+
+  void replaceContent(String fallbackPlain, String? properHtml) =>
+      replaceContentHTML(
+        properHtml != null && properHtml.isNotEmpty
+            ? properHtml
+            : minimalMarkup(fallbackPlain),
+      );
+
+  void replaceContentHTML(String body) {
+    // I would have expected a transaction can do both delete and insert Nodes
+    // but if we do that within the exact same transation, for an unknown reason,
+    // the order of the inserted Items is then messed up. See
+    //            https://github.com/AppFlowy-IO/appflowy-editor/issues/1122
+    // That's why we do that in two separate transactions.
+
+    Transaction t = transaction;
+    t.deleteNodes(document.root.children); // drop previous children
+    apply(t);
+
+    t = transaction;
+    bool inserted = false;
+
+    if (body.isNotEmpty) {
+      final newDoc = defaultHtmlCodec.decode(body);
+      if (newDoc.root.children.isNotEmpty) {
+        t.insertNodes([0], newDoc.root.children);
+        inserted = true;
+      }
+    }
+
+    if (!inserted) {
+      // per fallback we add one empty paragraph
+      t.insertNode([0, 0], paragraphNode());
+    }
+
+    apply(t);
+  }
+
   /// clear the editor text with selection
   void clear() async {
     if (!document.isEmpty) {
-      final transaction = this.transaction;
-
-      // Delete all existing nodes
-      int nodeIndex = 0;
-      while (true) {
-        final node = getNodeAtPath([nodeIndex]);
-        if (node == null) break;
-        transaction.deleteNode(node);
-        nodeIndex++;
-      }
-
-      transaction.insertNode([0], paragraphNode(text: ''));
-
-      apply(transaction);
+      final t = transaction;
+      t.deleteNodes(document.root.children); // clear the page
+      apply(t);
 
       WidgetsBinding.instance.addPostFrameCallback((_) {
         updateSelectionWithReason(
@@ -215,54 +117,45 @@ extension ActerEditorStateHelpers on EditorState {
       });
     }
   }
-}
 
-extension ActerDocumentHelpers on Document {
-  static Document? _fromHtml(String content, {AppFlowyEditorHTMLCodec? codec}) {
-    if (content.isEmpty) {
-      return null;
-    }
-
-    Document document = (codec ?? defaultHtmlCodec).decode(content);
-    if (document.isEmpty) {
-      return null;
-    }
-    return document;
-  }
-
-  static Document _fromMarkdown(
-    String content, {
-    AppFlowyEditorMarkdownCodec? codec,
-  }) {
-    return (codec ?? defaultMarkdownCodec).decode(content);
-  }
-
-  static Document parse(
-    String content, {
-    String? htmlContent,
-    AppFlowyEditorMarkdownCodec? codec,
-  }) {
-    if (htmlContent != null) {
-      final document = ActerDocumentHelpers._fromHtml(htmlContent);
-      if (document != null && !document.isEmpty) {
-        return document;
+  // extract the user mentions
+  List<String> extractMentions() {
+    final mentions = <String>[];
+    int index = 0;
+    while (true) {
+      final node = document.nodeAtPath([index]);
+      if (node == null) break;
+      final delta = node.delta;
+      if (delta != null) {
+        for (final op in delta) {
+          if (op.attributes != null) {
+            final href = op.attributes?[AppFlowyRichTextKeys.href] as String?;
+            if (href != null) {
+              final uri = Uri.tryParse(href);
+              if (uri != null) {
+                try {
+                  final parsed = parseActerUri(uri);
+                  if (parsed.type == LinkType.userId) {
+                    mentions.add(parsed.target);
+                  }
+                } catch (e) {
+                  // pass
+                  continue;
+                }
+              }
+            }
+          }
+        }
       }
+      index++;
     }
-    // fallback: parse from markdown
-    return ActerDocumentHelpers._fromMarkdown(content);
-  }
-
-  static Document fromMsgContent(MsgContent msgContent) {
-    return ActerDocumentHelpers.parse(
-      msgContent.body(),
-      htmlContent: msgContent.formattedBody(),
-    );
+    return mentions;
   }
 }
 
 typedef ExportCallback = Function(String, String?);
 
-class HtmlEditor extends StatefulWidget {
+class HtmlEditor extends ConsumerStatefulWidget {
   static const saveEditKey = Key('html-editor-save');
   static const cancelEditKey = Key('html-editor-cancel');
   final String? roomId;
@@ -299,14 +192,14 @@ class HtmlEditor extends StatefulWidget {
   });
 
   @override
-  State<HtmlEditor> createState() => _HtmlEditorState();
+  ConsumerState<HtmlEditor> createState() => _HtmlEditorState();
 }
 
-const innnerMargin = 10.0;
+const innerPadding = 24.0;
 const defaultMinHeight = 40.0;
-const lineHeight = 16.0;
+const defaultMaxHeight = 200.0;
 
-class _HtmlEditorState extends State<HtmlEditor> {
+class _HtmlEditorState extends ConsumerState<HtmlEditor> {
   late EditorState editorState;
   late EditorScrollController editorScrollController;
 
@@ -327,6 +220,23 @@ class _HtmlEditorState extends State<HtmlEditor> {
     updateEditorState(widget.editorState ?? EditorState.blank());
   }
 
+  @override
+  void didUpdateWidget(covariant HtmlEditor oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.editorState != widget.editorState) {
+      updateEditorState(widget.editorState ?? EditorState.blank());
+    }
+  }
+
+  @override
+  void dispose() {
+    editorScrollController.visibleRangeNotifier.removeListener(
+      _updateEditorHeight,
+    );
+    _changeListener?.cancel();
+    super.dispose();
+  }
+
   void updateEditorState(EditorState newEditorState) {
     editorState = newEditorState;
 
@@ -335,10 +245,9 @@ class _HtmlEditorState extends State<HtmlEditor> {
       shrinkWrap: widget.shrinkWrap,
     );
 
-    // Listen to all editor transactions with a delay
-    editorState.transactionStream.listen((_) {
-      Future.delayed(const Duration(milliseconds: 50), _updateContentHeight);
-    });
+    editorScrollController.visibleRangeNotifier.addListener(
+      _updateEditorHeight,
+    );
 
     _changeListener?.cancel();
     widget.onChanged.map((cb) {
@@ -354,67 +263,56 @@ class _HtmlEditorState extends State<HtmlEditor> {
     });
   }
 
-  @override
-  void didUpdateWidget(covariant HtmlEditor oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.editorState != widget.editorState) {
-      updateEditorState(widget.editorState ?? EditorState.blank());
-    }
-  }
-
-  @override
-  void dispose() {
-    _changeListener?.cancel();
-    super.dispose();
-  }
-
-  void _updateContentHeight() {
-    final contentHeight = _calculateContentHeight();
-
-    double newHeight = contentHeight;
-    final maxHeight = widget.maxHeight;
-    if (maxHeight != null) {
-      newHeight = min(newHeight, maxHeight);
-    }
-    final minHeight = widget.minHeight ?? defaultMinHeight;
-    newHeight = max(newHeight, minHeight);
-
-    if ((_contentHeightNotifier.value - newHeight).abs() > 1.0) {
-      _contentHeightNotifier.value = newHeight;
-    }
-  }
-
-  double _calculateContentHeight() {
+  void _updateEditorHeight() {
     final scrollService = editorState.scrollableState;
-    if (scrollService == null) return widget.minHeight ?? defaultMinHeight;
-
-    final textWidth = scrollService.position.viewportDimension;
-    if (textWidth <= 0) return widget.minHeight ?? defaultMinHeight;
-
-    final textContent = editorState.document.root.children
-        .map((node) => node.delta?.toPlainText() ?? '')
-        .join('\n');
-
-    if (textContent.isEmpty) {
-      return defaultMinHeight;
+    if (scrollService == null) {
+      _contentHeightNotifier.value = widget.minHeight ?? defaultMinHeight;
+      return;
     }
 
-    final textPainter = TextPainter(
-      text: TextSpan(
-        text: textContent,
-        style: Theme.of(context).textTheme.bodySmall,
-      ),
-      textDirection: TextDirection.ltr,
-      maxLines: null,
-    )..layout(maxWidth: textWidth);
+    final position = scrollService.position;
+    final viewportDimension = position.viewportDimension;
 
-    return textPainter.height + (2 * innnerMargin);
+    if (viewportDimension <= 0) {
+      _contentHeightNotifier.value = widget.minHeight ?? defaultMinHeight;
+      return;
+    }
+
+    // count paragraph nodes
+    final document = editorState.document;
+    final paragraphCount = document.root.children.length;
+
+    double lineHeight = Theme.of(context).textTheme.bodySmall?.fontSize ?? 14.0;
+    double contentHeight = widget.minHeight ?? defaultMinHeight;
+    if (paragraphCount > 1) {
+      contentHeight += innerPadding + (paragraphCount - 1) * lineHeight;
+    }
+
+    // also account for viewport
+    double calculatedHeight = max(contentHeight, viewportDimension);
+
+    // smaller than viewport, shrink to content size
+    if (contentHeight < viewportDimension && position.maxScrollExtent <= 0) {
+      calculatedHeight = contentHeight;
+    }
+
+    if (widget.maxHeight != null) {
+      calculatedHeight = min(
+        calculatedHeight,
+        widget.maxHeight ?? defaultMaxHeight,
+      );
+    }
+    calculatedHeight = max(
+      calculatedHeight,
+      widget.minHeight ?? defaultMinHeight,
+    );
+
+    _contentHeightNotifier.value = calculatedHeight;
   }
 
   void _triggerExport(ExportCallback exportFn) {
     final plain = editorState.intoMarkdown();
     final htmlBody = editorState.intoHtml();
-
     exportFn(plain, htmlBody != plain ? htmlBody : null);
   }
 
@@ -441,7 +339,8 @@ class _HtmlEditorState extends State<HtmlEditor> {
   List<CharacterShortcutEvent> _buildCharacterShortcutEvents() {
     return [
       ...standardCharacterShortcutEvents.where((e) => e != slashCommand),
-      if (widget.roomId != null) ...mentionShortcuts(context, widget.roomId!),
+      if (widget.roomId != null)
+        ...mentionShortcuts(context, ref, widget.roomId!),
     ];
   }
 
@@ -569,7 +468,7 @@ class _HtmlEditorState extends State<HtmlEditor> {
       blockComponentBuilders: _buildBlockComponentBuilders(),
       characterShortcutEvents: _buildCharacterShortcutEvents(),
       commandShortcutEvents: [
-        backSpaceCommandForMentions,
+        ...mentionMenuCommandShortcutEvents,
         ...standardCommandShortcutEvents,
       ],
       disableAutoScroll: false,
