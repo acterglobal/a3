@@ -91,6 +91,11 @@ async fn image_blurhash_support() -> Result<()> {
         Some(blurhash),
         "image blurhash not available",
     );
+    assert_eq!(
+        msg_content.mimetype().as_deref(),
+        Some(mimetype),
+        "image mimetype not available",
+    );
 
     Ok(())
 }
@@ -174,6 +179,11 @@ async fn video_blurhash_support() -> Result<()> {
         msg_content.blurhash().as_deref(),
         Some(blurhash),
         "video blurhash not available",
+    );
+    assert_eq!(
+        msg_content.mimetype().as_deref(),
+        Some(mimetype),
+        "video mimetype not available",
     );
 
     Ok(())
