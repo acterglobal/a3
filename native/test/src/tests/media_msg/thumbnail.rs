@@ -481,7 +481,7 @@ async fn image_attachment_can_support_thumbnail() -> Result<()> {
 async fn video_attachment_can_support_thumbnail() -> Result<()> {
     let _ = env_logger::try_init();
     let (user, sync_state, _engine) =
-        random_user_with_template("image_attachment_thumbnail", TMPL).await?;
+        random_user_with_template("video_attachment_thumbnail", TMPL).await?;
     sync_state.await_has_synced_history().await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
