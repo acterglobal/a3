@@ -61,7 +61,9 @@ jobs:
         with:
           components: llvm-tools-preview
       - uses: taiki-e/install-action@cargo-llvm-cov
-      - uses: taiki-e/install-action@nextest
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: nextest@0.9.98
       - name: Test
         run: cargo llvm-cov --lcov --output-path lcov.info nextest -p ${{matrix.package}}
 
