@@ -25,8 +25,9 @@ class SpaceToolbar extends ConsumerWidget {
     final lang = L10n.of(context);
     final colorScheme = Theme.of(context).colorScheme;
     final membership = ref.watch(roomMembershipProvider(spaceId)).valueOrNull;
-    final isBookmarked =
-        ref.watch(spaceIsBookmarkedProvider(spaceId)).valueOrNull ?? false;
+    final bookmarkState = ref.watch(spaceBookmarkProvider);
+    final isBookmarked = bookmarkState[spaceId] ?? false;
+
     final invited =
         ref.watch(spaceInvitedMembersProvider(spaceId)).valueOrNull ?? [];
     final showInviteBtn = membership?.canString('CanInvite') == true;
@@ -108,13 +109,7 @@ class SpaceToolbar extends ConsumerWidget {
           ),
         IconButton(
           icon: Icon(isBookmarked ? Icons.bookmark : Icons.bookmark_border),
-          onPressed: () async {
-            final bookmarked = await ref.read(
-              spaceIsBookmarkedProvider(spaceId).future,
-            );
-            final space = await ref.read(spaceProvider(spaceId).future);
-            await space.setBookmarked(!bookmarked);
-          },
+          onPressed: () async => await _bookmarkSpace(ref),
         ),
         PopupMenuButton(
           icon: const Icon(Icons.more_vert, key: optionsMenu),
@@ -124,5 +119,9 @@ class SpaceToolbar extends ConsumerWidget {
         ),
       ],
     );
+  }
+
+  Future<void> _bookmarkSpace(WidgetRef ref) async {
+    await ref.read(spaceBookmarkProvider.notifier).setBookmark(spaceId);
   }
 }

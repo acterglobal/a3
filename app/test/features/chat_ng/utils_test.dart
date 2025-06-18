@@ -27,6 +27,21 @@ void main() {
       expect(isOnlyEmojis('Hello 😊 World'), false);
     });
 
+    test(
+      'should return false for mulitline text with emojis and plaintext',
+      () {
+        expect(isOnlyEmojis('Hello \n😊'), false);
+        expect(isOnlyEmojis('😊\n World'), false);
+        expect(isOnlyEmojis('Hello\n😊👍🎉\nWorld'), false);
+      },
+    );
+
+    test('should return true for mulitline with only emojis', () {
+      expect(isOnlyEmojis('👍🎉 \n😊'), true);
+      expect(isOnlyEmojis('😊\n 👍🎉'), true);
+      expect(isOnlyEmojis('👍🎉\n😊👍🎉\n\r\t  👍🎉'), true);
+    });
+
     test('should return false for plain text', () {
       expect(isOnlyEmojis('Hello'), false);
       expect(isOnlyEmojis('123'), false);

@@ -1,7 +1,10 @@
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/activity_membership_container_widget.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/attachment.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/comment.dart';
+import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/creation.dart';
+import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/descriptionChange.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/eventDateChange.dart';
+import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/otherChanges.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/reaction.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/references.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/roomAvatar.dart';
@@ -16,6 +19,7 @@ import 'package:acter/features/activities/widgets/space_activities_section/item_
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/taskDecline.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/taskDueDateChange.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/taskReOpen.dart';
+import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/titleChange.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:acter_notifify/model/push_styles.dart';
 import 'package:flutter/material.dart';
@@ -48,6 +52,10 @@ class ActivityItemWidget extends ConsumerWidget {
       PushStyles.roomName => ActivityRoomNameItemWidget(activity: activity),
       PushStyles.roomTopic => ActivityRoomTopicItemWidget(activity: activity),
       PushStyles.roomAvatar => ActivityRoomAvatarItemWidget(activity: activity),
+      PushStyles.creation => ActivityCreationItemWidget(activity: activity),
+      PushStyles.titleChange => ActivityTitleChangeItemWidget(activity: activity),
+      PushStyles.descriptionChange => ActivityDescriptionChangeItemWidget(activity: activity),
+      PushStyles.otherChanges => ActivityOtherChangesItemWidget(activity: activity),
       PushStyles.invitationRevoked || PushStyles.invitationAccepted || PushStyles.invitationRejected || PushStyles.joined || PushStyles.invited || PushStyles.knocked || PushStyles.knockAccepted || PushStyles.knockRetracted || PushStyles.knockDenied || PushStyles.banned || PushStyles.unbanned || PushStyles.left || PushStyles.kicked || PushStyles.kickedAndBanned => ActivityMembershipItemWidget(activity: activity),
       _ => const SizedBox.shrink(),
     };
