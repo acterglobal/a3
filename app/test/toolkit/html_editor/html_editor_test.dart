@@ -236,11 +236,15 @@ void main() {
       final docNode = editorState.getNodeAtPath([0]);
       if (docNode != null) {
         // add multiple lines to force height increase
-        transaction.replaceText(
-          docNode,
-          0,
-          0,
-          'Line 1\nLine 2\nLine 3\nLine 4\nLine 5',
+        transaction.insertNodes(
+          [0],
+          [
+            paragraphNode(text: 'Line 1'),
+            paragraphNode(text: 'Line 2'),
+            paragraphNode(text: 'Line 3'),
+            paragraphNode(text: 'Line 4'),
+            paragraphNode(text: 'Line 5'),
+          ],
         );
         editorState.apply(transaction);
       }
@@ -280,12 +284,9 @@ void main() {
       final docNode = editorState.getNodeAtPath([0]);
       if (docNode != null) {
         // Add many lines to try to exceed max height
-        transaction.replaceText(
-          docNode,
+        transaction.insertNodes([
           0,
-          0,
-          List.generate(20, (i) => 'Line $i').join('\n'),
-        );
+        ], List.generate(20, (i) => paragraphNode(text: 'Line $i')));
         editorState.apply(transaction);
       }
 
@@ -322,9 +323,7 @@ void main() {
         transaction.replaceText(docNode, 0, 0, 'Some text');
         editorState.apply(transaction);
 
-        final clearTransaction = editorState.transaction;
-        clearTransaction.replaceText(docNode, 0, 9, '');
-        editorState.apply(clearTransaction);
+        editorState.clear();
       }
 
       // wait for height animation
