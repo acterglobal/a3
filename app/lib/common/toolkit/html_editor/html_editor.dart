@@ -628,7 +628,7 @@ class _HtmlEditorState extends State<HtmlEditor> {
       textSpanDecorator:
           widget.roomId != null ? customizeAttributeDecorator : null,
       mobileDragHandleBallSize:
-          Platform.isIOS ? const Size.square(12) : const Size.square(8),
+          Platform.isIOS ? const Size.square(16) : const Size.square(12),
     );
   }
 
