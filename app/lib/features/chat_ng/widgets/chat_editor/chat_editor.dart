@@ -98,6 +98,16 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
     if (body.isEmpty) return;
 
     textEditorState.replaceContent(body, msgContent.formattedBody());
+    final docChildren = textEditorState.document.root.children;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      textEditorState.updateSelectionWithReason(
+        Selection.single(
+          path: docChildren.last.path,
+          startOffset: docChildren.last.delta?.length ?? 0,
+        ),
+        reason: SelectionUpdateReason.uiEvent,
+      );
+    });
   }
 
   void _editorUpdate(Transaction data) {
