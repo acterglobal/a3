@@ -76,7 +76,8 @@ Future<MsgDraft> createImageMsgDraftDraft(
   Uint8List bytes = await file.readAsBytes();
   final decodedImage = await decodeImageFromList(bytes);
   final imageDraft =
-      client.imageDraft(file.path, mimeType)
+      client.imageDraft(file.path)
+        ..mimetype(mimeType)
         ..size(bytes.length)
         ..width(decodedImage.width)
         ..height(decodedImage.height);

@@ -53,10 +53,8 @@ async fn room_msg_can_support_image_thumbnail() -> Result<()> {
     let mimetype = "image/jpeg";
     let thumb_mimetype = "image/png";
     let draft = user
-        .image_draft(
-            tmp_jpg.path().to_string_lossy().to_string(),
-            mimetype.to_owned(),
-        )
+        .image_draft(tmp_jpg.path().to_string_lossy().to_string())
+        .mimetype(mimetype.to_owned())
         .thumbnail_file_path(tmp_png.path().to_string_lossy().to_string())
         .thumbnail_info(None, None, Some(thumb_mimetype.to_owned()), Some(size))
         .clone(); // switch variable from temporary to normal so that send_message can use it
@@ -153,10 +151,8 @@ async fn room_msg_can_support_video_thumbnail() -> Result<()> {
     let mimetype = "video/mp4";
     let thumb_mimetype = "image/png";
     let draft = user
-        .video_draft(
-            tmp_mp4.path().to_string_lossy().to_string(),
-            mimetype.to_owned(),
-        )
+        .video_draft(tmp_mp4.path().to_string_lossy().to_string())
+        .mimetype(mimetype.to_owned())
         .thumbnail_file_path(tmp_png.path().to_string_lossy().to_string())
         .thumbnail_info(None, None, Some(thumb_mimetype.to_owned()), Some(size))
         .clone(); // switch variable from temporary to normal so that send_message can use it
@@ -241,13 +237,11 @@ async fn news_can_support_image_thumbnail() -> Result<()> {
     let space = user.space(room_id.to_string()).await?;
     let thumb_mimetype = "image/png";
     let image_draft = user
-        .image_draft(
-            tmp_jpg.path().to_string_lossy().to_string(),
-            "image/jpeg".to_owned(),
-        )
+        .image_draft(tmp_jpg.path().to_string_lossy().to_string())
+        .mimetype("image/jpeg".to_owned())
         .thumbnail_file_path(tmp_png.path().to_string_lossy().to_string())
         .thumbnail_info(None, None, Some(thumb_mimetype.to_owned()), Some(size))
-        .clone(); // switch variable from temporary to normal so that send_message can use it
+        .clone(); // switch variable from temporary to normal so that add_slide can use it
     space
         .news_draft()?
         .add_slide(Box::new(image_draft.into()))
@@ -316,13 +310,11 @@ async fn news_can_support_video_thumbnail() -> Result<()> {
     let space = user.space(room_id.to_string()).await?;
     let thumb_mimetype = "image/png";
     let video_draft = user
-        .video_draft(
-            tmp_mp4.path().to_string_lossy().to_string(),
-            "video/mp4".to_owned(),
-        )
+        .video_draft(tmp_mp4.path().to_string_lossy().to_string())
+        .mimetype("video/mp4".to_owned())
         .thumbnail_file_path(tmp_png.path().to_string_lossy().to_string())
         .thumbnail_info(None, None, Some(thumb_mimetype.to_owned()), Some(size))
-        .clone(); // switch variable from temporary to normal so that send_message can use it
+        .clone(); // switch variable from temporary to normal so that add_slide can use it
     space
         .news_draft()?
         .add_slide(Box::new(video_draft.into()))
@@ -433,13 +425,11 @@ async fn image_attachment_can_support_thumbnail() -> Result<()> {
     let attachments_listener = attachments_manager.subscribe();
     let thumb_mimetype = "image/png";
     let base_draft = user
-        .image_draft(
-            jpg_file.path().to_string_lossy().to_string(),
-            "image/jpeg".to_owned(),
-        )
+        .image_draft(jpg_file.path().to_string_lossy().to_string())
+        .mimetype("image/jpeg".to_owned())
         .thumbnail_file_path(png_file.path().to_string_lossy().to_string())
         .thumbnail_info(None, None, Some(thumb_mimetype.to_owned()), Some(size))
-        .clone(); // switch variable from temporary to normal so that send_message can use it
+        .clone(); // switch variable from temporary to normal so that content_draft can use it
     let attachment_id = attachments_manager
         .content_draft(Box::new(base_draft))
         .await?
@@ -529,13 +519,11 @@ async fn video_attachment_can_support_thumbnail() -> Result<()> {
     let attachments_listener = attachments_manager.subscribe();
     let thumb_mimetype = "image/png";
     let base_draft = user
-        .video_draft(
-            mp4_file.path().to_string_lossy().to_string(),
-            "video/mp4".to_owned(),
-        )
+        .video_draft(mp4_file.path().to_string_lossy().to_string())
+        .mimetype("video/mp4".to_owned())
         .thumbnail_file_path(png_file.path().to_string_lossy().to_string())
         .thumbnail_info(None, None, Some(thumb_mimetype.to_owned()), Some(size))
-        .clone(); // switch variable from temporary to normal so that send_message can use it
+        .clone(); // switch variable from temporary to normal so that content_draft can use it
     let attachment_id = attachments_manager
         .content_draft(Box::new(base_draft))
         .await?

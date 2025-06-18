@@ -277,46 +277,34 @@ impl Client {
         })
     }
 
-    pub fn image_draft(&self, source: String, mimetype: String) -> MsgDraft {
-        let info = assign!(ImageInfo::new(), {
-            mimetype: Some(mimetype),
-        });
+    pub fn image_draft(&self, source: String) -> MsgDraft {
         MsgDraft::new(MsgContentDraft::Image {
             source,
-            info: Some(info),
+            info: Some(ImageInfo::new()),
             filename: None,
         })
     }
 
-    pub fn audio_draft(&self, source: String, mimetype: String) -> MsgDraft {
-        let info = assign!(AudioInfo::new(), {
-            mimetype: Some(mimetype),
-        });
+    pub fn audio_draft(&self, source: String) -> MsgDraft {
         MsgDraft::new(MsgContentDraft::Audio {
             source,
-            info: Some(info),
+            info: Some(AudioInfo::new()),
             filename: None,
         })
     }
 
-    pub fn video_draft(&self, source: String, mimetype: String) -> MsgDraft {
-        let info = assign!(VideoInfo::new(), {
-            mimetype: Some(mimetype),
-        });
+    pub fn video_draft(&self, source: String) -> MsgDraft {
         MsgDraft::new(MsgContentDraft::Video {
             source,
-            info: Some(info),
+            info: Some(VideoInfo::new()),
             filename: None,
         })
     }
 
-    pub fn file_draft(&self, source: String, mimetype: String) -> MsgDraft {
-        let info = assign!(FileInfo::new(), {
-            mimetype: Some(mimetype),
-        });
+    pub fn file_draft(&self, source: String) -> MsgDraft {
         MsgDraft::new(MsgContentDraft::File {
             source,
-            info: Some(info),
+            info: Some(FileInfo::new()),
             filename: None,
         })
     }

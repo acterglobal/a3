@@ -48,10 +48,8 @@ async fn room_msg_can_download_image() -> Result<()> {
 
     let mimetype = "image/jpeg";
     let draft = user
-        .image_draft(
-            tmp_jpg.path().to_string_lossy().to_string(),
-            mimetype.to_owned(),
-        )
+        .image_draft(tmp_jpg.path().to_string_lossy().to_string())
+        .mimetype(mimetype.to_owned())
         .thumbnail_file_path(tmp_png.path().to_string_lossy().to_string())
         .thumbnail_info(None, None, Some("image/png".to_owned()), Some(size))
         .clone(); // switch variable from temporary to normal so that send_message can use it

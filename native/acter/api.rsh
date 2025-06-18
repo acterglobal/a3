@@ -3931,16 +3931,16 @@ object Client {
     fn text_html_draft(html: string, plain: string) -> MsgDraft;
 
     /// make draft to send image msg
-    fn image_draft(source: string, mimetype: string) -> MsgDraft;
+    fn image_draft(source: string) -> MsgDraft;
 
     /// make draft to send audio msg
-    fn audio_draft(source: string, mimetype: string) -> MsgDraft;
+    fn audio_draft(source: string) -> MsgDraft;
 
     /// make draft to send video msg
-    fn video_draft(source: string, mimetype: string) -> MsgDraft;
+    fn video_draft(source: string) -> MsgDraft;
 
     /// make draft to send file msg
-    fn file_draft(source: string, mimetype: string) -> MsgDraft;
+    fn file_draft(source: string) -> MsgDraft;
 
     /// make draft to send location msg
     fn location_draft(body: string, source: string) -> MsgDraft;

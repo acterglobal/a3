@@ -44,10 +44,8 @@ async fn image_blurhash_support() -> Result<()> {
     let mimetype = "image/jpeg";
     let blurhash = "KingFisher";
     let draft = user
-        .image_draft(
-            tmp_jpg.path().to_string_lossy().to_string(),
-            mimetype.to_owned(),
-        )
+        .image_draft(tmp_jpg.path().to_string_lossy().to_string())
+        .mimetype(mimetype.to_owned())
         .blurhash(blurhash.to_owned())
         .clone(); // switch variable from temporary to normal so that send_message can use it
     timeline.send_message(Box::new(draft)).await?;
@@ -130,10 +128,8 @@ async fn video_blurhash_support() -> Result<()> {
     let mimetype = "video/mp4";
     let blurhash = "Big Buck Bunny";
     let draft = user
-        .image_draft(
-            tmp_mp4.path().to_string_lossy().to_string(),
-            mimetype.to_owned(),
-        )
+        .image_draft(tmp_mp4.path().to_string_lossy().to_string())
+        .mimetype(mimetype.to_owned())
         .blurhash(blurhash.to_owned())
         .clone(); // switch variable from temporary to normal so that send_message can use it
     timeline.send_message(Box::new(draft)).await?;

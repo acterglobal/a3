@@ -4,11 +4,11 @@ import 'dart:typed_data';
 import 'package:acter/common/models/types.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/notifications/actions/autosubscribe.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show AttachmentDraft, AttachmentsManager, RefDetails;
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:mime/mime.dart';
@@ -42,7 +42,8 @@ Future<void> handleAttachmentSelected({
         Uint8List bytes = await file.readAsBytes();
         final decodedImage = await decodeImageFromList(bytes);
         final imageDraft =
-            client.imageDraft(file.path, mimeType)
+            client.imageDraft(file.path)
+              ..mimetype(mimeType)
               ..filename(title ?? fileName)
               ..size(bytes.length)
               ..width(decodedImage.width)
@@ -52,7 +53,8 @@ Future<void> handleAttachmentSelected({
       } else if (attachmentType == AttachmentType.audio) {
         Uint8List bytes = await file.readAsBytes();
         final audioDraft =
-            client.audioDraft(file.path, mimeType)
+            client.audioDraft(file.path)
+              ..mimetype(mimeType)
               ..filename(title ?? fileName)
               ..size(bytes.length);
         final attachmentDraft = await manager.contentDraft(audioDraft);
@@ -60,14 +62,16 @@ Future<void> handleAttachmentSelected({
       } else if (attachmentType == AttachmentType.video) {
         Uint8List bytes = await file.readAsBytes();
         final videoDraft =
-            client.videoDraft(file.path, mimeType)
+            client.videoDraft(file.path)
+              ..mimetype(mimeType)
               ..filename(title ?? fileName)
               ..size(bytes.length);
         final attachmentDraft = await manager.contentDraft(videoDraft);
         drafts.add(attachmentDraft);
       } else {
         final fileDraft =
-            client.fileDraft(file.path, mimeType)
+            client.fileDraft(file.path)
+              ..mimetype(mimeType)
               ..filename(title ?? fileName)
               ..size(file.lengthSync());
         final attachmentDraft = await manager.contentDraft(fileDraft);
