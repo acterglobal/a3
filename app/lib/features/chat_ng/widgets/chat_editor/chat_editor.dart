@@ -152,8 +152,9 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
 
       final htmlBody = draft.htmlText();
       final fallbackPlain = draft.plainText();
-
-      textEditorState.replaceContent(fallbackPlain, htmlBody);
+      if (fallbackPlain.trim().isNotEmpty) {
+        textEditorState.replaceContent(fallbackPlain, htmlBody);
+      }
 
       _log.info('compose text draft loaded for room: ${widget.roomId}');
     }
