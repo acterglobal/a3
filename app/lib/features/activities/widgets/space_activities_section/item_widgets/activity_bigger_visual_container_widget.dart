@@ -121,18 +121,24 @@ class ActivityBiggerVisualContainerWidget extends ConsumerWidget {
 
   /// Subtitle + time or only time if subtitle is null
   Widget _buildSubtitleOrTime() {
-    if (subtitle != null) {
-      return Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+  if (subtitle != null) {
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Expanded(child: subtitle ?? const SizedBox.shrink()),
           const SizedBox(width: 8),
-          TimeAgoWidget(originServerTs: originServerTs),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: TimeAgoWidget(originServerTs: originServerTs),
+          ),
         ],
-      );
-    }
-    return TimeAgoWidget(originServerTs: originServerTs);
+      ),
+    );
   }
+  return TimeAgoWidget(originServerTs: originServerTs);
+}
+
 
   IconData _getActivityObjectIcon() {
     return switch (activityObject?.typeStr()) {

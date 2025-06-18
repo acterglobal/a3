@@ -26,7 +26,7 @@ class ActivityTitleChangeItemWidget extends ConsumerWidget {
       actionTitle: getMessage(lang, userId) ?? '',
       target: '',
       actionIcon: PhosphorIconsRegular.pencilSimpleLine,
-      subtitle: getSubtitle(context, activity.titleContent()?.newVal()),
+      subtitle: getSubtitle(context, activity.titleContent()?.newVal().toString().trim()),
       originServerTs: activity.originServerTs(),
       leadingWidget: Icon(PhosphorIconsRegular.pencilSimpleLine, size: 25),
     );

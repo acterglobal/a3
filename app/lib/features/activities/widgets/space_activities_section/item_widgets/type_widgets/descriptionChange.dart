@@ -29,7 +29,7 @@ class ActivityDescriptionChangeItemWidget extends ConsumerWidget {
       activityObject: activity.object(),
       userId: userId,
       roomId: activity.roomIdStr(),
-      subtitle: getSubtitle(context, activity.descriptionContent()?.newVal()),
+      subtitle: getSubtitle(context, activity.descriptionContent()?.newVal().toString().trim()),
       leadingWidget: Icon(PhosphorIconsRegular.pencilLine, size: 25),
       originServerTs: activity.originServerTs(),
     );

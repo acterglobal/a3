@@ -33,21 +33,26 @@ class ActivityMembershipItemWidget extends ConsumerWidget {
         children: [
           Icon(membershipInfo.icon, size: 20),
           const SizedBox(width: 10),
-          Expanded(child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Expanded(child: Stack(
             children: [
-              Expanded(child: RichText(
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                text: TextSpan(
-                  text: membershipInfo.text,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: colorScheme.surfaceTint,
+              Padding(
+                padding: const EdgeInsets.only(right: 80), // Space for TimeAgoWidget
+                child: RichText(
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  text: TextSpan(
+                    text: membershipInfo.text,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.surfaceTint,
+                    ),
                   ),
                 ),
               ),
+              Positioned(
+                right: 0,
+                bottom: 3,
+                child: TimeAgoWidget(originServerTs: originServerTs),
               ),
-              TimeAgoWidget(originServerTs: originServerTs),
             ],
           )),
         ],
