@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// A widget that displays membership change events in a space's activity feed.
-/// 
+///
 /// This widget shows information about various membership changes like:
 /// - Users joining/leaving a space
 /// - Invitations being sent/accepted/rejected
@@ -18,10 +18,7 @@ class ActivityMembershipItemWidget extends ConsumerWidget {
   /// The activity containing membership change information
   final Activity activity;
 
-  const ActivityMembershipItemWidget({
-    super.key,
-    required this.activity,
-  });
+  const ActivityMembershipItemWidget({super.key, required this.activity});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -30,26 +27,29 @@ class ActivityMembershipItemWidget extends ConsumerWidget {
     final membershipInfo = _getMembershipInfo(context, ref, activityObject);
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Icon(membershipInfo.icon, size: 20),
           const SizedBox(width: 10),
-          Expanded(
-            child: RichText(
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              text: TextSpan(
-                text: membershipInfo.text,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: colorScheme.surfaceTint,
+          Expanded(child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(child: RichText(
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                text: TextSpan(
+                  text: membershipInfo.text,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.surfaceTint,
+                  ),
                 ),
               ),
-            ),
-          ),
-          const SizedBox(width: 5),
-          TimeAgoWidget(originServerTs: originServerTs),
+              ),
+              TimeAgoWidget(originServerTs: originServerTs),
+            ],
+          )),
         ],
       ),
     );
@@ -63,8 +63,13 @@ class ActivityMembershipItemWidget extends ConsumerWidget {
   ) {
     final lang = L10n.of(context);
     final myId = ref.watch(myUserIdStrProvider);
-    final isActionOnMe = activity.membershipContent()?.userId().toString() == myId;
-    final senderName = _getMemberDisplayName(ref, activity.roomIdStr(), activity.senderIdStr());
+    final isActionOnMe =
+        activity.membershipContent()?.userId().toString() == myId;
+    final senderName = _getMemberDisplayName(
+      ref,
+      activity.roomIdStr(),
+      activity.senderIdStr(),
+    );
     final targetName = _getMemberDisplayName(
       ref,
       activity.roomIdStr(),
@@ -73,77 +78,86 @@ class ActivityMembershipItemWidget extends ConsumerWidget {
 
     return switch (activity.membershipContent()?.change()) {
       'joined' => (
-          icon: Icons.people_sharp,
-          text: lang.chatMembershipOtherJoined(targetName)
-        ),
+        icon: Icons.people_sharp,
+        text: lang.chatMembershipOtherJoined(targetName),
+      ),
       'left' => (
-          icon: Icons.logout,
-          text: lang.chatMembershipOtherLeft(targetName)
-        ),
+        icon: Icons.logout,
+        text: lang.chatMembershipOtherLeft(targetName),
+      ),
       'invitationAccepted' => (
-          icon: Icons.person_add,
-          text: lang.chatMembershipInvitationOtherAccepted(targetName)
-        ),
+        icon: Icons.person_add,
+        text: lang.chatMembershipInvitationOtherAccepted(targetName),
+      ),
       'invitationRejected' => (
-          icon: Icons.person_off,
-          text: lang.chatMembershipInvitationOtherRejected(targetName)
-        ),
+        icon: Icons.person_off,
+        text: lang.chatMembershipInvitationOtherRejected(targetName),
+      ),
       'invitationRevoked' => (
-          icon: Icons.person_remove,
-          text: lang.chatMembershipInvitationOtherRevoked(targetName)
-        ),
+        icon: Icons.person_remove,
+        text: lang.chatMembershipInvitationOtherRevoked(targetName),
+      ),
       'knockAccepted' => (
-          icon: Icons.person_add,
-          text: lang.chatMembershipKnockOtherAccepted(targetName)
-        ),
+        icon: Icons.person_add,
+        text: lang.chatMembershipKnockOtherAccepted(targetName),
+      ),
       'knockRetracted' => (
-          icon: Icons.person_remove,
-          text: lang.chatMembershipKnockOtherRetracted(targetName)
-        ),
+        icon: Icons.person_remove,
+        text: lang.chatMembershipKnockOtherRetracted(targetName),
+      ),
       'knockDenied' => (
-          icon: Icons.block,
-          text: lang.chatMembershipKnockOtherDenied(targetName)
-        ),
+        icon: Icons.block,
+        text: lang.chatMembershipKnockOtherDenied(targetName),
+      ),
       'banned' => (
-          icon: Icons.block,
-          text: isActionOnMe
-              ? lang.chatMembershipOtherBannedYou(senderName)
-              : lang.chatMembershipOtherBannedOther(senderName, targetName)
-        ),
+        icon: Icons.block,
+        text:
+            isActionOnMe
+                ? lang.chatMembershipOtherBannedYou(senderName)
+                : lang.chatMembershipOtherBannedOther(senderName, targetName),
+      ),
       'unbanned' => (
-          icon: Icons.block_flipped,
-          text: isActionOnMe
-              ? lang.chatMembershipOtherUnbannedYou(senderName)
-              : lang.chatMembershipOtherUnbannedOther(senderName, targetName)
-        ),
+        icon: Icons.block_flipped,
+        text:
+            isActionOnMe
+                ? lang.chatMembershipOtherUnbannedYou(senderName)
+                : lang.chatMembershipOtherUnbannedOther(senderName, targetName),
+      ),
       'kicked' => (
-          icon: Icons.person_remove,
-          text: isActionOnMe
-              ? lang.chatMembershipOtherKickedYou(senderName)
-              : lang.chatMembershipOtherKickedOther(senderName, targetName)
-        ),
+        icon: Icons.person_remove,
+        text:
+            isActionOnMe
+                ? lang.chatMembershipOtherKickedYou(senderName)
+                : lang.chatMembershipOtherKickedOther(senderName, targetName),
+      ),
       'invited' => (
-          icon: Icons.person_add,
-          text: isActionOnMe
-              ? lang.chatMembershipOtherInvitedYou(senderName)
-              : lang.chatMembershipOtherInvitedOther(senderName, targetName)
-        ),
+        icon: Icons.person_add,
+        text:
+            isActionOnMe
+                ? lang.chatMembershipOtherInvitedYou(senderName)
+                : lang.chatMembershipOtherInvitedOther(senderName, targetName),
+      ),
       'kickedAndBanned' => (
-          icon: Icons.block,
-          text: isActionOnMe
-              ? lang.chatMembershipOtherKickedAndBannedYou(senderName)
-              : lang.chatMembershipOtherKickedAndBannedOther(senderName, targetName)
-        ),
+        icon: Icons.block,
+        text:
+            isActionOnMe
+                ? lang.chatMembershipOtherKickedAndBannedYou(senderName)
+                : lang.chatMembershipOtherKickedAndBannedOther(
+                  senderName,
+                  targetName,
+                ),
+      ),
       'knocked' => (
-          icon: Icons.person_add,
-          text: isActionOnMe
-              ? lang.chatMembershipOtherKnockedYou(senderName)
-              : lang.chatMembershipOtherKnockedOther(senderName, targetName)
-        ),
+        icon: Icons.person_add,
+        text:
+            isActionOnMe
+                ? lang.chatMembershipOtherKnockedYou(senderName)
+                : lang.chatMembershipOtherKnockedOther(senderName, targetName),
+      ),
       _ => (
-          icon: Icons.person,
-          text: activity.membershipContent()?.change() ?? ''
-        ),
+        icon: Icons.person,
+        text: activity.membershipContent()?.change() ?? '',
+      ),
     };
   }
 

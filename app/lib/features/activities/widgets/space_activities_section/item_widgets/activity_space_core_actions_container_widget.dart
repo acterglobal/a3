@@ -35,7 +35,7 @@ class ActivitySpaceCoreActionsContainerWidget extends ConsumerWidget {
         userId;
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+      padding: const EdgeInsets.symmetric(vertical: 10),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -52,7 +52,7 @@ class ActivitySpaceCoreActionsContainerWidget extends ConsumerWidget {
     return Stack(
       clipBehavior: Clip.none,
       children: [
-        ActerAvatar(options: AvatarOptions.DM(avatarInfo, size: 25)),
+        ActerAvatar(options: AvatarOptions.DM(avatarInfo, size: 22)),
         Positioned(
           right: -6,
           bottom: -6,
@@ -80,7 +80,9 @@ class ActivitySpaceCoreActionsContainerWidget extends ConsumerWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          RichText(
+          Flexible(
+            flex: 1,
+            child: RichText(
             text: TextSpan(
               children: [
                 TextSpan(text: displayName, style: theme.textTheme.bodyMedium),
@@ -92,6 +94,7 @@ class ActivitySpaceCoreActionsContainerWidget extends ConsumerWidget {
                 ),
               ],
             ),
+          ),
           ),
           TimeAgoWidget(originServerTs: originServerTs),
         ],

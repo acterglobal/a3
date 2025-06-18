@@ -43,12 +43,32 @@ class SpaceActivitiesItemWidget extends ConsumerWidget {
     return ExpansionTile(
       initiallyExpanded: true,
       collapsedBackgroundColor: Colors.transparent,
+      tilePadding: EdgeInsets.zero,
       shape: const Border(),
       leading: ActerAvatar(options: AvatarOptions(avatarInfo, size: 24)),
       title: Text(spaceName),
       children:
           activities
-              .map((activity) => ActivityItemWidget(activity: activity))
+              .asMap()
+              .entries
+              .map((entry) {
+                final activity = entry.value;
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: IntrinsicHeight(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        DashedLineVertical(
+                          color: Theme.of(context).dividerColor.withValues(alpha: 0.3),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(child: ActivityItemWidget(activity: activity)),
+                      ],
+                    ),
+                  ),
+                );
+              })
               .toList(),
     );
   }
@@ -77,4 +97,65 @@ class SpaceActivitiesSkeleton extends StatelessWidget {
       ),
     );
   }
+}
+
+class DashedLineVertical extends StatelessWidget {
+  final double? height;
+  final double dashHeight;
+  final double dashSpacing;
+  final Color color;
+
+  const DashedLineVertical({
+    super.key,
+    this.height,
+    this.dashHeight = 6,
+    this.dashSpacing = 5,
+    this.color = Colors.grey,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 0.5,
+      height: height,
+      child: CustomPaint(
+        painter: _DashedLinePainter(
+          dashHeight: dashHeight,
+          dashSpacing: dashSpacing,
+          color: color,
+        ),
+      ),
+    );
+  }
+}
+
+class _DashedLinePainter extends CustomPainter {
+  final double dashHeight;
+  final double dashSpacing;
+  final Color color;
+
+  _DashedLinePainter({
+    required this.dashHeight,
+    required this.dashSpacing,
+    required this.color,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    double startY = 0;
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = 0.8;
+    while (startY < size.height) {
+      canvas.drawLine(
+        Offset(size.width / 2, startY),
+        Offset(size.width / 2, startY + dashHeight),
+        paint,
+      );
+      startY += dashHeight + dashSpacing;
+    }
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) => false;
 }

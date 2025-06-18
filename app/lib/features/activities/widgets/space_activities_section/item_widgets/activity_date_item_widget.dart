@@ -21,7 +21,7 @@ class ActivityDateItemWidget extends ConsumerWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-          margin: const EdgeInsets.symmetric(vertical: 16),
+          margin: const EdgeInsets.symmetric(vertical: 10),
           padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 16),
           decoration: BoxDecoration(
             border: Border.all(
@@ -37,6 +37,7 @@ class ActivityDateItemWidget extends ConsumerWidget {
         ListView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
+          padding: EdgeInsets.zero, 
           itemCount: roomIds.length,
           itemBuilder:
               (context, index) =>

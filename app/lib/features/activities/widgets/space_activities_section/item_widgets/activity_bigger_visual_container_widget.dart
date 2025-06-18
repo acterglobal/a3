@@ -41,7 +41,7 @@ class ActivityBiggerVisualContainerWidget extends ConsumerWidget {
             .valueOrNull ?? userId;
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+      padding: leadingWidget == null ? const EdgeInsets.symmetric(vertical: 10) : const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -67,7 +67,7 @@ class ActivityBiggerVisualContainerWidget extends ConsumerWidget {
     return Stack(
       clipBehavior: Clip.none,
       children: [
-        ActerAvatar(options: AvatarOptions.DM(avatarInfo, size: 25)),
+        ActerAvatar(options: AvatarOptions.DM(avatarInfo, size: 22)),
         Positioned(
           right: -6,
           bottom: -6,
@@ -95,9 +95,8 @@ class ActivityBiggerVisualContainerWidget extends ConsumerWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Flexible(
+          flex: 1,
           child: RichText(
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
             text: TextSpan(
               children: [
                 TextSpan(text: displayName, style: theme.textTheme.bodyMedium),
