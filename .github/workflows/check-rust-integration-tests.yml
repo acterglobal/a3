@@ -64,8 +64,9 @@ jobs:
       - uses: rui314/setup-mold@v1
         name: "Setup mold linker"
 
-      - uses: taiki-e/install-action@cargo-llvm-cov
-      - uses: taiki-e/install-action@nextest
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-llvm-cov,nextest
 
       - name: run cargo integration tests
         env:
