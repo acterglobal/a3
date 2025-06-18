@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:path/path.dart' as path;
 
 class FileAttachmentPreview extends StatelessWidget {
   final File file;
@@ -14,25 +15,17 @@ class FileAttachmentPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(child: Icon(_getIconData(file), size: iconSize));
-  }
+    final extension = path.extension(file.path).toLowerCase();
 
-  IconData _getIconData(File file) {
-    final extension = file.path.split('.').last;
-    switch (extension) {
-      case 'pdf':
-        return PhosphorIconsRegular.filePdf;
-      case 'doc':
-      case 'docx':
-        return PhosphorIconsRegular.fileDoc;
-      case 'csv':
-        return PhosphorIconsRegular.fileCsv;
-      case 'xls':
-      case 'xlsx':
-        return PhosphorIconsRegular.fileXls;
-      case 'txt':
-      default:
-        return PhosphorIconsRegular.file;
-    }
+    final IconData iconData = switch (extension) {
+      '.pdf' => PhosphorIconsRegular.filePdf,
+      '.doc' || '.docx' => PhosphorIconsRegular.fileDoc,
+      '.csv' => PhosphorIconsRegular.fileCsv,
+      '.xls' || '.xlsx' => PhosphorIconsRegular.fileXls,
+      '.txt' => PhosphorIconsRegular.file,
+      _ => PhosphorIconsRegular.file,
+    };
+
+    return Center(child: Icon(iconData, size: iconSize));
   }
 }
