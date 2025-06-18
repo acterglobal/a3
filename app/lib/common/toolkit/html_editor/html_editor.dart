@@ -102,6 +102,16 @@ extension ActerEditorStateHelpers on EditorState {
     }
 
     apply(t);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      updateSelectionWithReason(
+        Selection.single(
+          path: document.root.children.last.path,
+          startOffset: document.root.children.last.delta?.length ?? 0,
+        ),
+        reason: SelectionUpdateReason.uiEvent,
+      );
+    });
   }
 
   /// clear the editor text with selection
