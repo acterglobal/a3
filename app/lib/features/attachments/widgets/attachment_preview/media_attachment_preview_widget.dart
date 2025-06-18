@@ -35,6 +35,20 @@ class _MediaAttachmentPreviewWidgetState
     _pageController = PageController(initialPage: _currentIndex);
   }
 
+  @override
+  void didUpdateWidget(MediaAttachmentPreviewWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    // Reset current index if selectedFiles has changed
+    if (oldWidget.selectedFiles != widget.selectedFiles) {
+      setState(() {
+        _currentIndex = 0;
+      });
+      // Jump to the first page when files change
+      _pageController.jumpToPage(0);
+    }
+  }
+
   void _onPageChanged(int index) {
     _pageController.jumpToPage(index);
     setState(() => _currentIndex = index);
