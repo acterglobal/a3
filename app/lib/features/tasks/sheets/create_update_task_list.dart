@@ -213,7 +213,13 @@ class _CreateUpdateTaskListConsumerState
           .read(selectedSpaceIdProvider)
           .expect('space not selected');
       final space = await ref.read(spaceProvider(spaceId).future);
-      final taskListDraft = space.taskListDraft();
+      final taskListDraft =
+          space.taskListDraft()
+            ..name(_titleController.text)
+            ..descriptionHtml(
+              textEditorState.intoMarkdown(),
+              textEditorState.intoHtml(),
+            );
 
       // TaskList IconData
 
@@ -227,11 +233,6 @@ class _CreateUpdateTaskListConsumerState
         taskListDraft.display(displayBuilder.build());
       }
 
-      taskListDraft.name(_titleController.text);
-      // Description text
-      final plainDescription = textEditorState.intoMarkdown();
-      final htmlBodyDescription = textEditorState.intoHtml();
-      taskListDraft.descriptionHtml(plainDescription, htmlBodyDescription);
       final objectId = await taskListDraft.send();
       await autosubscribe(ref: ref, objectId: objectId.toString(), lang: lang);
 
