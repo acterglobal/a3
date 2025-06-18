@@ -124,7 +124,7 @@ class ActivityBiggerVisualContainerWidget extends ConsumerWidget {
   Widget _buildSubtitleOrTime() {
     if (subtitle != null) {
       return Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(child: subtitle ?? const SizedBox.shrink()),
           const SizedBox(width: 8),

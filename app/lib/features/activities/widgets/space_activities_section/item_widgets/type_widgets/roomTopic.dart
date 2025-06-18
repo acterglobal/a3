@@ -37,9 +37,11 @@ class ActivityRoomTopicItemWidget extends ConsumerWidget {
     }
     switch (content.change()) {
       case 'Changed':
-       return lang.updateDesc;
+        return lang.changedDescription('space');
       case 'Set':
-         return lang.setDesc;
+        return lang.setDescription('space');
+      case 'Unset':
+        return lang.unsetDescription('space');
     }
     return null;
   }
