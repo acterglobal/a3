@@ -99,21 +99,8 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
 
     final body = msgContent.body();
     if (body.isEmpty) return;
-    // clear the editor first
-    textEditorState.clear();
 
-    final docNode = textEditorState.getNodeAtPath([0]);
-    if (docNode == null) return;
-
-    // process text and apply mention attributes , if any
-    textEditorState.toMentionPills(body, docNode);
-
-    final text = docNode.delta?.toPlainText() ?? '';
-    final pos = Position(path: [0], offset: text.length);
-    textEditorState.updateSelectionWithReason(
-      Selection.collapsed(pos),
-      reason: SelectionUpdateReason.uiEvent,
-    );
+    textEditorState.replaceContent(body, msgContent.formattedBody());
   }
 
   void _editorUpdate(Transaction data) {
@@ -144,7 +131,6 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
       final chatEditorState = ref.read(chatEditorStateProvider.notifier);
       chatEditorState.unsetActions();
       textEditorState.clear();
-      final body = draft.plainText();
       draft.eventId().map((eventId) {
         final draftType = draft.draftType();
         final msgsList =
@@ -164,16 +150,12 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
         }
       });
 
-      if (body.trim().isEmpty) return;
+      final htmlBody = draft.htmlText();
+      final fallbackPlain = draft.plainText();
 
-      final transaction = textEditorState.transaction;
-      final docNode = textEditorState.getNodeAtPath([0]);
-      if (docNode == null) return;
-      transaction.replaceText(docNode, 0, docNode.delta?.length ?? 0, body);
-      final pos = Position(path: [0], offset: body.length);
-      transaction.afterSelection = Selection.collapsed(pos);
-      textEditorState.apply(transaction);
-      _log.info('compose draft loaded for room: ${widget.roomId}');
+      textEditorState.replaceContent(fallbackPlain, htmlBody);
+
+      _log.info('compose text draft loaded for room: ${widget.roomId}');
     }
   }
 
