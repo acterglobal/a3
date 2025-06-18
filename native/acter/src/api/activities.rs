@@ -21,6 +21,7 @@ use futures::{FutureExt, Stream, StreamExt};
 use matrix_sdk::ruma::{EventId, OwnedEventId, OwnedRoomId, RoomId};
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::wrappers::BroadcastStream;
+use tracing::error;
 
 use super::{Client, MsgContent, RefDetails, RUNTIME};
 
@@ -61,9 +62,18 @@ impl Activity {
 
     pub fn msg_content(&self) -> Option<MsgContent> {
         match self.inner.content() {
-            ActivityContent::DescriptionChange { content, .. } => {
-                content.as_ref().map(MsgContent::from)
-            }
+            ActivityContent::DescriptionChange { content, .. } => match content.change().as_str() {
+                "Changed" | "Set" => {
+                    if let Some(new_val) = content.new_val.as_ref() {
+                        Some(MsgContent::from(new_val.clone()))
+                    } else {
+                        error!("Could not get the new value for the description change");
+                        None
+                    }
+                }
+                "Unset" => Some(MsgContent::from_text("removed description".to_owned())),
+                _ => None,
+            },
             ActivityContent::Comment { content, .. } => Some(MsgContent::from(content)),
             ActivityContent::Boost {
                 first_slide: Some(first_slide),

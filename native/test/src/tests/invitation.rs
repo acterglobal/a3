@@ -183,7 +183,7 @@ async fn invitations_update_count_when_joined() -> Result<()> {
 
     invite_user(&sisko, &sisko_room_id, &kyra.user_id()?).await?;
 
-    // sisko's invite
+    // sisko’s invite
 
     let invited = Retry::spawn(retry_strategy.clone(), || async {
         let invited = invites.room_invitations().await?;
@@ -256,7 +256,7 @@ async fn no_invite_count_update_on_message() -> Result<()> {
 
     let sisko_room = invite_user(&sisko, &sisko_room_id, &kyra.user_id()?).await?;
 
-    // sisko's invite
+    // sisko’s invite
 
     let invited = Retry::spawn(retry_strategy.clone(), || async {
         let invited = invites.room_invitations().await?;
@@ -362,7 +362,7 @@ async fn invitations_update_count_when_rejected() -> Result<()> {
 
     invite_user(&sisko, &sisko_room_id, &kyra.user_id()?).await?;
 
-    // sisko's invite
+    // sisko’s invite
 
     let invited = Retry::spawn(retry_strategy.clone(), || async {
         let invited = invites.room_invitations().await?;
