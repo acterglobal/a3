@@ -278,7 +278,6 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
     return Padding(
       padding: const EdgeInsets.only(top: 15),
       child: HtmlEditor(
-        key: Key('html-editor-${widget.roomId}'),
         footer: null,
         // if provided, will activate mentions
         roomId: widget.roomId,
