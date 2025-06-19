@@ -664,3 +664,95 @@ async fn file_attachment_can_support_thumbnail() -> Result<()> {
 
     Ok(())
 }
+
+#[tokio::test]
+async fn location_attachment_can_support_thumbnail() -> Result<()> {
+    let _ = env_logger::try_init();
+    let (user, sync_state, _engine) =
+        random_user_with_template("location_attachment_thumbnail", TMPL).await?;
+    sync_state.await_has_synced_history().await?;
+
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
+    Retry::spawn(retry_strategy, || async {
+        if user.pins().await?.len() != 3 {
+            bail!("not all pins found");
+        }
+        Ok(())
+    })
+    .await?;
+
+    let pin = user
+        .pins()
+        .await?
+        .into_iter()
+        .find(|p| !p.is_link())
+        .expect("we’ve created one non-link pin");
+
+    // START actual attachment on pin
+
+    let attachments_manager = pin.attachments().await?;
+    assert!(!attachments_manager.stats().has_attachments());
+
+    // ---- let’s make a attachment
+
+    let body = "Working Office";
+    let geo_uri = "geo:51.5074,-0.1278";
+
+    let bytes = include_bytes!("../fixtures/PNG_transparency_demonstration_1.png");
+    let size = bytes.len() as u64;
+    let mut png_file = NamedTempFile::new()?;
+    png_file.as_file_mut().write_all(bytes)?;
+
+    let attachments_listener = attachments_manager.subscribe();
+    let thumb_mimetype = "image/png";
+    let base_draft = user
+        .location_draft(body.to_owned(), geo_uri.to_owned())
+        .thumbnail_file_path(png_file.path().to_string_lossy().to_string())
+        .thumbnail_info(None, None, Some(thumb_mimetype.to_owned()), Some(size))
+        .clone(); // switch variable from temporary to normal so that content_draft can use it
+    let attachment_id = attachments_manager
+        .content_draft(Box::new(base_draft))
+        .await?
+        .send()
+        .await?;
+
+    let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
+    Retry::spawn(retry_strategy, || async {
+        if attachments_listener.is_empty() {
+            bail!("all still empty");
+        }
+        Ok(())
+    })
+    .await?;
+
+    let attachments = attachments_manager.attachments().await?;
+    assert_eq!(attachments.len(), 1);
+    let attachment = attachments
+        .first()
+        .expect("first attachment should be available");
+    assert_eq!(attachment.event_id(), attachment_id);
+    assert_eq!(attachment.type_str(), "location");
+
+    let msg_content = attachment
+        .msg_content()
+        .expect("msg content should be available");
+    assert!(
+        msg_content.thumbnail_source().is_some(),
+        "we sent thumbnail, but thumbnail source not available",
+    );
+    let thumbnail_info = msg_content
+        .thumbnail_info()
+        .context("we sent thumbnail, but thumbnail info not available")?;
+    assert_eq!(
+        thumbnail_info.mimetype().as_deref(),
+        Some(thumb_mimetype),
+        "we sent thumbnail in png format",
+    );
+    assert_eq!(
+        thumbnail_info.size(),
+        Some(size),
+        "wrong file size in thumbnail",
+    );
+
+    Ok(())
+}
