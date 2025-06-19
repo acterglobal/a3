@@ -102,6 +102,13 @@ extension ActerEditorStateHelpers on EditorState {
     }
 
     apply(t);
+
+    t = transaction;
+    t.afterSelection = Selection.single(
+      path: document.root.children.last.path,
+      startOffset: document.root.children.last.delta?.length ?? 0,
+    );
+    apply(t);
   }
 
   /// clear the editor text with selection
