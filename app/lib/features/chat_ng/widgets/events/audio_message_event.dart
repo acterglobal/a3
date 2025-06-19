@@ -33,36 +33,40 @@ class AudioMessageEvent extends ConsumerStatefulWidget {
 
 class _AudioMessageEventState extends ConsumerState<AudioMessageEvent> {
   final AudioPlayer _player = AudioPlayer();
+  StreamSubscription<PlayerState>? _playerStateSubscription;
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      // listen to the audio player state changes
-      ref.listenManual(audioPlayerStateProvider, (previous, next) {
-        if (next.messageId != widget.messageId &&
-            next.state == PlayerState.playing) {
-          _player.stop();
-        }
-      });
+    // Listen to global audio player state changes to stop this player when another starts
+    ref.listenManual(audioPlayerStateProvider, (previous, next) {
+      if (mounted &&
+          next.messageId != widget.messageId &&
+          next.state == PlayerState.playing) {
+        _player.stop();
+      }
+    });
 
-      // listen to the audio player state changes
-      _player.onPlayerStateChanged.listen((state) {
-        // if the messageId is not the same, return early
-        // only update the state if this widget's messageId matches the current audio player
-        final audioPlayerMessageId =
-            ref.read(audioPlayerStateProvider).messageId;
-        if (audioPlayerMessageId != widget.messageId) return;
+    // Listen to this player's state changes and update the global state accordingly
+    _playerStateSubscription = _player.onPlayerStateChanged.listen((state) {
+      if (!mounted) return;
+
+      final currentAudioPlayerMessageId =
+          ref.read(audioPlayerStateProvider).messageId;
+
+      // Only update global state if this widget's messageId matches the current audio player
+      if (currentAudioPlayerMessageId == widget.messageId) {
         ref.read(audioPlayerStateProvider.notifier).state = (
           state: state,
           messageId: widget.messageId,
         );
-      });
+      }
     });
   }
 
   @override
   void dispose() {
+    _playerStateSubscription?.cancel();
     _player.dispose();
     super.dispose();
   }
