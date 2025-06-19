@@ -13,7 +13,6 @@ Future<void> saveMsgDraft(
   final chat = await ref.read(chatProvider(roomId).future);
   final chatEditorState = ref.read(chatEditorStateProvider);
   final messageId = chatEditorState.selectedMsgItem?.eventId();
-
   if (chat != null) {
     if (messageId != null) {
       if (chatEditorState.isEditing) {

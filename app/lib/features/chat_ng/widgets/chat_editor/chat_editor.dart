@@ -37,7 +37,7 @@ class ChatEditor extends ConsumerStatefulWidget {
 }
 
 class _ChatEditorState extends ConsumerState<ChatEditor> {
-  EditorState textEditorState = EditorState.blank();
+  late EditorState textEditorState;
   StreamSubscription<EditorTransactionValue>? _updateListener;
   final ValueNotifier<bool> _isInputEmptyNotifier = ValueNotifier(true);
   Timer? _debounceTimer;
@@ -45,6 +45,29 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
   @override
   void initState() {
     super.initState();
+    _init();
+  }
+
+  @override
+  void dispose() {
+    textEditorState.dispose();
+    _updateListener?.cancel();
+    _debounceTimer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(covariant ChatEditor oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.roomId != widget.roomId) {
+      // room id changes, dispose the old editor state
+      textEditorState.dispose();
+      _init();
+    }
+  }
+
+  void _init() {
+    textEditorState = EditorState.blank();
     _updateListener?.cancel();
     // listener for editor input state
     _updateListener = textEditorState.transactionStream.listen((data) {
@@ -71,21 +94,6 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
         saveMsgDraft(body, bodyHtml, widget.roomId, ref);
       }
     });
-  }
-
-  @override
-  void dispose() {
-    _updateListener?.cancel();
-    _debounceTimer?.cancel();
-    super.dispose();
-  }
-
-  @override
-  void didUpdateWidget(covariant ChatEditor oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.roomId != widget.roomId) {
-      WidgetsBinding.instance.addPostFrameCallback((_) => _loadDraft());
-    }
   }
 
   void _handleEditing(TimelineEventItem? item) {
@@ -151,6 +159,18 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
       final fallbackPlain = draft.plainText();
       if (fallbackPlain.trim().isNotEmpty) {
         textEditorState.replaceContent(fallbackPlain, htmlBody);
+      } else {
+        // FOR DESKTOP/SIDE VIEW:
+        // it means the draft is empty, but still valid document (e.g. empty paragraph) for editor to get auto focused
+        // set selection to null to avoid the editor from being focused
+        if (mounted) {
+          bool isLargeScreen = MediaQuery.sizeOf(context).width > 600;
+          if (isLargeScreen) {
+            final t = textEditorState.transaction;
+            t.afterSelection = null;
+            textEditorState.apply(t);
+          }
+        }
       }
 
       _log.info('compose text draft loaded for room: ${widget.roomId}');
@@ -254,6 +274,7 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
     return Padding(
       padding: const EdgeInsets.only(top: 15),
       child: HtmlEditor(
+        key: Key('html-editor-${widget.roomId}'),
         footer: null,
         // if provided, will activate mentions
         roomId: widget.roomId,
