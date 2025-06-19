@@ -1,5 +1,5 @@
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/features/activities/providers/activities_providers.dart';
+import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/activity_item_widget.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -14,24 +14,16 @@ class SpaceActivitiesItemWidget extends ConsumerWidget {
     super.key,
     required this.date,
     required this.roomId,
+    required this.activities,
   });
 
   final DateTime date;
   final String roomId;
+  final List<Activity> activities;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final spaceActivitiesLoader = ref.watch(
-      spaceActivitiesProviderByDate((roomId: roomId, date: date)),
-    );
-
-    return spaceActivitiesLoader.when(
-      data:
-          (spaceActivities) =>
-              buildSpaceActivitiesItemUI(context, ref, spaceActivities),
-      error: (error, stack) => const SizedBox.shrink(),
-      loading: () => const SpaceActivitiesSkeleton(),
-    );
+    return buildSpaceActivitiesItemUI(context, ref, activities);
   }
 
   Widget buildSpaceActivitiesItemUI(
@@ -46,8 +38,9 @@ class SpaceActivitiesItemWidget extends ConsumerWidget {
       collapsedBackgroundColor: Colors.transparent,
       tilePadding: EdgeInsets.zero,
       shape: const Border(),
+      showTrailingIcon: false,
       leading: ActerAvatar(options: AvatarOptions(avatarInfo, size: 24)),
-      title: Text(spaceName),
+      title: Text(spaceName, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: colorScheme.surfaceTint)),
       children:
           activities
               .asMap()

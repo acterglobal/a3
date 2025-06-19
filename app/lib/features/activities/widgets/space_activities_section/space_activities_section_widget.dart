@@ -8,8 +8,8 @@ import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 Widget? buildSpaceActivitiesSectionWidget(BuildContext context, WidgetRef ref) {
-  final activityDates = ref.watch(activityDatesProvider).valueOrNull;
-  if (activityDates == null || activityDates.isEmpty) return null;
+  final activityDates = ref.watch(activityDatesProvider);
+  if (activityDates.isEmpty) return null;
 
   return Column(
     mainAxisSize: MainAxisSize.min,
