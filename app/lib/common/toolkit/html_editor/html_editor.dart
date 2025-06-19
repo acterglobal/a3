@@ -89,6 +89,7 @@ extension ActerEditorStateHelpers on EditorState {
 
     if (body.isNotEmpty) {
       final newDoc = defaultHtmlCodec.decode(body);
+
       if (newDoc.root.children.isNotEmpty) {
         t.insertNodes([0], newDoc.root.children);
         inserted = true;
@@ -97,9 +98,16 @@ extension ActerEditorStateHelpers on EditorState {
 
     if (!inserted) {
       // per fallback we add one empty paragraph
-      t.insertNode([0, 0], paragraphNode());
+      t.insertNode([0], paragraphNode());
     }
 
+    apply(t);
+
+    t = transaction;
+    t.afterSelection = Selection.single(
+      path: document.root.children.last.path,
+      startOffset: document.root.children.last.delta?.length ?? 0,
+    );
     apply(t);
   }
 
@@ -108,6 +116,8 @@ extension ActerEditorStateHelpers on EditorState {
     if (!document.isEmpty) {
       final t = transaction;
       t.deleteNodes(document.root.children); // clear the page
+      // add empty paragraph to make sure there is a valid node selection
+      t.insertNode([0], paragraphNode());
       apply(t);
 
       WidgetsBinding.instance.addPostFrameCallback((_) {

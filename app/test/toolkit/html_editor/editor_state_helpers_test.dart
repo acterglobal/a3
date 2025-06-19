@@ -299,8 +299,9 @@ void main() {
         final editorState = EditorState(document: initialDocument);
 
         editorState.replaceContentHTML('');
-
-        expect(editorState.document.root.children.length, equals(0));
+        // should only be one empty paragraph
+        expect(editorState.document.root.children.length, equals(1));
+        expect(editorState.intoHtml(), equals('<br>'));
       });
 
       test('completely replaces existing content', () {
@@ -345,8 +346,9 @@ void main() {
         expect(editorState.document.root.children.length, equals(2));
 
         editorState.clear();
-
-        expect(editorState.document.root.children.length, equals(0));
+        // should only be one empty paragraph
+        expect(editorState.document.root.children.length, equals(1));
+        expect(editorState.intoHtml(), equals('<br>'));
       });
 
       test('does nothing when document is already empty', () async {
@@ -386,7 +388,9 @@ void main() {
 
         editorState.clear();
 
-        expect(editorState.document.root.children.length, equals(0));
+        // should only be one empty paragraph
+        expect(editorState.document.root.children.length, equals(1));
+        expect(editorState.intoHtml(), equals('<br>'));
       });
     });
 
@@ -432,7 +436,9 @@ void main() {
 
         // Clear content
         editorState.clear();
-        expect(editorState.document.root.children.length, equals(0));
+        // should only be one empty paragraph
+        expect(editorState.document.root.children.length, equals(1));
+        expect(editorState.intoHtml(), equals('<br>'));
       });
     });
   });
