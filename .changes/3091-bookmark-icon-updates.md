@@ -1,1 +1,0 @@
-- [Fixes] : Now, when a user bookmark a space, the UI updates accordingly.
