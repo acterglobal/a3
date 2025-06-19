@@ -33,7 +33,7 @@ class ActivitySocialContainerWidget extends ConsumerWidget {
         userId;
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+      padding: const EdgeInsets.symmetric(vertical: 10),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
