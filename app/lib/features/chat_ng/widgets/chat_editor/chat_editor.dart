@@ -87,10 +87,14 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
       if (next.isReplying &&
           (next.actionType != prev?.actionType ||
               next.selectedMsgItem != prev?.selectedMsgItem)) {
-        textEditorState.updateSelectionWithReason(
-          null,
-          reason: SelectionUpdateReason.uiEvent,
+        // set selection of editor for composing
+        final t = textEditorState.transaction;
+        t.afterSelection = Selection.single(
+          path: textEditorState.document.root.children.last.path,
+          startOffset:
+              textEditorState.document.root.children.last.delta?.length ?? 0,
         );
+        textEditorState.apply(t);
         saveMsgDraft(body, bodyHtml, widget.roomId, ref);
       }
     });
