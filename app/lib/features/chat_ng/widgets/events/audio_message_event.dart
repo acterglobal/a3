@@ -133,6 +133,7 @@ class _AudioMessageEventState extends ConsumerState<AudioMessageEvent> {
   }
 
   Future<void> _handlePlayAudio(File mediaFile) async {
+    final mimetype = widget.content.mimetype();
     try {
       PlayerState playerState;
       switch (_player.state) {
@@ -146,7 +147,9 @@ class _AudioMessageEventState extends ConsumerState<AudioMessageEvent> {
           break;
         case PlayerState.stopped:
         default:
-          await _player.play(DeviceFileSource(mediaFile.path));
+          await _player.play(
+            DeviceFileSource(mediaFile.path, mimeType: mimetype),
+          );
           playerState = PlayerState.playing;
           break;
       }
