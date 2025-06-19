@@ -17,7 +17,7 @@ class TimeAgoWidget extends StatelessWidget {
     final originServerDateTime = DateTime.fromMillisecondsSinceEpoch(
       originServerTs,
       isUtc: true,
-    );
+    ).toLocal();
     final time = DateFormat('hh:mm a').format(originServerDateTime);
     return Text(
       time,
