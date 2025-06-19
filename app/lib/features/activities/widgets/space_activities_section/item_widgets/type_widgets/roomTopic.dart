@@ -23,7 +23,7 @@ class ActivityRoomTopicItemWidget extends ConsumerWidget {
       actionTitle: getMessage(lang, userId) ?? '',
       target: '',
       actionIcon: PhosphorIconsRegular.pencilSimpleLine,
-      subtitle: getSubtitle(context, activity.roomTopic()),
+      subtitle: getSubtitle(context, activity.roomTopicContent()?.newVal().toString().trim()),
       originServerTs: activity.originServerTs(),
       leadingWidget: Icon(PhosphorIconsRegular.pencilSimpleLine, size: 25),
     );

@@ -2878,6 +2878,8 @@
   "@declinedTask": {},
   "rescheduledTask": "rescheduled task",
   "@rescheduledTask": {},
+  "rescheduledEvent": "rescheduled event",
+  "@rescheduledEvent": {},
   "taskLabel": "Task",
   "@taskLabel": {},
   "getDetails": "Get Details",

@@ -15,7 +15,7 @@ class ActivityEventDateChangeItemWidget extends StatelessWidget {
       target: activityObject?.title() ?? '',
       actionIcon: Icons.access_time,
       actionIconBgColor: Theme.of(context).cardColor,
-      actionTitle: L10n.of(context).rescheduled,
+      actionTitle: L10n.of(context).rescheduledEvent,
       activityObject: activityObject,
       userId: activity.senderIdStr(),
       roomId: activity.roomIdStr(),

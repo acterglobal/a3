@@ -32,9 +32,16 @@ final fonts = [
 Future<void> loadTestFonts() async {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  for (final (fontFamily, fontPath) in fonts) {
-    final Future<ByteData> font = rootBundle.load(fontPath);
-    final FontLoader fontLoader = FontLoader(fontFamily)..addFont(font);
+  // Load Phosphor Icons font
+  final phosphorIconFont = await rootBundle.load('packages/phosphor_flutter/lib/fonts/Phosphor.ttf');
+  final phosphorIconLoader = FontLoader('Phosphor')..addFont(Future.value(phosphorIconFont));
+  await phosphorIconLoader.load();
+
+  // Load other fonts
+  for (final font in fonts) {
+    final fontLoader = FontLoader(font.$1);
+    final fontData = await rootBundle.load(font.$2);
+    fontLoader.addFont(Future.value(fontData));
     await fontLoader.load();
   }
 
@@ -98,4 +105,6 @@ const List<String> _overridableFonts = [
   '.SF UI Text',
   '.SF Pro Text',
   '.SF Pro Display',
+  'MaterialIcons',
+  'Phosphor',
 ];
