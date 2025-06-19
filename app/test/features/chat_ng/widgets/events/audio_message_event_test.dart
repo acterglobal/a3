@@ -3,54 +3,14 @@ import 'dart:io';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/models/media_chat_state/media_chat_state.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
-import 'package:acter/features/chat/providers/notifiers/media_chat_notifier.dart';
 import 'package:acter/features/chat_ng/widgets/events/audio_message_event.dart';
 import 'package:acter/features/chat_ng/widgets/message_timestamp_widget.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show MsgContent;
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
-import 'package:riverpod/riverpod.dart';
 
+import '../../../../helpers/mock_audio_event_providers.dart';
 import '../../../../helpers/test_util.dart';
-
-class MockMsgContent extends Mock implements MsgContent {
-  final String bodyText;
-  final int? sizeValue;
-  final String? mimeTypeValue;
-
-  MockMsgContent({required this.bodyText, this.sizeValue, this.mimeTypeValue});
-
-  @override
-  String body() => bodyText;
-
-  @override
-  int? size() => sizeValue;
-
-  @override
-  String? mimetype() => mimeTypeValue;
-}
-
-class MockMediaChatNotifier extends StateNotifier<MediaChatState>
-    with Mock
-    implements MediaChatNotifier {
-  final MediaChatLoadingState mediaChatLoadingState;
-  final File? mediaFile;
-  final bool isDownloading;
-
-  MockMediaChatNotifier({
-    this.mediaChatLoadingState = const MediaChatLoadingState.notYetStarted(),
-    this.mediaFile,
-    this.isDownloading = false,
-  }) : super(
-         MediaChatState(
-           mediaChatLoadingState: mediaChatLoadingState,
-           mediaFile: mediaFile,
-           isDownloading: isDownloading,
-         ),
-       );
-}
 
 void main() {
   group('AudioMessageEvent Tests', () {
