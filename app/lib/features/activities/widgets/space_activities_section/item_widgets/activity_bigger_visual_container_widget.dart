@@ -41,7 +41,7 @@ class ActivityBiggerVisualContainerWidget extends ConsumerWidget {
             .valueOrNull ?? userId;
 
     return Container(
-      padding: leadingWidget == null ? const EdgeInsets.symmetric(vertical: 10) : const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+      padding: const EdgeInsets.symmetric(vertical: 10),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
