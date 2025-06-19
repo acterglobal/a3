@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/activity_membership_container_widget.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/attachment.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/comment.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/creation.dart';
@@ -35,6 +36,7 @@ import '../../../helpers/font_loader.dart';
 import '../../comments/mock_data/mock_message_content.dart';
 import '../mock_data/mock_activity.dart';
 import '../mock_data/mock_activity_object.dart';
+import '../mock_data/mock_membership_change.dart';
 import '../mock_data/mock_ref_details.dart';
 import '../mock_data/mock_room_topic_change.dart';
 import '../mock_data/mock_title_change.dart';
@@ -312,6 +314,203 @@ void main() {
           ),
           'expectedText': 'updated task',
           'expectedIcon': PhosphorIconsRegular.pencilLine,
+        },
+        // Membership activities
+        {
+          'name': 'membership_joined',
+          'widget': (Activity activity) => ActivityMembershipItemWidget(activity: activity),
+          'activity': MockActivity(
+            mockType: PushStyles.joined.name,
+            mockSenderId: '@user1:acter.global',
+            mockMembershipContent: MockMembershipContent(
+              mockChange: 'joined',
+              mockUserId: '@user1:acter.global',
+            ),
+          ),
+          'expectedText': 'joined',
+          'expectedIcon': Icons.people_sharp,
+        },
+        {
+          'name': 'membership_left',
+          'widget': (Activity activity) => ActivityMembershipItemWidget(activity: activity),
+          'activity': MockActivity(
+            mockType: PushStyles.left.name,
+            mockSenderId: '@user1:acter.global',
+            mockMembershipContent: MockMembershipContent(
+              mockChange: 'left',
+              mockUserId: '@user1:acter.global',
+            ),
+          ),
+          'expectedText': 'left',
+          'expectedIcon': Icons.logout,
+        },
+        {
+          'name': 'membership_invited',
+          'widget': (Activity activity) => ActivityMembershipItemWidget(activity: activity),
+          'activity': MockActivity(
+            mockType: PushStyles.invited.name,
+            mockSenderId: '@user1:acter.global',
+            mockMembershipContent: MockMembershipContent(
+              mockChange: 'invited',
+              mockUserId: '@user2:acter.global',
+            ),
+          ),
+          'expectedText': 'invited',
+          'expectedIcon': Icons.person_add,
+        },
+        {
+          'name': 'membership_banned',
+          'widget': (Activity activity) => ActivityMembershipItemWidget(activity: activity),
+          'activity': MockActivity(
+            mockType: PushStyles.banned.name,
+            mockSenderId: '@user1:acter.global',
+            mockMembershipContent: MockMembershipContent(
+              mockChange: 'banned',
+              mockUserId: '@user2:acter.global',
+            ),
+          ),
+          'expectedText': 'banned',
+          'expectedIcon': Icons.block,
+        },
+        {
+          'name': 'membership_kicked',
+          'widget': (Activity activity) => ActivityMembershipItemWidget(activity: activity),
+          'activity': MockActivity(
+            mockType: PushStyles.kicked.name,
+            mockSenderId: '@user1:acter.global',
+            mockMembershipContent: MockMembershipContent(
+              mockChange: 'kicked',
+              mockUserId: '@user2:acter.global',
+            ),
+          ),
+          'expectedText': 'kicked',
+          'expectedIcon': Icons.person_remove,
+        },
+        {
+          'name': 'membership_invitation_accepted',
+          'widget': (Activity activity) => ActivityMembershipItemWidget(activity: activity),
+          'activity': MockActivity(
+            mockType: PushStyles.invitationAccepted.name,
+            mockSenderId: '@user1:acter.global',
+            mockMembershipContent: MockMembershipContent(
+              mockChange: 'invitationAccepted',
+              mockUserId: '@user1:acter.global',
+            ),
+          ),
+          'expectedText': 'accepted',
+          'expectedIcon': Icons.person_add,
+        },
+        {
+          'name': 'membership_invitation_rejected',
+          'widget': (Activity activity) => ActivityMembershipItemWidget(activity: activity),
+          'activity': MockActivity(
+            mockType: PushStyles.invitationRejected.name,
+            mockSenderId: '@user1:acter.global',
+            mockMembershipContent: MockMembershipContent(
+              mockChange: 'invitationRejected',
+              mockUserId: '@user1:acter.global',
+            ),
+          ),
+          'expectedText': 'rejected',
+          'expectedIcon': Icons.person_off,
+        },
+        {
+          'name': 'membership_invitation_revoked',
+          'widget': (Activity activity) => ActivityMembershipItemWidget(activity: activity),
+          'activity': MockActivity(
+            mockType: PushStyles.invitationRevoked.name,
+            mockSenderId: '@user1:acter.global',
+            mockMembershipContent: MockMembershipContent(
+              mockChange: 'invitationRevoked',
+              mockUserId: '@user2:acter.global',
+            ),
+          ),
+          'expectedText': 'revoked',
+          'expectedIcon': Icons.person_remove,
+        },
+        {
+          'name': 'membership_knock_accepted',
+          'widget': (Activity activity) => ActivityMembershipItemWidget(activity: activity),
+          'activity': MockActivity(
+            mockType: PushStyles.knockAccepted.name,
+            mockSenderId: '@user1:acter.global',
+            mockMembershipContent: MockMembershipContent(
+              mockChange: 'knockAccepted',
+              mockUserId: '@user1:acter.global',
+            ),
+          ),
+          'expectedText': 'accepted',
+          'expectedIcon': Icons.person_add,
+        },
+        {
+          'name': 'membership_knock_retracted',
+          'widget': (Activity activity) => ActivityMembershipItemWidget(activity: activity),
+          'activity': MockActivity(
+            mockType: PushStyles.knockRetracted.name,
+            mockSenderId: '@user1:acter.global',
+            mockMembershipContent: MockMembershipContent(
+              mockChange: 'knockRetracted',
+              mockUserId: '@user1:acter.global',
+            ),
+          ),
+          'expectedText': 'retracted',
+          'expectedIcon': Icons.person_remove,
+        },
+        {
+          'name': 'membership_knock_denied',
+          'widget': (Activity activity) => ActivityMembershipItemWidget(activity: activity),
+          'activity': MockActivity(
+            mockType: PushStyles.knockDenied.name,
+            mockSenderId: '@user1:acter.global',
+            mockMembershipContent: MockMembershipContent(
+              mockChange: 'knockDenied',
+              mockUserId: '@user1:acter.global',
+            ),
+          ),
+          'expectedText': 'denied',
+          'expectedIcon': Icons.block,
+        },
+        {
+          'name': 'membership_unbanned',
+          'widget': (Activity activity) => ActivityMembershipItemWidget(activity: activity),
+          'activity': MockActivity(
+            mockType: PushStyles.unbanned.name,
+            mockSenderId: '@user1:acter.global',
+            mockMembershipContent: MockMembershipContent(
+              mockChange: 'unbanned',
+              mockUserId: '@user2:acter.global',
+            ),
+          ),
+          'expectedText': 'unbanned',
+          'expectedIcon': Icons.block_flipped,
+        },
+        {
+          'name': 'membership_kicked_and_banned',
+          'widget': (Activity activity) => ActivityMembershipItemWidget(activity: activity),
+          'activity': MockActivity(
+            mockType: PushStyles.kickedAndBanned.name,
+            mockSenderId: '@user1:acter.global',
+            mockMembershipContent: MockMembershipContent(
+              mockChange: 'kickedAndBanned',
+              mockUserId: '@user2:acter.global',
+            ),
+          ),
+          'expectedText': 'kicked and banned',
+          'expectedIcon': Icons.block,
+        },
+        {
+          'name': 'membership_knocked',
+          'widget': (Activity activity) => ActivityMembershipItemWidget(activity: activity),
+          'activity': MockActivity(
+            mockType: PushStyles.knocked.name,
+            mockSenderId: '@user1:acter.global',
+            mockMembershipContent: MockMembershipContent(
+              mockChange: 'knocked',
+              mockUserId: '@user1:acter.global',
+            ),
+          ),
+          'expectedText': 'knocked',
+          'expectedIcon': Icons.person_add,
         },
       ];
 
