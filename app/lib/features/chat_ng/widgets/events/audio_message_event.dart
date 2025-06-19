@@ -50,17 +50,13 @@ class _AudioMessageEventState extends ConsumerState<AudioMessageEvent> {
         }
       });
 
-      // if the messageId is not the same, stop the player
-      final audioPlayerInfo = ref.read(audioPlayerStateProvider);
-      if (audioPlayerInfo.messageId != widget.messageId) {
-        _player.stop();
-      }
-
       // listen to the audio player state changes
       _player.onPlayerStateChanged.listen((state) {
-        // if the widget is not mounted or the messageId is not the same, return
-        // only change the state if the messageId is the same
-        if (!mounted || audioPlayerInfo.messageId != widget.messageId) return;
+        // if the messageId is not the same, return early
+        // only update the state if this widget's messageId matches the current audio player
+        final audioPlayerMessageId =
+            ref.read(audioPlayerStateProvider).messageId;
+        if (audioPlayerMessageId != widget.messageId) return;
         ref.read(audioPlayerStateProvider.notifier).state = (
           state: state,
           messageId: widget.messageId,
