@@ -11,7 +11,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hrk_flutter_test_batteries/hrk_flutter_test_batteries.dart';
 import '../../../../../helpers/font_loader.dart';
 import '../../../../../helpers/test_util.dart';
-import '../../../../../helpers/mock_audio_event_providers.dart';
 
 void main() {
   group('Chat NG - ChatEvent audio message golden', () {
