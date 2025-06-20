@@ -166,7 +166,7 @@ async fn room_msg_can_support_video_thumbnail() -> Result<()> {
         .thumbnail_info(None, None, Some(size));
     timeline.send_message(Box::new(draft)).await?;
 
-    // image msg may reach via pushback action or reset action
+    // video msg may reach via pushback action or reset action
     let mut i = 30;
     let mut found = None;
     while i > 0 {
@@ -201,7 +201,7 @@ async fn room_msg_can_support_video_thumbnail() -> Result<()> {
         i -= 1;
         sleep(Duration::from_secs(1)).await;
     }
-    let msg_content = found.context("Even after 30 seconds, image msg not received")?;
+    let msg_content = found.context("Even after 30 seconds, video msg not received")?;
     let thumbnail_info = msg_content
         .thumbnail_info()
         .context("thumbnail info should exist")?;
@@ -497,7 +497,7 @@ async fn image_attachment_can_support_thumbnail() -> Result<()> {
 async fn video_attachment_can_support_thumbnail() -> Result<()> {
     let _ = env_logger::try_init();
     let (user, sync_state, _engine) =
-        random_user_with_template("image_attachment_thumbnail", TMPL).await?;
+        random_user_with_template("video_attachment_thumbnail", TMPL).await?;
     sync_state.await_has_synced_history().await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
