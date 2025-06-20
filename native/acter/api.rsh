@@ -1663,10 +1663,10 @@ object MsgDraft {
     /// for this media to be read and shared upon sending
     ///
     /// available for only image/video/file/location
-    fn thumbnail_file_path(value: string) -> MsgDraft;
+    fn thumbnail_image(source: string, mimetype: string) -> MsgDraft;
 
     /// available for only image/video/file/location
-    fn thumbnail_info(width: Option<u64>, height: Option<u64>, mimetype: Option<string>, size: Option<u64>) -> MsgDraft;
+    fn thumbnail_info(width: Option<u64>, height: Option<u64>, size: Option<u64>) -> MsgDraft;
 
     /// available for only file
     fn filename(value: string) -> MsgDraft;

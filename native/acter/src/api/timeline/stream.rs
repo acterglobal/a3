@@ -10,7 +10,7 @@ use matrix_sdk_base::{
         assign,
         events::{
             room::{
-                message::{AudioInfo, FileInfo, ForwardThread, VideoInfo},
+                message::{AudioInfo, FileInfo, ForwardThread, LocationInfo, VideoInfo},
                 ImageInfo,
             },
             MessageLikeEventType,
@@ -283,6 +283,7 @@ impl Client {
         });
         MsgDraft::new(MsgContentDraft::Image {
             source,
+            thumbnail_source: None,
             info: Some(info),
             filename: None,
         })
@@ -305,6 +306,7 @@ impl Client {
         });
         MsgDraft::new(MsgContentDraft::Video {
             source,
+            thumbnail_source: None,
             info: Some(info),
             filename: None,
         })
@@ -316,6 +318,7 @@ impl Client {
         });
         MsgDraft::new(MsgContentDraft::File {
             source,
+            thumbnail_source: None,
             info: Some(info),
             filename: None,
         })
@@ -325,7 +328,8 @@ impl Client {
         MsgDraft::new(MsgContentDraft::Location {
             body,
             geo_uri,
-            info: None,
+            thumbnail_source: None,
+            info: Some(LocationInfo::new()),
         })
     }
 }
