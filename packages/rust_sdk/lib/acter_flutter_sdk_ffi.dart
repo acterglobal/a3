@@ -23591,14 +23591,6 @@ class Api {
   late final _msgDraftAddRoomMention =
       _msgDraftAddRoomMentionPtr
           .asFunction<_MsgDraftAddRoomMentionReturn Function(int, int)>();
-  late final _msgDraftMimetypePtr = _lookup<
-    ffi.NativeFunction<
-      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
-    >
-  >("__MsgDraft_mimetype");
-
-  late final _msgDraftMimetype =
-      _msgDraftMimetypePtr.asFunction<void Function(int, int, int, int)>();
   late final _msgDraftSizePtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint64)>>(
         "__MsgDraft_size",
@@ -51220,26 +51212,6 @@ class MsgDraft {
       }
       throw tmp5_0;
     }
-    return;
-  }
-
-  /// available for only image/audio/video/file
-  void mimetype(String value) {
-    final tmp1 = value;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp4 = 0;
-    tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    _api._msgDraftMimetype(tmp0, tmp2, tmp3, tmp4);
     return;
   }
 

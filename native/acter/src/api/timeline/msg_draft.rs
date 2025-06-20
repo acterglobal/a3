@@ -483,7 +483,7 @@ impl MsgDraft {
         Ok(self)
     }
 
-    pub fn mimetype(&mut self, value: String) -> &mut Self {
+    pub(super) fn mimetype(&mut self, value: String) -> &mut Self {
         self.inner.mimetype(value);
         self
     }
