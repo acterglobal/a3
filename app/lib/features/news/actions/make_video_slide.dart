@@ -73,9 +73,6 @@ Future<MsgDraft> createVideoMsgDraftDraft(
     throw lang.postingOfTypeNotYetSupported(mimeType);
   }
   Uint8List bytes = await file.readAsBytes();
-  final videoDraft =
-      client.videoDraft(file.path)
-        ..mimetype(mimeType)
-        ..size(bytes.length);
+  final videoDraft = client.videoDraft(file.path, mimeType)..size(bytes.length);
   return videoDraft;
 }
