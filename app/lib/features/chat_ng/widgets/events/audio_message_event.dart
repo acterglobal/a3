@@ -11,6 +11,9 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:acter/common/extensions/options.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::chat::audio_message_event');
 
 class AudioMessageEvent extends ConsumerStatefulWidget {
   final String roomId;
@@ -174,7 +177,7 @@ class _AudioMessageEventState extends ConsumerState<AudioMessageEvent> {
         messageId: widget.messageId,
       );
     } catch (e, st) {
-      debugPrint('Error playing audio: $e, \n $st');
+      _log.severe('Error playing audio: $e, \n $st');
     }
   }
 }
