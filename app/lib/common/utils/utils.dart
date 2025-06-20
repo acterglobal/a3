@@ -257,3 +257,9 @@ String formatChatDayDividerDateString(BuildContext context, String dateString) {
     return dateString;
   }
 }
+
+// Helper function to get date-only DateTime from activity timestamp
+DateTime getActivityDate(Activity activity) {
+  final activityDate = DateTime.fromMillisecondsSinceEpoch(activity.originServerTs()).toLocal();
+  return DateTime(activityDate.year, activityDate.month, activityDate.day);
+}

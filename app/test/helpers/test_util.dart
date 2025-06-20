@@ -88,3 +88,14 @@ extension SizeSetting on WidgetTester {
     view.devicePixelRatio = 1.0;
   }
 }
+
+/// Custom finder to search for text within RichText widgets
+Finder findRichTextContaining(String text) {
+  return find.byWidgetPredicate((widget) {
+    if (widget is RichText) {
+      final plainText = widget.text.toPlainText();
+      return plainText.contains(text);
+    }
+    return false;
+  });
+}

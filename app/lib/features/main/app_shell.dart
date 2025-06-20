@@ -50,7 +50,7 @@ class _TopLevelShell extends ConsumerWidget {
     ref.watch(updateListProvider(null));
     ref.watch(hasActivitiesProvider);
     ref.watch(openSystemLinkSettingsProvider);
-    ref.watch(activitiesPreloader);
+    ref.watch(allActivitiesProvider);
 
     if (ref.watch(hasFirstSyncedProvider)) {
       return const SizedBox.shrink();

@@ -1,4 +1,4 @@
-import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/activity_item_container_widgets.dart';
+import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/activity_bigger_visual_container_widget.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -10,13 +10,12 @@ class ActivityTaskAddItemWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final activityObject = activity.object();
-    final name = activity.name();
-
-    return ActivityUserCentricItemContainerWidget(
+    return ActivityBiggerVisualContainerWidget(
       actionIcon: Icons.add_circle_outline,
-      actionTitle: L10n.of(context).created,
+      actionTitle: L10n.of(context).addedTaskOn,
+      target: activityObject?.title() ?? '',
       subtitle: Text(
-        '${L10n.of(context).taskLabel} : $name',
+        activity.name() ?? '',
         style: Theme.of(context).textTheme.labelMedium,
         maxLines: 2,
         overflow: TextOverflow.ellipsis,
