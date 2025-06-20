@@ -63,9 +63,9 @@ class _ActerIconPickerState extends ConsumerState<ActerIconPicker> {
       actorIconList.value = ActerIcon.values;
     } else {
       actorIconList.value =
-          ActerIcon.values
-              .where((icon) => icon.name.contains(searchValue))
-              .toList();
+          ActerIcon.values.where((icon) {
+            return icon.name.toLowerCase().contains(searchValue.toLowerCase());
+          }).toList();
     }
   }
 
@@ -218,23 +218,28 @@ class _ActerIconPickerState extends ConsumerState<ActerIconPicker> {
           child: ValueListenableBuilder(
             valueListenable: actorIconList,
             builder: (context, iconList, child) {
-              final iconBoxes =
-                  iconList
-                      .asMap()
-                      .map(
-                        (index, acterIcon) => MapEntry(
-                          index,
-                          _buildIconBoxItem(acterIcon, index),
-                        ),
-                      )
-                      .values
-                      .toList();
-              return SingleChildScrollView(child: Wrap(children: iconBoxes));
+              if (iconList.isEmpty) {
+                return Center(child: Text(L10n.of(context).noIconsFound));
+              }
+              return _buildIconsBoxList(iconList);
             },
           ),
         ),
       ],
     );
+  }
+
+  Widget _buildIconsBoxList(List<ActerIcon> iconList) {
+    final iconBoxes =
+        iconList
+            .asMap()
+            .map(
+              (index, acterIcon) =>
+                  MapEntry(index, _buildIconBoxItem(acterIcon, index)),
+            )
+            .values
+            .toList();
+    return SingleChildScrollView(child: Wrap(children: iconBoxes));
   }
 
   Widget _buildIconBoxItem(ActerIcon acterIconItem, int index) {
