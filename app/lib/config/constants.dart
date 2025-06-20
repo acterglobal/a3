@@ -2,6 +2,9 @@ import 'package:acter/config/env.g.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter/foundation.dart';
 
+final helpUrl = Uri.tryParse(Env.helpCenterUrl);
+final hostPartnerShipUrl = Uri.tryParse(Env.hostUrl);
+
 const String heart = '\u{2764}';
 const String thumbsUp = '\u{1F44D}';
 const String prayHands = '\u{1F64F}';
