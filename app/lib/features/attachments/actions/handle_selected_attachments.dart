@@ -42,8 +42,7 @@ Future<void> handleAttachmentSelected({
         Uint8List bytes = await file.readAsBytes();
         final decodedImage = await decodeImageFromList(bytes);
         final imageDraft =
-            client.imageDraft(file.path)
-              ..mimetype(mimeType)
+            client.imageDraft(file.path, mimeType)
               ..filename(title ?? fileName)
               ..size(bytes.length)
               ..width(decodedImage.width)
@@ -53,8 +52,7 @@ Future<void> handleAttachmentSelected({
       } else if (attachmentType == AttachmentType.audio) {
         Uint8List bytes = await file.readAsBytes();
         final audioDraft =
-            client.audioDraft(file.path)
-              ..mimetype(mimeType)
+            client.audioDraft(file.path, mimeType)
               ..filename(title ?? fileName)
               ..size(bytes.length);
         final attachmentDraft = await manager.contentDraft(audioDraft);
@@ -62,16 +60,14 @@ Future<void> handleAttachmentSelected({
       } else if (attachmentType == AttachmentType.video) {
         Uint8List bytes = await file.readAsBytes();
         final videoDraft =
-            client.videoDraft(file.path)
-              ..mimetype(mimeType)
+            client.videoDraft(file.path, mimeType)
               ..filename(title ?? fileName)
               ..size(bytes.length);
         final attachmentDraft = await manager.contentDraft(videoDraft);
         drafts.add(attachmentDraft);
       } else {
         final fileDraft =
-            client.fileDraft(file.path)
-              ..mimetype(mimeType)
+            client.fileDraft(file.path, mimeType)
               ..filename(title ?? fileName)
               ..size(file.lengthSync());
         final attachmentDraft = await manager.contentDraft(fileDraft);
