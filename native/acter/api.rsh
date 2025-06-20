@@ -436,7 +436,7 @@ object NewsEntryDraft {
     fn slides() -> Vec<NewsSlideDraft>;
 
     /// clear slides
-    fn unset_slides() -> NewsEntryDraft;
+    fn unset_slides();
 
     /// create this news entry
     fn send() -> Future<Result<EventId>>;

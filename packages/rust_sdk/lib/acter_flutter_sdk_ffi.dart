@@ -19764,12 +19764,12 @@ class Api {
   late final _newsEntryDraftSlides =
       _newsEntryDraftSlidesPtr.asFunction<int Function(int)>();
   late final _newsEntryDraftUnsetSlidesPtr =
-      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
         "__NewsEntryDraft_unset_slides",
       );
 
   late final _newsEntryDraftUnsetSlides =
-      _newsEntryDraftUnsetSlidesPtr.asFunction<int Function(int)>();
+      _newsEntryDraftUnsetSlidesPtr.asFunction<void Function(int)>();
   late final _newsEntryDraftSendPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__NewsEntryDraft_send",
@@ -41159,16 +41159,11 @@ class NewsEntryDraft {
   }
 
   /// clear slides
-  NewsEntryDraft unsetSlides() {
+  void unsetSlides() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._newsEntryDraftUnsetSlides(tmp0);
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_NewsEntryDraft");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = NewsEntryDraft._(_api, tmp3_1);
-    return tmp2;
+    _api._newsEntryDraftUnsetSlides(tmp0);
+    return;
   }
 
   /// create this news entry
