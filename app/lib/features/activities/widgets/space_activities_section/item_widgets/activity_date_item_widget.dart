@@ -6,34 +6,41 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ActivityDateItemWidget extends ConsumerWidget {
-  final DateTime date;
+  final DateTime activityDate;
 
-  const ActivityDateItemWidget({super.key, required this.date});
+  const ActivityDateItemWidget({super.key, required this.activityDate});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final groups = ref.watch(consecutiveGroupedActivitiesProvider(date));
+    // Fetch grouped activities for a given date
+    final groupedActivitiesList = ref.watch(consecutiveGroupedActivitiesProvider(activityDate));
 
-    if (groups.isEmpty) return const SizedBox.shrink();
+    if (groupedActivitiesList.isEmpty) return const SizedBox.shrink();
 
-    String? lastPeriod;
+    String? lastDisplayedDateLabel;
 
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       padding: EdgeInsets.zero,
-      itemCount: groups.length,
+      itemCount: groupedActivitiesList.length,
       itemBuilder: (context, index) {
-        final group = groups[index];
-        final period = jiffyDateForActvity(context, group.activities.first.originServerTs());
-        final showChip = period != lastPeriod;
-        lastPeriod = period;
+        final activityGroup = groupedActivitiesList[index];
+
+        final currentDateLabel = jiffyDateForActvity(
+          context,
+          activityGroup.activities.first.originServerTs(),
+        );
+
+        // Only show the date label if it differs from the previous one
+        final shouldShowDateLabel = currentDateLabel != lastDisplayedDateLabel;
+        lastDisplayedDateLabel = currentDateLabel;
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (showChip)
+            if (shouldShowDateLabel)
               Container(
                 margin: const EdgeInsets.symmetric(vertical: 10),
                 padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 16),
@@ -44,14 +51,15 @@ class ActivityDateItemWidget extends ConsumerWidget {
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Text(
-                  period,
+                  currentDateLabel,
                   style: Theme.of(context).textTheme.labelMedium,
                 ),
               ),
+
             SpaceActivitiesItemWidget(
-              date: date,
-              roomId: group.roomId,
-              activities: group.activities,
+              date: activityDate,
+              roomId: activityGroup.roomId,
+              activities: activityGroup.activities,
             ),
           ],
         );

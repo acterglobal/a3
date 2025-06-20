@@ -40,7 +40,7 @@ Widget? buildSpaceActivitiesSectionWidget(BuildContext context, WidgetRef ref) {
         physics: const NeverScrollableScrollPhysics(),
         itemBuilder:
             (context, index) =>
-                ActivityDateItemWidget(date: activityDates[index]),
+                ActivityDateItemWidget(activityDate: activityDates[index]),
       ),
     ],
   );
