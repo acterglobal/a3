@@ -11,8 +11,8 @@ use tokio_retry::{
 };
 
 use crate::utils::{
-    match_media_msg, random_user_with_random_convo, random_user_with_random_space,
-    random_user_with_template,
+    match_location_msg, match_media_msg, random_user_with_random_convo,
+    random_user_with_random_space, random_user_with_template,
 };
 
 #[tokio::test]
@@ -202,6 +202,96 @@ async fn room_msg_can_support_video_thumbnail() -> Result<()> {
         sleep(Duration::from_secs(1)).await;
     }
     let msg_content = found.context("Even after 30 seconds, video msg not received")?;
+    let thumbnail_info = msg_content
+        .thumbnail_info()
+        .context("thumbnail info should exist")?;
+    assert_eq!(
+        thumbnail_info.mimetype().as_deref(),
+        Some(thumb_mimetype),
+        "we sent thumbnail in png format",
+    );
+    assert_eq!(
+        thumbnail_info.size(),
+        Some(size),
+        "wrong file size in thumbnail",
+    );
+
+    Ok(())
+}
+
+#[tokio::test]
+async fn room_msg_can_support_location_thumbnail() -> Result<()> {
+    let _ = env_logger::try_init();
+
+    let (mut user, room_id) = random_user_with_random_convo("room_msg_location_thumbnail").await?;
+    let state_sync = user.start_sync();
+    state_sync.await_has_synced_history().await?;
+
+    // wait for sync to catch up
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
+    Retry::spawn(retry_strategy, || async {
+        user.convo(room_id.to_string()).await
+    })
+    .await?;
+
+    let convo = user.convo(room_id.to_string()).await?;
+    let timeline = convo.timeline_stream();
+    let stream = timeline.messages_stream();
+    pin_mut!(stream);
+
+    let bytes = include_bytes!("../fixtures/PNG_transparency_demonstration_1.png");
+    let size = bytes.len() as u64;
+    let mut tmp_png = NamedTempFile::new()?;
+    tmp_png.as_file_mut().write_all(bytes)?;
+
+    let body = "Working Office";
+    let geo_uri = "geo:51.5074,-0.1278";
+    let thumb_mimetype = "image/png";
+    let draft = user
+        .location_draft(body.to_owned(), geo_uri.to_owned())
+        .thumbnail_image(
+            tmp_png.path().to_string_lossy().to_string(),
+            thumb_mimetype.to_owned(),
+        )
+        .thumbnail_info(None, None, Some(size));
+    timeline.send_message(Box::new(draft)).await?;
+
+    // location msg may reach via pushback action or reset action
+    let mut i = 30;
+    let mut found = None;
+    while i > 0 {
+        if let Some(diff) = stream.next().now_or_never().flatten() {
+            match diff.action().as_str() {
+                "PushBack" | "Set" => {
+                    let value = diff
+                        .value()
+                        .expect("diff pushback action should have valid value");
+                    if let Some(msg_content) = match_location_msg(&value, body, geo_uri) {
+                        found = Some(msg_content);
+                    }
+                }
+                "Reset" => {
+                    let values = diff
+                        .values()
+                        .expect("diff reset action should have valid values");
+                    for value in values.iter() {
+                        if let Some(msg_content) = match_location_msg(value, body, geo_uri) {
+                            found = Some(msg_content);
+                            break;
+                        }
+                    }
+                }
+                _ => {}
+            }
+            // yay
+            if found.is_some() {
+                break;
+            }
+        }
+        i -= 1;
+        sleep(Duration::from_secs(1)).await;
+    }
+    let msg_content = found.context("Even after 30 seconds, location msg not received")?;
     let thumbnail_info = msg_content
         .thumbnail_info()
         .context("thumbnail info should exist")?;
