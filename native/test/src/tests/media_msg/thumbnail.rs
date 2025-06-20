@@ -114,10 +114,25 @@ async fn room_msg_can_support_image_thumbnail() -> Result<()> {
     assert_eq!(msg_content.width(), Some(jpg_width));
     assert_eq!(msg_content.height(), Some(jpg_height));
 
-    assert_eq!(msg_content.thumbnail_info().and_then(|i| i.mimetype()).as_deref(), Some(thumb_mimetype));
-    assert_eq!(msg_content.thumbnail_info().and_then(|i| i.size()), Some(png_size));
-    assert_eq!(msg_content.thumbnail_info().and_then(|i| i.width()), Some(png_width));
-    assert_eq!(msg_content.thumbnail_info().and_then(|i| i.height()), Some(png_height));
+    assert_eq!(
+        msg_content
+            .thumbnail_info()
+            .and_then(|i| i.mimetype())
+            .as_deref(),
+        Some(thumb_mimetype)
+    );
+    assert_eq!(
+        msg_content.thumbnail_info().and_then(|i| i.size()),
+        Some(png_size)
+    );
+    assert_eq!(
+        msg_content.thumbnail_info().and_then(|i| i.width()),
+        Some(png_width)
+    );
+    assert_eq!(
+        msg_content.thumbnail_info().and_then(|i| i.height()),
+        Some(png_height)
+    );
 
     Ok(())
 }
