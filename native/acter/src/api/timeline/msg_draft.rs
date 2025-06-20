@@ -217,7 +217,7 @@ impl MsgContentDraft {
             } => {
                 *thumbnail_source = Some(source);
                 if let Some(o) = info {
-                    if let Some(mut a) = o.thumbnail_info.as_mut() {
+                    if let Some(a) = o.thumbnail_info.as_mut() {
                         a.mimetype = Some(mimetype);
                     } else {
                         o.thumbnail_info = Some(Box::new(assign!(
@@ -241,7 +241,7 @@ impl MsgContentDraft {
             } => {
                 *thumbnail_source = Some(source);
                 if let Some(o) = info {
-                    if let Some(mut a) = o.thumbnail_info.as_mut() {
+                    if let Some(a) = o.thumbnail_info.as_mut() {
                         a.mimetype = Some(mimetype);
                     } else {
                         o.thumbnail_info = Some(Box::new(assign!(
@@ -265,7 +265,7 @@ impl MsgContentDraft {
             } => {
                 *thumbnail_source = Some(source);
                 if let Some(o) = info {
-                    if let Some(mut a) = o.thumbnail_info.as_mut() {
+                    if let Some(a) = o.thumbnail_info.as_mut() {
                         a.mimetype = Some(mimetype);
                     } else {
                         o.thumbnail_info = Some(Box::new(assign!(
@@ -289,7 +289,7 @@ impl MsgContentDraft {
             } => {
                 *thumbnail_source = Some(source);
                 if let Some(o) = info {
-                    if let Some(mut a) = o.thumbnail_info.as_mut() {
+                    if let Some(a) = o.thumbnail_info.as_mut() {
                         a.mimetype = Some(mimetype);
                     } else {
                         o.thumbnail_info = Some(Box::new(assign!(
@@ -316,7 +316,7 @@ impl MsgContentDraft {
             MsgContentDraft::Image { info, .. } => {
                 if let Some(o) = info {
                     // will keep mimetype if exists
-                    if let Some(mut i) = o.thumbnail_info.as_mut() {
+                    if let Some(i) = o.thumbnail_info.as_mut() {
                         i.size = value.size;
                         i.width = value.width;
                         i.height = value.height;
@@ -331,7 +331,7 @@ impl MsgContentDraft {
             MsgContentDraft::Video { info, .. } => {
                 if let Some(o) = info {
                     // will keep mimetype if exists
-                    if let Some(mut i) = o.thumbnail_info.as_mut() {
+                    if let Some(i) = o.thumbnail_info.as_mut() {
                         i.size = value.size;
                         i.width = value.width;
                         i.height = value.height;
