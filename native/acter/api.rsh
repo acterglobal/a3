@@ -3937,7 +3937,7 @@ object Client {
     fn file_draft(source: string, mimetype: string) -> MsgDraft;
 
     /// make draft to send location msg
-    fn location_draft(body: string, source: string) -> MsgDraft;
+    fn location_draft(body: string, geo_uri: string) -> MsgDraft;
 
     /// get access to the backup manager
     fn backup_manager() -> BackupManager;
