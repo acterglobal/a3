@@ -1,0 +1,2 @@
+- [Improvement] : This PR introduces a fully redesigned Activity Screen with a clean, categorized layout.  
+  It supports real-time updates, time-based filtering, and visual grouping for better user experience.
