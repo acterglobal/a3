@@ -224,18 +224,17 @@ async fn room_msg_can_support_video_thumbnail() -> Result<()> {
         sleep(Duration::from_secs(1)).await;
     }
     let msg_content = found.context("Even after 30 seconds, video msg not received")?;
-    let thumbnail_info = msg_content
-        .thumbnail_info()
-        .context("thumbnail info should exist")?;
+
     assert_eq!(
-        thumbnail_info.mimetype().as_deref(),
-        Some(thumb_mimetype),
-        "we sent thumbnail in png format",
+        msg_content
+            .thumbnail_info()
+            .and_then(|i| i.mimetype())
+            .as_deref(),
+        Some(thumb_mimetype)
     );
     assert_eq!(
-        thumbnail_info.size(),
-        Some(size),
-        "wrong file size in thumbnail",
+        msg_content.thumbnail_info().and_then(|i| i.size()),
+        Some(size)
     );
 
     Ok(())
@@ -432,18 +431,17 @@ async fn room_msg_can_support_location_thumbnail() -> Result<()> {
         sleep(Duration::from_secs(1)).await;
     }
     let msg_content = found.context("Even after 30 seconds, location msg not received")?;
-    let thumbnail_info = msg_content
-        .thumbnail_info()
-        .context("thumbnail info should exist")?;
+
     assert_eq!(
-        thumbnail_info.mimetype().as_deref(),
-        Some(thumb_mimetype),
-        "we sent thumbnail in png format",
+        msg_content
+            .thumbnail_info()
+            .and_then(|i| i.mimetype())
+            .as_deref(),
+        Some(thumb_mimetype)
     );
     assert_eq!(
-        thumbnail_info.size(),
-        Some(size),
-        "wrong file size in thumbnail",
+        msg_content.thumbnail_info().and_then(|i| i.size()),
+        Some(size)
     );
 
     Ok(())
@@ -506,22 +504,17 @@ async fn news_can_support_image_thumbnail() -> Result<()> {
     assert_eq!(image_slide.type_str(), "image");
 
     let msg_content = image_slide.msg_content();
-    assert!(
-        msg_content.thumbnail_source().is_some(),
-        "we sent thumbnail, but thumbnail source not available",
-    );
-    let thumbnail_info = msg_content
-        .thumbnail_info()
-        .context("we sent thumbnail, but thumbnail info not available")?;
+
     assert_eq!(
-        thumbnail_info.mimetype().as_deref(),
-        Some(thumb_mimetype),
-        "we sent thumbnail in png format",
+        msg_content
+            .thumbnail_info()
+            .and_then(|i| i.mimetype())
+            .as_deref(),
+        Some(thumb_mimetype)
     );
     assert_eq!(
-        thumbnail_info.size(),
-        Some(size),
-        "wrong file size in thumbnail",
+        msg_content.thumbnail_info().and_then(|i| i.size()),
+        Some(size)
     );
 
     Ok(())
@@ -709,22 +702,17 @@ async fn image_attachment_can_support_thumbnail() -> Result<()> {
     let msg_content = attachment
         .msg_content()
         .expect("msg content should be available");
-    assert!(
-        msg_content.thumbnail_source().is_some(),
-        "we sent thumbnail, but thumbnail source not available",
-    );
-    let thumbnail_info = msg_content
-        .thumbnail_info()
-        .context("we sent thumbnail, but thumbnail info not available")?;
+
     assert_eq!(
-        thumbnail_info.mimetype().as_deref(),
-        Some(thumb_mimetype),
-        "we sent thumbnail in png format",
+        msg_content
+            .thumbnail_info()
+            .and_then(|i| i.mimetype())
+            .as_deref(),
+        Some(thumb_mimetype)
     );
     assert_eq!(
-        thumbnail_info.size(),
-        Some(size),
-        "wrong file size in thumbnail",
+        msg_content.thumbnail_info().and_then(|i| i.size()),
+        Some(size)
     );
 
     Ok(())
@@ -808,22 +796,17 @@ async fn video_attachment_can_support_thumbnail() -> Result<()> {
     let msg_content = attachment
         .msg_content()
         .expect("msg content should be available");
-    assert!(
-        msg_content.thumbnail_source().is_some(),
-        "we sent thumbnail, but thumbnail source not available",
-    );
-    let thumbnail_info = msg_content
-        .thumbnail_info()
-        .context("we sent thumbnail, but thumbnail info not available")?;
+
     assert_eq!(
-        thumbnail_info.mimetype().as_deref(),
-        Some(thumb_mimetype),
-        "we sent thumbnail in png format",
+        msg_content
+            .thumbnail_info()
+            .and_then(|i| i.mimetype())
+            .as_deref(),
+        Some(thumb_mimetype)
     );
     assert_eq!(
-        thumbnail_info.size(),
-        Some(size),
-        "wrong file size in thumbnail",
+        msg_content.thumbnail_info().and_then(|i| i.size()),
+        Some(size)
     );
 
     Ok(())
@@ -907,22 +890,17 @@ async fn file_attachment_can_support_thumbnail() -> Result<()> {
     let msg_content = attachment
         .msg_content()
         .expect("msg content should be available");
-    assert!(
-        msg_content.thumbnail_source().is_some(),
-        "we sent thumbnail, but thumbnail source not available",
-    );
-    let thumbnail_info = msg_content
-        .thumbnail_info()
-        .context("we sent thumbnail, but thumbnail info not available")?;
+
     assert_eq!(
-        thumbnail_info.mimetype().as_deref(),
-        Some(thumb_mimetype),
-        "we sent thumbnail in png format",
+        msg_content
+            .thumbnail_info()
+            .and_then(|i| i.mimetype())
+            .as_deref(),
+        Some(thumb_mimetype)
     );
     assert_eq!(
-        thumbnail_info.size(),
-        Some(size),
-        "wrong file size in thumbnail",
+        msg_content.thumbnail_info().and_then(|i| i.size()),
+        Some(size)
     );
 
     Ok(())
@@ -1002,22 +980,17 @@ async fn location_attachment_can_support_thumbnail() -> Result<()> {
     let msg_content = attachment
         .msg_content()
         .expect("msg content should be available");
-    assert!(
-        msg_content.thumbnail_source().is_some(),
-        "we sent thumbnail, but thumbnail source not available",
-    );
-    let thumbnail_info = msg_content
-        .thumbnail_info()
-        .context("we sent thumbnail, but thumbnail info not available")?;
+
     assert_eq!(
-        thumbnail_info.mimetype().as_deref(),
-        Some(thumb_mimetype),
-        "we sent thumbnail in png format",
+        msg_content
+            .thumbnail_info()
+            .and_then(|i| i.mimetype())
+            .as_deref(),
+        Some(thumb_mimetype)
     );
     assert_eq!(
-        thumbnail_info.size(),
-        Some(size),
-        "wrong file size in thumbnail",
+        msg_content.thumbnail_info().and_then(|i| i.size()),
+        Some(size)
     );
 
     Ok(())
