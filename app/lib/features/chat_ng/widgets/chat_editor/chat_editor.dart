@@ -65,10 +65,7 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
           (next.actionType != prev?.actionType ||
               next.selectedMsgItem != prev?.selectedMsgItem)) {
         textEditorState.updateSelectionWithReason(
-          Selection.single(
-            path: [0],
-            startOffset: textEditorState.intoMarkdown().length - 1,
-          ),
+          null,
           reason: SelectionUpdateReason.uiEvent,
         );
         saveMsgDraft(body, bodyHtml, widget.roomId, ref);
@@ -152,8 +149,9 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
 
       final htmlBody = draft.htmlText();
       final fallbackPlain = draft.plainText();
-
-      textEditorState.replaceContent(fallbackPlain, htmlBody);
+      if (fallbackPlain.trim().isNotEmpty) {
+        textEditorState.replaceContent(fallbackPlain, htmlBody);
+      }
 
       _log.info('compose text draft loaded for room: ${widget.roomId}');
     }

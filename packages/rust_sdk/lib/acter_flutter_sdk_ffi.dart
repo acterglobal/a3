@@ -23635,15 +23635,23 @@ class Api {
 
   late final _msgDraftBlurhash =
       _msgDraftBlurhashPtr.asFunction<void Function(int, int, int, int)>();
-  late final _msgDraftThumbnailFilePathPtr = _lookup<
+  late final _msgDraftThumbnailImagePtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+      ffi.Void Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
     >
-  >("__MsgDraft_thumbnail_file_path");
+  >("__MsgDraft_thumbnail_image");
 
-  late final _msgDraftThumbnailFilePath =
-      _msgDraftThumbnailFilePathPtr
-          .asFunction<void Function(int, int, int, int)>();
+  late final _msgDraftThumbnailImage =
+      _msgDraftThumbnailImagePtr
+          .asFunction<void Function(int, int, int, int, int, int, int)>();
   late final _msgDraftThumbnailInfoPtr = _lookup<
     ffi.NativeFunction<
       ffi.Void Function(
@@ -23653,10 +23661,6 @@ class Api {
         ffi.Uint8,
         ffi.Uint64,
         ffi.Uint8,
-        ffi.IntPtr,
-        ffi.UintPtr,
-        ffi.UintPtr,
-        ffi.Uint8,
         ffi.Uint64,
       )
     >
@@ -23664,9 +23668,7 @@ class Api {
 
   late final _msgDraftThumbnailInfo =
       _msgDraftThumbnailInfoPtr
-          .asFunction<
-            void Function(int, int, int, int, int, int, int, int, int, int, int)
-          >();
+          .asFunction<void Function(int, int, int, int, int, int, int)>();
   late final _msgDraftFilenamePtr = _lookup<
     ffi.NativeFunction<
       ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
@@ -29944,36 +29946,72 @@ class Api {
           .asFunction<int Function(int, int, int, int, int, int, int)>();
   late final _clientImageDraftPtr = _lookup<
     ffi.NativeFunction<
-      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
     >
   >("__Client_image_draft");
 
   late final _clientImageDraft =
-      _clientImageDraftPtr.asFunction<int Function(int, int, int, int)>();
+      _clientImageDraftPtr
+          .asFunction<int Function(int, int, int, int, int, int, int)>();
   late final _clientAudioDraftPtr = _lookup<
     ffi.NativeFunction<
-      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
     >
   >("__Client_audio_draft");
 
   late final _clientAudioDraft =
-      _clientAudioDraftPtr.asFunction<int Function(int, int, int, int)>();
+      _clientAudioDraftPtr
+          .asFunction<int Function(int, int, int, int, int, int, int)>();
   late final _clientVideoDraftPtr = _lookup<
     ffi.NativeFunction<
-      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
     >
   >("__Client_video_draft");
 
   late final _clientVideoDraft =
-      _clientVideoDraftPtr.asFunction<int Function(int, int, int, int)>();
+      _clientVideoDraftPtr
+          .asFunction<int Function(int, int, int, int, int, int, int)>();
   late final _clientFileDraftPtr = _lookup<
     ffi.NativeFunction<
-      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
     >
   >("__Client_file_draft");
 
   late final _clientFileDraft =
-      _clientFileDraftPtr.asFunction<int Function(int, int, int, int)>();
+      _clientFileDraftPtr
+          .asFunction<int Function(int, int, int, int, int, int, int)>();
   late final _clientLocationDraftPtr = _lookup<
     ffi.NativeFunction<
       ffi.IntPtr Function(
@@ -46537,6 +46575,7 @@ class MsgContent {
   }
 
   /// available for location msg
+  /// geo_uri follows RFC 5870, for example `geo:51.5074,-0.1278`
   String? geoUri() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -51277,12 +51316,16 @@ class MsgDraft {
   /// for this media to be read and shared upon sending
   ///
   /// available for only image/video/file/location
-  void thumbnailFilePath(String value) {
-    final tmp1 = value;
+  void thumbnailImage(String source, String mimetype) {
+    final tmp1 = source;
+    final tmp5 = mimetype;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
     var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -51292,16 +51335,23 @@ class MsgDraft {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    _api._msgDraftThumbnailFilePath(tmp0, tmp2, tmp3, tmp4);
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    _api._msgDraftThumbnailImage(tmp0, tmp2, tmp3, tmp4, tmp6, tmp7, tmp8);
     return;
   }
 
   /// available for only image/video/file/location
-  void thumbnailInfo(int? width, int? height, String? mimetype, int? size) {
+  void thumbnailInfo(int? width, int? height, int? size) {
     final tmp1 = width;
     final tmp5 = height;
-    final tmp9 = mimetype;
-    final tmp15 = size;
+    final tmp9 = size;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp4 = 0;
@@ -51309,10 +51359,6 @@ class MsgDraft {
     var tmp8 = 0;
     var tmp10 = 0;
     var tmp12 = 0;
-    var tmp13 = 0;
-    var tmp14 = 0;
-    var tmp16 = 0;
-    var tmp18 = 0;
     tmp0 = _box.borrow();
     if (tmp1 == null) {
       tmp2 = 0;
@@ -51333,35 +51379,9 @@ class MsgDraft {
     } else {
       tmp10 = 1;
       final tmp11 = tmp9;
-      final tmp11_0 = utf8.encode(tmp11);
-      tmp13 = tmp11_0.length;
-
-      final ffi.Pointer<ffi.Uint8> tmp12_0 = _api.__allocate(tmp13 * 1, 1);
-      final Uint8List tmp12_1 = tmp12_0.asTypedList(tmp13);
-      tmp12_1.setAll(0, tmp11_0);
-      tmp12 = tmp12_0.address;
-      tmp14 = tmp13;
+      tmp12 = tmp11;
     }
-    if (tmp15 == null) {
-      tmp16 = 0;
-    } else {
-      tmp16 = 1;
-      final tmp17 = tmp15;
-      tmp18 = tmp17;
-    }
-    _api._msgDraftThumbnailInfo(
-      tmp0,
-      tmp2,
-      tmp4,
-      tmp6,
-      tmp8,
-      tmp10,
-      tmp12,
-      tmp13,
-      tmp14,
-      tmp16,
-      tmp18,
-    );
+    _api._msgDraftThumbnailInfo(tmp0, tmp2, tmp4, tmp6, tmp8, tmp10, tmp12);
     return;
   }
 
@@ -51386,6 +51406,7 @@ class MsgDraft {
   }
 
   /// available for only location
+  /// geo_uri follows RFC 5870, for example `geo:51.5074,-0.1278`
   void geoUri(String value) {
     final tmp1 = value;
     var tmp0 = 0;
@@ -67819,12 +67840,16 @@ class Client {
   }
 
   /// make draft to send image msg
-  MsgDraft imageDraft(String source) {
+  MsgDraft imageDraft(String source, String mimetype) {
     final tmp1 = source;
+    final tmp5 = mimetype;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
     var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -67834,22 +67859,42 @@ class Client {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    final tmp5 = _api._clientImageDraft(tmp0, tmp2, tmp3, tmp4);
-    final tmp7 = tmp5;
-    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_MsgDraft");
-    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 = MsgDraft._(_api, tmp7_1);
-    return tmp6;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    final tmp9 = _api._clientImageDraft(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+    );
+    final tmp11 = tmp9;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_MsgDraft");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp10 = MsgDraft._(_api, tmp11_1);
+    return tmp10;
   }
 
   /// make draft to send audio msg
-  MsgDraft audioDraft(String source) {
+  MsgDraft audioDraft(String source, String mimetype) {
     final tmp1 = source;
+    final tmp5 = mimetype;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
     var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -67859,22 +67904,42 @@ class Client {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    final tmp5 = _api._clientAudioDraft(tmp0, tmp2, tmp3, tmp4);
-    final tmp7 = tmp5;
-    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_MsgDraft");
-    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 = MsgDraft._(_api, tmp7_1);
-    return tmp6;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    final tmp9 = _api._clientAudioDraft(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+    );
+    final tmp11 = tmp9;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_MsgDraft");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp10 = MsgDraft._(_api, tmp11_1);
+    return tmp10;
   }
 
   /// make draft to send video msg
-  MsgDraft videoDraft(String source) {
+  MsgDraft videoDraft(String source, String mimetype) {
     final tmp1 = source;
+    final tmp5 = mimetype;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
     var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -67884,22 +67949,42 @@ class Client {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    final tmp5 = _api._clientVideoDraft(tmp0, tmp2, tmp3, tmp4);
-    final tmp7 = tmp5;
-    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_MsgDraft");
-    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 = MsgDraft._(_api, tmp7_1);
-    return tmp6;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    final tmp9 = _api._clientVideoDraft(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+    );
+    final tmp11 = tmp9;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_MsgDraft");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp10 = MsgDraft._(_api, tmp11_1);
+    return tmp10;
   }
 
   /// make draft to send file msg
-  MsgDraft fileDraft(String source) {
+  MsgDraft fileDraft(String source, String mimetype) {
     final tmp1 = source;
+    final tmp5 = mimetype;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
     var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -67909,19 +67994,36 @@ class Client {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    final tmp5 = _api._clientFileDraft(tmp0, tmp2, tmp3, tmp4);
-    final tmp7 = tmp5;
-    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_MsgDraft");
-    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 = MsgDraft._(_api, tmp7_1);
-    return tmp6;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    final tmp9 = _api._clientFileDraft(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+    );
+    final tmp11 = tmp9;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_MsgDraft");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp10 = MsgDraft._(_api, tmp11_1);
+    return tmp10;
   }
 
   /// make draft to send location msg
-  MsgDraft locationDraft(String body, String source) {
+  /// geo_uri follows RFC 5870, for example `geo:51.5074,-0.1278`
+  MsgDraft locationDraft(String body, String geoUri) {
     final tmp1 = body;
-    final tmp5 = source;
+    final tmp5 = geoUri;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;

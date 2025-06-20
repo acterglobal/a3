@@ -1,1 +1,0 @@
-- [UI-UX]: Enhanced attachment preview with fullscreen support and seamless navigation across multiple media files, more immersive experience.

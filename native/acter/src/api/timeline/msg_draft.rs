@@ -38,6 +38,7 @@ pub(crate) enum MsgContentDraft {
     },
     Image {
         source: String,
+        thumbnail_source: Option<String>,
         info: Option<ImageInfo>,
         filename: Option<String>,
     },
@@ -48,17 +49,20 @@ pub(crate) enum MsgContentDraft {
     },
     Video {
         source: String,
+        thumbnail_source: Option<String>,
         info: Option<VideoInfo>,
         filename: Option<String>,
     },
     File {
         source: String,
+        thumbnail_source: Option<String>,
         info: Option<FileInfo>,
         filename: Option<String>,
     },
     Location {
         body: String,
         geo_uri: String,
+        thumbnail_source: Option<String>,
         info: Option<LocationInfo>,
     },
 }
@@ -204,34 +208,102 @@ impl MsgContentDraft {
         self
     }
 
-    fn thumbnail_source(&mut self, value: MediaSource) -> &mut Self {
+    fn thumbnail_image(&mut self, source: String, mimetype: String) -> &mut Self {
         match self {
-            MsgContentDraft::Image { info, .. } => {
+            MsgContentDraft::Image {
+                info,
+                thumbnail_source,
+                ..
+            } => {
+                *thumbnail_source = Some(source);
                 if let Some(o) = info {
-                    o.thumbnail_source = Some(value);
+                    if let Some(mut a) = o.thumbnail_info.as_mut() {
+                        a.mimetype = Some(mimetype);
+                    } else {
+                        o.thumbnail_info = Some(Box::new(assign!(
+                            ThumbnailInfo::new(),
+                            { mimetype: Some(mimetype) }
+                        )));
+                    }
                 } else {
-                    *info = Some(assign!(ImageInfo::new(), { thumbnail_source: Some(value) }));
+                    *info = Some(assign!(ImageInfo::new(), {
+                        thumbnail_info: Some(Box::new(assign!(
+                            ThumbnailInfo::new(),
+                            { mimetype: Some(mimetype) }
+                        )))
+                    }));
                 }
             }
-            MsgContentDraft::Video { info, .. } => {
+            MsgContentDraft::Video {
+                info,
+                thumbnail_source,
+                ..
+            } => {
+                *thumbnail_source = Some(source);
                 if let Some(o) = info {
-                    o.thumbnail_source = Some(value);
+                    if let Some(mut a) = o.thumbnail_info.as_mut() {
+                        a.mimetype = Some(mimetype);
+                    } else {
+                        o.thumbnail_info = Some(Box::new(assign!(
+                            ThumbnailInfo::new(),
+                            { mimetype: Some(mimetype) }
+                        )));
+                    }
                 } else {
-                    *info = Some(assign!(VideoInfo::new(), { thumbnail_source: Some(value) }));
+                    *info = Some(assign!(VideoInfo::new(), {
+                        thumbnail_info: Some(Box::new(assign!(
+                            ThumbnailInfo::new(),
+                            { mimetype: Some(mimetype) }
+                        )))
+                    }));
                 }
             }
-            MsgContentDraft::File { info, .. } => {
+            MsgContentDraft::File {
+                info,
+                thumbnail_source,
+                ..
+            } => {
+                *thumbnail_source = Some(source);
                 if let Some(o) = info {
-                    o.thumbnail_source = Some(value);
+                    if let Some(mut a) = o.thumbnail_info.as_mut() {
+                        a.mimetype = Some(mimetype);
+                    } else {
+                        o.thumbnail_info = Some(Box::new(assign!(
+                            ThumbnailInfo::new(),
+                            { mimetype: Some(mimetype) }
+                        )));
+                    }
                 } else {
-                    *info = Some(assign!(FileInfo::new(), { thumbnail_source: Some(value) }));
+                    *info = Some(assign!(FileInfo::new(), {
+                        thumbnail_info: Some(Box::new(assign!(
+                            ThumbnailInfo::new(),
+                            { mimetype: Some(mimetype) }
+                        )))
+                    }));
                 }
             }
-            MsgContentDraft::Location { info, .. } => {
+            MsgContentDraft::Location {
+                info,
+                thumbnail_source,
+                ..
+            } => {
+                *thumbnail_source = Some(source);
                 if let Some(o) = info {
-                    o.thumbnail_source = Some(value);
+                    if let Some(mut a) = o.thumbnail_info.as_mut() {
+                        a.mimetype = Some(mimetype);
+                    } else {
+                        o.thumbnail_info = Some(Box::new(assign!(
+                            ThumbnailInfo::new(),
+                            { mimetype: Some(mimetype) }
+                        )));
+                    }
                 } else {
-                    *info = Some(assign!(LocationInfo::new(), { thumbnail_source: Some(value) }));
+                    *info = Some(assign!(LocationInfo::new(), {
+                        thumbnail_info: Some(Box::new(assign!(
+                            ThumbnailInfo::new(),
+                            { mimetype: Some(mimetype) }
+                        )))
+                    }));
                 }
             }
             _ => warn!("thumbnail_source is available for only image/video/file/location"),
@@ -243,7 +315,14 @@ impl MsgContentDraft {
         match self {
             MsgContentDraft::Image { info, .. } => {
                 if let Some(o) = info {
-                    o.thumbnail_info = Some(Box::new(value));
+                    // will keep mimetype if exists
+                    if let Some(mut i) = o.thumbnail_info.as_mut() {
+                        i.size = value.size;
+                        i.width = value.width;
+                        i.height = value.height;
+                    } else {
+                        o.thumbnail_info = Some(Box::new(value));
+                    }
                 } else {
                     *info =
                         Some(assign!(ImageInfo::new(), { thumbnail_info: Some(Box::new(value)) }));
@@ -251,7 +330,14 @@ impl MsgContentDraft {
             }
             MsgContentDraft::Video { info, .. } => {
                 if let Some(o) = info {
-                    o.thumbnail_info = Some(Box::new(value));
+                    // will keep mimetype if exists
+                    if let Some(mut i) = o.thumbnail_info.as_mut() {
+                        i.size = value.size;
+                        i.width = value.width;
+                        i.height = value.height;
+                    } else {
+                        o.thumbnail_info = Some(Box::new(value));
+                    }
                 } else {
                     *info =
                         Some(assign!(VideoInfo::new(), { thumbnail_info: Some(Box::new(value)) }));
@@ -259,7 +345,14 @@ impl MsgContentDraft {
             }
             MsgContentDraft::File { info, .. } => {
                 if let Some(o) = info {
-                    o.thumbnail_info = Some(Box::new(value));
+                    // will keep mimetype if exists
+                    if let Some(i) = o.thumbnail_info.as_mut() {
+                        i.size = value.size;
+                        i.width = value.width;
+                        i.height = value.height;
+                    } else {
+                        o.thumbnail_info = Some(Box::new(value));
+                    }
                 } else {
                     *info =
                         Some(assign!(FileInfo::new(), { thumbnail_info: Some(Box::new(value)) }));
@@ -267,7 +360,14 @@ impl MsgContentDraft {
             }
             MsgContentDraft::Location { info, .. } => {
                 if let Some(o) = info {
-                    o.thumbnail_info = Some(Box::new(value));
+                    // will keep mimetype if exists
+                    if let Some(i) = o.thumbnail_info.as_mut() {
+                        i.size = value.size;
+                        i.width = value.width;
+                        i.height = value.height;
+                    } else {
+                        o.thumbnail_info = Some(Box::new(value));
+                    }
                 } else {
                     *info = Some(
                         assign!(LocationInfo::new(), { thumbnail_info: Some(Box::new(value)) }),
@@ -403,9 +503,8 @@ impl MsgDraft {
         self
     }
 
-    pub fn thumbnail_file_path(&mut self, value: String) -> &mut Self {
-        let v = MediaSource::Plain(OwnedMxcUri::from(value));
-        self.inner.thumbnail_source(v);
+    pub fn thumbnail_image(&mut self, source: String, mimetype: String) -> &mut Self {
+        self.inner.thumbnail_image(source, mimetype);
         self
     }
 
@@ -413,13 +512,11 @@ impl MsgDraft {
         &mut self,
         width: Option<u64>,
         height: Option<u64>,
-        mimetype: Option<String>,
         size: Option<u64>,
     ) -> &mut Self {
         let value = assign!(ThumbnailInfo::new(), {
             width: width.and_then(UInt::new),
             height: height.and_then(UInt::new),
-            mimetype,
             size: size.and_then(UInt::new),
         });
         self.inner.thumbnail_info(value);
@@ -490,17 +587,72 @@ impl MsgDraft {
             MsgContentDraft::Location {
                 body,
                 geo_uri,
+                thumbnail_source,
                 info,
-            } => MessageType::Location(LocationMessageEventContent::new(body, geo_uri)),
+            } => {
+                let is_encrypted = room.latest_encryption_state().await?.is_encrypted();
+                let mut info = info.expect("location info needed");
+                if let Some(thumb_src) = thumbnail_source {
+                    let thumb_path = PathBuf::from(thumb_src);
+                    info.thumbnail_source = if is_encrypted {
+                        let mut reader = std::fs::File::open(thumb_path)?;
+                        let encrypted_file =
+                            room.client().upload_encrypted_file(&mut reader).await?;
+                        Some(MediaSource::Encrypted(Box::new(encrypted_file)))
+                    } else {
+                        let mimetype = info
+                            .thumbnail_info
+                            .as_ref()
+                            .and_then(|i| i.mimetype.clone())
+                            .expect("thumbnail mimetype needed");
+                        let content_type = mimetype.parse::<mime::Mime>()?;
+                        let mut image_buf = std::fs::read(thumb_path)?;
+                        let response = room
+                            .client()
+                            .media()
+                            .upload(&content_type, image_buf, None)
+                            .await?;
+                        Some(MediaSource::Plain(response.content_uri))
+                    };
+                }
+                let mut location_content = LocationMessageEventContent::new(body, geo_uri);
+                location_content.info = Some(Box::new(info));
+                MessageType::Location(location_content)
+            }
 
             MsgContentDraft::Image {
                 source,
+                thumbnail_source,
                 info,
                 filename,
             } => {
-                let info = info.expect("image info needed");
+                let is_encrypted = room.latest_encryption_state().await?.is_encrypted();
+                let mut info = info.expect("image info needed");
+                if let Some(thumb_src) = thumbnail_source {
+                    let thumb_path = PathBuf::from(thumb_src);
+                    info.thumbnail_source = if is_encrypted {
+                        let mut reader = std::fs::File::open(thumb_path)?;
+                        let encrypted_file =
+                            room.client().upload_encrypted_file(&mut reader).await?;
+                        Some(MediaSource::Encrypted(Box::new(encrypted_file)))
+                    } else {
+                        let mimetype = info
+                            .thumbnail_info
+                            .as_ref()
+                            .and_then(|i| i.mimetype.clone())
+                            .expect("thumbnail mimetype needed");
+                        let content_type = mimetype.parse::<mime::Mime>()?;
+                        let mut image_buf = std::fs::read(thumb_path)?;
+                        let response = room
+                            .client()
+                            .media()
+                            .upload(&content_type, image_buf, None)
+                            .await?;
+                        Some(MediaSource::Plain(response.content_uri))
+                    };
+                }
                 let path = PathBuf::from(source);
-                let mut image_content = if room.latest_encryption_state().await?.is_encrypted() {
+                let mut image_content = if is_encrypted {
                     let mut reader = std::fs::File::open(path.clone())?;
                     let encrypted_file = room.client().upload_encrypted_file(&mut reader).await?;
                     let body = path
@@ -567,12 +719,37 @@ impl MsgDraft {
             }
             MsgContentDraft::Video {
                 source,
+                thumbnail_source,
                 info,
                 filename,
             } => {
+                let is_encrypted = room.latest_encryption_state().await?.is_encrypted();
+                let mut info = info.expect("video info needed");
+                if let Some(thumb_src) = thumbnail_source {
+                    let thumb_path = PathBuf::from(thumb_src);
+                    info.thumbnail_source = if is_encrypted {
+                        let mut reader = std::fs::File::open(thumb_path)?;
+                        let encrypted_file =
+                            room.client().upload_encrypted_file(&mut reader).await?;
+                        Some(MediaSource::Encrypted(Box::new(encrypted_file)))
+                    } else {
+                        let mimetype = info
+                            .thumbnail_info
+                            .as_ref()
+                            .and_then(|i| i.mimetype.clone())
+                            .expect("thumbnail mimetype needed");
+                        let content_type = mimetype.parse::<mime::Mime>()?;
+                        let mut image_buf = std::fs::read(thumb_path)?;
+                        let response = room
+                            .client()
+                            .media()
+                            .upload(&content_type, image_buf, None)
+                            .await?;
+                        Some(MediaSource::Plain(response.content_uri))
+                    };
+                }
                 let path = PathBuf::from(source);
-                let info = info.expect("video info needed");
-                let mut video_content = if room.latest_encryption_state().await?.is_encrypted() {
+                let mut video_content = if is_encrypted {
                     let mut reader = std::fs::File::open(path.clone())?;
                     let encrypted_file = room.client().upload_encrypted_file(&mut reader).await?;
                     let body = path
@@ -603,12 +780,35 @@ impl MsgDraft {
             }
             MsgContentDraft::File {
                 source,
+                thumbnail_source,
                 info,
                 filename,
             } => {
-                let info = info.expect("file info needed");
-                let mimetype = info.mimetype.clone().expect("mimetype needed");
-                let content_type = mimetype.parse::<mime::Mime>()?;
+                let is_encrypted = room.latest_encryption_state().await?.is_encrypted();
+                let mut info = info.expect("file info needed");
+                if let Some(thumb_src) = thumbnail_source {
+                    let thumb_path = PathBuf::from(thumb_src);
+                    info.thumbnail_source = if is_encrypted {
+                        let mut reader = std::fs::File::open(thumb_path)?;
+                        let encrypted_file =
+                            room.client().upload_encrypted_file(&mut reader).await?;
+                        Some(MediaSource::Encrypted(Box::new(encrypted_file)))
+                    } else {
+                        let mimetype = info
+                            .thumbnail_info
+                            .as_ref()
+                            .and_then(|i| i.mimetype.clone())
+                            .expect("thumbnail mimetype needed");
+                        let content_type = mimetype.parse::<mime::Mime>()?;
+                        let mut image_buf = std::fs::read(thumb_path)?;
+                        let response = room
+                            .client()
+                            .media()
+                            .upload(&content_type, image_buf, None)
+                            .await?;
+                        Some(MediaSource::Plain(response.content_uri))
+                    };
+                }
                 let path = PathBuf::from(source);
                 let mut file_content = if room.latest_encryption_state().await?.is_encrypted() {
                     let mut reader = std::fs::File::open(path.clone())?;
@@ -620,6 +820,8 @@ impl MsgDraft {
                         .to_string();
                     FileMessageEventContent::encrypted(body, encrypted_file)
                 } else {
+                    let mimetype = info.mimetype.clone().expect("mimetype needed");
+                    let content_type = mimetype.parse::<mime::Mime>()?;
                     let mut file_buf = std::fs::read(path.clone())?;
                     let response = room
                         .client()

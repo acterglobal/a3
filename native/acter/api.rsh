@@ -1191,6 +1191,7 @@ object MsgContent {
     fn filename() -> Option<string>;
 
     /// available for location msg
+    /// geo_uri follows RFC 5870, for example `geo:51.5074,-0.1278`
     fn geo_uri() -> Option<string>;
 
     /// whether or not this has url previews attached
@@ -1668,15 +1669,16 @@ object MsgDraft {
     /// for this media to be read and shared upon sending
     ///
     /// available for only image/video/file/location
-    fn thumbnail_file_path(value: string);
+    fn thumbnail_image(source: string, mimetype: string);
 
     /// available for only image/video/file/location
-    fn thumbnail_info(width: Option<u64>, height: Option<u64>, mimetype: Option<string>, size: Option<u64>);
+    fn thumbnail_info(width: Option<u64>, height: Option<u64>, size: Option<u64>);
 
     /// available for only file
     fn filename(value: string);
 
     /// available for only location
+    /// geo_uri follows RFC 5870, for example `geo:51.5074,-0.1278`
     fn geo_uri(value: string);
 
     /// convert this into a NewsSlideDraft;
@@ -3931,19 +3933,20 @@ object Client {
     fn text_html_draft(html: string, plain: string) -> MsgDraft;
 
     /// make draft to send image msg
-    fn image_draft(source: string) -> MsgDraft;
+    fn image_draft(source: string, mimetype: string) -> MsgDraft;
 
     /// make draft to send audio msg
-    fn audio_draft(source: string) -> MsgDraft;
+    fn audio_draft(source: string, mimetype: string) -> MsgDraft;
 
     /// make draft to send video msg
-    fn video_draft(source: string) -> MsgDraft;
+    fn video_draft(source: string, mimetype: string) -> MsgDraft;
 
     /// make draft to send file msg
-    fn file_draft(source: string) -> MsgDraft;
+    fn file_draft(source: string, mimetype: string) -> MsgDraft;
 
     /// make draft to send location msg
-    fn location_draft(body: string, source: string) -> MsgDraft;
+    /// geo_uri follows RFC 5870, for example `geo:51.5074,-0.1278`
+    fn location_draft(body: string, geo_uri: string) -> MsgDraft;
 
     /// get access to the backup manager
     fn backup_manager() -> BackupManager;
