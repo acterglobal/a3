@@ -219,7 +219,10 @@ class _ActerIconPickerState extends ConsumerState<ActerIconPicker> {
             valueListenable: actorIconList,
             builder: (context, iconList, child) {
               if (iconList.isEmpty) {
-                return Center(child: Text(L10n.of(context).noIconsFound));
+                return Center(
+                  key: Key('no-icons-found'),
+                  child: Text(L10n.of(context).noIconsFound),
+                );
               }
               return _buildIconsBoxList(iconList);
             },
