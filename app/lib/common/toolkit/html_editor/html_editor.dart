@@ -119,13 +119,6 @@ extension ActerEditorStateHelpers on EditorState {
       // add empty paragraph to make sure there is a valid node selection
       t.insertNode([0], paragraphNode());
       apply(t);
-
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        updateSelectionWithReason(
-          Selection.single(path: [0], startOffset: 0, endOffset: 0),
-          reason: SelectionUpdateReason.uiEvent,
-        );
-      });
     }
   }
 

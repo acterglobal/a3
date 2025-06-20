@@ -13,13 +13,15 @@ Future<void> saveMsgDraft(
   final chat = await ref.read(chatProvider(roomId).future);
   final chatEditorState = ref.read(chatEditorStateProvider);
   final messageId = chatEditorState.selectedMsgItem?.eventId();
-
-  if (chat != null && messageId != null) {
-    if (chatEditorState.isEditing) {
-      await chat.saveMsgDraft(text, htmlText, 'edit', messageId);
-    } else if (chatEditorState.isReplying) {
-      await chat.saveMsgDraft(text, htmlText, 'reply', messageId);
+  if (chat != null) {
+    if (messageId != null) {
+      if (chatEditorState.isEditing) {
+        await chat.saveMsgDraft(text, htmlText, 'edit', messageId);
+      } else if (chatEditorState.isReplying) {
+        await chat.saveMsgDraft(text, htmlText, 'reply', messageId);
+      }
     } else {
+      // no message id, create a unreferenced draft
       await chat.saveMsgDraft(text, htmlText, 'new', null);
     }
   }
