@@ -51,6 +51,7 @@ async fn room_msg_can_download_image() -> Result<()> {
             tmp_jpg.path().to_string_lossy().to_string(),
             mimetype.to_owned(),
         )
+        .filename(jpg_name.clone())
         .thumbnail_image(
             tmp_png.path().to_string_lossy().to_string(),
             "image/png".to_owned(),
@@ -105,6 +106,7 @@ async fn room_msg_can_download_image() -> Result<()> {
     }
     let (msg_content, event_id) = found.context("Even after 30 seconds, image msg not received")?;
     assert_eq!(msg_content.mimetype().as_deref(), Some(mimetype));
+    assert_eq!(msg_content.filename(), Some(jpg_name));
 
     let dir_path = env::temp_dir().to_string_lossy().to_string();
     let downloaded_path = convo
@@ -162,6 +164,7 @@ async fn room_msg_can_download_audio() -> Result<()> {
             mimetype.to_owned(),
         )
         .size(mp3_size)
+        .filename(mp3_name.clone())
         .clone(); // switch variable from temporary to normal so that send_message can use it
     timeline.send_message(Box::new(draft)).await?;
 
@@ -213,6 +216,7 @@ async fn room_msg_can_download_audio() -> Result<()> {
     let (msg_content, event_id) = found.context("Even after 30 seconds, audio msg not received")?;
     assert_eq!(msg_content.mimetype().as_deref(), Some(mimetype));
     assert_eq!(msg_content.size(), Some(mp3_size));
+    assert_eq!(msg_content.filename(), Some(mp3_name));
 
     let dir_path = env::temp_dir().to_string_lossy().to_string();
     let downloaded_path = convo
@@ -275,6 +279,7 @@ async fn room_msg_can_download_video() -> Result<()> {
             mimetype.to_owned(),
         )
         .size(mp4_size)
+        .filename(mp4_name.clone())
         .thumbnail_image(
             tmp_png.path().to_string_lossy().to_string(),
             "image/png".to_owned(),
@@ -331,6 +336,7 @@ async fn room_msg_can_download_video() -> Result<()> {
     let (msg_content, event_id) = found.context("Even after 30 seconds, video msg not received")?;
     assert_eq!(msg_content.mimetype().as_deref(), Some(mimetype));
     assert_eq!(msg_content.size(), Some(mp4_size));
+    assert_eq!(msg_content.filename(), Some(mp4_name));
 
     let dir_path = env::temp_dir().to_string_lossy().to_string();
     let downloaded_path = convo
@@ -393,6 +399,7 @@ async fn room_msg_can_download_file() -> Result<()> {
             mimetype.to_owned(),
         )
         .size(pdf_size)
+        .filename(pdf_name.clone())
         .thumbnail_image(
             tmp_png.path().to_string_lossy().to_string(),
             "image/png".to_owned(),
@@ -449,6 +456,7 @@ async fn room_msg_can_download_file() -> Result<()> {
     let (msg_content, event_id) = found.context("Even after 30 seconds, file msg not received")?;
     assert_eq!(msg_content.mimetype().as_deref(), Some(mimetype));
     assert_eq!(msg_content.size(), Some(pdf_size));
+    assert_eq!(msg_content.filename(), Some(pdf_name));
 
     let dir_path = env::temp_dir().to_string_lossy().to_string();
     let downloaded_path = convo
