@@ -46510,6 +46510,7 @@ class MsgContent {
   }
 
   /// available for location msg
+  /// geo_uri follows RFC 5870, for example `geo:51.5074,-0.1278`
   String? geoUri() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -51424,6 +51425,7 @@ class MsgDraft {
   }
 
   /// available for only location
+  /// geo_uri follows RFC 5870, for example `geo:51.5074,-0.1278`
   MsgDraft geoUri(String value) {
     final tmp1 = value;
     var tmp0 = 0;
@@ -68042,6 +68044,7 @@ class Client {
   }
 
   /// make draft to send location msg
+  /// geo_uri follows RFC 5870, for example `geo:51.5074,-0.1278`
   MsgDraft locationDraft(String body, String geoUri) {
     final tmp1 = body;
     final tmp5 = geoUri;

@@ -1185,6 +1185,7 @@ object MsgContent {
     fn filename() -> Option<string>;
 
     /// available for location msg
+    /// geo_uri follows RFC 5870, for example `geo:51.5074,-0.1278`
     fn geo_uri() -> Option<string>;
 
     /// whether or not this has url previews attached
@@ -1671,6 +1672,7 @@ object MsgDraft {
     fn filename(value: string) -> MsgDraft;
 
     /// available for only location
+    /// geo_uri follows RFC 5870, for example `geo:51.5074,-0.1278`
     fn geo_uri(value: string) -> MsgDraft;
 
     /// convert this into a NewsSlideDraft;
@@ -3937,6 +3939,7 @@ object Client {
     fn file_draft(source: string, mimetype: string) -> MsgDraft;
 
     /// make draft to send location msg
+    /// geo_uri follows RFC 5870, for example `geo:51.5074,-0.1278`
     fn location_draft(body: string, geo_uri: string) -> MsgDraft;
 
     /// get access to the backup manager
