@@ -157,10 +157,10 @@ async fn edit_image_msg() -> Result<()> {
         .to_string();
 
     let mimetype = "image/jpeg";
-    let draft = user
-        .image_draft(tmp_jpg.path().to_string_lossy().to_string())
-        .mimetype(mimetype.to_owned())
-        .clone(); // switch variable from temporary to normal so that send_message can use it
+    let draft = user.image_draft(
+        tmp_jpg.path().to_string_lossy().to_string(),
+        mimetype.to_owned(),
+    );
     timeline.send_message(Box::new(draft)).await?;
 
     // image msg may reach via pushback action or reset action
@@ -219,10 +219,10 @@ async fn edit_image_msg() -> Result<()> {
         .to_string();
 
     let mimetype = "image/png";
-    let draft = user
-        .image_draft(tmp_png.path().to_string_lossy().to_string())
-        .mimetype(mimetype.to_owned())
-        .clone(); // switch variable from temporary to normal so that edit_message can use it
+    let draft = user.image_draft(
+        tmp_png.path().to_string_lossy().to_string(),
+        mimetype.to_owned(),
+    );
     timeline
         .edit_message(sent_event_id.clone(), Box::new(draft))
         .await?;

@@ -291,10 +291,10 @@ async fn story_jpg_image_with_text_test() -> Result<()> {
     tmp_file.as_file_mut().write_all(bytes)?;
 
     let space = user.space(room_id.to_string()).await?;
-    let image_draft = user
-        .image_draft(tmp_file.path().to_string_lossy().to_string())
-        .mimetype("image/jpg".to_owned())
-        .clone(); // switch variable from temporary to normal so that add_slide can use it
+    let image_draft = user.image_draft(
+        tmp_file.path().to_string_lossy().to_string(),
+        "image/jpg".to_owned(),
+    );
     space
         .story_draft()?
         .add_slide(Box::new(image_draft.into()))
@@ -351,10 +351,10 @@ async fn story_png_image_with_text_test() -> Result<()> {
     tmp_file.as_file_mut().write_all(bytes)?;
 
     let space = user.space(room_id.to_string()).await?;
-    let image_draft = user
-        .image_draft(tmp_file.path().to_string_lossy().to_string())
-        .mimetype("image/png".to_owned())
-        .clone(); // switch variable from temporary to normal so that add_slide can use it
+    let image_draft = user.image_draft(
+        tmp_file.path().to_string_lossy().to_string(),
+        "image/png".to_owned(),
+    );
     space
         .story_draft()?
         .add_slide(Box::new(image_draft.into()))
@@ -397,10 +397,10 @@ async fn story_multiple_slide_test() -> Result<()> {
     ))?;
 
     let space = user.space(room_id.to_string()).await?;
-    let image_draft = user
-        .image_draft(tmp_file.path().to_string_lossy().to_string())
-        .mimetype("image/png".to_owned())
-        .clone(); // switch variable from temporary to normal so that add_slide can use it
+    let image_draft = user.image_draft(
+        tmp_file.path().to_string_lossy().to_string(),
+        "image/png".to_owned(),
+    );
     let markdown_draft =
         user.text_markdown_draft("This update is ***reallly important***".to_owned());
 
@@ -412,10 +412,10 @@ async fn story_multiple_slide_test() -> Result<()> {
         .as_file_mut()
         .write_all(include_bytes!("./fixtures/big_buck_bunny.mp4"))?;
 
-    let video_draft = user
-        .video_draft(vid_file.path().to_string_lossy().to_string())
-        .mimetype("video/mp4".to_owned())
-        .clone(); // switch variable from temporary to normal so that add_slide can use it
+    let video_draft = user.video_draft(
+        vid_file.path().to_string_lossy().to_string(),
+        "video/mp4".to_owned(),
+    );
 
     // we add three slides
     space
@@ -481,10 +481,10 @@ async fn story_like_reaction_test() -> Result<()> {
     tmp_file.as_file_mut().write_all(bytes)?;
 
     let space = user.space(room_id.to_string()).await?;
-    let image_draft = user
-        .image_draft(tmp_file.path().to_string_lossy().to_string())
-        .mimetype("image/png".to_owned())
-        .clone(); // switch variable from temporary to normal so that add_slide can use it
+    let image_draft = user.image_draft(
+        tmp_file.path().to_string_lossy().to_string(),
+        "image/png".to_owned(),
+    );
     space
         .story_draft()?
         .add_slide(Box::new(image_draft.into()))

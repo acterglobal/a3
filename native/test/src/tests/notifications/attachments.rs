@@ -93,8 +93,10 @@ async fn image_attachment_on_pin() -> Result<()> {
 
     let filename = "Fishy.png";
     let base_draft = first
-        .image_draft(png_file.path().to_string_lossy().to_string())
-        .mimetype("image/png".to_owned())
+        .image_draft(
+            png_file.path().to_string_lossy().to_string(),
+            "image/png".to_owned(),
+        )
         .filename(filename.to_owned())
         .clone(); // switch variable from temporary to normal so that content_draft can use it
     let notification_id = manager
@@ -182,8 +184,10 @@ async fn file_attachment_on_event() -> Result<()> {
 
     let filename = "Fishy.doc";
     let base_draft = first
-        .file_draft(png_file.path().to_string_lossy().to_string())
-        .mimetype("document/x-src".to_owned())
+        .file_draft(
+            png_file.path().to_string_lossy().to_string(),
+            "document/x-src".to_owned(),
+        )
         .filename(filename.to_owned())
         .clone(); // switch variable from temporary to normal so that content_draft can use it
     let notification_id = manager
@@ -272,8 +276,10 @@ async fn video_attachment_on_tasklist() -> Result<()> {
 
     let filename = "Fishy.mp4";
     let base_draft = first
-        .video_draft(png_file.path().to_string_lossy().to_string())
-        .mimetype("video/mpeg4".to_owned())
+        .video_draft(
+            png_file.path().to_string_lossy().to_string(),
+            "video/mpeg4".to_owned(),
+        )
         .filename(filename.to_owned())
         .clone(); // switch variable from temporary to normal so that content_draft can use it
     let notification_id = manager

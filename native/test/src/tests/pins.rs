@@ -154,10 +154,10 @@ async fn pin_attachments() -> Result<()> {
     jpg_file.as_file_mut().write_all(bytes)?;
 
     let attachments_listener = attachments_manager.subscribe();
-    let base_draft = user
-        .image_draft(jpg_file.path().to_string_lossy().to_string())
-        .mimetype("image/jpeg".to_owned())
-        .clone(); // switch variable from temporary to normal so that content_draft can use it
+    let base_draft = user.image_draft(
+        jpg_file.path().to_string_lossy().to_string(),
+        "image/jpeg".to_owned(),
+    );
     let jpg_attach_id = attachments_manager
         .content_draft(Box::new(base_draft))
         .await?
@@ -188,10 +188,10 @@ async fn pin_attachments() -> Result<()> {
     png_file.as_file_mut().write_all(bytes)?;
 
     let attachments_listener = attachments_manager.subscribe();
-    let base_draft = user
-        .file_draft(png_file.path().to_string_lossy().to_string())
-        .mimetype("image/png".to_owned())
-        .clone(); // switch variable from temporary to normal so that content_draft can use it
+    let base_draft = user.file_draft(
+        png_file.path().to_string_lossy().to_string(),
+        "image/png".to_owned(),
+    );
     let png_attach_id = attachments_manager
         .content_draft(Box::new(base_draft))
         .await?

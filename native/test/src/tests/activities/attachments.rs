@@ -68,8 +68,10 @@ async fn image_attachment_activity_on_pin() -> Result<()> {
     png_file.as_file_mut().write_all(bytes)?;
 
     let base_draft = first
-        .image_draft(png_file.path().to_string_lossy().to_string())
-        .mimetype("image/png".to_owned())
+        .image_draft(
+            png_file.path().to_string_lossy().to_string(),
+            "image/png".to_owned(),
+        )
         .filename("Fishy.png".to_owned())
         .clone(); // switch variable from temporary to normal so that content_draft can use it
     let activity_id = manager
@@ -137,8 +139,10 @@ async fn file_attachment_activity_on_calendar() -> Result<()> {
     png_file.as_file_mut().write_all(bytes)?;
 
     let base_draft = first
-        .file_draft(png_file.path().to_string_lossy().to_string())
-        .mimetype("image/png".to_owned())
+        .file_draft(
+            png_file.path().to_string_lossy().to_string(),
+            "image/png".to_owned(),
+        )
         .filename("Fishy.png".to_owned())
         .clone(); // switch variable from temporary to normal so that content_draft can use it
     let activity_id = manager
