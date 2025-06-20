@@ -19,6 +19,7 @@ import 'package:acter/features/labs/providers/labs_providers.dart';
 import 'package:acter/features/settings/providers/app_settings_provider.dart';
 import 'package:acter/features/space/providers/suggested_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:riverpod/riverpod.dart';
@@ -130,6 +131,16 @@ final mediaChatStateProvider = StateNotifierProvider.family<
   MediaChatState,
   ChatMessageInfo
 >((ref, messageInfo) => MediaChatNotifier(ref: ref, messageInfo: messageInfo));
+
+final audioPlayerStateProvider = StateProvider.autoDispose<AudioPlayerInfo>((
+  ref,
+) {
+  final AudioPlayerInfo messageInfo = (
+    state: PlayerState.stopped,
+    messageId: null,
+  );
+  return messageInfo;
+});
 
 final timelineStreamProvider = FutureProvider.family<TimelineStream, String>((
   ref,

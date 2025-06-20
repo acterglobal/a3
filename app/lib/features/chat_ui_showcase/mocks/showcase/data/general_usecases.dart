@@ -1019,6 +1019,27 @@ final productTeamMutedWithSingleTypingUserRoom2 = createMockChatItem(
                 'class MessageEventItem extends ConsumerWidget {\n  final String roomId;\n  final String messageId;\n  final TimelineEventItem item;\n  final bool isMe;\n  final bool isDM;\n  final bool canRedact;\n  final bool isFirstMessageBySender;\n  final bool isLastMessageBySender;\n  final bool isLastMessage;\n}',
           ),
         ),
+
+        // --- Audio messages example ---
+        MockTimelineEventItem(
+          mockEventId: 'mock-audio-1',
+          mockSenderId: userId,
+          mockOriginServerTs: 1744097256000, // April 8, 2025 15:47:36
+          mockMsgType: 'm.audio',
+          mockMsgContent: MockMsgContent(
+            mockBody: 'Sample Audio - 1',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-audio-2',
+          mockSenderId: '@sarah:acter.global',
+          mockOriginServerTs: 1744097266000, // April 8, 2025 15:47:46
+          mockMsgType: 'm.audio',
+          mockMsgContent: MockMsgContent(
+            mockBody: 'Sample Audio - 2',
+          ),
+        ),
+        
       ],
 );
 
