@@ -100,7 +100,9 @@ class _DesktopLaunchAtStartupWidgetState extends ConsumerState<DesktopLaunchAtSt
             }
           },
         ),
-        Text(lang.activateFeatures, style: textTheme.bodySmall),
+        Flexible(
+          child: Text(lang.activateFeatures, style: textTheme.bodySmall),
+        ),
       ],
     );
   }
