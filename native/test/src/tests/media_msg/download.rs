@@ -156,6 +156,7 @@ async fn room_msg_can_download_audio() -> Result<()> {
         .expect("it is not file")
         .to_string_lossy()
         .to_string();
+    let duration = 3; // in seconds
 
     let mimetype = "audio/mp3";
     let draft = user
@@ -165,6 +166,7 @@ async fn room_msg_can_download_audio() -> Result<()> {
         )
         .size(mp3_size)
         .filename(mp3_name.clone())
+        .duration(duration)
         .clone(); // switch variable from temporary to normal so that send_message can use it
     timeline.send_message(Box::new(draft)).await?;
 
@@ -217,6 +219,7 @@ async fn room_msg_can_download_audio() -> Result<()> {
     assert_eq!(msg_content.mimetype().as_deref(), Some(mimetype));
     assert_eq!(msg_content.size(), Some(mp3_size));
     assert_eq!(msg_content.filename(), Some(mp3_name));
+    assert_eq!(msg_content.duration(), Some(duration));
 
     let dir_path = env::temp_dir().to_string_lossy().to_string();
     let downloaded_path = convo
@@ -266,6 +269,7 @@ async fn room_msg_can_download_video() -> Result<()> {
         .expect("it is not file")
         .to_string_lossy()
         .to_string();
+    let duration = 5; // in seconds
 
     let bytes = include_bytes!("../fixtures/PNG_transparency_demonstration_1.png");
     let png_size = bytes.len() as u64;
@@ -280,6 +284,7 @@ async fn room_msg_can_download_video() -> Result<()> {
         )
         .size(mp4_size)
         .filename(mp4_name.clone())
+        .duration(duration)
         .thumbnail_image(
             tmp_png.path().to_string_lossy().to_string(),
             "image/png".to_owned(),
@@ -337,6 +342,7 @@ async fn room_msg_can_download_video() -> Result<()> {
     assert_eq!(msg_content.mimetype().as_deref(), Some(mimetype));
     assert_eq!(msg_content.size(), Some(mp4_size));
     assert_eq!(msg_content.filename(), Some(mp4_name));
+    assert_eq!(msg_content.duration(), Some(duration));
 
     let dir_path = env::temp_dir().to_string_lossy().to_string();
     let downloaded_path = convo
