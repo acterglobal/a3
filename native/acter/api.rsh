@@ -1674,10 +1674,6 @@ object MsgDraft {
     /// available for only file
     fn filename(value: string);
 
-    /// available for only location
-    /// geo_uri follows RFC 5870, for example `geo:51.5074,-0.1278`
-    fn geo_uri(value: string);
-
     /// convert this into a NewsSlideDraft;
     fn into_news_slide_draft() -> NewsSlideDraft;
 

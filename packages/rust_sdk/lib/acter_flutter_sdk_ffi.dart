@@ -23669,14 +23669,6 @@ class Api {
 
   late final _msgDraftFilename =
       _msgDraftFilenamePtr.asFunction<void Function(int, int, int, int)>();
-  late final _msgDraftGeoUriPtr = _lookup<
-    ffi.NativeFunction<
-      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
-    >
-  >("__MsgDraft_geo_uri");
-
-  late final _msgDraftGeoUri =
-      _msgDraftGeoUriPtr.asFunction<void Function(int, int, int, int)>();
   late final _msgDraftIntoNewsSlideDraftPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__MsgDraft_into_news_slide_draft",
@@ -51369,27 +51361,6 @@ class MsgDraft {
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
     _api._msgDraftFilename(tmp0, tmp2, tmp3, tmp4);
-    return;
-  }
-
-  /// available for only location
-  /// geo_uri follows RFC 5870, for example `geo:51.5074,-0.1278`
-  void geoUri(String value) {
-    final tmp1 = value;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp4 = 0;
-    tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    _api._msgDraftGeoUri(tmp0, tmp2, tmp3, tmp4);
     return;
   }
 

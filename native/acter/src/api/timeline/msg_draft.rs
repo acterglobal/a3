@@ -443,16 +443,6 @@ impl MsgContentDraft {
         }
         self
     }
-
-    fn geo_uri(&mut self, value: String) -> &mut Self {
-        match self {
-            MsgContentDraft::Location { geo_uri, .. } => {
-                *geo_uri = value;
-            }
-            _ => warn!("geo_uri is available for only location"),
-        }
-        self
-    }
 }
 
 #[derive(Clone, Debug)]
@@ -530,11 +520,6 @@ impl MsgDraft {
 
     pub fn blurhash(&mut self, value: String) -> &mut Self {
         self.inner.blurhash(value);
-        self
-    }
-
-    pub fn geo_uri(&mut self, value: String) -> &mut Self {
-        self.inner.geo_uri(value);
         self
     }
 
