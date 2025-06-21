@@ -19,8 +19,7 @@ Future<void> saveEventTitle({
   final lang = L10n.of(context);
   try {
     EasyLoading.show(status: lang.updateName);
-    final updateBuilder = calendarEvent.updateBuilder();
-    updateBuilder.title(newName);
+    final updateBuilder = calendarEvent.updateBuilder()..title(newName);
     final eventId = await updateBuilder.send();
     _log.info('Calendar Event Title Updated $eventId');
     await autosubscribe(
@@ -54,8 +53,9 @@ Future<void> saveEventDescription({
   final lang = L10n.of(context);
   EasyLoading.show(status: lang.updatingDescription);
   try {
-    final updateBuilder = calendarEvent.updateBuilder();
-    updateBuilder.descriptionHtml(plainDescription, htmlBodyDescription);
+    final updateBuilder =
+        calendarEvent.updateBuilder()
+          ..descriptionHtml(plainDescription, htmlBodyDescription);
     await updateBuilder.send();
     await autosubscribe(
       ref: ref,
@@ -121,7 +121,7 @@ String eventDateFormat(DateTime dateTime) {
   return DateFormat('MMM dd, yyyy').format(dateTime);
 }
 
-String getDateFormat(UtcDateTime utcDateTime){
+String getDateFormat(UtcDateTime utcDateTime) {
   final localDateTime = toDartDatetime(utcDateTime).toLocal();
   return DateFormat('dd MMMM, yyyy').format(localDateTime);
 }

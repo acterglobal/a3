@@ -48,7 +48,8 @@ async fn image_blurhash_support() -> Result<()> {
             tmp_jpg.path().to_string_lossy().to_string(),
             mimetype.to_owned(),
         )
-        .blurhash(blurhash.to_owned());
+        .blurhash(blurhash.to_owned())
+        .clone(); // switch variable from temporary to normal so that send_message can use it
     timeline.send_message(Box::new(draft)).await?;
 
     // image msg may reach via pushback action or reset action
@@ -133,7 +134,8 @@ async fn video_blurhash_support() -> Result<()> {
             tmp_mp4.path().to_string_lossy().to_string(),
             mimetype.to_owned(),
         )
-        .blurhash(blurhash.to_owned());
+        .blurhash(blurhash.to_owned())
+        .clone(); // switch variable from temporary to normal so that send_message can use it
     timeline.send_message(Box::new(draft)).await?;
 
     // video msg may reach via pushback action or reset action

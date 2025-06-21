@@ -399,13 +399,12 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
         calendarEventProvider(widget.calendarId).future,
       );
       final rsvpManager = await event.rsvps();
-      final draft = rsvpManager.rsvpDraft();
       final statusStr = switch (status) {
         RsvpStatusTag.Yes => 'yes',
         RsvpStatusTag.No => 'no',
         RsvpStatusTag.Maybe => 'maybe',
       };
-      draft.status(statusStr);
+      final draft = rsvpManager.rsvpDraft()..status(statusStr);
       final rsvpId = await draft.send();
       _log.info('new rsvp id: $rsvpId');
 

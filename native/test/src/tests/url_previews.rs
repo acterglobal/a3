@@ -50,8 +50,10 @@ async fn ref_details_as_url_preview() -> Result<()> {
 
     let ref_details = obj_entry.ref_details().await?;
     let target_uri = ref_details.generate_internal_link(true)?;
-    let mut draft = user.text_plain_draft("look at this pin".to_owned());
-    draft = draft.add_ref_details(Box::new(ref_details))?;
+    let draft = user
+        .text_plain_draft("look at this pin".to_owned())
+        .add_ref_details(Box::new(ref_details))?
+        .clone(); // switch variable from temporary to normal so that send_message can use it
 
     let convo = user
         .convo(chat_id.to_string())
@@ -119,8 +121,10 @@ async fn url_preview_on_message() -> Result<()> {
 
     assert_eq!(preview.title().as_deref(), Some("Synapse is running"));
 
-    let mut draft = user.text_plain_draft("look at this pin".to_owned());
-    draft = draft.add_url_preview(Box::new(preview))?;
+    let draft = user
+        .text_plain_draft("look at this pin".to_owned())
+        .add_url_preview(Box::new(preview))?
+        .clone(); // switch variable from temporary to normal so that send_message can use it
 
     let convo = first
         .convo(chat_id.to_string())

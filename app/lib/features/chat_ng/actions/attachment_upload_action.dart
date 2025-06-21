@@ -34,11 +34,11 @@ Future<void> attachmentUploadAction({
               attachmentType == AttachmentType.camera)) {
         final bytes = file.readAsBytesSync();
         final image = await decodeImageFromList(bytes);
-        final imageDraft = client
-            .imageDraft(file.path, mimeType)
-            .size(fileLen)
-            .width(image.width)
-            .height(image.height);
+        final imageDraft =
+            client.imageDraft(file.path, mimeType)
+              ..size(fileLen)
+              ..width(image.width)
+              ..height(image.height);
         if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
           final remoteId = inputState.selectedMessage?.remoteId;
           if (remoteId == null) throw 'remote id of sel msg not available';
@@ -48,9 +48,8 @@ Future<void> attachmentUploadAction({
         }
       } else if (mimeType.startsWith('audio/') &&
           attachmentType == AttachmentType.audio) {
-        final audioDraft = client
-            .audioDraft(file.path, mimeType)
-            .size(file.lengthSync());
+        final audioDraft = client.audioDraft(file.path, mimeType)
+          ..size(file.lengthSync());
         if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
           final remoteId = inputState.selectedMessage?.remoteId;
           if (remoteId == null) throw 'remote id of sel msg not available';
@@ -60,9 +59,8 @@ Future<void> attachmentUploadAction({
         }
       } else if (mimeType.startsWith('video/') &&
           attachmentType == AttachmentType.video) {
-        final videoDraft = client
-            .videoDraft(file.path, mimeType)
-            .size(file.lengthSync());
+        final videoDraft = client.videoDraft(file.path, mimeType)
+          ..size(file.lengthSync());
         if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
           final remoteId = inputState.selectedMessage?.remoteId;
           if (remoteId == null) throw 'remote id of sel msg not available';
@@ -71,9 +69,8 @@ Future<void> attachmentUploadAction({
           await stream.sendMessage(videoDraft);
         }
       } else {
-        final fileDraft = client
-            .fileDraft(file.path, mimeType)
-            .size(file.lengthSync());
+        final fileDraft = client.fileDraft(file.path, mimeType)
+          ..size(file.lengthSync());
         if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
           final remoteId = inputState.selectedMessage?.remoteId;
           if (remoteId == null) throw 'remote id of sel msg not available';

@@ -19,8 +19,9 @@ Future<String?> submitComment(
   }
   EasyLoading.show(status: lang.submittingComment);
   try {
-    final draft = manager.commentDraft();
-    draft.contentFormatted(trimmedPlainText, htmlBodyDescription);
+    final draft =
+        manager.commentDraft()
+          ..contentFormatted(trimmedPlainText, htmlBodyDescription);
     final id = await draft.send();
     FocusManager.instance.primaryFocus?.unfocus();
     EasyLoading.showToast(lang.commentSubmitted);

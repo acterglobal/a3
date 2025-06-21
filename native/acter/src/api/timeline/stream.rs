@@ -8,13 +8,7 @@ use matrix_sdk_base::{
     ruma::{
         api::client::receipt::create_receipt,
         assign,
-        events::{
-            room::{
-                message::{AudioInfo, FileInfo, ForwardThread, LocationInfo, VideoInfo},
-                ImageInfo,
-            },
-            MessageLikeEventType,
-        },
+        events::{room::message::ForwardThread, MessageLikeEventType},
         EventId, OwnedEventId, OwnedTransactionId,
     },
     RoomState,
@@ -283,50 +277,46 @@ impl Client {
     }
 
     pub fn image_draft(&self, source: String, mimetype: String) -> MsgDraft {
-        let info = assign!(ImageInfo::new(), {
-            mimetype: Some(mimetype),
-        });
         MsgDraft::new(MsgContentDraft::Image {
             source,
             thumbnail_source: None,
-            info: Some(info),
+            info: None,
             filename: None,
         })
+        .mimetype(mimetype)
+        .clone()
     }
 
     pub fn audio_draft(&self, source: String, mimetype: String) -> MsgDraft {
-        let info = assign!(AudioInfo::new(), {
-            mimetype: Some(mimetype),
-        });
         MsgDraft::new(MsgContentDraft::Audio {
             source,
-            info: Some(info),
+            info: None,
             filename: None,
         })
+        .mimetype(mimetype)
+        .clone()
     }
 
     pub fn video_draft(&self, source: String, mimetype: String) -> MsgDraft {
-        let info = assign!(VideoInfo::new(), {
-            mimetype: Some(mimetype),
-        });
         MsgDraft::new(MsgContentDraft::Video {
             source,
             thumbnail_source: None,
-            info: Some(info),
+            info: None,
             filename: None,
         })
+        .mimetype(mimetype)
+        .clone()
     }
 
     pub fn file_draft(&self, source: String, mimetype: String) -> MsgDraft {
-        let info = assign!(FileInfo::new(), {
-            mimetype: Some(mimetype),
-        });
         MsgDraft::new(MsgContentDraft::File {
             source,
             thumbnail_source: None,
-            info: Some(info),
+            info: None,
             filename: None,
         })
+        .mimetype(mimetype)
+        .clone()
     }
 
     pub fn location_draft(&self, body: String, geo_uri: String) -> MsgDraft {
@@ -334,7 +324,7 @@ impl Client {
             body,
             geo_uri,
             thumbnail_source: None,
-            info: Some(LocationInfo::new()),
+            info: None,
         })
     }
 }

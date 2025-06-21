@@ -105,8 +105,9 @@ class _DueChipState extends ConsumerState<DueChip> {
     if (newDue == null) return;
     EasyLoading.show(status: lang.updatingDue);
     try {
-      final updater = widget.task.updateBuilder();
-      updater.dueDate(newDue.due.year, newDue.due.month, newDue.due.day);
+      final updater =
+          widget.task.updateBuilder()
+            ..dueDate(newDue.due.year, newDue.due.month, newDue.due.day);
       if (newDue.includeTime) {
         final seconds =
             newDue.due.hour * 60 * 60 +

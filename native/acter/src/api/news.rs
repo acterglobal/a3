@@ -485,9 +485,9 @@ pub struct NewsEntryDraft {
 }
 
 impl NewsEntryDraft {
-    pub async fn add_slide(&mut self, draft: Box<NewsSlideDraft>) -> Result<bool> {
+    pub fn add_slide(&mut self, draft: Box<NewsSlideDraft>) -> &mut Self {
         self.slides.push(*draft);
-        Ok(true)
+        self
     }
 
     pub fn slides(&self) -> Vec<NewsSlideDraft> {
@@ -549,7 +549,7 @@ pub struct NewsEntryUpdateBuilder {
 
 impl NewsEntryUpdateBuilder {
     #[allow(clippy::ptr_arg)]
-    pub async fn add_slide(&mut self, draft: Box<NewsSlideDraft>) -> Result<bool> {
+    pub async fn add_slide(&mut self, draft: Box<NewsSlideDraft>) -> Result<Self> {
         let client = self.client.clone();
         let room = self.room.clone();
         let mut slides = vec![];
@@ -564,7 +564,7 @@ impl NewsEntryUpdateBuilder {
         slides.push(slide);
 
         self.content.slides(Some(slides));
-        Ok(true)
+        Ok(self.clone())
     }
 
     pub fn swap_slides(&mut self, from: u8, to: u8) -> Result<&mut Self> {
