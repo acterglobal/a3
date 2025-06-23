@@ -129,7 +129,7 @@ void main() {
             ),
           ),
           'expectedText': 'changed title task',
-          'expectedIcon': PhosphorIconsRegular.pencilSimpleLine,
+          'expectedIcon': PhosphorIconsThin.pencilSimpleLine,
         },
         {
           'name': 'description_change',
@@ -143,7 +143,7 @@ void main() {
             ),
           ),
           'expectedText': 'changed description task',
-          'expectedIcon': PhosphorIconsRegular.pencilLine,
+          'expectedIcon': PhosphorIconsThin.pencilSimpleLine,
         },
         {
           'name': 'event_date_change',
@@ -177,7 +177,7 @@ void main() {
             ),
           ),
           'expectedText': 'set space description',
-          'expectedIcon': PhosphorIconsRegular.pencilSimpleLine,
+          'expectedIcon': PhosphorIconsThin.pencilSimpleLine,
         },
         {
           'name': 'room_avatar',
@@ -328,7 +328,7 @@ void main() {
             ),
           ),
           'expectedText': 'joined',
-          'expectedIcon': Icons.people_sharp,
+          'expectedIcon': PhosphorIconsThin.users,
         },
         {
           'name': 'membership_left',
@@ -342,7 +342,7 @@ void main() {
             ),
           ),
           'expectedText': 'left',
-          'expectedIcon': Icons.logout,
+          'expectedIcon': PhosphorIconsThin.signOut,
         },
         {
           'name': 'membership_invited',
@@ -356,7 +356,7 @@ void main() {
             ),
           ),
           'expectedText': 'invited',
-          'expectedIcon': Icons.person_add,
+          'expectedIcon': PhosphorIconsThin.userPlus,
         },
         {
           'name': 'membership_banned',
@@ -370,7 +370,7 @@ void main() {
             ),
           ),
           'expectedText': 'banned',
-          'expectedIcon': Icons.block,
+          'expectedIcon': PhosphorIconsThin.userCircleMinus,
         },
         {
           'name': 'membership_kicked',
@@ -384,7 +384,7 @@ void main() {
             ),
           ),
           'expectedText': 'kicked',
-          'expectedIcon': Icons.person_remove,
+          'expectedIcon': PhosphorIconsThin.userMinus,
         },
         {
           'name': 'membership_invitation_accepted',
@@ -398,7 +398,7 @@ void main() {
             ),
           ),
           'expectedText': 'accepted',
-          'expectedIcon': Icons.person_add,
+          'expectedIcon': PhosphorIconsThin.userCheck,
         },
         {
           'name': 'membership_invitation_rejected',
@@ -412,7 +412,7 @@ void main() {
             ),
           ),
           'expectedText': 'rejected',
-          'expectedIcon': Icons.person_off,
+          'expectedIcon': PhosphorIconsThin.userMinus,
         },
         {
           'name': 'membership_invitation_revoked',
@@ -426,7 +426,7 @@ void main() {
             ),
           ),
           'expectedText': 'revoked',
-          'expectedIcon': Icons.person_remove,
+          'expectedIcon': PhosphorIconsThin.minusCircle,
         },
         {
           'name': 'membership_knock_accepted',
@@ -440,7 +440,7 @@ void main() {
             ),
           ),
           'expectedText': 'accepted',
-          'expectedIcon': Icons.person_add,
+          'expectedIcon': PhosphorIconsThin.userCheck,
         },
         {
           'name': 'membership_knock_retracted',
@@ -454,7 +454,7 @@ void main() {
             ),
           ),
           'expectedText': 'retracted',
-          'expectedIcon': Icons.person_remove,
+          'expectedIcon': PhosphorIconsThin.userCircleMinus,
         },
         {
           'name': 'membership_knock_denied',
@@ -468,7 +468,7 @@ void main() {
             ),
           ),
           'expectedText': 'denied',
-          'expectedIcon': Icons.block,
+          'expectedIcon': PhosphorIconsThin.userCircleMinus,
         },
         {
           'name': 'membership_unbanned',
@@ -482,7 +482,7 @@ void main() {
             ),
           ),
           'expectedText': 'unbanned',
-          'expectedIcon': Icons.block_flipped,
+          'expectedIcon': PhosphorIconsThin.userCirclePlus,
         },
         {
           'name': 'membership_kicked_and_banned',
@@ -496,7 +496,7 @@ void main() {
             ),
           ),
           'expectedText': 'kicked and banned',
-          'expectedIcon': Icons.block,
+          'expectedIcon': PhosphorIconsThin.userCircleMinus,
         },
         {
           'name': 'membership_knocked',
@@ -510,7 +510,7 @@ void main() {
             ),
           ),
           'expectedText': 'knocked',
-          'expectedIcon': Icons.person_add,
+          'expectedIcon': PhosphorIconsThin.userPlus,
         },
       ];
 
