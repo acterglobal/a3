@@ -49,24 +49,6 @@ class ActivityListShowcasePage extends ConsumerWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        SectionHeader(
-          title: lang.spaceActivities,
-          showSectionBg: false,
-          isShowSeeAllButton: false,
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: InfoWidget(
-            title: lang.betaVersion,
-            subTitle: lang.spaceAcitivitiesBetaInfo,
-            trailing: const Icon(Icons.arrow_forward_ios),
-            onTap: () => openLink(
-              ref: ref,
-              target: 'https://github.com/acterglobal/a3/issues/2597',
-              lang: lang,
-            ),
-          ),
-        ),
         ListView.builder(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           itemCount: dates.length,
