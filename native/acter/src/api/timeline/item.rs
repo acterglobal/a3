@@ -476,7 +476,7 @@ impl TimelineEventItem {
 
     pub fn mentioned_users(&self) -> Vec<String> {
         self.mentions.as_ref().map_or_else(
-            || vec![],
+            || Vec::new(),
             |m| m.user_ids.iter().map(ToString::to_string).collect(),
         )
     }
