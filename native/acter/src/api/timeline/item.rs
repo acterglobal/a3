@@ -475,10 +475,9 @@ impl TimelineEventItem {
     }
 
     pub fn mentioned_users(&self) -> Vec<String> {
-        self.mentions.as_ref().map_or_else(
-            || Vec::new(),
-            |m| m.user_ids.iter().map(ToString::to_string).collect(),
-        )
+        self.mentions.as_ref().map_or_else(Vec::new, |m| {
+            m.user_ids.iter().map(ToString::to_string).collect()
+        })
     }
 
     pub fn in_reply_to_id(&self) -> Option<String> {
