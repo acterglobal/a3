@@ -111,14 +111,21 @@ extension ActerEditorStateHelpers on EditorState {
     apply(t);
   }
 
-  /// clear the editor text with selection
-  void clear() async {
+  /// clear the editor text
+  void clear([bool keepSelection = false]) async {
     if (!document.isEmpty) {
       final t = transaction;
       t.deleteNodes(document.root.children); // clear the page
       // add empty paragraph to make sure there is a valid node selection
       t.insertNode([0], paragraphNode());
       apply(t);
+
+      // keep the cursor selection
+      if (keepSelection) {
+        final t = transaction;
+        t.afterSelection = Selection.single(path: [0], startOffset: 0);
+        apply(t);
+      }
     }
   }
 
