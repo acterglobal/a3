@@ -7,6 +7,7 @@ import 'package:acter/router/routes.dart';
 import 'package:acter/config/constants.dart';
 import 'package:acter/features/chat_ng/pages/chat_room.dart';
 import 'package:acter/features/chat_ui_showcase/pages/chat_list_showcase_page.dart';
+import 'package:acter/features/activity_ui_showcase/pages/activity_list_showcase_page.dart';
 import 'package:acter/router/router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -39,6 +40,20 @@ final List<GoRoute> showCaseRoutes =
               );
             },
           ),
+
+          // Activities
+          GoRoute(
+            name: Routes.activityListShowcase.name,
+            path: Routes.activityListShowcase.route,
+            redirect: authGuardRedirect,
+            pageBuilder: (context, state) {
+              return MaterialPage(
+                key: state.pageKey,
+                child: ActivityListShowcasePage(),
+              );
+            },
+          ),
+
 
           // onboarding
           GoRoute(

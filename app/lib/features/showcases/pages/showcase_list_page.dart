@@ -6,6 +6,10 @@ const List<ShowCaseItem> _chatShowcase = [
   (title: 'Chat List', route: Routes.chatListShowcase),
 ];
 
+const List<ShowCaseItem> _activityShowcase = [
+  (title: 'Activity List', route: Routes.activityListShowcase),
+];
+
 const List<ShowCaseItem> _onboardingShowcase = [
   (
     title: 'Encryption Recovery',
@@ -29,6 +33,7 @@ typedef ShowCaseItem = ({String title, Routes route});
 const List<ShowCaseGroup> _showCases = [
   (title: 'Onboarding Wizard', items: _onboardingShowcase),
   (title: 'Chat Ng', items: _chatShowcase),
+  (title: 'Activities', items: _activityShowcase),
   (title: 'Invitations', items: _invitationsShowcase),
 ];
 
