@@ -45951,7 +45951,7 @@ class TimelineEventItem {
   }
 
   /// The list of mentioned users.
-  /// Available only when sender didn't mention the whole room
+  /// Available only when sender didn’t mention the whole room
   FfiListFfiString mentionedUsers() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -70279,7 +70279,7 @@ class BackupManager {
     return tmp6;
   }
 
-  /// the backup key as it was stored last, might be empty if there isn't any stored
+  /// the backup key as it was stored last, might be empty if there isn’t any stored
   Future<OptionString> storedEncKey() {
     var tmp0 = 0;
     tmp0 = _box.borrow();

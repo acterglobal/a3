@@ -1103,7 +1103,7 @@ object TimelineEventItem {
     fn room_mentioned() -> bool;
 
     /// The list of mentioned users.
-    /// Available only when sender didn't mention the whole room
+    /// Available only when sender didn’t mention the whole room
     fn mentioned_users() -> Vec<string>;
 
     /// original event id, if this msg is reply to another msg
@@ -4287,7 +4287,7 @@ object BackupManager {
     /// Open the existing secret store using the given key and import the keys
     fn recover(secret: string) -> Future<Result<bool>>;
 
-    /// the backup key as it was stored last, might be empty if there isn't any stored
+    /// the backup key as it was stored last, might be empty if there isn’t any stored
     fn stored_enc_key() -> Future<Result<OptionString>>;
 
     /// When was the key stored as unix timestamp. 0 if nothing was found
