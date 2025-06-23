@@ -136,16 +136,16 @@ pub async fn random_user_under_token(prefix: &str, registration_token: &str) -> 
 
 pub async fn random_users_with_random_convo(
     prefix: &str,
-    user_count: u8,
+    observer_count: u8,
 ) -> Result<(Vec<Client>, OwnedRoomId)> {
-    assert!(user_count > 0, "User Counts must be more than 0");
+    assert!(observer_count > 0, "User Counts must be more than 0");
     let (main_user, uuid) = random_user_with_uuid(prefix).await?;
     let (settings, mut users) = {
         let mut builder = CreateConvoSettingsBuilder::default();
         builder.name(format!("it-room-{prefix}-{uuid}"));
 
         let mut users = vec![];
-        for _x in 0..user_count {
+        for _x in 0..observer_count {
             let (new_user, _uuid) = random_user_with_uuid(prefix).await?;
             builder.add_invitee(new_user.user_id()?.to_string())?;
             users.push(new_user);
