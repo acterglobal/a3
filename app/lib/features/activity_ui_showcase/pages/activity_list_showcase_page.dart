@@ -19,12 +19,10 @@ class ActivityListShowcasePage extends ConsumerWidget {
     
     // Debug: Check what mock data we have
     final mockActivities = ref.watch(mockAllActivitiesProvider);
-    print('🔍 Mock activities count: ${mockActivities.length}');
     
     // Calculate dates directly from mock data
     final uniqueDates = mockActivities.map(getActivityDate).toSet();
     final sortedDates = uniqueDates.toList()..sort((a, b) => b.compareTo(a));
-    print('🔍 Direct calculation - Unique dates: ${sortedDates.map((d) => d.toString()).join(', ')}');
     
     return Scaffold(
       appBar: AppBar(
@@ -104,8 +102,7 @@ class ActivityListShowcasePage extends ConsumerWidget {
                       groups.add((roomId: roomId, activities: [activity]));
                     }
                   }
-                  
-                  print('🔍 Groups for date $date: ${groups.length}');
+
                   return groups;
                 }),
               ],
