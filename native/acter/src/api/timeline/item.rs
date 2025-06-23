@@ -470,7 +470,7 @@ impl TimelineEventItem {
         }
     }
 
-    pub fn mentioned_room(&self) -> bool {
+    pub fn room_mentioned(&self) -> bool {
         self.mentions.as_ref().map_or_else(|| false, |m| m.room)
     }
 

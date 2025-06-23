@@ -21797,13 +21797,13 @@ class Api {
           .asFunction<
             _TimelineEventItemSpaceParentContentReturn Function(int)
           >();
-  late final _timelineEventItemMentionedRoomPtr =
+  late final _timelineEventItemRoomMentionedPtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-        "__TimelineEventItem_mentioned_room",
+        "__TimelineEventItem_room_mentioned",
       );
 
-  late final _timelineEventItemMentionedRoom =
-      _timelineEventItemMentionedRoomPtr.asFunction<int Function(int)>();
+  late final _timelineEventItemRoomMentioned =
+      _timelineEventItemRoomMentionedPtr.asFunction<int Function(int)>();
   late final _timelineEventItemMentionedUsersPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__TimelineEventItem_mentioned_users",
@@ -45941,16 +45941,17 @@ class TimelineEventItem {
   }
 
   /// Whether the whole room is mentioned.
-  bool mentionedRoom() {
+  bool roomMentioned() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._timelineEventItemMentionedRoom(tmp0);
+    final tmp1 = _api._timelineEventItemRoomMentioned(tmp0);
     final tmp3 = tmp1;
     final tmp2 = tmp3 > 0;
     return tmp2;
   }
 
   /// The list of mentioned users.
+  /// Available only when sender didn't mention the whole room
   FfiListFfiString mentionedUsers() {
     var tmp0 = 0;
     tmp0 = _box.borrow();

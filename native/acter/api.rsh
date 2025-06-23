@@ -1100,9 +1100,10 @@ object TimelineEventItem {
     fn space_parent_content() -> Option<SpaceParentContent>;
 
     /// Whether the whole room is mentioned.
-    fn mentioned_room() -> bool;
+    fn room_mentioned() -> bool;
 
     /// The list of mentioned users.
+    /// Available only when sender didn't mention the whole room
     fn mentioned_users() -> Vec<string>;
 
     /// original event id, if this msg is reply to another msg

@@ -73,7 +73,7 @@ async fn sisko_mentions_kyra_worf() -> Result<()> {
     sisko_timeline.send_message(Box::new(draft)).await?;
 
     // wait for kyra sync to catch up
-    let (event_id, mentioned_room, mentioned_users) =
+    let (event_id, room_mentioned, mentioned_users) =
         Retry::spawn(retry_strategy.clone(), || async {
             for v in kyra_convo.items().await {
                 if let Some(result) = match_mentioned_msg(&v, "Hello, there") {
@@ -86,11 +86,11 @@ async fn sisko_mentions_kyra_worf() -> Result<()> {
 
     info!("kyra found sisko mentioned her: {}", event_id);
 
-    assert!(!mentioned_room);
+    assert!(!room_mentioned);
     assert!(mentioned_users.contains(&kyra_id));
 
     // wait for worf sync to catch up
-    let (event_id, mentioned_room, mentioned_users) = Retry::spawn(retry_strategy, || async {
+    let (event_id, room_mentioned, mentioned_users) = Retry::spawn(retry_strategy, || async {
         for v in worf_convo.items().await {
             if let Some(result) = match_mentioned_msg(&v, "Hello, there") {
                 return Ok(result);
@@ -102,7 +102,7 @@ async fn sisko_mentions_kyra_worf() -> Result<()> {
 
     info!("worf found sisko mentioned him: {}", event_id);
 
-    assert!(!mentioned_room);
+    assert!(!room_mentioned);
     assert!(mentioned_users.contains(&worf_id));
 
     Ok(())
@@ -118,7 +118,7 @@ fn match_mentioned_msg(msg: &TimelineItem, body: &str) -> Option<(String, bool, 
                 if let Some(event_id) = event_item.event_id() {
                     return Some((
                         event_id,
-                        event_item.mentioned_room(),
+                        event_item.room_mentioned(),
                         event_item.mentioned_users(),
                     ));
                 }
