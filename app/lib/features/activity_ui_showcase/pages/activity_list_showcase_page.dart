@@ -31,10 +31,7 @@ class ActivityListShowcasePage extends ConsumerWidget {
         title: Text(lang.spaceActivities),
       ),  
       body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: _buildMockActivitiesSection(context, ref, mockActivities, sortedDates),
-        ),
+        child: _buildMockActivitiesSection(context, ref, mockActivities, sortedDates),
       ),
     );
   }

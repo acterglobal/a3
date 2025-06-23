@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter/config/constants.dart';
+import 'package:acter/features/activity_ui_showcase/mocks/providers/mock_activities_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show Activities, Activity, Client;
 import 'package:riverpod/riverpod.dart';
@@ -23,6 +25,12 @@ class AllActivitiesNotifier extends AsyncNotifier<List<Activity>> {
 
   @override
   Future<List<Activity>> build() async {
+    // if we are in showcase mode, return mock activities
+    if (includeShowCases) {
+      final mockActivities = ref.watch(mockAllActivitiesProvider);
+      return mockActivities;
+    }
+
     final client = await ref.watch(alwaysClientProvider.future);
     final spaces = ref.watch(spacesProvider);
 
