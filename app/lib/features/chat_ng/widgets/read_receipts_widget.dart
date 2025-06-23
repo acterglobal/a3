@@ -1,6 +1,7 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
+import 'package:acter/features/chat_ng/widgets/sending_state_widget.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -12,17 +13,111 @@ class ReadReceiptsWidget extends ConsumerWidget {
   static const readReceiptsPopupMenuKey = Key('read_receipts_popup_menu');
   final TimelineEventItem item;
   final String roomId;
-  final String messageId;
+  final bool isMe;
+  final bool isLastMessageBySender;
   final int showAvatarsLimit;
 
-  const ReadReceiptsWidget({
+  const ReadReceiptsWidget._({
     super.key,
     required this.item,
     required this.roomId,
-    required this.messageId,
     this.showAvatarsLimit = 5,
+    this.isMe = false,
+    this.isLastMessageBySender = false,
   });
 
+  factory ReadReceiptsWidget.group({
+    Key? key,
+    required TimelineEventItem item,
+    required String roomId,
+
+    int showAvatarsLimit = 5,
+  }) {
+    return ReadReceiptsWidget._(
+      key: key,
+      item: item,
+      roomId: roomId,
+
+      showAvatarsLimit: showAvatarsLimit,
+    );
+  }
+
+  factory ReadReceiptsWidget.dm({
+    Key? key,
+    required TimelineEventItem item,
+    required String roomId,
+    required bool isMe,
+    required bool isLastMessageBySender,
+  }) {
+    return ReadReceiptsWidget._(
+      key: key,
+      item: item,
+      roomId: roomId,
+      isMe: isMe,
+      isLastMessageBySender: isLastMessageBySender,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isDM = ref.watch(isDirectChatProvider(roomId)).valueOrNull ?? false;
+
+    return isDM
+        ? _DmReadReceipts(
+          item: item,
+          roomId: roomId,
+          isMe: isMe,
+          isLastMessageBySender: isLastMessageBySender,
+        )
+        : _GroupReadReceipts(
+          item: item,
+          roomId: roomId,
+          showAvatarsLimit: showAvatarsLimit,
+        );
+  }
+}
+
+class _DmReadReceipts extends ConsumerWidget {
+  const _DmReadReceipts({
+    required this.item,
+    required this.roomId,
+    required this.isMe,
+    required this.isLastMessageBySender,
+  });
+  final TimelineEventItem item;
+  final String roomId;
+  final bool isMe;
+  final bool isLastMessageBySender;
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final sendState = item.sendState();
+    final readReceipts = ref.watch(messageReadReceiptsProvider(item));
+    final isRead = readReceipts.keys.toList().isNotEmpty;
+    if (!isMe) return const SizedBox.shrink();
+
+    return sendState != null
+        ? SendingStateWidget(
+          state: sendState,
+          showSentIconOnUnknown: isMe && isLastMessageBySender,
+        )
+        : isRead
+        ? SendingStateWidget.read()
+        : isLastMessageBySender
+        ? SendingStateWidget.sent()
+        : const SizedBox.shrink();
+  }
+}
+
+class _GroupReadReceipts extends ConsumerWidget {
+  const _GroupReadReceipts({
+    required this.item,
+    required this.roomId,
+    required this.showAvatarsLimit,
+  });
+
+  final TimelineEventItem item;
+  final String roomId;
+  final int showAvatarsLimit;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);

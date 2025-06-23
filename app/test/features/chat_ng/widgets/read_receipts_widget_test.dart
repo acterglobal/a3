@@ -11,7 +11,6 @@ import '../../../helpers/test_util.dart';
 void main() {
   late MockTimelineEventItem mockItem;
   const testRoomId = 'test_room_id';
-  const testMessageId = 'test_message_id';
 
   setUp(() {
     mockItem = MockTimelineEventItem();
@@ -34,10 +33,9 @@ void main() {
           ),
         ),
       ],
-      child: ReadReceiptsWidget(
+      child: ReadReceiptsWidget.group(
         item: mockItem,
         roomId: testRoomId,
-        messageId: testMessageId,
         showAvatarsLimit: showAvatarsLimit,
       ),
     );

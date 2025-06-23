@@ -10,8 +10,21 @@ class SentStateWidget extends StatelessWidget {
   const SentStateWidget({super.key});
 
   @override
-  Widget build(BuildContext context) =>
-      Icon(Icons.check, color: Theme.of(context).colorScheme.primary);
+  Widget build(BuildContext context) => Icon(
+    Icons.check,
+    size: 14,
+    color: Theme.of(context).colorScheme.onSecondary,
+  );
+}
+
+class ReadStateWidget extends StatelessWidget {
+  const ReadStateWidget({super.key});
+  @override
+  Widget build(BuildContext context) => Icon(
+    Icons.done_all,
+    size: 14,
+    color: Theme.of(context).colorScheme.onSecondary,
+  );
 }
 
 class SendingStateWidget extends StatelessWidget {
@@ -27,7 +40,7 @@ class SendingStateWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) => switch (state.state()) {
     'NotSentYet' => PulsatingIcon(
-      icon: Icons.send,
+      icon: Icons.schedule,
       color: Theme.of(context).colorScheme.onSecondary,
     ),
     'SendingFailed' => _buildSendingFailed(context),
@@ -36,6 +49,7 @@ class SendingStateWidget extends StatelessWidget {
   };
 
   static Widget sent() => SentStateWidget();
+  static Widget read() => ReadStateWidget();
 
   Widget _buildSendingFailed(BuildContext context) =>
       ActerInlineTextButton.icon(

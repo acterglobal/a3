@@ -11,6 +11,7 @@ import 'package:acter/features/chat_ng/widgets/events/state_event_container_widg
 import 'package:acter/features/chat_ng/widgets/events/text_message_event.dart';
 import 'package:acter/features/chat_ng/widgets/events/video_message_event.dart';
 import 'package:acter/common/extensions/options.dart';
+import 'package:acter/features/chat_ng/widgets/read_receipts_widget.dart';
 import 'package:acter/features/chat_ng/widgets/replied_to_preview.dart';
 import 'package:acter/features/chat_ng/widgets/sending_state_widget.dart';
 import 'package:acter/l10n/generated/l10n.dart';
@@ -49,6 +50,7 @@ class MessageEventItem extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final sendingState = item.sendState();
+    final shouldShowSendState = isMe && isLastMessage;
     return SwipeTo(
       swipeSensitivity: Platform.isIOS ? 30 : 5,
       key: Key(messageId), // needed or swipe doesn't work reliably in listview
@@ -59,7 +61,7 @@ class MessageEventItem extends ConsumerWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           _buildMessageUI(context, ref, roomId, messageId, item, isMe),
-          if (sendingState != null || (isMe && isLastMessage))
+          if (!isDM && (sendingState != null || shouldShowSendState))
             Align(
               alignment: Alignment.centerRight,
               child: Padding(
@@ -232,6 +234,15 @@ class MessageEventItem extends ConsumerWidget {
         isEdited: wasEdited,
         timestamp: timestamp,
         displayName: displayName,
+        readWidgetBuilder:
+            isDM
+                ? ReadReceiptsWidget.dm(
+                  item: item,
+                  roomId: roomId,
+                  isMe: isMe,
+                  isLastMessageBySender: isLastMessageBySender,
+                )
+                : null,
         child: child,
       );
     }
@@ -241,6 +252,15 @@ class MessageEventItem extends ConsumerWidget {
       isEdited: wasEdited,
       timestamp: timestamp,
       displayName: displayName,
+      readWidgetBuilder:
+          isDM
+              ? ReadReceiptsWidget.dm(
+                item: item,
+                roomId: roomId,
+                isMe: isMe,
+                isLastMessageBySender: isLastMessageBySender,
+              )
+              : null,
       child: child,
     );
   }
@@ -260,13 +280,31 @@ class MessageEventItem extends ConsumerWidget {
           isLastMessageBySender: isLastMessageBySender,
           isEdited: wasEdited,
           displayName: displayName,
+          readWidgetBuilder:
+              isDM
+                  ? ReadReceiptsWidget.dm(
+                    item: item,
+                    roomId: roomId,
+                    isMe: isMe,
+                    isLastMessageBySender: isLastMessageBySender,
+                  )
+                  : null,
           child: mediaMessageWidget,
         )
         : ChatBubble(
           isFirstMessageBySender: isFirstMessageBySender,
-          isLastMessageBySender: isLastMessageBySender,
+          isLastMessageBySender: isLastMessage,
           isEdited: wasEdited,
           displayName: displayName,
+          readWidgetBuilder:
+              isDM
+                  ? ReadReceiptsWidget.dm(
+                    item: item,
+                    roomId: roomId,
+                    isMe: isMe,
+                    isLastMessageBySender: isLastMessageBySender,
+                  )
+                  : null,
           child: mediaMessageWidget,
         );
   }
