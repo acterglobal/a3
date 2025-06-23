@@ -313,6 +313,25 @@ pub(crate) fn match_media_msg(
     None
 }
 
+pub(crate) fn match_location_msg(
+    msg: &TimelineItem,
+    body: &str,
+    geo_uri: &str,
+) -> Option<MsgContent> {
+    if !msg.is_virtual() {
+        let event_item = msg.event_item().expect("room msg should have event item");
+        if let Some(msg_content) = event_item.msg_content() {
+            if msg_content.body() == body && msg_content.geo_uri().as_deref() == Some(geo_uri) {
+                // exclude the pending msg
+                if event_item.event_id().is_some() {
+                    return Some(msg_content);
+                }
+            }
+        }
+    }
+    None
+}
+
 pub(crate) fn match_pinned_msg(msg: &TimelineItem) -> Option<(String, RoomPinnedEventsContent)> {
     if msg.is_virtual() {
         return None;

@@ -1,7 +1,6 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/toolkit/html_editor/html_editor.dart';
-import 'package:acter/common/toolkit/html_editor/mentions/models/mention_attributes.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
@@ -23,15 +22,19 @@ Future<void> sendMessageAction({
   void Function(bool)? onTyping,
   required Logger log,
 }) async {
+  if (ref.read(chatInputProvider.notifier).isSending) {
+    return; // we are in a sending process, ignore double sends
+  }
+
   final lang = L10n.of(context);
   final body = textEditorState.intoMarkdown();
   final html = textEditorState.intoHtml();
+  final mentions = textEditorState.extractMentions();
 
   if (!hasValidEditorContent(plainText: body, html: html)) {
     return;
   }
 
-  final bodyProcessedText = textEditorState.toMentionText(body, null);
   ref.read(chatInputProvider.notifier).startSending();
   try {
     // end the typing notification
@@ -41,21 +44,16 @@ Future<void> sendMessageAction({
     final chatEditorState = ref.read(chatEditorStateProvider);
     final client = await ref.read(alwaysClientProvider.future);
     late MsgDraft draft;
+
     if (html.isNotEmpty) {
-      final htmlProcessedText = textEditorState.toMentionText(body, html);
-      draft = client.textHtmlDraft(htmlProcessedText.$1, bodyProcessedText.$1);
-      if (htmlProcessedText.$2.isNotEmpty) {
-        for (MentionAttributes m in htmlProcessedText.$2) {
-          draft.addMention(m.mentionId);
-        }
-      }
+      draft = client.textHtmlDraft(html, body);
     } else {
-      draft = client.textMarkdownDraft(bodyProcessedText.$1);
-      if (bodyProcessedText.$2.isNotEmpty) {
-        for (MentionAttributes m in bodyProcessedText.$2) {
-          draft.addMention(m.mentionId);
-        }
-      }
+      draft = client.textMarkdownDraft(body);
+    }
+
+    // add mentions to the draft
+    for (final mention in mentions) {
+      draft.addMention(mention);
     }
 
     // actually send it out

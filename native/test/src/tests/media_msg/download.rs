@@ -52,8 +52,11 @@ async fn room_msg_can_download_image() -> Result<()> {
             tmp_jpg.path().to_string_lossy().to_string(),
             mimetype.to_owned(),
         )
-        .thumbnail_file_path(tmp_png.path().to_string_lossy().to_string())
-        .thumbnail_info(None, None, Some("image/png".to_owned()), Some(size));
+        .thumbnail_image(
+            tmp_png.path().to_string_lossy().to_string(),
+            "image/png".to_owned(),
+        )
+        .thumbnail_info(None, None, Some(size));
     timeline.send_message(Box::new(draft)).await?;
 
     // image msg may reach via pushback action or reset action
