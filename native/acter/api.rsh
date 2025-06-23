@@ -1099,6 +1099,13 @@ object TimelineEventItem {
     /// covers m.space.parent
     fn space_parent_content() -> Option<SpaceParentContent>;
 
+    /// Whether the whole room is mentioned.
+    fn room_mentioned() -> bool;
+
+    /// The list of mentioned users.
+    /// Available only when sender didn’t mention the whole room
+    fn mentioned_users() -> Vec<string>;
+
     /// original event id, if this msg is reply to another msg
     fn in_reply_to_id() -> Option<string>;
 
@@ -1185,6 +1192,7 @@ object MsgContent {
     fn filename() -> Option<string>;
 
     /// available for location msg
+    /// geo_uri follows RFC 5870, for example `geo:51.5074,-0.1278`
     fn geo_uri() -> Option<string>;
 
     /// whether or not this has url previews attached
@@ -1662,15 +1670,16 @@ object MsgDraft {
     /// for this media to be read and shared upon sending
     ///
     /// available for only image/video/file/location
-    fn thumbnail_file_path(value: string) -> MsgDraft;
+    fn thumbnail_image(source: string, mimetype: string) -> MsgDraft;
 
     /// available for only image/video/file/location
-    fn thumbnail_info(width: Option<u64>, height: Option<u64>, mimetype: Option<string>, size: Option<u64>) -> MsgDraft;
+    fn thumbnail_info(width: Option<u64>, height: Option<u64>, size: Option<u64>) -> MsgDraft;
 
     /// available for only file
     fn filename(value: string) -> MsgDraft;
 
     /// available for only location
+    /// geo_uri follows RFC 5870, for example `geo:51.5074,-0.1278`
     fn geo_uri(value: string) -> MsgDraft;
 
     /// convert this into a NewsSlideDraft;
@@ -3937,7 +3946,8 @@ object Client {
     fn file_draft(source: string, mimetype: string) -> MsgDraft;
 
     /// make draft to send location msg
-    fn location_draft(body: string, source: string) -> MsgDraft;
+    /// geo_uri follows RFC 5870, for example `geo:51.5074,-0.1278`
+    fn location_draft(body: string, geo_uri: string) -> MsgDraft;
 
     /// get access to the backup manager
     fn backup_manager() -> BackupManager;
@@ -4277,7 +4287,7 @@ object BackupManager {
     /// Open the existing secret store using the given key and import the keys
     fn recover(secret: string) -> Future<Result<bool>>;
 
-    /// the backup key as it was stored last, might be empty if there isn't any stored
+    /// the backup key as it was stored last, might be empty if there isn’t any stored
     fn stored_enc_key() -> Future<Result<OptionString>>;
 
     /// When was the key stored as unix timestamp. 0 if nothing was found

@@ -21,8 +21,9 @@ class _DesktopLaunchAtStartupWidgetState extends ConsumerState<DesktopLaunchAtSt
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
           child: Center(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Container(
+                constraints: const BoxConstraints(maxWidth: 500),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: SingleChildScrollView(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -99,7 +100,9 @@ class _DesktopLaunchAtStartupWidgetState extends ConsumerState<DesktopLaunchAtSt
             }
           },
         ),
-        Text(lang.activateFeatures, style: textTheme.bodySmall),
+        Flexible(
+          child: Text(lang.activateFeatures, style: textTheme.bodySmall),
+        ),
       ],
     );
   }

@@ -129,14 +129,14 @@ async fn video_blurhash_support() -> Result<()> {
     let mimetype = "video/mp4";
     let blurhash = "Big Buck Bunny";
     let draft = user
-        .image_draft(
+        .video_draft(
             tmp_mp4.path().to_string_lossy().to_string(),
             mimetype.to_owned(),
         )
         .blurhash(blurhash.to_owned());
     timeline.send_message(Box::new(draft)).await?;
 
-    // image msg may reach via pushback action or reset action
+    // video msg may reach via pushback action or reset action
     let mut i = 30;
     let mut found = None;
     while i > 0 {
@@ -171,7 +171,7 @@ async fn video_blurhash_support() -> Result<()> {
         i -= 1;
         sleep(Duration::from_secs(1)).await;
     }
-    let msg_content = found.context("Even after 30 seconds, image msg not received")?;
+    let msg_content = found.context("Even after 30 seconds, video msg not received")?;
     assert_eq!(
         msg_content.blurhash().as_deref(),
         Some(blurhash),
