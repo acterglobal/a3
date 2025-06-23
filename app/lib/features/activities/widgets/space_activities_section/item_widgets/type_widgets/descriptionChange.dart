@@ -23,14 +23,14 @@ class ActivityDescriptionChangeItemWidget extends ConsumerWidget {
     final userId = activity.senderIdStr();
 
     return ActivityBiggerVisualContainerWidget(
-      actionIcon: PhosphorIconsRegular.pencilLine,
+      actionIcon: PhosphorIconsThin.pencilLine,
       actionTitle: getMessage(lang, userId) ?? '',
       target: '',
       activityObject: activity.object(),
       userId: userId,
       roomId: activity.roomIdStr(),
       subtitle: getSubtitle(context, activity.descriptionContent()?.newVal().toString().trim()),
-      leadingWidget: Icon(PhosphorIconsRegular.pencilLine, size: 25),
+      leadingWidget: Icon(PhosphorIconsThin.pencilSimpleLine, size: 25),
       originServerTs: activity.originServerTs(),
     );
   }

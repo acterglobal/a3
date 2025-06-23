@@ -6,6 +6,7 @@ import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// A widget that displays membership change events in a space's activity feed.
 ///
@@ -83,67 +84,68 @@ class ActivityMembershipItemWidget extends ConsumerWidget {
 
     return switch (activity.membershipContent()?.change()) {
       'joined' => (
-        icon: Icons.people_sharp,
+        icon: PhosphorIconsThin.users,
         text: lang.chatMembershipOtherJoined(targetName),
       ),
       'left' => (
-        icon: Icons.logout,
+        icon: PhosphorIconsThin.signOut,
         text: lang.chatMembershipOtherLeft(targetName),
       ),
+      //PhosphorIconsThin.userCheck
       'invitationAccepted' => (
-        icon: Icons.person_add,
+        icon: PhosphorIconsThin.userCheck,
         text: lang.chatMembershipInvitationOtherAccepted(targetName),
       ),
       'invitationRejected' => (
-        icon: Icons.person_off,
+        icon: PhosphorIconsThin.userMinus,
         text: lang.chatMembershipInvitationOtherRejected(targetName),
       ),
       'invitationRevoked' => (
-        icon: Icons.person_remove,
+        icon: PhosphorIconsThin.minusCircle,
         text: lang.chatMembershipInvitationOtherRevoked(targetName),
       ),
       'knockAccepted' => (
-        icon: Icons.person_add,
+        icon: PhosphorIconsThin.userCheck,
         text: lang.chatMembershipKnockOtherAccepted(targetName),
       ),
       'knockRetracted' => (
-        icon: Icons.person_remove,
+        icon: PhosphorIconsThin.userCircleMinus,
         text: lang.chatMembershipKnockOtherRetracted(targetName),
       ),
       'knockDenied' => (
-        icon: Icons.block,
+        icon: PhosphorIconsThin.userCircleMinus,
         text: lang.chatMembershipKnockOtherDenied(targetName),
       ),
       'banned' => (
-        icon: Icons.block,
+        icon: PhosphorIconsThin.userCircleMinus,
         text:
             isActionOnMe
                 ? lang.chatMembershipOtherBannedYou(senderName)
                 : lang.chatMembershipOtherBannedOther(senderName, targetName),
       ),
       'unbanned' => (
-        icon: Icons.block_flipped,
+        icon: PhosphorIconsThin.userCirclePlus,
         text:
             isActionOnMe
                 ? lang.chatMembershipOtherUnbannedYou(senderName)
                 : lang.chatMembershipOtherUnbannedOther(senderName, targetName),
       ),
       'kicked' => (
-        icon: Icons.person_remove,
+        icon: PhosphorIconsThin.userMinus,
         text:
             isActionOnMe
                 ? lang.chatMembershipOtherKickedYou(senderName)
                 : lang.chatMembershipOtherKickedOther(senderName, targetName),
       ),
       'invited' => (
-        icon: Icons.person_add,
+        icon: PhosphorIconsThin.userPlus,
         text:
             isActionOnMe
                 ? lang.chatMembershipOtherInvitedYou(senderName)
                 : lang.chatMembershipOtherInvitedOther(senderName, targetName),
       ),
       'kickedAndBanned' => (
-        icon: Icons.block,
+        icon: PhosphorIconsThin.userCircleMinus,
         text:
             isActionOnMe
                 ? lang.chatMembershipOtherKickedAndBannedYou(senderName)
@@ -153,14 +155,14 @@ class ActivityMembershipItemWidget extends ConsumerWidget {
                 ),
       ),
       'knocked' => (
-        icon: Icons.person_add,
+        icon: PhosphorIconsThin.userPlus,
         text:
             isActionOnMe
                 ? lang.chatMembershipOtherKnockedYou(senderName)
                 : lang.chatMembershipOtherKnockedOther(senderName, targetName),
       ),
       _ => (
-        icon: Icons.person,
+        icon: PhosphorIconsThin.user,
         text: activity.membershipContent()?.change() ?? '',
       ),
     };
