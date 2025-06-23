@@ -1099,6 +1099,12 @@ object TimelineEventItem {
     /// covers m.space.parent
     fn space_parent_content() -> Option<SpaceParentContent>;
 
+    /// Whether the whole room is mentioned.
+    fn mentioned_room() -> bool;
+
+    /// The list of mentioned users.
+    fn mentioned_users() -> Vec<string>;
+
     /// original event id, if this msg is reply to another msg
     fn in_reply_to_id() -> Option<string>;
 
