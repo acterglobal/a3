@@ -1,9 +1,6 @@
 import 'package:acter/features/activity_ui_showcase/mocks/providers/mock_activities_provider.dart';
 import 'package:acter/features/activities/providers/activities_providers.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/activity_date_item_widget.dart';
-import 'package:acter/features/space/widgets/space_sections/section_header.dart';
-import 'package:acter/common/actions/open_link.dart';
-import 'package:acter/common/widgets/info_widget.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:acter/l10n/generated/l10n.dart';
@@ -40,8 +37,7 @@ class ActivityListShowcasePage extends ConsumerWidget {
     List<Activity> activities, 
     List<DateTime> dates
   ) {
-    final lang = L10n.of(context);
-    
+
     if (dates.isEmpty) {
       return const Center(child: Text('No mock activities available'));
     }
