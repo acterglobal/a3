@@ -6,6 +6,7 @@ import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../../../../helpers/test_util.dart';
 import '../../../../../common/mock_data/mock_avatar_info.dart';
 import '../../../../activity/mock_data/mock_activity.dart';
@@ -98,7 +99,7 @@ void main() {
           membershipChange: 'joined',
         );
 
-        expect(find.byIcon(Icons.people_sharp), findsOneWidget);
+        expect(find.byIcon(PhosphorIconsThin.users), findsOneWidget);
         expect(findRichTextContaining('Target User'), findsOneWidget);
         expect(findRichTextContaining('joined'), findsOneWidget);
       });
@@ -109,7 +110,7 @@ void main() {
           membershipChange: 'left',
         );
 
-        expect(find.byIcon(Icons.logout), findsOneWidget);
+        expect(find.byIcon(PhosphorIconsThin.signOut), findsOneWidget);
         expect(findRichTextContaining('Target User'), findsOneWidget);
         expect(findRichTextContaining('left'), findsOneWidget);
       });
@@ -120,7 +121,7 @@ void main() {
           membershipChange: 'invitationAccepted',
         );
 
-        expect(find.byIcon(Icons.person_add), findsOneWidget);
+        expect(find.byIcon(PhosphorIconsThin.userCheck), findsOneWidget);
         expect(findRichTextContaining('Target User'), findsOneWidget);
         expect(findRichTextContaining('accepted'), findsOneWidget);
       });
@@ -132,7 +133,7 @@ void main() {
           myUserId: 'different-user-id',
         );
 
-        expect(find.byIcon(Icons.block), findsOneWidget);
+        expect(find.byIcon(PhosphorIconsThin.userCircleMinus), findsOneWidget);
         expect(findRichTextContaining('Sender User'), findsOneWidget);
         expect(findRichTextContaining('Target User'), findsOneWidget);
         expect(findRichTextContaining('banned'), findsOneWidget);
@@ -145,7 +146,7 @@ void main() {
           myUserId: 'target-user-id',
         );
 
-        expect(find.byIcon(Icons.block), findsOneWidget);
+        expect(find.byIcon(PhosphorIconsThin.userCircleMinus), findsOneWidget);
         expect(findRichTextContaining('Sender User'), findsOneWidget);
         expect(findRichTextContaining('banned you'), findsOneWidget);
       });
@@ -157,7 +158,7 @@ void main() {
           myUserId: 'different-user-id',
         );
 
-        expect(find.byIcon(Icons.person_add), findsOneWidget);
+        expect(find.byIcon(PhosphorIconsThin.userPlus), findsOneWidget);
         expect(findRichTextContaining('Sender User'), findsOneWidget);
         expect(findRichTextContaining('Target User'), findsOneWidget);
         expect(findRichTextContaining('invited'), findsOneWidget);
@@ -170,7 +171,7 @@ void main() {
           myUserId: 'target-user-id',
         );
 
-        expect(find.byIcon(Icons.person_add), findsOneWidget);
+        expect(find.byIcon(PhosphorIconsThin.userPlus), findsOneWidget);
         expect(findRichTextContaining('Sender User'), findsOneWidget);
         expect(findRichTextContaining('invited you'), findsOneWidget);
       });
@@ -181,7 +182,7 @@ void main() {
           membershipChange: 'unknown_action',
         );
 
-        expect(find.byIcon(Icons.person), findsOneWidget);
+        expect(find.byIcon(PhosphorIconsThin.user), findsOneWidget);
         expect(findRichTextContaining('unknown_action'), findsOneWidget);
       });
     });
@@ -317,7 +318,7 @@ void main() {
 
         // Should still render without crashing
         expect(find.byType(ActivityMembershipItemWidget), findsOneWidget);
-        expect(find.byIcon(Icons.person), findsOneWidget);
+        expect(find.byIcon(PhosphorIconsThin.user), findsOneWidget);
       });
 
       testWidgets('handles very long display names', (WidgetTester tester) async {

@@ -25,10 +25,10 @@ class ActivityTitleChangeItemWidget extends ConsumerWidget {
       roomId: activity.roomIdStr(),
       actionTitle: getMessage(lang, userId) ?? '',
       target: '',
-      actionIcon: PhosphorIconsRegular.pencilSimpleLine,
+      actionIcon: PhosphorIconsThin.pencilSimpleLine,
       subtitle: getSubtitle(context, activity.titleContent()?.newVal().toString().trim()),
       originServerTs: activity.originServerTs(),
-      leadingWidget: Icon(PhosphorIconsRegular.pencilSimpleLine, size: 25),
+      leadingWidget: Icon(PhosphorIconsThin.pencilSimpleLine, size: 25),
     );
   }
 

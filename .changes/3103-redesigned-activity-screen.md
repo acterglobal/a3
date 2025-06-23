@@ -1,2 +1,1 @@
-- [Improvement] : This PR introduces a fully redesigned Activity Screen with a clean, categorized layout.  
-  It supports real-time updates, time-based filtering, and visual grouping for better user experience.
+- [Improvement] : Activity items have been redesigned and the activities are now grouped chronologically, with the most recent first. Consecutive items from the same space are visually grouped to improve readability.
