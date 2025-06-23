@@ -3,6 +3,7 @@ mod invitations;
 use acter::testing::wait_for;
 use acter_core::models::ActerModel;
 use anyhow::{bail, Context, Result};
+use chrono::{Datelike, Duration, Utc};
 use matrix_sdk_base::ruma::{
     events::room::redaction::RoomRedactionEvent, MilliSecondsSinceUnixEpoch,
 };
@@ -64,10 +65,17 @@ async fn task_smoketests() -> Result<()> {
     let task_list_listener = task_list.subscribe();
 
     let title = "Testing 1";
+    let body = "This is testing task";
+    let today = Utc::now().date_naive();
+    let tomorrow = today + Duration::days(1);
     let task_1_id = task_list
         .task_builder()?
         .title(title.to_owned())
-        .description_text("This is testing task".into())
+        .description_text(body.to_owned())
+        .due_date(tomorrow.year(), tomorrow.month0() + 1, tomorrow.day0() + 1)
+        .utc_due_time_of_day(9 * 3600) // 9 AM UTC
+        .unset_utc_due_time_of_day()
+        .utc_due_time_of_day(11 * 3600) // 11 AM UTC
         .send()
         .await?;
 
@@ -88,9 +96,14 @@ async fn task_smoketests() -> Result<()> {
     let task_1 = tasks[0].clone();
     assert_eq!(task_1.title(), title);
     assert_eq!(
-        task_1.description().map(|msg| msg.body()),
-        Some("This is testing task".to_owned())
+        task_1.description().map(|msg| msg.body()).as_deref(),
+        Some(body)
     );
+    assert_eq!(
+        task_1.due_date(),
+        Some(tomorrow.format("%Y-%m-%d").to_string())
+    );
+    assert_eq!(task_1.utc_due_time_of_day(), Some(11 * 3600)); // not 9 AM UTC
     assert!(!task_1.is_done());
 
     let task_list_listener = task_list.subscribe();
