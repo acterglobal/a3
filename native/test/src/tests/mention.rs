@@ -73,31 +73,34 @@ async fn sisko_mentions_kyra_worf() -> Result<()> {
     sisko_timeline.send_message(Box::new(draft)).await?;
 
     // wait for kyra sync to catch up
-    let (_, mentioned_room, mentioned_users) = Retry::spawn(retry_strategy.clone(), || async {
-        for v in kyra_convo.items().await {
-            let Some(result) = match_mentioned_msg(&v, "Hello, there") else {
-                continue;
-            };
-            return Ok(result);
-        }
-        bail!("Event not found");
-    })
-    .await?;
+    let (event_id, mentioned_room, mentioned_users) =
+        Retry::spawn(retry_strategy.clone(), || async {
+            for v in kyra_convo.items().await {
+                if let Some(result) = match_mentioned_msg(&v, "Hello, there") {
+                    return Ok(result);
+                };
+            }
+            bail!("Event not found");
+        })
+        .await?;
+
+    info!("kyra found sisko mentioned her: {}", event_id);
 
     assert!(!mentioned_room);
     assert!(mentioned_users.contains(&kyra_id));
 
     // wait for worf sync to catch up
-    let (_, mentioned_room, mentioned_users) = Retry::spawn(retry_strategy, || async {
+    let (event_id, mentioned_room, mentioned_users) = Retry::spawn(retry_strategy, || async {
         for v in worf_convo.items().await {
-            let Some(result) = match_mentioned_msg(&v, "Hello, there") else {
-                continue;
+            if let Some(result) = match_mentioned_msg(&v, "Hello, there") {
+                return Ok(result);
             };
-            return Ok(result);
         }
         bail!("Event not found");
     })
     .await?;
+
+    info!("worf found sisko mentioned him: {}", event_id);
 
     assert!(!mentioned_room);
     assert!(mentioned_users.contains(&worf_id));

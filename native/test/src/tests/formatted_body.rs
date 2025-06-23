@@ -50,16 +50,17 @@ async fn sisko_sends_rich_text_to_kyra() -> Result<()> {
     sisko_timeline.send_message(Box::new(draft)).await?;
 
     // wait for sync to catch up
-    Retry::spawn(retry_strategy, || async {
+    let event_id = Retry::spawn(retry_strategy, || async {
         for v in kyra_convo.items().await {
-            let Some(event_id) = match_html_msg(&v, "<strong>Hello</strong>") else {
-                continue;
+            if let Some(event_id) = match_html_msg(&v, "<strong>Hello</strong>") {
+                return Ok(event_id);
             };
-            return Ok(event_id);
         }
         bail!("Event not found");
     })
     .await?;
+
+    info!("kyra received rich text msg: {}", event_id);
 
     Ok(())
 }
