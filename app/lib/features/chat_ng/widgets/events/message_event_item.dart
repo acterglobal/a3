@@ -62,6 +62,7 @@ class MessageEventItem extends ConsumerWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           _buildMessageUI(context, ref, roomId, messageId, item, isMe),
+          // DM chats have their own read state widget
           if (!isDM && (sendingState != null || shouldShowSendState))
             Align(
               alignment: Alignment.centerRight,
@@ -254,8 +255,7 @@ class MessageEventItem extends ConsumerWidget {
                 ? ReadReceiptsWidget.dm(
                   item: item,
                   roomId: roomId,
-                  isMe: isMe,
-                  isLastMessageBySender: isLastMessageBySender,
+                  isLastMessage: isLastMessage,
                 )
                 : null,
         child: child,
@@ -267,15 +267,6 @@ class MessageEventItem extends ConsumerWidget {
       isEdited: wasEdited,
       timestamp: timestamp,
       displayName: displayName,
-      readWidgetBuilder:
-          isDM
-              ? ReadReceiptsWidget.dm(
-                item: item,
-                roomId: roomId,
-                isMe: isMe,
-                isLastMessageBySender: isLastMessageBySender,
-              )
-              : null,
       child: child,
     );
   }
@@ -300,26 +291,16 @@ class MessageEventItem extends ConsumerWidget {
                   ? ReadReceiptsWidget.dm(
                     item: item,
                     roomId: roomId,
-                    isMe: isMe,
-                    isLastMessageBySender: isLastMessageBySender,
+                    isLastMessage: isLastMessage,
                   )
                   : null,
           child: mediaMessageWidget,
         )
         : ChatBubble(
           isFirstMessageBySender: isFirstMessageBySender,
-          isLastMessageBySender: isLastMessage,
+          isLastMessageBySender: isLastMessageBySender,
           isEdited: wasEdited,
           displayName: displayName,
-          readWidgetBuilder:
-              isDM
-                  ? ReadReceiptsWidget.dm(
-                    item: item,
-                    roomId: roomId,
-                    isMe: isMe,
-                    isLastMessageBySender: isLastMessageBySender,
-                  )
-                  : null,
           child: mediaMessageWidget,
         );
   }

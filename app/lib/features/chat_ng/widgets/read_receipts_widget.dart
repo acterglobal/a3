@@ -13,8 +13,7 @@ class ReadReceiptsWidget extends ConsumerWidget {
   static const readReceiptsPopupMenuKey = Key('read_receipts_popup_menu');
   final TimelineEventItem item;
   final String roomId;
-  final bool isMe;
-  final bool isLastMessageBySender;
+  final bool isLastMessage;
   final int showAvatarsLimit;
 
   const ReadReceiptsWidget._({
@@ -22,8 +21,7 @@ class ReadReceiptsWidget extends ConsumerWidget {
     required this.item,
     required this.roomId,
     this.showAvatarsLimit = 5,
-    this.isMe = false,
-    this.isLastMessageBySender = false,
+    this.isLastMessage = false,
   });
 
   factory ReadReceiptsWidget.group({
@@ -46,15 +44,13 @@ class ReadReceiptsWidget extends ConsumerWidget {
     Key? key,
     required TimelineEventItem item,
     required String roomId,
-    required bool isMe,
-    required bool isLastMessageBySender,
+    required bool isLastMessage,
   }) {
     return ReadReceiptsWidget._(
       key: key,
       item: item,
       roomId: roomId,
-      isMe: isMe,
-      isLastMessageBySender: isLastMessageBySender,
+      isLastMessage: isLastMessage,
     );
   }
 
@@ -63,12 +59,7 @@ class ReadReceiptsWidget extends ConsumerWidget {
     final isDM = ref.watch(isDirectChatProvider(roomId)).valueOrNull ?? false;
 
     return isDM
-        ? _DmReadReceipts(
-          item: item,
-          roomId: roomId,
-          isMe: isMe,
-          isLastMessageBySender: isLastMessageBySender,
-        )
+        ? _DmReadReceipts(item: item, roomId: roomId)
         : _GroupReadReceipts(
           item: item,
           roomId: roomId,
@@ -78,33 +69,42 @@ class ReadReceiptsWidget extends ConsumerWidget {
 }
 
 class _DmReadReceipts extends ConsumerWidget {
-  const _DmReadReceipts({
-    required this.item,
-    required this.roomId,
-    required this.isMe,
-    required this.isLastMessageBySender,
-  });
+  const _DmReadReceipts({required this.item, required this.roomId});
   final TimelineEventItem item;
   final String roomId;
-  final bool isMe;
-  final bool isLastMessageBySender;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    if (item.eventId() == null) return const SizedBox.shrink();
     final sendState = item.sendState();
-    final readReceipts = ref.watch(messageReadReceiptsProvider(item));
-    final isRead = readReceipts.keys.toList().isNotEmpty;
-    if (!isMe) return const SizedBox.shrink();
+    if (sendState != null) {
+      // we are in process of sending, the widget will take care
+      return SendingStateWidget(state: sendState);
+    } else {
+      // tracking the latest message whether its read or not
+      final msgId =
+          ref.watch(renderableBubbleChatMessagesProvider(roomId)).first;
+      final msg = ref.watch(
+        chatRoomMessageProvider((roomId: roomId, uniqueId: msgId)),
+      );
+      final msgEventItem = msg?.eventItem();
+      final isLatestMsgBySender =
+          (msg?.uniqueId() == item.eventId()) &&
+          (msgEventItem?.sender() == item.sender());
 
-    return sendState != null
-        ? SendingStateWidget(
-          state: sendState,
-          showSentIconOnUnknown: isMe && isLastMessageBySender,
-        )
-        : isRead
-        ? SendingStateWidget.read()
-        : isLastMessageBySender
-        ? SendingStateWidget.sent()
-        : const SizedBox.shrink();
+      if (isLatestMsgBySender && msgEventItem != null) {
+        // if the latest message by own user is read, show the read state
+        if (ref.watch(messageReadReceiptsProvider(msgEventItem)).isNotEmpty) {
+          return SendingStateWidget.read();
+        } else {
+          // return the sent state instead
+          return SendingStateWidget.sent();
+        }
+      } else {
+        // for other previous messages by self, don't need to show tracker
+        return const SizedBox.shrink();
+      }
+    }
   }
 }
 
