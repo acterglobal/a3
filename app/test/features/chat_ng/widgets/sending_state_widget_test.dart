@@ -40,7 +40,7 @@ void main() {
       );
 
       expect(find.byType(PulsatingIcon), findsOneWidget);
-      expect(find.byIcon(Icons.send), findsOneWidget);
+      expect(find.byIcon(Icons.schedule), findsOneWidget);
     });
 
     testWidgets('displays check icon for Sent state', (tester) async {

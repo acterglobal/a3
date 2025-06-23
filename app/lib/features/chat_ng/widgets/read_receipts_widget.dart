@@ -9,6 +9,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:quds_popup_menu/quds_popup_menu.dart';
 
+class ReadStateWidget extends StatelessWidget {
+  const ReadStateWidget({super.key});
+  @override
+  Widget build(BuildContext context) => Icon(
+    Icons.done_all,
+    size: 14,
+    color: Theme.of(context).colorScheme.onSecondary,
+  );
+}
+
 class ReadReceiptsWidget extends ConsumerWidget {
   static const readReceiptsPopupMenuKey = Key('read_receipts_popup_menu');
   final TimelineEventItem item;
@@ -95,7 +105,7 @@ class _DmReadReceipts extends ConsumerWidget {
       if (isLatestMsgBySender && msgEventItem != null) {
         // if the latest message by own user is read, show the read state
         if (ref.watch(messageReadReceiptsProvider(msgEventItem)).isNotEmpty) {
-          return SendingStateWidget.read();
+          return ReadStateWidget();
         } else {
           // return the sent state instead
           return SendingStateWidget.sent();

@@ -49,7 +49,6 @@ class SendingStateWidget extends StatelessWidget {
   };
 
   static Widget sent() => SentStateWidget();
-  static Widget read() => ReadStateWidget();
 
   Widget _buildSendingFailed(BuildContext context) =>
       ActerInlineTextButton.icon(
