@@ -164,9 +164,16 @@ async fn task_smoketests() -> Result<()> {
     let task_1_updater = task_1.subscribe();
 
     let title = "Replacement Name";
+    let someday = today + Duration::days(10);
+    let otherday = today + Duration::days(15);
     task_1
         .update_builder()?
         .title(title.to_owned())
+        .utc_start_from_rfc2822(someday.to_rfc2822())?
+        .unset_utc_start()
+        .utc_start_from_rfc3339(someday.to_rfc3339())?
+        .unset_utc_start()
+        .utc_start_from_format(otherday.format(fmt).to_string(), fmt.to_owned())?
         .mark_done()
         .send()
         .await?;
@@ -188,6 +195,18 @@ async fn task_smoketests() -> Result<()> {
     let assignees = task_1.assignees();
     assert_eq!(assignees, vec![user_id]);
     assert!(task_1.is_done());
+    assert_ne!(
+        task_1.utc_start().map(|d| d.to_rfc2822()),
+        Some(someday.to_rfc2822())
+    );
+    assert_ne!(
+        task_1.utc_start().map(|d| d.to_rfc3339()),
+        Some(someday.to_rfc3339())
+    );
+    assert_eq!(
+        task_1.utc_start().map(|d| d.format(fmt).to_string()),
+        Some(otherday.format(fmt).to_string())
+    );
 
     let task_list_listener = task_list.subscribe();
 
