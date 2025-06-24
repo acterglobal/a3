@@ -40,12 +40,7 @@ class SpaceActivitiesItemWidget extends ConsumerWidget {
       shape: const Border(),
       showTrailingIcon: false,
       leading: ActerAvatar(options: AvatarOptions(avatarInfo, size: 18)),
-      title: Text(
-        spaceName,
-        style: Theme.of(
-          context,
-        ).textTheme.bodySmall?.copyWith(color: colorScheme.surfaceTint),
-      ),
+      title: Text(spaceName, style: Theme.of(context).textTheme.labelMedium),
       children:
           activities.asMap().entries.map((entry) {
             final activity = entry.value;
@@ -61,7 +56,21 @@ class SpaceActivitiesItemWidget extends ConsumerWidget {
                       ).dividerColor.withValues(alpha: 0.3),
                     ),
                     const SizedBox(width: 12),
-                    Expanded(child: ActivityItemWidget(activity: activity)),
+                    Expanded(
+                      child: Column(
+                        children: [
+                          ActivityItemWidget(activity: activity),
+                          if (entry.key != activities.length - 1)
+                            Divider(
+                              height: 1,
+                              color: Theme.of(
+                                context,
+                              ).dividerColor.withValues(alpha: 0.1),
+                              indent: 0,
+                            ),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
