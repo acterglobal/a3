@@ -14,10 +14,12 @@ class EventLocationListWidget extends ConsumerStatefulWidget {
   const EventLocationListWidget({super.key, this.eventId});
 
   @override
-  ConsumerState<EventLocationListWidget> createState() => _EventLocationListWidgetState();
+  ConsumerState<EventLocationListWidget> createState() =>
+      _EventLocationListWidgetState();
 }
 
-class _EventLocationListWidgetState extends ConsumerState<EventLocationListWidget> {
+class _EventLocationListWidgetState
+    extends ConsumerState<EventLocationListWidget> {
   @override
   void initState() {
     super.initState();
@@ -28,24 +30,32 @@ class _EventLocationListWidgetState extends ConsumerState<EventLocationListWidge
     }
   }
 
-Future<void> loadExistingLocations(WidgetRef ref, String eventId) async {
-  final asyncLocations = ref.read(asyncEventLocationsProvider(eventId)).valueOrNull;
-  if (asyncLocations != null) {
-    final locations = asyncLocations.map((location) => EventLocationDraft(
-      name: location.name() ?? '',
-      type: location.locationType().toLowerCase() == LocationType.virtual.name
-          ? LocationType.virtual
-          : LocationType.physical,
-      url: location.uri(),
-      address: location.address(),
-      note: location.notes(),
-    )).toList();
-    ref.read(eventDraftLocationsProvider.notifier).clearLocations();
-    for (final location in locations) {
-      ref.read(eventDraftLocationsProvider.notifier).addLocation(location);
+  Future<void> loadExistingLocations(WidgetRef ref, String eventId) async {
+    final asyncLocations =
+        ref.read(asyncEventLocationsProvider(eventId)).valueOrNull;
+    if (asyncLocations != null) {
+      final locations =
+          asyncLocations
+              .map(
+                (location) => EventLocationDraft(
+                  name: location.name() ?? '',
+                  type:
+                      location.locationType().toLowerCase() ==
+                              LocationType.virtual.name
+                          ? LocationType.virtual
+                          : LocationType.physical,
+                  url: location.uri(),
+                  address: location.address(),
+                  note: location.notes(),
+                ),
+              )
+              .toList();
+      ref.read(eventDraftLocationsProvider.notifier).clearLocations();
+      for (final location in locations) {
+        ref.read(eventDraftLocationsProvider.notifier).addLocation(location);
+      }
     }
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +70,7 @@ Future<void> loadExistingLocations(WidgetRef ref, String eventId) async {
           _buildEmptyState(context)
         else ...[
           _buildLocationList(context, locations),
-          _buildActionButtons(context),
+          if (widget.eventId != null) _buildActionButtons(context),
         ],
       ],
     );
@@ -72,7 +82,12 @@ Future<void> loadExistingLocations(WidgetRef ref, String eventId) async {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
         children: [
-          Expanded(child: Text(lang.eventLocations, style: Theme.of(context).textTheme.titleMedium)),
+          Expanded(
+            child: Text(
+              lang.eventLocations,
+              style: Theme.of(context).textTheme.titleSmall,
+            ),
+          ),
           IconButton(
             icon: const Icon(Icons.add_circle_outline),
             tooltip: lang.addLocation,
@@ -95,10 +110,14 @@ Future<void> loadExistingLocations(WidgetRef ref, String eventId) async {
   }
 
   /// List of locations
-  Widget _buildLocationList(BuildContext context, List<EventLocationDraft> locations) {
+  Widget _buildLocationList(
+    BuildContext context,
+    List<EventLocationDraft> locations,
+  ) {
     return Flexible(
       child: ListView.builder(
         shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
         padding: EdgeInsets.zero,
         itemCount: locations.length,
         itemBuilder: (context, index) {
@@ -110,22 +129,33 @@ Future<void> loadExistingLocations(WidgetRef ref, String eventId) async {
   }
 
   /// Individual location tile
-  Widget _buildLocationTile(BuildContext context, EventLocationDraft draftLocation) {
+  Widget _buildLocationTile(
+    BuildContext context,
+    EventLocationDraft draftLocation,
+  ) {
     final theme = Theme.of(context);
     final isVirtual = draftLocation.type == LocationType.virtual;
 
     return ListTile(
-      leading: Icon(isVirtual ? Icons.language : Icons.map_outlined, color: theme.colorScheme.primary),
+      leading: Icon(
+        isVirtual ? Icons.language : Icons.map_outlined,
+        color: theme.colorScheme.primary,
+      ),
       title: Text(draftLocation.name),
       subtitle: Text(
-        isVirtual ? (draftLocation.url ?? '') : (draftLocation.address?.split('\n').first ?? ''),
+        isVirtual
+            ? (draftLocation.url ?? '')
+            : (draftLocation.address?.split('\n').first ?? ''),
         style: theme.textTheme.bodySmall,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),
       trailing: IconButton(
         icon: Icon(PhosphorIcons.trash(), color: theme.colorScheme.error),
-        onPressed: () => ref.read(eventDraftLocationsProvider.notifier).removeLocation(draftLocation),
+        onPressed:
+            () => ref
+                .read(eventDraftLocationsProvider.notifier)
+                .removeLocation(draftLocation),
       ),
       onTap: () => _openEditLocationModal(context, draftLocation),
     );
@@ -156,9 +186,6 @@ Future<void> loadExistingLocations(WidgetRef ref, String eventId) async {
                     ref: ref,
                     calendarId: eventId,
                   );
-                } else {
-                  // Return true to indicate save was clicked for new events
-                  Navigator.pop(context, true);
                 }
               },
               child: Text(lang.save),
@@ -179,7 +206,10 @@ Future<void> loadExistingLocations(WidgetRef ref, String eventId) async {
     );
   }
 
-  void _openEditLocationModal(BuildContext context, EventLocationDraft draftLocation) {
+  void _openEditLocationModal(
+    BuildContext context,
+    EventLocationDraft draftLocation,
+  ) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -195,27 +225,30 @@ Future<void> loadExistingLocations(WidgetRef ref, String eventId) async {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(lang.discardChanges),
-        content: Text(lang.discardChangesDescription),
-        actionsAlignment: MainAxisAlignment.spaceEvenly,
-        actions: [
-          OutlinedButton(
-            onPressed: () {
-              Navigator.pop(dialogContext);
-            },
-            child: Text(lang.keepChanges),
+      builder:
+          (dialogContext) => AlertDialog(
+            title: Text(lang.discardChanges),
+            content: Text(lang.discardChangesDescription),
+            actionsAlignment: MainAxisAlignment.spaceEvenly,
+            actions: [
+              OutlinedButton(
+                onPressed: () {
+                  Navigator.pop(dialogContext);
+                },
+                child: Text(lang.keepChanges),
+              ),
+              ActerPrimaryActionButton(
+                onPressed: () {
+                  ref
+                      .read(eventDraftLocationsProvider.notifier)
+                      .clearLocations();
+                  Navigator.pop(dialogContext); // Close dialog
+                  Navigator.pop(context); // Close EventLocationListWidget
+                },
+                child: Text(lang.discard),
+              ),
+            ],
           ),
-          ActerPrimaryActionButton(
-            onPressed: () {
-              ref.read(eventDraftLocationsProvider.notifier).clearLocations();
-              Navigator.pop(dialogContext); // Close dialog
-              Navigator.pop(context); // Close EventLocationListWidget
-            },
-            child: Text(lang.discard),
-          ),
-        ],
-      ),
     );
   }
 }
