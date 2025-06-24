@@ -1,6 +1,5 @@
 import 'package:acter/common/models/types.dart';
 import 'package:acter/common/providers/common_providers.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/activities/providers/notifiers/activities_notifiers.dart';
 import 'package:acter/features/invitations/providers/invitations_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
@@ -73,23 +72,24 @@ final allActivitiesProvider =
   AllActivitiesNotifier.new,
 );
 
-// Helper function to filter activities by date
-List<Activity> _filterActivitiesByDate(List<Activity> activities, DateTime date) {
-  return activities.where((activity) => getActivityDate(activity).isAtSameMomentAs(date)).toList();
+// Helper function to get date-only DateTime from activity timestamp
+DateTime getActivityDate(int timestamp) {
+  final activityDate = DateTime.fromMillisecondsSinceEpoch(timestamp).toLocal();
+  return DateTime(activityDate.year, activityDate.month, activityDate.day);
 }
 
 final activityDatesProvider = Provider<List<DateTime>>((ref) {
   final activities = ref.watch(allActivitiesProvider).valueOrNull;
   if (activities == null || activities.isEmpty) return [];
   
-  final uniqueDates = activities.map(getActivityDate).toSet();
+  final uniqueDates = activities.map((activity) => getActivityDate(activity.originServerTs())).toSet();
   return uniqueDates.toList()..sort((a, b) => b.compareTo(a));
 });
 
 // Base provider for activities filtered by date
 final activitiesByDateProvider = Provider.family<List<Activity>, DateTime>((ref, date) {
   final allActivities = ref.watch(allActivitiesProvider).valueOrNull ?? [];
-  return _filterActivitiesByDate(allActivities, date);
+  return allActivities.where((activity) => getActivityDate(activity.originServerTs()).isAtSameMomentAs(date)).toList();
 });
 
 // Provider for consecutive grouped activities using records 

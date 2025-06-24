@@ -1,5 +1,4 @@
 import 'package:acter/features/activities/providers/activities_providers.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../activity/mock_data/mock_activity.dart';
@@ -31,7 +30,7 @@ void main() {
       
       // Test filtering activities by date
       final filteredActivities = allActivities.where((activity) => 
-        getActivityDate(activity).isAtSameMomentAs(targetDate)
+        getActivityDate(activity.originServerTs()).isAtSameMomentAs(targetDate)
       ).toList();
       
       expect(filteredActivities.length, 2);
@@ -133,7 +132,7 @@ void main() {
 
       final activities = [activity1, activity2, activity3];
 
-      final uniqueDates = activities.map(getActivityDate).toSet();
+      final uniqueDates = activities.map((activity) => getActivityDate(activity.originServerTs())).toSet();
       final sortedDates = uniqueDates.toList()..sort((a, b) => b.compareTo(a));
 
       expect(uniqueDates.length, 2); // Should have 2 unique dates
@@ -142,7 +141,7 @@ void main() {
       
       final targetDate = DateTime(2024, 1, 15);
       final filteredActivities = activities.where((activity) => 
-        getActivityDate(activity).isAtSameMomentAs(targetDate)).toList();
+        getActivityDate(activity.originServerTs()).isAtSameMomentAs(targetDate)).toList();
       
       expect(filteredActivities.length, 2); // activity1 and activity3 have same date
       expect(filteredActivities.any((a) => a.typeStr() == 'test1'), true);
