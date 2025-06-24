@@ -14,7 +14,8 @@ class ActivityEventDateChangeItemWidget extends StatelessWidget {
     return ActivityIndividualActionContainerWidget(
       target: activityObject?.title() ?? '',
       actionIcon: Icons.access_time,
-      actionIconBgColor: Theme.of(context).cardColor,
+      actionIconColor: Colors.white,
+      actionIconBgColor: Colors.teal,
       actionTitle: L10n.of(context).rescheduledEvent,
       activityObject: activityObject,
       userId: activity.senderIdStr(),

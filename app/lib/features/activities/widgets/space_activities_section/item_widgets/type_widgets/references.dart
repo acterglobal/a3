@@ -18,6 +18,8 @@ class ActivityReferencesItemWidget extends StatelessWidget {
     return ActivityBiggerVisualContainerWidget(
       activityObject: activityObject,
       actionIcon: PhosphorIconsRegular.link,
+      actionIconBgColor: Colors.blue,
+      actionIconColor: Colors.white,
       userId: activity.senderIdStr(),
       roomId: activity.roomIdStr(),
       actionTitle: L10n.of(context).addedReferencesOn,

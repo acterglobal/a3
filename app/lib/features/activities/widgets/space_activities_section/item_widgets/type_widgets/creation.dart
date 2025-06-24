@@ -12,7 +12,9 @@ class ActivityCreationItemWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return ActivityIndividualActionContainerWidget(
-      actionIcon: Icons.add_circle_outline,
+      actionIcon: Icons.add,
+      actionIconBgColor: Colors.deepPurple,
+      actionIconColor: Colors.white,
       actionTitle:
           '${L10n.of(context).creation} ${activity.object()?.typeStr() ?? ''}',
       activityObject: activity.object(),
