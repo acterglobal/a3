@@ -17,7 +17,7 @@ class ActivityDateItemWidget extends ConsumerWidget {
 
     if (groupedActivitiesList.isEmpty) return const SizedBox.shrink();
 
-    String? lastDisplayedDateLabel;
+    String? previousDateText;
 
     return ListView.builder(
       shrinkWrap: true,
@@ -25,22 +25,22 @@ class ActivityDateItemWidget extends ConsumerWidget {
       padding: EdgeInsets.zero,
       itemCount: groupedActivitiesList.length,
       itemBuilder: (context, index) {
-        final activityGroup = groupedActivitiesList[index];
+        final roomActivities = groupedActivitiesList[index];
 
-        final currentDateLabel = jiffyDateForActvity(
+        final activityDateText = jiffyDateForActvity(
           context,
-          activityGroup.activities.first.originServerTs(),
+          roomActivities.activities.first.originServerTs(),
         );
 
-        // Only show the date label if it differs from the previous one
-        final shouldShowDateLabel = currentDateLabel != lastDisplayedDateLabel;
-        lastDisplayedDateLabel = currentDateLabel;
+        // Only show the date header if it differs from the previous one
+        final showDateHeader = activityDateText != previousDateText;
+        previousDateText = activityDateText;
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (shouldShowDateLabel)
+            if (showDateHeader)
               Container(
                 margin: const EdgeInsets.symmetric(vertical: 10),
                 padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 16),
@@ -51,15 +51,15 @@ class ActivityDateItemWidget extends ConsumerWidget {
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Text(
-                  currentDateLabel,
+                  activityDateText,
                   style: Theme.of(context).textTheme.labelMedium,
                 ),
               ),
 
             SpaceActivitiesItemWidget(
               date: activityDate,
-              roomId: activityGroup.roomId,
-              activities: activityGroup.activities,
+              roomId: roomActivities.roomId,
+              activities: roomActivities.activities,
             ),
           ],
         );
