@@ -306,6 +306,8 @@ async fn calendar_event_create() -> Result<()> {
     .await?;
 
     let title = "First meeting";
+    let desc_tech = "This is tech channel";
+    let desc_support = "This is support channel";
     let now = Utc::now();
     let utc_start = now + Duration::days(1);
     let utc_end = now + Duration::days(2);
@@ -321,6 +323,9 @@ async fn calendar_event_create() -> Result<()> {
     let event_id = space
         .calendar_event_draft()?
         .title(title.to_owned())
+        .description_text(desc_tech.to_owned())
+        .unset_description()
+        .description_text(desc_support.to_owned())
         .utc_start_from_rfc3339(utc_start.to_rfc3339())?
         .utc_end_from_rfc3339(utc_end.to_rfc3339())?
         .add_physical_location(
@@ -357,6 +362,14 @@ async fn calendar_event_create() -> Result<()> {
 
     assert_eq!(main_event.event_id(), event_id);
     assert_eq!(main_event.title(), title);
+    assert_ne!(
+        main_event.description().map(|c| c.body()).as_deref(),
+        Some(desc_tech)
+    );
+    assert_eq!(
+        main_event.description().map(|c| c.body()).as_deref(),
+        Some(desc_support)
+    );
     let locations = main_event.locations();
     assert_eq!(locations.len(), 2);
 
