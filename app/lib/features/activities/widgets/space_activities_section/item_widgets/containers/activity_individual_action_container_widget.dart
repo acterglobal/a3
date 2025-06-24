@@ -1,11 +1,11 @@
 import 'package:acter/common/themes/colors/color_scheme.dart';
+import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/object_icon_widget.dart';
 import 'package:acter/features/comments/widgets/time_ago_widget.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class ActivityIndividualActionContainerWidget extends ConsumerWidget {
   final ActivityObject? activityObject;
@@ -110,11 +110,7 @@ class ActivityIndividualActionContainerWidget extends ConsumerWidget {
           ),
         ),
         if (activityObject != null)
-          Icon(
-            _getActivityObjectIcon(),
-            size: 16,
-            color: colorScheme.surfaceTint,
-          ),
+          ObjectIconWidget(objectType: activityObject?.typeStr()),
       ],
     );
   }
@@ -144,17 +140,5 @@ class ActivityIndividualActionContainerWidget extends ConsumerWidget {
         TimeAgoWidget(originServerTs: originServerTs),
       ],
     );
-  }
-
-  IconData _getActivityObjectIcon() {
-    return switch (activityObject?.typeStr()) {
-      'news' => PhosphorIconsRegular.rocketLaunch,
-      'story' => PhosphorIconsRegular.book,
-      'event' => PhosphorIconsRegular.calendar,
-      'pin' => PhosphorIconsRegular.pushPin,
-      'task-list' => PhosphorIconsRegular.listChecks,
-      'task' => PhosphorIconsRegular.checkCircle,
-      _ => PhosphorIconsRegular.question,
-    };
   }
 }
