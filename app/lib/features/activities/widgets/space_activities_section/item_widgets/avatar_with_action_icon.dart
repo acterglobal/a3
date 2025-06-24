@@ -38,7 +38,7 @@ class AvatarWithActionIcon extends StatelessWidget {
             child: Icon(
               actionIcon,
               color: actionIconColor ?? Colors.white,
-              size: 14,
+              size: 12,
             ),
           ),
         ),
