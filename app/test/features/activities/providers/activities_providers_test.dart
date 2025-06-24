@@ -529,7 +529,7 @@ void main() {
          
          // Each group should have exactly 1 activity
          for (final group in groups) {
-           expect(group.activities.length, 1);
+           expect(group.activities.length, 1);  
          }
        });
 
