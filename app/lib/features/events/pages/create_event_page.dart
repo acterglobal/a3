@@ -57,6 +57,7 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
   EditorState textEditorState = EditorState.blank();
 
   bool _isJitsiEnabled = false;
+  bool _shouldShowLocations = false;
 
   void _setFromTemplate(CalendarEvent event) {
     // title
@@ -193,6 +194,9 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
 
   // Event location field
   Widget _buildEventLocationWidget() {
+    final lang = L10n.of(context);
+    final locations = ref.watch(eventDraftLocationsProvider);
+    
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8),
       child: Column(
@@ -204,15 +208,54 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
               size: 30,
             ),
             title: Text(L10n.of(context).eventLocations),
+            subtitle: locations.isNotEmpty && _shouldShowLocations
+                ? Text(lang.locationAdded(locations.length))
+                : null,
             trailing: IconButton(
               icon: const Icon(Icons.add_circle_outline, size: 26),
               tooltip: L10n.of(context).addLocation,
-              onPressed: () => showEventLocationList(context),
+              onPressed: () async {
+                final result = await showEventLocationList(context);
+                // If save was clicked (result is true), show locations
+                if (result == true && mounted) {
+                  setState(() {
+                    _shouldShowLocations = true;
+                  });
+                }
+              },
             ),
           ),
+          if (locations.isNotEmpty && _shouldShowLocations) ...[
+            const Divider(height: 1),
+            ...locations.map((location) => _buildLocationTile(location)),
+          ],
           _buildJitsiCallLinkWidget(),
           const SizedBox(height: 10),
         ],
+      ),
+    );
+  }
+
+  Widget _buildLocationTile(EventLocationDraft location) {
+    final isVirtual = location.type == LocationType.virtual;
+    
+    return ListTile(
+      dense: true,
+      leading: Icon(
+        isVirtual ? Icons.language : Icons.map_outlined,
+        size: 20,
+      ),
+      title: Text(
+        location.name,
+        style: Theme.of(context).textTheme.bodyMedium,
+      ),
+      subtitle: Text(
+        isVirtual 
+            ? (location.url ?? '') 
+            : (location.address?.split('\n').first ?? ''),
+        style: Theme.of(context).textTheme.bodySmall,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
       ),
     );
   }

@@ -695,6 +695,8 @@
   "@loadingFailed": {},
   "location": "Location",
   "@location": {},
+  "locationAdded": "{count} location added",
+  "@locationAdded": {},
   "logIn": "Log In",
   "@logIn": {},
   "loginAgain": "Login again",

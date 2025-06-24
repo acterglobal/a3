@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:acter/features/events/widgets/event_location_list_widget.dart';
 
-void showEventLocationList(BuildContext context, {String? eventId}) {
-  showModalBottomSheet(
+Future<bool?> showEventLocationList(BuildContext context, {String? eventId}) {
+  return showModalBottomSheet<bool>(
     context: context,
     isScrollControlled: true,
     isDismissible: true,
