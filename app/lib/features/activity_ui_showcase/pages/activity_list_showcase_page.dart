@@ -12,8 +12,6 @@ class ActivityListShowcasePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
-    
-    // Debug: Check what mock data we have
     final mockActivities = ref.watch(mockAllActivitiesProvider);
     
     // Calculate dates directly from mock data
