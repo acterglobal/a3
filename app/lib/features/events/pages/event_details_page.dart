@@ -217,7 +217,13 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
         actions.add(
           PopupMenuItem(
             onTap: () {
-              context.pushNamed(Routes.createEvent.name, extra: event);
+              context.pushNamed(
+                Routes.createEvent.name, 
+                extra: {
+                  'event': event,
+                  'locations': locations,
+                },
+              );
             },
             child: Row(
               children: <Widget>[

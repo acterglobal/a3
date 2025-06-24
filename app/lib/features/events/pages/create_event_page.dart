@@ -31,11 +31,13 @@ const createEditEventKey = Key('create-edit-event');
 class CreateEventPage extends ConsumerStatefulWidget {
   final String? initialSelectedSpace;
   final CalendarEvent? templateEvent;
+  final List<EventLocationInfo>? templateLocations;
 
   const CreateEventPage({
     super.key = createEditEventKey,
     this.initialSelectedSpace,
     this.templateEvent,
+    this.templateLocations,
   });
 
   @override
@@ -97,6 +99,21 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
     ref.read(eventDraftLocationsProvider.notifier).clearLocations();
   }
 
+  void _setTemplateLocations(List<EventLocationInfo> locations) {
+    for (final location in locations) {
+      final draftLocation = EventLocationDraft(
+        name: location.name() ?? '',
+        type: location.locationType().toLowerCase() == LocationType.virtual.name
+            ? LocationType.virtual
+            : LocationType.physical,
+        url: location.uri(),
+        address: location.address(),
+        note: location.notes(),
+      );
+      ref.read(eventDraftLocationsProvider.notifier).addLocation(draftLocation);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -108,6 +125,10 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
     widget.templateEvent.map(
       (p0) => WidgetsBinding.instance.addPostFrameCallback((Duration dur) {
         _setFromTemplate(p0);
+        // Set template locations if available
+        if (widget.templateLocations != null) {
+          _setTemplateLocations(widget.templateLocations!);
+        }
       }),
       orElse: () {
         widget.initialSelectedSpace.map((p0) {
