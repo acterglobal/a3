@@ -21,7 +21,7 @@ class SpaceActionsSection extends ConsumerWidget {
 
   final String spaceId;
 
-  SpaceActionsSection({super.key, required this.spaceId});
+  const SpaceActionsSection({super.key, required this.spaceId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
