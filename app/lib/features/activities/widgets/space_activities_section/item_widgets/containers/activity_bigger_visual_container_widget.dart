@@ -17,6 +17,8 @@ class ActivityBiggerVisualContainerWidget extends ConsumerWidget {
   final String target;
   final Widget? subtitle;
   final int originServerTs;
+  final Color? actionIconBgColor;
+  final Color? actionIconColor;
 
   const ActivityBiggerVisualContainerWidget({
     super.key,
@@ -29,6 +31,8 @@ class ActivityBiggerVisualContainerWidget extends ConsumerWidget {
     required this.target,
     this.subtitle,
     required this.originServerTs,
+    this.actionIconBgColor,
+    this.actionIconColor,
   });
 
   @override
@@ -52,6 +56,8 @@ class ActivityBiggerVisualContainerWidget extends ConsumerWidget {
               AvatarWithActionIcon(
                 avatarInfo: avatarInfo,
                 actionIcon: actionIcon,
+                actionIconBgColor: actionIconBgColor,
+                actionIconColor: actionIconColor,
               ),
           const SizedBox(width: 10),
           Expanded(
