@@ -72,6 +72,8 @@ async fn task_smoketests() -> Result<()> {
         .task_builder()?
         .title(title.to_owned())
         .description_text(body.to_owned())
+        .due_date(today.year(), today.month0() + 1, today.day0() + 1)
+        .unset_due_date()
         .due_date(tomorrow.year(), tomorrow.month0() + 1, tomorrow.day0() + 1)
         .utc_due_time_of_day(9 * 3600) // 9 AM UTC
         .unset_utc_due_time_of_day()
@@ -99,6 +101,10 @@ async fn task_smoketests() -> Result<()> {
         task_1.description().map(|msg| msg.body()).as_deref(),
         Some(body)
     );
+    assert_ne!(
+        task_1.due_date(),
+        Some(today.format("%Y-%m-%d").to_string())
+    );
     assert_eq!(
         task_1.due_date(),
         Some(tomorrow.format("%Y-%m-%d").to_string())
@@ -109,10 +115,18 @@ async fn task_smoketests() -> Result<()> {
     let task_list_listener = task_list.subscribe();
 
     let title = "Testing 2";
+    let today = Utc::now();
+    let tomorrow = today + Duration::days(1);
+    let fmt = "%Y-%m-%dT%H:%M:%S%:z"; // ISO 8601 format with timezone
     let task_2_id = task_list
         .task_builder()?
         .title(title.to_owned())
         .sort_order(1)
+        .utc_start_from_rfc2822(today.to_rfc2822())?
+        .unset_utc_start()
+        .utc_start_from_rfc3339(today.to_rfc3339())?
+        .unset_utc_start()
+        .utc_start_from_format(tomorrow.format(fmt).to_string(), fmt.to_owned())?
         .send()
         .await?;
 
@@ -134,6 +148,18 @@ async fn task_smoketests() -> Result<()> {
     let task_2 = tasks[1].clone();
     assert_eq!(task_2.title(), title);
     assert!(!task_2.is_done());
+    assert_ne!(
+        task_2.utc_start().map(|d| d.to_rfc2822()),
+        Some(today.to_rfc2822())
+    );
+    assert_ne!(
+        task_2.utc_start().map(|d| d.to_rfc3339()),
+        Some(today.to_rfc3339())
+    );
+    assert_eq!(
+        task_2.utc_start().map(|d| d.format(fmt).to_string()),
+        Some(tomorrow.format(fmt).to_string())
+    );
 
     let task_1_updater = task_1.subscribe();
 
