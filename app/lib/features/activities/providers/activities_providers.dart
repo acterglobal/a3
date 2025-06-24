@@ -93,14 +93,16 @@ final activitiesByDateProvider = Provider.family<List<Activity>, DateTime>((ref,
 });
 
 // Provider for consecutive grouped activities using records 
-final consecutiveGroupedActivitiesProvider = Provider.family<List<({String roomId, List<Activity> activities})>, DateTime>((ref, date) {
+typedef RoomActivitiesInfo = ({String roomId, List<Activity> activities});
+
+final consecutiveGroupedActivitiesProvider = Provider.family<List<RoomActivitiesInfo>, DateTime>((ref, date) {
   final activitiesForDate = ref.watch(activitiesByDateProvider(date));
   
   // Sort by time descending
   final sortedActivities = activitiesForDate.toList()..sort((a, b) => b.originServerTs().compareTo(a.originServerTs()));
 
   // Group consecutive activities by roomId
-  final groups = <({String roomId, List<Activity> activities})>[];
+  final groups = <RoomActivitiesInfo>[];
   
   for (final activity in sortedActivities) {
     final roomId = activity.roomIdStr();
