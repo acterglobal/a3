@@ -3183,6 +3183,6 @@
   "@noIconsFound": {},
   "activityUIShowcase": "Activity UI Showcase",
   "@activityUIShowcase": {},
-  "activityUIShowcaseDes2": "Preview different activity components and layouts",
-  "@activityUIShowcaseDes2": {}
+  "showcaseList": "Showcase List",
+  "@showcaseList": {}
 }

@@ -1,7 +1,6 @@
 import 'package:acter/features/activity_ui_showcase/mocks/providers/mock_activities_provider.dart';
 import 'package:acter/features/activities/providers/activities_providers.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/activity_date_item_widget.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +17,7 @@ class ActivityListShowcasePage extends ConsumerWidget {
     final mockActivities = ref.watch(mockAllActivitiesProvider);
     
     // Calculate dates directly from mock data
-    final uniqueDates = mockActivities.map(getActivityDate).toSet();
+    final uniqueDates = mockActivities.map((activity) => getActivityDate(activity.originServerTs())).toSet();
     final sortedDates = uniqueDates.toList()..sort((a, b) => b.compareTo(a));
     
     return Scaffold(
@@ -59,7 +58,7 @@ class ActivityListShowcasePage extends ConsumerWidget {
                   
                   // Filter activities by date
                   final activitiesForDate = activities.where((activity) => 
-                    getActivityDate(activity).isAtSameMomentAs(date)).toList();
+                    getActivityDate(activity.originServerTs()).isAtSameMomentAs(date)).toList();
                   
                   // Sort by time descending
                   final sortedActivities = activitiesForDate.toList()
