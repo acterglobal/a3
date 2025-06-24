@@ -155,7 +155,7 @@ void main() {
       expect(overlayContainer.decoration, isA<BoxDecoration>());
       final decoration = overlayContainer.decoration as BoxDecoration;
       expect(decoration.shape, BoxShape.circle);
-      expect(decoration.color, Colors.red);
+      expect(decoration.color, Colors.red.withValues(alpha: 0.8));
     });
 
     testWidgets('displays default avatar', (WidgetTester tester) async {

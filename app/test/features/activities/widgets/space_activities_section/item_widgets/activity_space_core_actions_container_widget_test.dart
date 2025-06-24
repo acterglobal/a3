@@ -286,7 +286,7 @@ void main() {
         find.byIcon(PhosphorIconsRegular.pencilSimpleLine),
       );
       expect(iconWidget.color, Colors.white);
-      expect(iconWidget.size, 15);
+      expect(iconWidget.size, 12);
     });
 
     testWidgets('avatar has correct size', (WidgetTester tester) async {

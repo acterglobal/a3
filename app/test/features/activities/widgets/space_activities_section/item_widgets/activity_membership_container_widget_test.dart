@@ -238,7 +238,7 @@ void main() {
         await pumpActivityMembershipItemWidget(tester);
 
         final icon = tester.widget<Icon>(find.byType(Icon));
-        expect(icon.size, 20);
+        expect(icon.size, 16);
       });
 
       testWidgets('RichText has correct styling and overflow handling', (
@@ -280,7 +280,7 @@ void main() {
 
         // Find the SizedBox that provides spacing between icon and content
         final spacingSizedBoxes = find.byWidgetPredicate((widget) {
-          return widget is SizedBox && widget.width == 10;
+          return widget is SizedBox && widget.width == 8;
         });
         expect(spacingSizedBoxes, findsOneWidget);
       });
