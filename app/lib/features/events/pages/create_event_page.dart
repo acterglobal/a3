@@ -3,7 +3,6 @@ import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/features/events/model/event_location_model.dart';
-import 'package:acter/features/events/widgets/event_location_list_widget.dart';
 import 'package:acter/router/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/toolkit/html_editor/html_editor.dart';
@@ -23,6 +22,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 import 'package:acter/features/events/providers/event_location_provider.dart';
+import 'package:acter/features/events/actions/show_event_location_list.dart';
 
 final _log = Logger('a3::cal_event::create');
 
@@ -57,6 +57,7 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
   EditorState textEditorState = EditorState.blank();
 
   bool _isJitsiEnabled = false;
+  bool _shouldShowLocations = false;
 
   void _setFromTemplate(CalendarEvent event) {
     // title
@@ -149,8 +150,8 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
               const SizedBox(height: 10),
               _eventDateAndTime(),
               const SizedBox(height: 10),
-              _buildEventLocationListWidget(),
-              _buildJitsiCallLinkWidget(),
+              _buildEventLocationWidget(),
+              const SizedBox(height: 10),
               _eventDescriptionField(),
               const SizedBox(height: 10),
               SelectSpaceFormField(
@@ -191,44 +192,98 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
     );
   }
 
-  // Event location list widget
-  Widget _buildEventLocationListWidget() {
+  // Event location field
+  Widget _buildEventLocationWidget() {
+    final lang = L10n.of(context);
+    final locations = ref.watch(eventDraftLocationsProvider);
+    
     return Card(
-      margin: EdgeInsets.only(bottom: 10),
-      child: Padding(padding: const EdgeInsets.all(8.0), child: EventLocationListWidget(),),
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      child: Column(
+        children: [
+          ListTile(
+            leading: Icon(
+              Icons.map_outlined,
+              color: Theme.of(context).colorScheme.primary,
+              size: 30,
+            ),
+            title: Text(L10n.of(context).eventLocations),
+            subtitle: locations.isNotEmpty && _shouldShowLocations
+                ? Text(lang.locationAdded(locations.length))
+                : null,
+            trailing: IconButton(
+              icon: const Icon(Icons.add_circle_outline, size: 26),
+              tooltip: L10n.of(context).addLocation,
+              onPressed: () async {
+                final result = await showEventLocationList(context);
+                // If save was clicked (result is true), show locations
+                if (result == true && mounted) {
+                  setState(() {
+                    _shouldShowLocations = true;
+                  });
+                }
+              },
+            ),
+          ),
+          if (locations.isNotEmpty && _shouldShowLocations) ...[
+            const Divider(height: 1),
+            ...locations.map((location) => _buildLocationTile(location)),
+          ],
+          _buildJitsiCallLinkWidget(),
+          const SizedBox(height: 10),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLocationTile(EventLocationDraft location) {
+    final isVirtual = location.type == LocationType.virtual;
+    
+    return ListTile(
+      dense: true,
+      leading: Icon(
+        isVirtual ? Icons.language : Icons.map_outlined,
+        size: 20,
+      ),
+      title: Text(
+        location.name,
+        style: Theme.of(context).textTheme.bodyMedium,
+      ),
+      subtitle: Text(
+        isVirtual 
+            ? (location.url ?? '') 
+            : (location.address?.split('\n').first ?? ''),
+        style: Theme.of(context).textTheme.bodySmall,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
     );
   }
 
   // Jitsi call link field
   Widget _buildJitsiCallLinkWidget() {
-    return Card(
-      margin: EdgeInsets.only(bottom: 10),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Transform.scale(
-              scale: 0.6,
-              child: Switch(
-                value: _isJitsiEnabled,
-                onChanged: (value) {
-                  setState(() {
-                    _isJitsiEnabled = value;
-                  });
-                },
-              ),
-            ),
-            Text(L10n.of(context).createJitsiCallLink, style: Theme.of(context).textTheme.bodyMedium,),
-            const SizedBox(width: 10),
-          ],
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Transform.scale(
+          scale: 0.6,
+          child: Switch(
+            value: _isJitsiEnabled,
+            onChanged: (value) {
+        setState(() {
+          _isJitsiEnabled = value;
+            });
+          },
         ),
       ),
-    );
+      Text(L10n.of(context).createJitsiCallLink),
+      const SizedBox(width: 10),
+        
+    ]);
   }
 
   // Create Jitsi call link
-  String createJitsiCallLink(String title) {
+  String createJitsiCallLink(String title) {   
     // Generate a random 10-digit number
     final random = DateTime.now().millisecondsSinceEpoch % 10000000000;
     // Format the number to ensure it's 10 digits by padding with zeros if needed
@@ -525,27 +580,13 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
       final locations = ref.read(eventDraftLocationsProvider);
       for (final location in locations) {
         if (location.type == LocationType.physical) {
-          draft.addPhysicalLocation(
-            location.name,
-            '',
-            '',
-            '',
-            '',
-            location.address,
-            location.note,
-          );
+          draft.addPhysicalLocation(location.name, '', '', '', '',location.address,location.note);
         }
         if (location.type == LocationType.virtual) {
-          draft.addVirtualLocation(
-            location.name,
-            '',
-            '',
-            location.url ?? '',
-            location.note,
-          );
+          draft.addVirtualLocation(location.name, '', '',location.url ?? '',location.note);
         }
       }
-
+      
       // Add Jitsi link if enabled
       if (_isJitsiEnabled) {
         final jitsiLink = createJitsiCallLink(title);
