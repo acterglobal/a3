@@ -1,5 +1,4 @@
-
-import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/activity_bigger_visual_container_widget.dart';
+import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/containers/activity_bigger_visual_container_widget.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -19,14 +18,17 @@ class ActivityTitleChangeItemWidget extends ConsumerWidget {
     final lang = L10n.of(context);
 
     final userId = activity.senderIdStr();
-     return ActivityBiggerVisualContainerWidget(
+    return ActivityBiggerVisualContainerWidget(
       activityObject: activity.object(),
       userId: userId,
       roomId: activity.roomIdStr(),
       actionTitle: getMessage(lang, userId) ?? '',
       target: '',
       actionIcon: PhosphorIconsThin.pencilSimpleLine,
-      subtitle: getSubtitle(context, activity.titleContent()?.newVal().toString().trim()),
+      subtitle: getSubtitle(
+        context,
+        activity.titleContent()?.newVal().toString().trim(),
+      ),
       originServerTs: activity.originServerTs(),
       leadingWidget: Icon(PhosphorIconsThin.pencilSimpleLine, size: 25),
     );
@@ -53,7 +55,7 @@ class ActivityTitleChangeItemWidget extends ConsumerWidget {
     if (stateMsg == null) return null;
     return Text(
       stateMsg,
-      style: Theme.of(context).textTheme.labelMedium,
+      style: Theme.of(context).textTheme.labelSmall,
       maxLines: 2,
       overflow: TextOverflow.ellipsis,
     );

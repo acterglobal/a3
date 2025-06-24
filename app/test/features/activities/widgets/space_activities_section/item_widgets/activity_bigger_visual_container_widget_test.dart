@@ -1,5 +1,5 @@
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/activity_bigger_visual_container_widget.dart';
+import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/containers/activity_bigger_visual_container_widget.dart';
 import 'package:acter/features/comments/widgets/time_ago_widget.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:acter_avatar/acter_avatar.dart';
@@ -34,10 +34,14 @@ void main() {
   }) async {
     await tester.pumpProviderWidget(
       overrides: [
-        memberAvatarInfoProvider((userId: userId ?? 'test-user-id', roomId: roomId ?? 'test-room-id'))
-            .overrideWith((ref) => mockAvatarInfo),
-        memberDisplayNameProvider((userId: userId ?? 'test-user-id', roomId: roomId ?? 'test-room-id'))
-            .overrideWith((ref) => Future.value('Test User')),
+        memberAvatarInfoProvider((
+          userId: userId ?? 'test-user-id',
+          roomId: roomId ?? 'test-room-id',
+        )).overrideWith((ref) => mockAvatarInfo),
+        memberDisplayNameProvider((
+          userId: userId ?? 'test-user-id',
+          roomId: roomId ?? 'test-room-id',
+        )).overrideWith((ref) => Future.value('Test User')),
       ],
       child: MaterialApp(
         home: Scaffold(
@@ -66,7 +70,7 @@ void main() {
       expect(find.byType(ActivityBiggerVisualContainerWidget), findsOneWidget);
       expect(find.byType(Row), findsWidgets);
       expect(find.byType(Column), findsWidgets);
-      
+
       // Verify RichText widgets are rendered
       final richTextWidgets = find.byType(RichText);
       expect(richTextWidgets, findsWidgets);
@@ -88,7 +92,9 @@ void main() {
       expect(findRichTextContaining('Test Task'), findsOneWidget);
     });
 
-    testWidgets('displays default values correctly', (WidgetTester tester) async {
+    testWidgets('displays default values correctly', (
+      WidgetTester tester,
+    ) async {
       await pumpActivityBiggerVisualContainerWidget(tester);
 
       // Test with default values: "Test User tested Test Target"
@@ -97,7 +103,9 @@ void main() {
       expect(findRichTextContaining('Test Target'), findsOneWidget);
     });
 
-    testWidgets('displays action icon in avatar overlay', (WidgetTester tester) async {
+    testWidgets('displays action icon in avatar overlay', (
+      WidgetTester tester,
+    ) async {
       await pumpActivityBiggerVisualContainerWidget(
         tester,
         actionIcon: Icons.add,
@@ -106,7 +114,9 @@ void main() {
       expect(find.byIcon(Icons.add), findsOneWidget);
     });
 
-    testWidgets('displays custom leading widget when provided', (WidgetTester tester) async {
+    testWidgets('displays custom leading widget when provided', (
+      WidgetTester tester,
+    ) async {
       final customLeadingWidget = Container(
         width: 30,
         height: 30,
@@ -123,7 +133,9 @@ void main() {
       expect(find.byType(Container), findsWidgets);
     });
 
-    testWidgets('displays default avatar when no leading widget provided', (WidgetTester tester) async {
+    testWidgets('displays default avatar when no leading widget provided', (
+      WidgetTester tester,
+    ) async {
       await pumpActivityBiggerVisualContainerWidget(tester);
 
       expect(find.byType(ActerAvatar), findsOneWidget);
@@ -146,7 +158,9 @@ void main() {
       expect(find.byType(TimeAgoWidget), findsOneWidget);
     });
 
-    testWidgets('displays activity object icon for event type', (WidgetTester tester) async {
+    testWidgets('displays activity object icon for event type', (
+      WidgetTester tester,
+    ) async {
       final activityObject = MockActivityObject(mockType: 'event');
 
       await pumpActivityBiggerVisualContainerWidget(
@@ -157,7 +171,9 @@ void main() {
       expect(find.byIcon(PhosphorIconsRegular.calendar), findsOneWidget);
     });
 
-    testWidgets('displays activity object icon for pin type', (WidgetTester tester) async {
+    testWidgets('displays activity object icon for pin type', (
+      WidgetTester tester,
+    ) async {
       final activityObject = MockActivityObject(mockType: 'pin');
 
       await pumpActivityBiggerVisualContainerWidget(
@@ -168,7 +184,9 @@ void main() {
       expect(find.byIcon(PhosphorIconsRegular.pushPin), findsOneWidget);
     });
 
-    testWidgets('displays activity object icon for task-list type', (WidgetTester tester) async {
+    testWidgets('displays activity object icon for task-list type', (
+      WidgetTester tester,
+    ) async {
       final activityObject = MockActivityObject(mockType: 'task-list');
 
       await pumpActivityBiggerVisualContainerWidget(
@@ -179,7 +197,9 @@ void main() {
       expect(find.byIcon(PhosphorIconsRegular.listChecks), findsOneWidget);
     });
 
-    testWidgets('displays activity object icon for task type', (WidgetTester tester) async {
+    testWidgets('displays activity object icon for task type', (
+      WidgetTester tester,
+    ) async {
       final activityObject = MockActivityObject(mockType: 'task');
 
       await pumpActivityBiggerVisualContainerWidget(
@@ -190,7 +210,9 @@ void main() {
       expect(find.byIcon(PhosphorIconsRegular.checkCircle), findsOneWidget);
     });
 
-    testWidgets('displays question icon for unknown activity object type', (WidgetTester tester) async {
+    testWidgets('displays question icon for unknown activity object type', (
+      WidgetTester tester,
+    ) async {
       final activityObject = MockActivityObject(mockType: 'unknown-type');
 
       await pumpActivityBiggerVisualContainerWidget(
@@ -201,56 +223,60 @@ void main() {
       expect(find.byIcon(PhosphorIconsRegular.question), findsOneWidget);
     });
 
-    testWidgets('does not display activity object icon when activityObject is null', (WidgetTester tester) async {
-      await pumpActivityBiggerVisualContainerWidget(
-        tester,
-        activityObject: null,
-      );
+    testWidgets(
+      'does not display activity object icon when activityObject is null',
+      (WidgetTester tester) async {
+        await pumpActivityBiggerVisualContainerWidget(
+          tester,
+          activityObject: null,
+        );
 
-      // Should not find any of the specific activity object icons
-      expect(find.byIcon(PhosphorIconsRegular.rocketLaunch), findsNothing);
-      expect(find.byIcon(PhosphorIconsRegular.book), findsNothing);
-      expect(find.byIcon(PhosphorIconsRegular.calendar), findsNothing);
-      expect(find.byIcon(PhosphorIconsRegular.pushPin), findsNothing);
-      expect(find.byIcon(PhosphorIconsRegular.listChecks), findsNothing);
-      expect(find.byIcon(PhosphorIconsRegular.checkCircle), findsNothing);
-      expect(find.byIcon(PhosphorIconsRegular.question), findsNothing);
-    });
+        // Should not find any of the specific activity object icons
+        expect(find.byIcon(PhosphorIconsRegular.rocketLaunch), findsNothing);
+        expect(find.byIcon(PhosphorIconsRegular.book), findsNothing);
+        expect(find.byIcon(PhosphorIconsRegular.calendar), findsNothing);
+        expect(find.byIcon(PhosphorIconsRegular.pushPin), findsNothing);
+        expect(find.byIcon(PhosphorIconsRegular.listChecks), findsNothing);
+        expect(find.byIcon(PhosphorIconsRegular.checkCircle), findsNothing);
+        expect(find.byIcon(PhosphorIconsRegular.question), findsNothing);
+      },
+    );
 
-    testWidgets('displays subtitle and time in correct layout when subtitle is provided', (WidgetTester tester) async {
-      final subtitleWidget = const Text('Subtitle Text');
+    testWidgets(
+      'displays subtitle and time in correct layout when subtitle is provided',
+      (WidgetTester tester) async {
+        final subtitleWidget = const Text('Subtitle Text');
 
-      await pumpActivityBiggerVisualContainerWidget(
-        tester,
-        subtitle: subtitleWidget,
-      );
+        await pumpActivityBiggerVisualContainerWidget(
+          tester,
+          subtitle: subtitleWidget,
+        );
 
-      expect(find.text('Subtitle Text'), findsOneWidget);
-      expect(find.byType(TimeAgoWidget), findsOneWidget);
-      expect(find.byType(IntrinsicHeight), findsOneWidget);
-    });
+        expect(find.text('Subtitle Text'), findsOneWidget);
+        expect(find.byType(TimeAgoWidget), findsOneWidget);
+        expect(find.byType(IntrinsicHeight), findsOneWidget);
+      },
+    );
 
-    testWidgets('displays only time when no subtitle is provided', (WidgetTester tester) async {
-      await pumpActivityBiggerVisualContainerWidget(
-        tester,
-        subtitle: null,
-      );
+    testWidgets('displays only time when no subtitle is provided', (
+      WidgetTester tester,
+    ) async {
+      await pumpActivityBiggerVisualContainerWidget(tester, subtitle: null);
 
       expect(find.byType(TimeAgoWidget), findsOneWidget);
       expect(find.byType(IntrinsicHeight), findsNothing);
     });
 
     testWidgets('handles empty target text', (WidgetTester tester) async {
-      await pumpActivityBiggerVisualContainerWidget(
-        tester,
-        target: '',
-      );
+      await pumpActivityBiggerVisualContainerWidget(tester, target: '');
 
       // Widget should still render without errors
       expect(find.byType(ActivityBiggerVisualContainerWidget), findsOneWidget);
     });
 
-    testWidgets('displays rich text with proper styling', (WidgetTester tester) async {
+    testWidgets('displays rich text with proper styling', (
+      WidgetTester tester,
+    ) async {
       await pumpActivityBiggerVisualContainerWidget(
         tester,
         actionTitle: 'created',
@@ -264,7 +290,9 @@ void main() {
       expect(findRichTextContaining('Test Task'), findsOneWidget);
     });
 
-    testWidgets('avatar overlay has correct styling', (WidgetTester tester) async {
+    testWidgets('avatar overlay has correct styling', (
+      WidgetTester tester,
+    ) async {
       await pumpActivityBiggerVisualContainerWidget(
         tester,
         actionIcon: Icons.add,
@@ -273,17 +301,17 @@ void main() {
       // Find the action icon
       final actionIcon = find.byIcon(Icons.add);
       expect(actionIcon, findsOneWidget);
-      
+
       // Find the Stack widget that contains the avatar and overlay
       expect(find.byType(Stack), findsWidgets);
-      
+
       // Verify the icon is within a Container with proper styling (should find the overlay container)
       final iconContainers = find.ancestor(
         of: actionIcon,
         matching: find.byType(Container),
       );
       expect(iconContainers, findsAtLeastNWidgets(1));
-      
+
       // Verify the container has circular decoration
       final overlayContainer = tester.widget<Container>(iconContainers.first);
       expect(overlayContainer.decoration, isA<BoxDecoration>());
@@ -310,8 +338,10 @@ void main() {
     });
 
     testWidgets('handles long text content', (WidgetTester tester) async {
-      const longTarget = 'This is a very long target text that should be handled properly by the widget without causing any layout issues or overflow problems';
-      const longActionTitle = 'This is a very long action title that should be handled properly';
+      const longTarget =
+          'This is a very long target text that should be handled properly by the widget without causing any layout issues or overflow problems';
+      const longActionTitle =
+          'This is a very long action title that should be handled properly';
 
       await pumpActivityBiggerVisualContainerWidget(
         tester,
@@ -321,24 +351,37 @@ void main() {
 
       // Widget should render without errors
       expect(find.byType(ActivityBiggerVisualContainerWidget), findsOneWidget);
-      expect(findRichTextContaining('This is a very long target text'), findsOneWidget);
-      expect(findRichTextContaining('This is a very long action title'), findsOneWidget);
+      expect(
+        findRichTextContaining('This is a very long target text'),
+        findsOneWidget,
+      );
+      expect(
+        findRichTextContaining('This is a very long action title'),
+        findsOneWidget,
+      );
     });
 
-    testWidgets('handles special characters in text', (WidgetTester tester) async {
+    testWidgets('handles special characters in text', (
+      WidgetTester tester,
+    ) async {
       await pumpActivityBiggerVisualContainerWidget(
         tester,
         target: 'Task with special chars: @#\$%^&*()',
         actionTitle: 'Action with emoji 🚀',
       );
 
-      expect(findRichTextContaining('Task with special chars: @#\$%^&*()'), findsOneWidget);
+      expect(
+        findRichTextContaining('Task with special chars: @#\$%^&*()'),
+        findsOneWidget,
+      );
       expect(findRichTextContaining('Action with emoji 🚀'), findsOneWidget);
     });
   });
 
   group('Integration Tests', () {
-    testWidgets('widget rebuilds correctly when properties change', (WidgetTester tester) async {
+    testWidgets('widget rebuilds correctly when properties change', (
+      WidgetTester tester,
+    ) async {
       // Initial render
       await pumpActivityBiggerVisualContainerWidget(
         tester,
@@ -362,15 +405,17 @@ void main() {
       // Verify widget still renders after rebuild
       expect(find.byType(ActivityBiggerVisualContainerWidget), findsOneWidget);
       expect(find.byType(RichText), findsWidgets);
-      
+
       // Verify that TimeAgoWidget is still present
       expect(find.byType(TimeAgoWidget), findsOneWidget);
-      
+
       // Verify that some icon is present (could be the edit icon or default info icon)
       expect(find.byType(Icon), findsAtLeastNWidgets(1));
     });
 
-    testWidgets('widget handles multiple instances correctly', (WidgetTester tester) async {
+    testWidgets('widget handles multiple instances correctly', (
+      WidgetTester tester,
+    ) async {
       final mockAvatarInfo1 = MockAvatarInfo(
         uniqueId: 'user1',
         mockDisplayName: 'User 1',
@@ -382,14 +427,22 @@ void main() {
 
       await tester.pumpProviderWidget(
         overrides: [
-          memberAvatarInfoProvider((userId: 'user1', roomId: 'room1'))
-              .overrideWith((ref) => mockAvatarInfo1),
-          memberDisplayNameProvider((userId: 'user1', roomId: 'room1'))
-              .overrideWith((ref) => Future.value('User 1')),
-          memberAvatarInfoProvider((userId: 'user2', roomId: 'room2'))
-              .overrideWith((ref) => mockAvatarInfo2),
-          memberDisplayNameProvider((userId: 'user2', roomId: 'room2'))
-              .overrideWith((ref) => Future.value('User 2')),
+          memberAvatarInfoProvider((
+            userId: 'user1',
+            roomId: 'room1',
+          )).overrideWith((ref) => mockAvatarInfo1),
+          memberDisplayNameProvider((
+            userId: 'user1',
+            roomId: 'room1',
+          )).overrideWith((ref) => Future.value('User 1')),
+          memberAvatarInfoProvider((
+            userId: 'user2',
+            roomId: 'room2',
+          )).overrideWith((ref) => mockAvatarInfo2),
+          memberDisplayNameProvider((
+            userId: 'user2',
+            roomId: 'room2',
+          )).overrideWith((ref) => Future.value('User 2')),
         ],
         child: MaterialApp(
           home: Scaffold(
@@ -418,7 +471,10 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.byType(ActivityBiggerVisualContainerWidget), findsNWidgets(2));
+      expect(
+        find.byType(ActivityBiggerVisualContainerWidget),
+        findsNWidgets(2),
+      );
       expect(findRichTextContaining('User 1'), findsOneWidget);
       expect(findRichTextContaining('User 2'), findsOneWidget);
       expect(findRichTextContaining('created'), findsOneWidget);
@@ -427,4 +483,4 @@ void main() {
       expect(find.byIcon(Icons.edit), findsOneWidget);
     });
   });
-} 
+}

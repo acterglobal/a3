@@ -1,11 +1,11 @@
 import 'package:acter/common/themes/colors/color_scheme.dart';
+import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/avatar_with_action_icon.dart';
+import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/object_icon_widget.dart';
 import 'package:acter/features/comments/widgets/time_ago_widget.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter_avatar/acter_avatar.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class ActivityIndividualActionContainerWidget extends ConsumerWidget {
   final ActivityObject? activityObject;
@@ -38,15 +38,22 @@ class ActivityIndividualActionContainerWidget extends ConsumerWidget {
       memberAvatarInfoProvider((roomId: roomId, userId: userId)),
     );
     final displayName =
-        ref.watch(memberDisplayNameProvider((roomId: roomId, userId: userId))).valueOrNull ??
+        ref
+            .watch(memberDisplayNameProvider((roomId: roomId, userId: userId)))
+            .valueOrNull ??
         userId;
 
     return Container(
-      padding: const EdgeInsets.symmetric( vertical: 10),
+      padding: const EdgeInsets.symmetric(vertical: 10),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildAvatarWithIcon(context, avatarInfo),
+          AvatarWithActionIcon(
+            avatarInfo: avatarInfo,
+            actionIcon: actionIcon,
+            actionIconBgColor: actionIconBgColor,
+            actionIconColor: actionIconColor,
+          ),
           const SizedBox(width: 10),
           Expanded(
             child: Column(
@@ -63,28 +70,6 @@ class ActivityIndividualActionContainerWidget extends ConsumerWidget {
     );
   }
 
-  /// Avatar with Action Icon overlay
-  Widget _buildAvatarWithIcon(BuildContext context, AvatarInfo avatarInfo) {
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        ActerAvatar(options: AvatarOptions.DM(avatarInfo, size: 22)),
-        Positioned(
-          right: -6,
-          bottom: -6,
-          child: Container(
-            padding: const EdgeInsets.all(4),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: actionIconBgColor ?? Theme.of(context).cardColor,
-            ),
-            child: Icon(actionIcon, color: actionIconColor ?? Colors.white, size: 15),
-          ),
-        ),
-      ],
-    );
-  }
-
   /// RichText for displayName, action, and target
   Widget _buildDisplayNameAndAction(
     BuildContext context,
@@ -98,17 +83,13 @@ class ActivityIndividualActionContainerWidget extends ConsumerWidget {
         Flexible(
           child: Text(
             target,
-            style: theme.textTheme.bodyMedium,
+            style: theme.textTheme.bodySmall,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
         ),
         if (activityObject != null)
-          Icon(
-            _getActivityObjectIcon(),
-            size: 16,
-            color: colorScheme.surfaceTint,
-          ),
+          ObjectIconWidget(objectType: activityObject?.typeStr()),
       ],
     );
   }
@@ -122,15 +103,15 @@ class ActivityIndividualActionContainerWidget extends ConsumerWidget {
         Flexible(
           flex: 1,
           child: RichText(
-          text: TextSpan(
-            children: [
-              TextSpan(text: displayName, style: theme.textTheme.bodyMedium),
-              TextSpan(
-                text: ' $actionTitle ',
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: colorScheme.surfaceTint,
+            text: TextSpan(
+              children: [
+                TextSpan(text: displayName, style: theme.textTheme.bodySmall),
+                TextSpan(
+                  text: ' $actionTitle ',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: colorScheme.surfaceTint,
+                  ),
                 ),
-              ),
               ],
             ),
           ),
@@ -138,17 +119,5 @@ class ActivityIndividualActionContainerWidget extends ConsumerWidget {
         TimeAgoWidget(originServerTs: originServerTs),
       ],
     );
-  }
-
-  IconData _getActivityObjectIcon() {
-    return switch (activityObject?.typeStr()) {
-      'news' => PhosphorIconsRegular.rocketLaunch,
-      'story' => PhosphorIconsRegular.book,
-      'event' => PhosphorIconsRegular.calendar,
-      'pin' => PhosphorIconsRegular.pushPin,
-      'task-list' => PhosphorIconsRegular.listChecks,
-      'task' => PhosphorIconsRegular.checkCircle,
-      _ => PhosphorIconsRegular.question,
-    };
   }
 }

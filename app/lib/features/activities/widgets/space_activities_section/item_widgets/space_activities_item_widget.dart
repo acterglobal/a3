@@ -1,5 +1,4 @@
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/activity_item_widget.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -39,31 +38,43 @@ class SpaceActivitiesItemWidget extends ConsumerWidget {
       tilePadding: EdgeInsets.zero,
       shape: const Border(),
       showTrailingIcon: false,
-      leading: ActerAvatar(options: AvatarOptions(avatarInfo, size: 24)),
-      title: Text(spaceName, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: colorScheme.surfaceTint)),
+      leading: ActerAvatar(options: AvatarOptions(avatarInfo, size: 18)),
+      title: Text(spaceName, style: Theme.of(context).textTheme.labelMedium),
       children:
-          activities
-              .asMap()
-              .entries
-              .map((entry) {
-                final activity = entry.value;
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: IntrinsicHeight(
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        DashedLineVertical(
-                          color: Theme.of(context).dividerColor.withValues(alpha: 0.3),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(child: ActivityItemWidget(activity: activity)),
-                      ],
+          activities.asMap().entries.map((entry) {
+            final activity = entry.value;
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              child: IntrinsicHeight(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    DashedLineVertical(
+                      color: Theme.of(
+                        context,
+                      ).dividerColor.withValues(alpha: 0.3),
                     ),
-                  ),
-                );
-              })
-              .toList(),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        children: [
+                          ActivityItemWidget(activity: activity),
+                          if (entry.key != activities.length - 1)
+                            Divider(
+                              height: 1,
+                              color: Theme.of(
+                                context,
+                              ).dividerColor.withValues(alpha: 0.1),
+                              indent: 0,
+                            ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }).toList(),
     );
   }
 }

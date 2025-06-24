@@ -1,6 +1,6 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/activity_membership_container_widget.dart';
+import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/containers/activity_membership_container_widget.dart';
 import 'package:acter/features/comments/widgets/time_ago_widget.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
@@ -70,9 +70,7 @@ void main() {
         ],
         supportedLocales: L10n.supportedLocales,
         home: Scaffold(
-          body: ActivityMembershipItemWidget(
-            activity: mockActivity,
-          ),
+          body: ActivityMembershipItemWidget(activity: mockActivity),
         ),
       ),
     );
@@ -93,7 +91,9 @@ void main() {
     });
 
     group('Membership Change Types', () {
-      testWidgets('displays correct info for joined event', (WidgetTester tester) async {
+      testWidgets('displays correct info for joined event', (
+        WidgetTester tester,
+      ) async {
         await pumpActivityMembershipItemWidget(
           tester,
           membershipChange: 'joined',
@@ -104,7 +104,9 @@ void main() {
         expect(findRichTextContaining('joined'), findsOneWidget);
       });
 
-      testWidgets('displays correct info for left event', (WidgetTester tester) async {
+      testWidgets('displays correct info for left event', (
+        WidgetTester tester,
+      ) async {
         await pumpActivityMembershipItemWidget(
           tester,
           membershipChange: 'left',
@@ -115,7 +117,9 @@ void main() {
         expect(findRichTextContaining('left'), findsOneWidget);
       });
 
-      testWidgets('displays correct info for invitationAccepted event', (WidgetTester tester) async {
+      testWidgets('displays correct info for invitationAccepted event', (
+        WidgetTester tester,
+      ) async {
         await pumpActivityMembershipItemWidget(
           tester,
           membershipChange: 'invitationAccepted',
@@ -126,7 +130,9 @@ void main() {
         expect(findRichTextContaining('accepted'), findsOneWidget);
       });
 
-      testWidgets('displays correct info for banned event on others', (WidgetTester tester) async {
+      testWidgets('displays correct info for banned event on others', (
+        WidgetTester tester,
+      ) async {
         await pumpActivityMembershipItemWidget(
           tester,
           membershipChange: 'banned',
@@ -139,7 +145,9 @@ void main() {
         expect(findRichTextContaining('banned'), findsOneWidget);
       });
 
-      testWidgets('displays correct info for banned event on self', (WidgetTester tester) async {
+      testWidgets('displays correct info for banned event on self', (
+        WidgetTester tester,
+      ) async {
         await pumpActivityMembershipItemWidget(
           tester,
           membershipChange: 'banned',
@@ -151,7 +159,9 @@ void main() {
         expect(findRichTextContaining('banned you'), findsOneWidget);
       });
 
-      testWidgets('displays correct info for invited event on others', (WidgetTester tester) async {
+      testWidgets('displays correct info for invited event on others', (
+        WidgetTester tester,
+      ) async {
         await pumpActivityMembershipItemWidget(
           tester,
           membershipChange: 'invited',
@@ -164,7 +174,9 @@ void main() {
         expect(findRichTextContaining('invited'), findsOneWidget);
       });
 
-      testWidgets('displays correct info for invited event on self', (WidgetTester tester) async {
+      testWidgets('displays correct info for invited event on self', (
+        WidgetTester tester,
+      ) async {
         await pumpActivityMembershipItemWidget(
           tester,
           membershipChange: 'invited',
@@ -176,7 +188,9 @@ void main() {
         expect(findRichTextContaining('invited you'), findsOneWidget);
       });
 
-      testWidgets('displays default info for unknown membership change', (WidgetTester tester) async {
+      testWidgets('displays default info for unknown membership change', (
+        WidgetTester tester,
+      ) async {
         await pumpActivityMembershipItemWidget(
           tester,
           membershipChange: 'unknown_action',
@@ -188,7 +202,9 @@ void main() {
     });
 
     group('Display Name Handling', () {
-      testWidgets('uses display names when available', (WidgetTester tester) async {
+      testWidgets('uses display names when available', (
+        WidgetTester tester,
+      ) async {
         await pumpActivityMembershipItemWidget(
           tester,
           membershipChange: 'joined',
@@ -206,7 +222,9 @@ void main() {
         await pumpActivityMembershipItemWidget(tester);
 
         // Verify container has correct padding
-        final container = tester.widget<Container>(find.byType(Container).first);
+        final container = tester.widget<Container>(
+          find.byType(Container).first,
+        );
         expect(container.padding, const EdgeInsets.symmetric(vertical: 10));
 
         // Verify Row structure
@@ -220,10 +238,12 @@ void main() {
         await pumpActivityMembershipItemWidget(tester);
 
         final icon = tester.widget<Icon>(find.byType(Icon));
-        expect(icon.size, 20);
+        expect(icon.size, 16);
       });
 
-      testWidgets('RichText has correct styling and overflow handling', (WidgetTester tester) async {
+      testWidgets('RichText has correct styling and overflow handling', (
+        WidgetTester tester,
+      ) async {
         await pumpActivityMembershipItemWidget(tester);
 
         // Find the specific RichText that contains our membership content
@@ -234,36 +254,42 @@ void main() {
           }
           return false;
         });
-        
+
         expect(membershipRichText, findsOneWidget);
         final richText = tester.widget<RichText>(membershipRichText);
         expect(richText.maxLines, 2);
         expect(richText.overflow, TextOverflow.ellipsis);
       });
 
-      testWidgets('TimeAgoWidget is positioned correctly', (WidgetTester tester) async {
+      testWidgets('TimeAgoWidget is positioned correctly', (
+        WidgetTester tester,
+      ) async {
         await pumpActivityMembershipItemWidget(tester);
 
         expect(find.byType(TimeAgoWidget), findsOneWidget);
-        
+
         final positioned = tester.widget<Positioned>(find.byType(Positioned));
         expect(positioned.right, 0);
         expect(positioned.bottom, 3);
       });
 
-      testWidgets('has correct spacing between icon and content', (WidgetTester tester) async {
+      testWidgets('has correct spacing between icon and content', (
+        WidgetTester tester,
+      ) async {
         await pumpActivityMembershipItemWidget(tester);
 
         // Find the SizedBox that provides spacing between icon and content
         final spacingSizedBoxes = find.byWidgetPredicate((widget) {
-          return widget is SizedBox && widget.width == 10;
+          return widget is SizedBox && widget.width == 8;
         });
         expect(spacingSizedBoxes, findsOneWidget);
       });
     });
 
     group('TimeAgoWidget Integration', () {
-      testWidgets('displays TimeAgoWidget with correct timestamp', (WidgetTester tester) async {
+      testWidgets('displays TimeAgoWidget with correct timestamp', (
+        WidgetTester tester,
+      ) async {
         const customTimestamp = 9876543210;
         await pumpActivityMembershipItemWidget(
           tester,
@@ -271,14 +297,18 @@ void main() {
         );
 
         expect(find.byType(TimeAgoWidget), findsOneWidget);
-        
-        final timeAgoWidget = tester.widget<TimeAgoWidget>(find.byType(TimeAgoWidget));
+
+        final timeAgoWidget = tester.widget<TimeAgoWidget>(
+          find.byType(TimeAgoWidget),
+        );
         expect(timeAgoWidget.originServerTs, customTimestamp);
       });
     });
 
     group('Edge Cases', () {
-      testWidgets('handles null membership content gracefully', (WidgetTester tester) async {
+      testWidgets('handles null membership content gracefully', (
+        WidgetTester tester,
+      ) async {
         final mockActivity = MockActivity(
           mockType: 'membership',
           mockMembershipContent: null,
@@ -308,9 +338,7 @@ void main() {
             ],
             supportedLocales: L10n.supportedLocales,
             home: Scaffold(
-              body: ActivityMembershipItemWidget(
-                activity: mockActivity,
-              ),
+              body: ActivityMembershipItemWidget(activity: mockActivity),
             ),
           ),
         );
@@ -321,10 +349,13 @@ void main() {
         expect(find.byIcon(PhosphorIconsThin.user), findsOneWidget);
       });
 
-      testWidgets('handles very long display names', (WidgetTester tester) async {
+      testWidgets('handles very long display names', (
+        WidgetTester tester,
+      ) async {
         final longNameAvatarInfo = MockAvatarInfo(
           uniqueId: 'target-user-id',
-          mockDisplayName: 'This is a very long display name that should be truncated properly by the widget',
+          mockDisplayName:
+              'This is a very long display name that should be truncated properly by the widget',
         );
 
         final mockMembershipContent = MockMembershipContent(
@@ -361,29 +392,31 @@ void main() {
             ],
             supportedLocales: L10n.supportedLocales,
             home: Scaffold(
-              body: ActivityMembershipItemWidget(
-                activity: mockActivity,
-              ),
+              body: ActivityMembershipItemWidget(activity: mockActivity),
             ),
           ),
         );
         await tester.pumpAndSettle();
 
-        expect(findRichTextContaining('This is a very long display name'), findsOneWidget);
-        
+        expect(
+          findRichTextContaining('This is a very long display name'),
+          findsOneWidget,
+        );
+
         // Verify text overflow is handled for the membership content
         final membershipRichText = find.byWidgetPredicate((widget) {
           if (widget is RichText) {
             final text = widget.text.toPlainText();
-            return text.contains('This is a very long display name') && text.contains('joined');
+            return text.contains('This is a very long display name') &&
+                text.contains('joined');
           }
           return false;
         });
-        
+
         expect(membershipRichText, findsOneWidget);
         final richText = tester.widget<RichText>(membershipRichText);
         expect(richText.overflow, TextOverflow.ellipsis);
       });
     });
   });
-} 
+}

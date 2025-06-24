@@ -1,5 +1,5 @@
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/activity_membership_container_widget.dart';
+import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/containers/activity_membership_container_widget.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/attachment.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/comment.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/creation.dart';
@@ -57,8 +57,10 @@ void main() {
       await tester.pumpProviderWidget(
         overrides: [
           memberAvatarInfoProvider.overrideWith(
-            (ref, param) =>
-                MockAvatarInfo(uniqueId: param.userId, mockDisplayName: 'Test User'),
+            (ref, param) => MockAvatarInfo(
+              uniqueId: param.userId,
+              mockDisplayName: 'Test User',
+            ),
           ),
         ],
         screenshotPath: screenshotPath,
@@ -88,41 +90,61 @@ void main() {
       final showcaseTypeWidgets = [
         {
           'name': 'comment',
-          'widget': (Activity activity) => ActivityCommentItemWidget(activity: activity),
+          'widget':
+              (Activity activity) =>
+                  ActivityCommentItemWidget(activity: activity),
           'activity': MockActivity(
             mockType: PushStyles.comment.name,
             mockMsgContent: MockMsgContent(bodyText: 'Showcase comment!'),
-            mockObject: MockActivityObject(mockType: 'task', mockTitle: 'Task Title'),
+            mockObject: MockActivityObject(
+              mockType: 'task',
+              mockTitle: 'Task Title',
+            ),
           ),
           'expectedText': 'commented on',
           'expectedIcon': PhosphorIconsRegular.chatCenteredDots,
         },
         {
           'name': 'attachment',
-          'widget': (Activity activity) => ActivityAttachmentItemWidget(activity: activity),
+          'widget':
+              (Activity activity) =>
+                  ActivityAttachmentItemWidget(activity: activity),
           'activity': MockActivity(
             mockType: PushStyles.attachment.name,
-            mockObject: MockActivityObject(mockType: 'task', mockTitle: 'Task Title'),
+            mockObject: MockActivityObject(
+              mockType: 'task',
+              mockTitle: 'Task Title',
+            ),
           ),
           'expectedText': 'added attachment on',
           'expectedIcon': PhosphorIconsRegular.paperclip,
         },
         {
           'name': 'creation',
-          'widget': (Activity activity) => ActivityCreationItemWidget(activity: activity),
+          'widget':
+              (Activity activity) =>
+                  ActivityCreationItemWidget(activity: activity),
           'activity': MockActivity(
             mockType: PushStyles.creation.name,
-            mockObject: MockActivityObject(mockType: 'task', mockTitle: 'Task Title'),
+            mockObject: MockActivityObject(
+              mockType: 'task',
+              mockTitle: 'Task Title',
+            ),
           ),
           'expectedText': 'creation task',
-          'expectedIcon': Icons.add_circle_outline,
+          'expectedIcon': Icons.add,
         },
         {
           'name': 'title_change',
-          'widget': (Activity activity) => ActivityTitleChangeItemWidget(activity: activity),
+          'widget':
+              (Activity activity) =>
+                  ActivityTitleChangeItemWidget(activity: activity),
           'activity': MockActivity(
             mockType: PushStyles.titleChange.name,
-            mockObject: MockActivityObject(mockType: 'pin', mockTitle: 'pin Title'),
+            mockObject: MockActivityObject(
+              mockType: 'pin',
+              mockTitle: 'pin Title',
+            ),
             mockTitleContent: MockTitleContent(
               mockChange: 'Changed',
               mockNewVal: 'New Pin Title',
@@ -133,44 +155,64 @@ void main() {
         },
         {
           'name': 'description_change',
-          'widget': (Activity activity) => ActivityDescriptionChangeItemWidget(activity: activity),
+          'widget':
+              (Activity activity) =>
+                  ActivityDescriptionChangeItemWidget(activity: activity),
           'activity': MockActivity(
             mockType: PushStyles.descriptionChange.name,
-            mockObject: MockActivityObject(mockType: 'pin', mockTitle: 'pin Description'),
+            mockObject: MockActivityObject(
+              mockType: 'pin',
+              mockTitle: 'pin Description',
+            ),
             mockDescriptionContent: MockDescriptionContent(
               mockChange: 'Changed',
               mockNewVal: 'New Pin Description',
             ),
           ),
           'expectedText': 'changed description task',
-          'expectedIcon': PhosphorIconsThin.pencilSimpleLine,
+          'expectedIcon': PhosphorIconsThin.pencilLine,
         },
         {
           'name': 'event_date_change',
-          'widget': (Activity activity) => ActivityEventDateChangeItemWidget(activity: activity),
+          'widget':
+              (Activity activity) =>
+                  ActivityEventDateChangeItemWidget(activity: activity),
           'activity': MockActivity(
             mockType: PushStyles.eventDateChange.name,
-            mockObject: MockActivityObject(mockType: 'event', mockTitle: 'Event Title'),
+            mockObject: MockActivityObject(
+              mockType: 'event',
+              mockTitle: 'Event Title',
+            ),
           ),
           'expectedText': 'rescheduled event',
           'expectedIcon': Icons.access_time,
         },
         {
           'name': 'room_name',
-          'widget': (Activity activity) => ActivityRoomNameItemWidget(activity: activity),
+          'widget':
+              (Activity activity) =>
+                  ActivityRoomNameItemWidget(activity: activity),
           'activity': MockActivity(
             mockType: PushStyles.roomName.name,
-            mockObject: MockActivityObject(mockType: 'space', mockTitle: 'Space Name'),
+            mockObject: MockActivityObject(
+              mockType: 'space',
+              mockTitle: 'Space Name',
+            ),
           ),
           'expectedText': 'updated space name',
           'expectedIcon': null, // Uses default icon in container
         },
         {
           'name': 'room_topic',
-          'widget': (Activity activity) => ActivityRoomTopicItemWidget(activity: activity),
+          'widget':
+              (Activity activity) =>
+                  ActivityRoomTopicItemWidget(activity: activity),
           'activity': MockActivity(
             mockType: PushStyles.roomTopic.name,
-            mockObject: MockActivityObject(mockType: 'space', mockTitle: 'Space Topic'),
+            mockObject: MockActivityObject(
+              mockType: 'space',
+              mockTitle: 'Space Topic',
+            ),
             mockRoomTopicContent: MockRoomTopicContent(
               mockChange: 'Set',
               mockNewVal: 'New Space Topic',
@@ -181,122 +223,182 @@ void main() {
         },
         {
           'name': 'room_avatar',
-          'widget': (Activity activity) => ActivityRoomAvatarItemWidget(activity: activity),
+          'widget':
+              (Activity activity) =>
+                  ActivityRoomAvatarItemWidget(activity: activity),
           'activity': MockActivity(
             mockType: PushStyles.roomAvatar.name,
-            mockObject: MockActivityObject(mockType: 'space', mockTitle: 'Space Avatar'),
+            mockObject: MockActivityObject(
+              mockType: 'space',
+              mockTitle: 'Space Avatar',
+            ),
           ),
           'expectedText': 'updated space avatar',
           'expectedIcon': null, // Uses default icon in container
         },
         {
           'name': 'rsvp_yes',
-          'widget': (Activity activity) => ActivityEventRSVPYesItemWidget(activity: activity),
+          'widget':
+              (Activity activity) =>
+                  ActivityEventRSVPYesItemWidget(activity: activity),
           'activity': MockActivity(
             mockType: PushStyles.rsvpYes.name,
-            mockObject: MockActivityObject(mockType: 'event', mockTitle: 'Event Title'),
+            mockObject: MockActivityObject(
+              mockType: 'event',
+              mockTitle: 'Event Title',
+            ),
           ),
           'expectedText': 'going to',
           'expectedIcon': Icons.check,
         },
         {
           'name': 'rsvp_no',
-          'widget': (Activity activity) => ActivityEventRSVPNoItemWidget(activity: activity),
+          'widget':
+              (Activity activity) =>
+                  ActivityEventRSVPNoItemWidget(activity: activity),
           'activity': MockActivity(
             mockType: PushStyles.rsvpNo.name,
-            mockObject: MockActivityObject(mockType: 'event', mockTitle: 'Event Title'),
+            mockObject: MockActivityObject(
+              mockType: 'event',
+              mockTitle: 'Event Title',
+            ),
           ),
           'expectedText': 'not going to',
           'expectedIcon': Icons.close_rounded,
         },
         {
           'name': 'rsvp_maybe',
-          'widget': (Activity activity) => ActivityEventRSVPMayBeItemWidget(activity: activity),
+          'widget':
+              (Activity activity) =>
+                  ActivityEventRSVPMayBeItemWidget(activity: activity),
           'activity': MockActivity(
             mockType: PushStyles.rsvpMaybe.name,
-            mockObject: MockActivityObject(mockType: 'event', mockTitle: 'Event Title'),
+            mockObject: MockActivityObject(
+              mockType: 'event',
+              mockTitle: 'Event Title',
+            ),
           ),
           'expectedText': 'may be',
           'expectedIcon': Icons.question_mark,
         },
         {
           'name': 'task_add',
-          'widget': (Activity activity) => ActivityTaskAddItemWidget(activity: activity),
+          'widget':
+              (Activity activity) =>
+                  ActivityTaskAddItemWidget(activity: activity),
           'activity': MockActivity(
             mockType: PushStyles.taskAdd.name,
-            mockObject: MockActivityObject(mockType: 'task', mockTitle: 'Task Title'),
+            mockObject: MockActivityObject(
+              mockType: 'task',
+              mockTitle: 'Task Title',
+            ),
             mockName: 'abc task',
           ),
           'expectedText': 'added task on',
           'expectedIcon': Icons.add_circle_outline,
           'expectedSubtitle': 'abc task',
         },
-          {
-            'name': 'task_complete',
-          'widget': (Activity activity) => ActivityTaskCompleteItemWidget(activity: activity),
+        {
+          'name': 'task_complete',
+          'widget':
+              (Activity activity) =>
+                  ActivityTaskCompleteItemWidget(activity: activity),
           'activity': MockActivity(
             mockType: PushStyles.taskComplete.name,
-            mockObject: MockActivityObject(mockType: 'task', mockTitle: 'Task Title'),
+            mockObject: MockActivityObject(
+              mockType: 'task',
+              mockTitle: 'Task Title',
+            ),
           ),
           'expectedText': 'completed task',
-          'expectedIcon': Icons.done_all,
+          'expectedIcon': Icons.done,
         },
         {
           'name': 'task_accepted',
-          'widget': (Activity activity) => ActivityTaskAcceptedItemWidget(activity: activity),
+          'widget':
+              (Activity activity) =>
+                  ActivityTaskAcceptedItemWidget(activity: activity),
           'activity': MockActivity(
             mockType: PushStyles.taskAccept.name,
-            mockObject: MockActivityObject(mockType: 'task', mockTitle: 'Task Title'),
+            mockObject: MockActivityObject(
+              mockType: 'task',
+              mockTitle: 'Task Title',
+            ),
           ),
           'expectedText': 'accepted task',
           'expectedIcon': Icons.done,
         },
         {
           'name': 'task_decline',
-          'widget': (Activity activity) => ActivityTaskDeclineItemWidget(activity: activity),
+          'widget':
+              (Activity activity) =>
+                  ActivityTaskDeclineItemWidget(activity: activity),
           'activity': MockActivity(
             mockType: PushStyles.taskDecline.name,
-            mockObject: MockActivityObject(mockType: 'task', mockTitle: 'Task Title'),
+            mockObject: MockActivityObject(
+              mockType: 'task',
+              mockTitle: 'Task Title',
+            ),
           ),
           'expectedText': 'declined task',
           'expectedIcon': Icons.close_rounded,
         },
         {
           'name': 'task_reopen',
-          'widget': (Activity activity) => ActivityTaskReOpenItemWidget(activity: activity),
+          'widget':
+              (Activity activity) =>
+                  ActivityTaskReOpenItemWidget(activity: activity),
           'activity': MockActivity(
             mockType: PushStyles.taskReOpen.name,
-            mockObject: MockActivityObject(mockType: 'task', mockTitle: 'Task Title'),
+            mockObject: MockActivityObject(
+              mockType: 'task',
+              mockTitle: 'Task Title',
+            ),
           ),
           'expectedText': 'reopened task',
           'expectedIcon': Icons.restart_alt,
         },
         {
           'name': 'task_due_date_change',
-          'widget': (Activity activity) => ActivityTaskDueDateChangedItemWidget(activity: activity),
+          'widget':
+              (Activity activity) =>
+                  ActivityTaskDueDateChangedItemWidget(activity: activity),
           'activity': MockActivity(
             mockType: PushStyles.taskDueDateChange.name,
-            mockObject: MockActivityObject(mockType: 'task', mockTitle: 'Task Title'),
+            mockObject: MockActivityObject(
+              mockType: 'task',
+              mockTitle: 'Task Title',
+            ),
           ),
           'expectedText': 'rescheduled task',
           'expectedIcon': Icons.access_time,
         },
         {
           'name': 'reaction',
-          'widget': (Activity activity) => ActivityReactionItemWidget(activity: activity),
+          'widget':
+              (Activity activity) =>
+                  ActivityReactionItemWidget(activity: activity),
           'activity': MockActivity(
             mockType: PushStyles.reaction.name,
-            mockObject: MockActivityObject(mockType: 'news', mockTitle: 'News Title'),
+            mockObject: MockActivityObject(
+              mockType: 'news',
+              mockTitle: 'News Title',
+            ),
           ),
           'expectedText': 'reacted on',
           'expectedIcon': Icons.favorite,
         },
         {
           'name': 'references',
-          'widget': (Activity activity) => ActivityReferencesItemWidget(activity: activity),
+          'widget':
+              (Activity activity) =>
+                  ActivityReferencesItemWidget(activity: activity),
           'activity': MockActivity(
             mockType: PushStyles.references.name,
-            mockObject: MockActivityObject(mockType: 'task', mockTitle: 'Task Title'),
+            mockObject: MockActivityObject(
+              mockType: 'task',
+              mockTitle: 'Task Title',
+            ),
             mockRefDetails: MockRefDetails(
               mockTitle: 'Task Title',
               mockType: 'task',
@@ -307,10 +409,15 @@ void main() {
         },
         {
           'name': 'other_changes',
-          'widget': (Activity activity) => ActivityOtherChangesItemWidget(activity: activity),
+          'widget':
+              (Activity activity) =>
+                  ActivityOtherChangesItemWidget(activity: activity),
           'activity': MockActivity(
             mockType: PushStyles.otherChanges.name,
-            mockObject: MockActivityObject(mockType: 'task', mockTitle: 'Task Title'),
+            mockObject: MockActivityObject(
+              mockType: 'task',
+              mockTitle: 'Task Title',
+            ),
           ),
           'expectedText': 'updated task',
           'expectedIcon': PhosphorIconsRegular.pencilLine,
@@ -318,7 +425,9 @@ void main() {
         // Membership activities
         {
           'name': 'membership_joined',
-          'widget': (Activity activity) => ActivityMembershipItemWidget(activity: activity),
+          'widget':
+              (Activity activity) =>
+                  ActivityMembershipItemWidget(activity: activity),
           'activity': MockActivity(
             mockType: PushStyles.joined.name,
             mockSenderId: '@user1:acter.global',
@@ -332,7 +441,9 @@ void main() {
         },
         {
           'name': 'membership_left',
-          'widget': (Activity activity) => ActivityMembershipItemWidget(activity: activity),
+          'widget':
+              (Activity activity) =>
+                  ActivityMembershipItemWidget(activity: activity),
           'activity': MockActivity(
             mockType: PushStyles.left.name,
             mockSenderId: '@user1:acter.global',
@@ -346,7 +457,9 @@ void main() {
         },
         {
           'name': 'membership_invited',
-          'widget': (Activity activity) => ActivityMembershipItemWidget(activity: activity),
+          'widget':
+              (Activity activity) =>
+                  ActivityMembershipItemWidget(activity: activity),
           'activity': MockActivity(
             mockType: PushStyles.invited.name,
             mockSenderId: '@user1:acter.global',
@@ -360,7 +473,9 @@ void main() {
         },
         {
           'name': 'membership_banned',
-          'widget': (Activity activity) => ActivityMembershipItemWidget(activity: activity),
+          'widget':
+              (Activity activity) =>
+                  ActivityMembershipItemWidget(activity: activity),
           'activity': MockActivity(
             mockType: PushStyles.banned.name,
             mockSenderId: '@user1:acter.global',
@@ -374,7 +489,9 @@ void main() {
         },
         {
           'name': 'membership_kicked',
-          'widget': (Activity activity) => ActivityMembershipItemWidget(activity: activity),
+          'widget':
+              (Activity activity) =>
+                  ActivityMembershipItemWidget(activity: activity),
           'activity': MockActivity(
             mockType: PushStyles.kicked.name,
             mockSenderId: '@user1:acter.global',
@@ -388,7 +505,9 @@ void main() {
         },
         {
           'name': 'membership_invitation_accepted',
-          'widget': (Activity activity) => ActivityMembershipItemWidget(activity: activity),
+          'widget':
+              (Activity activity) =>
+                  ActivityMembershipItemWidget(activity: activity),
           'activity': MockActivity(
             mockType: PushStyles.invitationAccepted.name,
             mockSenderId: '@user1:acter.global',
@@ -402,7 +521,9 @@ void main() {
         },
         {
           'name': 'membership_invitation_rejected',
-          'widget': (Activity activity) => ActivityMembershipItemWidget(activity: activity),
+          'widget':
+              (Activity activity) =>
+                  ActivityMembershipItemWidget(activity: activity),
           'activity': MockActivity(
             mockType: PushStyles.invitationRejected.name,
             mockSenderId: '@user1:acter.global',
@@ -416,7 +537,9 @@ void main() {
         },
         {
           'name': 'membership_invitation_revoked',
-          'widget': (Activity activity) => ActivityMembershipItemWidget(activity: activity),
+          'widget':
+              (Activity activity) =>
+                  ActivityMembershipItemWidget(activity: activity),
           'activity': MockActivity(
             mockType: PushStyles.invitationRevoked.name,
             mockSenderId: '@user1:acter.global',
@@ -430,7 +553,9 @@ void main() {
         },
         {
           'name': 'membership_knock_accepted',
-          'widget': (Activity activity) => ActivityMembershipItemWidget(activity: activity),
+          'widget':
+              (Activity activity) =>
+                  ActivityMembershipItemWidget(activity: activity),
           'activity': MockActivity(
             mockType: PushStyles.knockAccepted.name,
             mockSenderId: '@user1:acter.global',
@@ -444,7 +569,9 @@ void main() {
         },
         {
           'name': 'membership_knock_retracted',
-          'widget': (Activity activity) => ActivityMembershipItemWidget(activity: activity),
+          'widget':
+              (Activity activity) =>
+                  ActivityMembershipItemWidget(activity: activity),
           'activity': MockActivity(
             mockType: PushStyles.knockRetracted.name,
             mockSenderId: '@user1:acter.global',
@@ -458,7 +585,9 @@ void main() {
         },
         {
           'name': 'membership_knock_denied',
-          'widget': (Activity activity) => ActivityMembershipItemWidget(activity: activity),
+          'widget':
+              (Activity activity) =>
+                  ActivityMembershipItemWidget(activity: activity),
           'activity': MockActivity(
             mockType: PushStyles.knockDenied.name,
             mockSenderId: '@user1:acter.global',
@@ -472,7 +601,9 @@ void main() {
         },
         {
           'name': 'membership_unbanned',
-          'widget': (Activity activity) => ActivityMembershipItemWidget(activity: activity),
+          'widget':
+              (Activity activity) =>
+                  ActivityMembershipItemWidget(activity: activity),
           'activity': MockActivity(
             mockType: PushStyles.unbanned.name,
             mockSenderId: '@user1:acter.global',
@@ -486,7 +617,9 @@ void main() {
         },
         {
           'name': 'membership_kicked_and_banned',
-          'widget': (Activity activity) => ActivityMembershipItemWidget(activity: activity),
+          'widget':
+              (Activity activity) =>
+                  ActivityMembershipItemWidget(activity: activity),
           'activity': MockActivity(
             mockType: PushStyles.kickedAndBanned.name,
             mockSenderId: '@user1:acter.global',
@@ -500,7 +633,9 @@ void main() {
         },
         {
           'name': 'membership_knocked',
-          'widget': (Activity activity) => ActivityMembershipItemWidget(activity: activity),
+          'widget':
+              (Activity activity) =>
+                  ActivityMembershipItemWidget(activity: activity),
           'activity': MockActivity(
             mockType: PushStyles.knocked.name,
             mockSenderId: '@user1:acter.global',
@@ -523,14 +658,15 @@ void main() {
           await createWidgetUnderTest(
             tester: tester,
             widget: widgetBuilder(activity),
-            screenshotPath: 'test/features/activity/item_widgets/goldens/${entry['name']}_widget.png',
+            screenshotPath:
+                'test/features/activity/item_widgets/goldens/${entry['name']}_widget.png',
           );
 
           // Check for expected icon if specified
           if (expectedIcon != null) {
             expect(find.byIcon(expectedIcon), findsOneWidget);
           }
-          
+
           // For comment widget, also check for the comment content
           if (entry['name'] == 'comment') {
             expect(find.text('Showcase comment!'), findsOneWidget);
@@ -538,7 +674,10 @@ void main() {
 
           // Check for subtitle if expected
           if (entry['expectedSubtitle'] != null) {
-            expect(find.text(entry['expectedSubtitle'] as String), findsOneWidget);
+            expect(
+              find.text(entry['expectedSubtitle'] as String),
+              findsOneWidget,
+            );
           }
         });
       }
