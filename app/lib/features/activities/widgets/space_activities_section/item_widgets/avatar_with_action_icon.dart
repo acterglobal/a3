@@ -27,6 +27,12 @@ class AvatarWithActionIcon extends StatelessWidget {
             padding: const EdgeInsets.all(5),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
+              border: Border.all(
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.6),
+                width: 1,
+              ),
               color: actionIconBgColor ?? Theme.of(context).colorScheme.surface,
             ),
             child: Icon(
