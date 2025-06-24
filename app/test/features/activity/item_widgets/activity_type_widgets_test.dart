@@ -132,7 +132,7 @@ void main() {
             ),
           ),
           'expectedText': 'creation task',
-          'expectedIcon': Icons.add_circle_outline,
+          'expectedIcon': Icons.add,
         },
         {
           'name': 'title_change',
@@ -170,7 +170,7 @@ void main() {
             ),
           ),
           'expectedText': 'changed description task',
-          'expectedIcon': PhosphorIconsThin.pencilSimpleLine,
+          'expectedIcon': PhosphorIconsThin.pencilLine,
         },
         {
           'name': 'event_date_change',
@@ -311,7 +311,7 @@ void main() {
             ),
           ),
           'expectedText': 'completed task',
-          'expectedIcon': Icons.done_all,
+          'expectedIcon': Icons.done,
         },
         {
           'name': 'task_accepted',
