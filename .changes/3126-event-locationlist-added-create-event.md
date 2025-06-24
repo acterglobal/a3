@@ -1,0 +1,1 @@
+- [Fix] : Event locations is now visible to users at the time of event creation within the same view instead of dialog.
