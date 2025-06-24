@@ -3146,5 +3146,7 @@
   "unsupportedFile": "Unsupported File Type",
   "@jitsiMeeting": {},
   "updatingLocations": "Updating locations...",
-  "@updatingLocations": {}
+  "@updatingLocations": {},
+  "noIconsFound": "No icons found",
+  "@noIconsFound": {}
 }
