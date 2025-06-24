@@ -1,4 +1,4 @@
-import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/activity_bigger_visual_container_widget.dart';
+import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/containers/activity_bigger_visual_container_widget.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -26,11 +26,15 @@ class ActivityDescriptionChangeItemWidget extends ConsumerWidget {
       actionIcon: PhosphorIconsThin.pencilLine,
       actionTitle: getMessage(lang, userId) ?? '',
       target: '',
+      actionIconBgColor: Colors.blueGrey,
+      actionIconColor: Colors.white,
       activityObject: activity.object(),
       userId: userId,
       roomId: activity.roomIdStr(),
-      subtitle: getSubtitle(context, activity.descriptionContent()?.newVal().toString().trim()),
-      leadingWidget: Icon(PhosphorIconsThin.pencilSimpleLine, size: 25),
+      subtitle: getSubtitle(
+        context,
+        activity.descriptionContent()?.newVal().toString().trim(),
+      ),
       originServerTs: activity.originServerTs(),
     );
   }

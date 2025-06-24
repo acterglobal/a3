@@ -1,5 +1,5 @@
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/activity_social_container_widget.dart';
+import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/containers/activity_social_container_widget.dart';
 import 'package:acter/features/comments/widgets/time_ago_widget.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -10,7 +10,6 @@ import '../../../../../helpers/test_util.dart';
 import '../../../../activity/mock_data/mock_activity_object.dart';
 
 void main() {
-
   Future<void> pumpActivitySocialContainerWidget(
     WidgetTester tester, {
     ActivityObject? activityObject,

@@ -1,5 +1,5 @@
 import 'package:acter/common/themes/colors/color_scheme.dart';
-import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/activity_bigger_visual_container_widget.dart';
+import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/containers/activity_bigger_visual_container_widget.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +18,8 @@ class ActivityCommentItemWidget extends ConsumerWidget {
     return ActivityBiggerVisualContainerWidget(
       activityObject: activityObject,
       actionIcon: PhosphorIconsRegular.chatCenteredDots,
+      actionIconBgColor: Colors.amber.shade800,
+      actionIconColor: Colors.white,
       userId: activity.senderIdStr(),
       roomId: activity.roomIdStr(),
       actionTitle: L10n.of(context).commentedOn,
@@ -28,7 +30,7 @@ class ActivityCommentItemWidget extends ConsumerWidget {
         overflow: TextOverflow.ellipsis,
         style: Theme.of(
           context,
-        ).textTheme.labelMedium?.copyWith(color: colorScheme.surfaceTint),
+        ).textTheme.labelSmall?.copyWith(color: colorScheme.surfaceTint),
       ),
       originServerTs: originServerTs,
     );

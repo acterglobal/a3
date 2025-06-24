@@ -17,7 +17,12 @@ class TimeAgoWidget extends StatelessWidget {
     final time = formatTimeFromTimestamp(originServerTs);
     return Text(
       time,
-      style: textStyle ?? Theme.of(context).textTheme.labelSmall?.copyWith(color: colorScheme.surfaceTint),
+      style:
+          textStyle ??
+          Theme.of(context).textTheme.labelSmall?.copyWith(
+            color: colorScheme.surfaceTint,
+            fontSize: 10,
+          ),
     );
   }
 }

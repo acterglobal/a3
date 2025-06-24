@@ -1,6 +1,6 @@
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/widgets/acter_icon_picker/utils.dart';
-import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/activity_bigger_visual_container_widget.dart';
+import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/containers/activity_bigger_visual_container_widget.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +18,8 @@ class ActivityReferencesItemWidget extends StatelessWidget {
     return ActivityBiggerVisualContainerWidget(
       activityObject: activityObject,
       actionIcon: PhosphorIconsRegular.link,
+      actionIconBgColor: Colors.blue,
+      actionIconColor: Colors.white,
       userId: activity.senderIdStr(),
       roomId: activity.roomIdStr(),
       actionTitle: L10n.of(context).addedReferencesOn,
@@ -73,7 +75,7 @@ class RefObjectWidget extends ConsumerWidget {
           fallbackWidget: Icon(
             objectDefaultIcon,
             size: 16,
-            color: Theme.of(context).textTheme.labelMedium?.color,
+            color: Theme.of(context).textTheme.labelSmall?.color,
           ),
         ),
         const SizedBox(width: 4),
@@ -87,7 +89,9 @@ class RefObjectWidget extends ConsumerWidget {
     if (title == null) return const SizedBox.shrink();
     return Text(
       title,
-      style: Theme.of(context).textTheme.labelMedium?.copyWith(color: colorScheme.surfaceTint),
+      style: Theme.of(
+        context,
+      ).textTheme.labelSmall?.copyWith(color: colorScheme.surfaceTint),
       maxLines: 2,
       overflow: TextOverflow.ellipsis,
     );
