@@ -157,8 +157,7 @@ Future<void> loadExistingLocations(WidgetRef ref, String eventId) async {
                     calendarId: eventId,
                   );
                 } else {
-                  // Return true to indicate save was clicked for new events
-                  Navigator.pop(context, true);
+                  Navigator.pop(context);
                 }
               },
               child: Text(lang.save),
