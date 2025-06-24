@@ -542,25 +542,15 @@ final homeShellRoutes = [
     pageBuilder: (context, state) {
       final extra = state.extra;
       CalendarEvent? templateEvent;
-      List<EventLocationInfo>? templateLocations;
-      
-      if (extra != null) {
-        if (extra is CalendarEvent) {
-          templateEvent = extra;
-        } else if (extra is Map<String, dynamic>) {
-          // with event and locations
-          templateEvent = extra['event'] as CalendarEvent?;
-          templateLocations = extra['locations'] as List<EventLocationInfo>?;
-        }
+      if (extra != null && extra is CalendarEvent) {
+        templateEvent = extra;
       }
-      
       final String? spaceId = state.uri.queryParameters['spaceId'];
       return MaterialPage(
         key: state.pageKey,
         child: CreateEventPage(
           initialSelectedSpace: spaceId?.isNotEmpty == true ? spaceId : null,
           templateEvent: templateEvent,
-          templateLocations: templateLocations,
         ),
       );
     },

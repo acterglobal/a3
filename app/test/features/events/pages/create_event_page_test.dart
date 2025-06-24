@@ -66,12 +66,11 @@ void main() {
     registerFallbackValue(null);
   });
 
-    Future<void> pumpCreateEventPage(
+  Future<void> pumpCreateEventPage(
     WidgetTester tester, {
     String? initialSelectedSpace,
     CalendarEvent? templateEvent,
-    List<EventLocationInfo>? templateLocations,
-}) async {
+  }) async {
     // Set a larger window size
     tester.platformDispatcher.views.first.physicalSize = const Size(1200, 1200);
     tester.platformDispatcher.views.first.devicePixelRatio = 1.0;
@@ -85,7 +84,6 @@ void main() {
       child: CreateEventPage(
         initialSelectedSpace: initialSelectedSpace,
         templateEvent: templateEvent,
-        templateLocations: templateLocations,
       ),
     );
     await tester.pump();
