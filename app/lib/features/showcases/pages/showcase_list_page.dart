@@ -79,7 +79,7 @@ class ShowcaseListPage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Section Header
-          Text(showcase.title, style: theme.textTheme.titleSmall?.copyWith(color: colorScheme.onSurface)),  
+          Text(showcase.title, style: theme.textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface)),  
           const SizedBox(height: 16),
 
           // Items List
@@ -103,7 +103,7 @@ class ShowcaseListPage extends StatelessWidget {
         ),
         title: Text(
           item.title,
-          style: theme.textTheme.bodyMedium?.copyWith(
+          style: theme.textTheme.bodySmall?.copyWith(
             color: colorScheme.onSurface,
           ),
         ),

@@ -51,40 +51,7 @@ class ActivityListShowcasePage extends ConsumerWidget {
           physics: const NeverScrollableScrollPhysics(),
           itemBuilder: (context, index) {
             final date = dates[index];
-            return ProviderScope(
-              overrides: [
-                consecutiveGroupedActivitiesProvider.overrideWith((ref, queryDate) {
-                  if (!queryDate.isAtSameMomentAs(date)) return [];
-                  
-                  // Filter activities by date
-                  final activitiesForDate = activities.where((activity) => 
-                    getActivityDate(activity.originServerTs()).isAtSameMomentAs(date)).toList();
-                  
-                  // Sort by time descending
-                  final sortedActivities = activitiesForDate.toList()
-                    ..sort((a, b) => b.originServerTs().compareTo(a.originServerTs()));
-
-                  // Group consecutive activities by roomId
-                  final groups = <({String roomId, List<Activity> activities})>[];
-                  
-                  for (final activity in sortedActivities) {
-                    final roomId = activity.roomIdStr();
-                    
-                    if (groups.isNotEmpty && groups.last.roomId == roomId) {
-                      // Add to existing group
-                      final lastGroup = groups.last;
-                      groups[groups.length - 1] = (roomId: roomId, activities: [...lastGroup.activities, activity]);
-                    } else {
-                      // Create new group
-                      groups.add((roomId: roomId, activities: [activity]));
-                    }
-                  }
-
-                  return groups;
-                }),
-              ],
-              child: ActivityDateItemWidget(activityDate: date),
-            );
+            return ActivityDateItemWidget(activityDate: date);
           },
         ),
       ],
