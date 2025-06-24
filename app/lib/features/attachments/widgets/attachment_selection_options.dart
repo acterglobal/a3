@@ -179,7 +179,8 @@ class AttachmentSelectionOptions extends StatelessWidget {
 
   Future<void> onTapAudio(BuildContext context) async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.audio,
+      type: FileType.custom,
+      allowedExtensions: ['mp3', 'wav', 'aac', 'm4a'],
     );
     if (result == null) return;
     List<File> files = [];
