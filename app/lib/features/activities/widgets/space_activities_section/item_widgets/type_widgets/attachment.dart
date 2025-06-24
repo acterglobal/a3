@@ -14,6 +14,8 @@ class ActivityAttachmentItemWidget extends StatelessWidget {
     final subType = activity.subTypeStr();
     final (icon, label) = getAttachmentIconAndLabel(context, subType ?? '');
     return ActivityBiggerVisualContainerWidget(
+      actionIconBgColor: Colors.blue,
+      actionIconColor: Colors.white,
       actionIcon: PhosphorIconsRegular.paperclip,
       actionTitle: L10n.of(context).addedAttachmentOn,
       activityObject: activityObject,

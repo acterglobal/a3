@@ -14,6 +14,8 @@ class ActivityOtherChangesItemWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return ActivityIndividualActionContainerWidget(
       actionIcon: PhosphorIconsRegular.pencilLine,
+      actionIconBgColor: Colors.blueGrey,
+      actionIconColor: Colors.white,
       actionTitle:
           '${L10n.of(context).updated} ${activity.object()?.typeStr() ?? ''}',
       activityObject: activity.object(),

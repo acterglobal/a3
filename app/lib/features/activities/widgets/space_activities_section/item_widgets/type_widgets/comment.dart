@@ -18,6 +18,8 @@ class ActivityCommentItemWidget extends ConsumerWidget {
     return ActivityBiggerVisualContainerWidget(
       activityObject: activityObject,
       actionIcon: PhosphorIconsRegular.chatCenteredDots,
+      actionIconBgColor: Colors.amber.shade800,
+      actionIconColor: Colors.white,
       userId: activity.senderIdStr(),
       roomId: activity.roomIdStr(),
       actionTitle: L10n.of(context).commentedOn,
