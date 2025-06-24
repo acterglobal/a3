@@ -9,7 +9,7 @@ class ObjectIconWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Icon(
       _getActivityObjectIcon(),
-      size: 16,
+      size: 18,
       color: Theme.of(context).colorScheme.surfaceTint,
     );
   }
