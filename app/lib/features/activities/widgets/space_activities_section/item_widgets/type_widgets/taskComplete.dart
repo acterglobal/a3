@@ -11,9 +11,10 @@ class ActivityTaskCompleteItemWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final activityObject = activity.object();
     return ActivityIndividualActionContainerWidget(
-      actionIcon: Icons.done_all,
+      actionIcon: Icons.done,
       actionTitle: L10n.of(context).completedTask,
-      actionIconColor: Colors.blue.shade400,
+      actionIconColor: Colors.white,
+      actionIconBgColor: Colors.green,
       target: activityObject?.title() ?? '',
       activityObject: activityObject,
       userId: activity.senderIdStr(),
