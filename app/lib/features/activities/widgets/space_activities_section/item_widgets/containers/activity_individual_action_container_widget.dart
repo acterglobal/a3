@@ -1,11 +1,11 @@
 import 'package:acter/common/themes/colors/color_scheme.dart';
+import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/avatar_with_action_icon.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/object_icon_widget.dart';
 import 'package:acter/features/comments/widgets/time_ago_widget.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter_avatar/acter_avatar.dart';
 
 class ActivityIndividualActionContainerWidget extends ConsumerWidget {
   final ActivityObject? activityObject;
@@ -48,7 +48,12 @@ class ActivityIndividualActionContainerWidget extends ConsumerWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildAvatarWithIcon(context, avatarInfo),
+          AvatarWithActionIcon(
+            avatarInfo: avatarInfo,
+            actionIcon: actionIcon,
+            actionIconBgColor: actionIconBgColor,
+            actionIconColor: actionIconColor,
+          ),
           const SizedBox(width: 10),
           Expanded(
             child: Column(
@@ -62,32 +67,6 @@ class ActivityIndividualActionContainerWidget extends ConsumerWidget {
           ),
         ],
       ),
-    );
-  }
-
-  /// Avatar with Action Icon overlay
-  Widget _buildAvatarWithIcon(BuildContext context, AvatarInfo avatarInfo) {
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        ActerAvatar(options: AvatarOptions.DM(avatarInfo, size: 22)),
-        Positioned(
-          right: -6,
-          bottom: -6,
-          child: Container(
-            padding: const EdgeInsets.all(4),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: actionIconBgColor ?? Theme.of(context).cardColor,
-            ),
-            child: Icon(
-              actionIcon,
-              color: actionIconColor ?? Colors.white,
-              size: 15,
-            ),
-          ),
-        ),
-      ],
     );
   }
 
