@@ -85,6 +85,22 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
     _selectedEndTime = TimeOfDay.fromDateTime(_selectedEndDate);
     _endDateController.text = eventDateFormat(_selectedEndDate);
     _endTimeController.text = _selectedEndTime.format(context);
+
+    // Set template locations if available
+    final locations = ref.watch(asyncEventLocationsProvider(event.eventId().toString())).valueOrNull ?? [];
+    for (final location in locations) {
+      final draftLocation = EventLocationDraft(
+        name: location.name() ?? '',
+        type: location.locationType().toLowerCase() == LocationType.virtual.name
+            ? LocationType.virtual
+            : LocationType.physical,
+        url: location.uri(),
+        address: location.address(),
+        note: location.notes(),
+      );
+      ref.read(eventDraftLocationsProvider.notifier).addLocation(draftLocation);
+    }
+    
     _setSpaceId(event.roomIdStr());
     setState(() {});
   }

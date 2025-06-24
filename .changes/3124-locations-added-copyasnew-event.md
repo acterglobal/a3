@@ -1,0 +1,1 @@
+- [Fix] : The "Copy as New" feature now includes event locations when duplicating an event.
