@@ -110,6 +110,14 @@ String taskDueDateFormat(DateTime dateTime) {
   return DateFormat('dd/MM/yyyy').format(dateTime);
 }
 
+String formatTimeFromTimestamp(int originServerTs) {
+  final originServerDateTime = DateTime.fromMillisecondsSinceEpoch(
+    originServerTs,
+    isUtc: true,
+  ).toLocal();
+  return DateFormat('hh:mm a').format(originServerDateTime);
+}
+
 String getHumanReadableFileSize(int bytes) {
   if (bytes <= 0) return '0 B';
   const suffixes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
