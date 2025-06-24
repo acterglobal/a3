@@ -33,7 +33,9 @@ class AvatarWithActionIcon extends StatelessWidget {
                 ).colorScheme.onSurface.withValues(alpha: 0.6),
                 width: 1,
               ),
-              color: actionIconBgColor ?? Theme.of(context).colorScheme.surface,
+              color:
+                  actionIconBgColor?.withValues(alpha: 0.8) ??
+                  Theme.of(context).colorScheme.surface.withValues(alpha: 0.8),
             ),
             child: Icon(
               actionIcon,
