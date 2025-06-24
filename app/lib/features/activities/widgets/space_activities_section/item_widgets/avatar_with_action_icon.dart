@@ -21,18 +21,18 @@ class AvatarWithActionIcon extends StatelessWidget {
       children: [
         ActerAvatar(options: AvatarOptions.DM(avatarInfo, size: 22)),
         Positioned(
-          right: -6,
-          bottom: -6,
+          right: -4,
+          bottom: -4,
           child: Container(
-            padding: const EdgeInsets.all(4),
+            padding: const EdgeInsets.all(5),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: actionIconBgColor ?? Theme.of(context).cardColor,
+              color: actionIconBgColor ?? Theme.of(context).colorScheme.surface,
             ),
             child: Icon(
               actionIcon,
               color: actionIconColor ?? Colors.white,
-              size: 15,
+              size: 14,
             ),
           ),
         ),
