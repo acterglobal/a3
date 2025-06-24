@@ -88,7 +88,6 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
 
     // Set template locations if available
     final locations = ref.watch(asyncEventLocationsProvider(event.eventId().toString())).valueOrNull ?? [];
-
     for (final location in locations) {
       final draftLocation = EventLocationDraft(
         name: location.name() ?? '',
