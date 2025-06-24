@@ -40,7 +40,7 @@ class ActivitySocialContainerWidget extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           _buildIcon(context),
-          const SizedBox(width: 10),
+          const SizedBox(width: 8),
           _buildSubtitleOrTime(context, displayName),
         ],
       ),
@@ -49,7 +49,7 @@ class ActivitySocialContainerWidget extends ConsumerWidget {
 
   /// Avatar with Action Icon overlay
   Widget _buildIcon(BuildContext context) {
-    return Icon(icon, color: iconColor ?? colorScheme.surfaceTint, size: 20);
+    return Icon(icon, color: iconColor ?? colorScheme.surfaceTint, size: 16);
   }
 
   /// Subtitle + time or only time if subtitle is null
@@ -65,10 +65,13 @@ class ActivitySocialContainerWidget extends ConsumerWidget {
               overflow: TextOverflow.ellipsis,
               text: TextSpan(
                 children: [
-                  TextSpan(text: displayName, style: theme.textTheme.bodySmall),
+                  TextSpan(
+                    text: displayName,
+                    style: theme.textTheme.labelSmall,
+                  ),
                   TextSpan(
                     text: ' $actionTitle ${getActivityObjectTitle(context)}',
-                    style: theme.textTheme.bodySmall?.copyWith(
+                    style: theme.textTheme.labelSmall?.copyWith(
                       color: colorScheme.surfaceTint,
                     ),
                   ),

@@ -32,8 +32,8 @@ class ActivityMembershipItemWidget extends ConsumerWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(membershipInfo.icon, size: 20),
-          const SizedBox(width: 10),
+          Icon(membershipInfo.icon, size: 16),
+          const SizedBox(width: 8),
           Expanded(
             child: Stack(
               children: [
@@ -46,7 +46,7 @@ class ActivityMembershipItemWidget extends ConsumerWidget {
                     overflow: TextOverflow.ellipsis,
                     text: TextSpan(
                       text: membershipInfo.text,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
                         color: colorScheme.surfaceTint,
                       ),
                     ),
