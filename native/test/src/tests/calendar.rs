@@ -104,32 +104,32 @@ async fn edit_calendar_event() -> Result<()> {
     // will add title & locations
     let title = "Onboarding on Acter1";
 
-    let name = "Test Location";
-    let description = "Philadelphia Office";
-    let description_html = "**Here is our office**";
-    let coordinates = "geo:51.5074,-0.1278";
-    let uri = "https://example.com/location";
-    let address = "123 Test St, Philadelphia, PA 19103";
-    let notes = "Please bring your laptop.";
+    let loc_name = "Test Location";
+    let loc_desc_text = "Philadelphia Office";
+    let loc_desc_html = "**Here is our office**";
+    let loc_coord = "geo:51.5074,-0.1278";
+    let loc_uri = "https://example.com/location";
+    let loc_addr = "123 Test St, Philadelphia, PA 19103";
+    let loc_notes = "Please bring your laptop.";
 
     main_event
         .update_builder()?
         .title(title.to_owned())
         .add_physical_location(
-            Some(name.to_owned()),
-            Some(description.to_owned()),
-            Some(description_html.to_owned()),
-            Some(coordinates.to_owned()),
-            Some(uri.to_owned()),
-            Some(address.to_owned()),
-            Some(notes.to_owned()),
+            Some(loc_name.to_owned()),
+            Some(loc_desc_text.to_owned()),
+            Some(loc_desc_html.to_owned()),
+            Some(loc_coord.to_owned()),
+            Some(loc_uri.to_owned()),
+            Some(loc_addr.to_owned()),
+            Some(loc_notes.to_owned()),
         )
         .add_virtual_location(
-            Some(name.to_owned()),
-            Some(description.to_owned()),
-            Some(description_html.to_owned()),
-            uri.to_owned(),
-            Some(notes.to_owned()),
+            Some(loc_name.to_owned()),
+            Some(loc_desc_text.to_owned()),
+            Some(loc_desc_html.to_owned()),
+            loc_uri.to_owned(),
+            Some(loc_notes.to_owned()),
         )
         .send()
         .await?;
@@ -152,30 +152,30 @@ async fn edit_calendar_event() -> Result<()> {
         if phy_loc.is_empty() {
             bail!("physical location update not yet received");
         }
-        if phy_loc[0].name().as_deref() != Some(name) {
+        if phy_loc[0].name().as_deref() != Some(loc_name) {
             bail!("physical location name not yet received");
         }
-        if phy_loc[0].description().map(|c| c.body()).as_deref() != Some(description) {
+        if phy_loc[0].description().map(|c| c.body()).as_deref() != Some(loc_desc_text) {
             bail!("physical location description not yet received");
         }
         if phy_loc[0]
             .description()
             .and_then(|c| c.formatted())
             .as_deref()
-            != Some(description_html)
+            != Some(loc_desc_html)
         {
             bail!("physical location description html not yet received");
         }
-        if phy_loc[0].coordinates().as_deref() != Some(coordinates) {
+        if phy_loc[0].coordinates().as_deref() != Some(loc_coord) {
             bail!("physical location coordinates not yet received");
         }
-        if phy_loc[0].uri().as_deref() != Some(uri) {
+        if phy_loc[0].uri().as_deref() != Some(loc_uri) {
             bail!("physical location uri not yet received");
         }
-        if phy_loc[0].address().as_deref() != Some(address) {
+        if phy_loc[0].address().as_deref() != Some(loc_addr) {
             bail!("physical location address not yet received");
         }
-        if phy_loc[0].notes().as_deref() != Some(notes) {
+        if phy_loc[0].notes().as_deref() != Some(loc_notes) {
             bail!("physical location notes not yet received");
         }
 
@@ -183,24 +183,24 @@ async fn edit_calendar_event() -> Result<()> {
         if vir_loc.is_empty() {
             bail!("virtual location update not yet received");
         }
-        if vir_loc[0].name().as_deref() != Some(name) {
+        if vir_loc[0].name().as_deref() != Some(loc_name) {
             bail!("virtual location name not yet received");
         }
-        if vir_loc[0].description().map(|c| c.body()).as_deref() != Some(description) {
+        if vir_loc[0].description().map(|c| c.body()).as_deref() != Some(loc_desc_text) {
             bail!("virtual location description not yet received");
         }
         if vir_loc[0]
             .description()
             .and_then(|c| c.formatted())
             .as_deref()
-            != Some(description_html)
+            != Some(loc_desc_html)
         {
             bail!("virtual location description html not yet received");
         }
-        if vir_loc[0].uri().as_deref() != Some(uri) {
+        if vir_loc[0].uri().as_deref() != Some(loc_uri) {
             bail!("virtual location uri not yet received");
         }
-        if vir_loc[0].notes().as_deref() != Some(notes) {
+        if vir_loc[0].notes().as_deref() != Some(loc_notes) {
             bail!("virtual location notes not yet received");
         }
         Ok(())
@@ -310,13 +310,13 @@ async fn calendar_event_create() -> Result<()> {
     let utc_start = now + Duration::days(1);
     let utc_end = now + Duration::days(2);
 
-    let name = "Test Location";
-    let description = "Philadelphia Office";
-    let description_html = "**Here is our office**";
-    let coordinates = "geo:51.5074,-0.1278";
-    let uri = "https://example.com/location";
-    let address = "123 Test St, Philadelphia, PA 19103";
-    let notes = "Please bring your laptop.";
+    let loc_name = "Test Location";
+    let loc_desc_text = "Philadelphia Office";
+    let loc_desc_html = "**Here is our office**";
+    let loc_coord = "geo:51.5074,-0.1278";
+    let loc_uri = "https://example.com/location";
+    let loc_addr = "123 Test St, Philadelphia, PA 19103";
+    let loc_notes = "Please bring your laptop.";
 
     let event_id = space
         .calendar_event_draft()?
@@ -324,20 +324,20 @@ async fn calendar_event_create() -> Result<()> {
         .utc_start_from_rfc3339(utc_start.to_rfc3339())?
         .utc_end_from_rfc3339(utc_end.to_rfc3339())?
         .add_physical_location(
-            Some(name.to_owned()),
-            Some(description.to_owned()),
-            Some(description_html.to_owned()),
-            Some(coordinates.to_owned()),
-            Some(uri.to_owned()),
-            Some(address.to_owned()),
-            Some(notes.to_owned()),
+            Some(loc_name.to_owned()),
+            Some(loc_desc_text.to_owned()),
+            Some(loc_desc_html.to_owned()),
+            Some(loc_coord.to_owned()),
+            Some(loc_uri.to_owned()),
+            Some(loc_addr.to_owned()),
+            Some(loc_notes.to_owned()),
         )
         .add_virtual_location(
-            Some(name.to_owned()),
-            Some(description.to_owned()),
-            Some(description_html.to_owned()),
-            uri.to_owned(),
-            Some(notes.to_owned()),
+            Some(loc_name.to_owned()),
+            Some(loc_desc_text.to_owned()),
+            Some(loc_desc_html.to_owned()),
+            loc_uri.to_owned(),
+            Some(loc_notes.to_owned()),
         )
         .send()
         .await?;
@@ -361,39 +361,39 @@ async fn calendar_event_create() -> Result<()> {
     assert_eq!(locations.len(), 2);
 
     assert_eq!(locations[0].location_type(), "Physical");
-    assert_eq!(locations[0].name().as_deref(), Some(name));
+    assert_eq!(locations[0].name().as_deref(), Some(loc_name));
     assert_eq!(
         locations[0].description().map(|d| d.body()).as_deref(),
-        Some(description)
+        Some(loc_desc_text)
     );
     assert_eq!(
         locations[0]
             .description()
             .and_then(|d| d.formatted())
             .as_deref(),
-        Some(description_html)
+        Some(loc_desc_html)
     );
-    assert_eq!(locations[0].coordinates().as_deref(), Some(coordinates));
-    assert_eq!(locations[0].uri().as_deref(), Some(uri));
-    assert_eq!(locations[0].address().as_deref(), Some(address));
-    assert_eq!(locations[0].notes().as_deref(), Some(notes));
+    assert_eq!(locations[0].coordinates().as_deref(), Some(loc_coord));
+    assert_eq!(locations[0].uri().as_deref(), Some(loc_uri));
+    assert_eq!(locations[0].address().as_deref(), Some(loc_addr));
+    assert_eq!(locations[0].notes().as_deref(), Some(loc_notes));
 
     assert_eq!(locations[1].location_type(), "Virtual");
-    assert_eq!(locations[1].name().as_deref(), Some(name));
+    assert_eq!(locations[1].name().as_deref(), Some(loc_name));
     assert_eq!(
         locations[1].description().map(|d| d.body()).as_deref(),
-        Some(description)
+        Some(loc_desc_text)
     );
     assert_eq!(
         locations[1]
             .description()
             .and_then(|d| d.formatted())
             .as_deref(),
-        Some(description_html)
+        Some(loc_desc_html)
     );
-    assert_eq!(locations[1].uri().as_deref(), Some(uri));
+    assert_eq!(locations[1].uri().as_deref(), Some(loc_uri));
     assert_eq!(locations[1].address(), None);
-    assert_eq!(locations[1].notes().as_deref(), Some(notes));
+    assert_eq!(locations[1].notes().as_deref(), Some(loc_notes));
 
     Ok(())
 }
