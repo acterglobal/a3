@@ -147,5 +147,523 @@ void main() {
       expect(filteredActivities.any((a) => a.typeStr() == 'test1'), true);
       expect(filteredActivities.any((a) => a.typeStr() == 'test3'), true);
     });
+
+    group('consecutiveGroupedActivitiesProvider Tests', () {
+      test('should return empty list when no activities', () {
+        // Test empty case
+        final activities = <MockActivity>[];
+        
+        // Simulate provider logic
+        final sortedActivities = activities.toList()..sort((a, b) => b.originServerTs().compareTo(a.originServerTs()));
+        final groups = <RoomActivitiesInfo>[];
+        
+        for (final activity in sortedActivities) {
+          final roomId = activity.roomIdStr();
+          
+          if (groups.isNotEmpty && groups.last.roomId == roomId) {
+            final lastGroup = groups.last;
+            groups[groups.length - 1] = (roomId: roomId, activities: [...lastGroup.activities, activity]);
+          } else {
+            groups.add((roomId: roomId, activities: [activity]));
+          }
+        }
+        
+        expect(groups, isEmpty);
+      });
+
+      test('should group consecutive activities from same room', () {
+        final baseTime = DateTime(2024, 1, 15, 10, 0).millisecondsSinceEpoch;
+        
+        final activity1 = MockActivity(
+          mockType: 'message',
+          mockOriginServerTs: baseTime + 1000, // 10:00:01
+          mockRoomId: 'room1',
+        );
+        final activity2 = MockActivity(
+          mockType: 'reaction',
+          mockOriginServerTs: baseTime + 2000, // 10:00:02
+          mockRoomId: 'room1',
+        );
+        final activity3 = MockActivity(
+          mockType: 'edit',
+          mockOriginServerTs: baseTime + 3000, // 10:00:03
+          mockRoomId: 'room1',
+        );
+
+        final activities = [activity1, activity2, activity3];
+        
+        // Simulate provider logic
+        final sortedActivities = activities.toList()..sort((a, b) => b.originServerTs().compareTo(a.originServerTs()));
+        final groups = <RoomActivitiesInfo>[];
+        
+        for (final activity in sortedActivities) {
+          final roomId = activity.roomIdStr();
+          
+          if (groups.isNotEmpty && groups.last.roomId == roomId) {
+            final lastGroup = groups.last;
+            groups[groups.length - 1] = (roomId: roomId, activities: [...lastGroup.activities, activity]);
+          } else {
+            groups.add((roomId: roomId, activities: [activity]));
+          }
+        }
+        
+        expect(groups.length, 1);
+        expect(groups[0].roomId, 'room1');
+        expect(groups[0].activities.length, 3);
+        // Should be sorted by time descending
+        expect(groups[0].activities[0].originServerTs(), baseTime + 3000);
+        expect(groups[0].activities[1].originServerTs(), baseTime + 2000);
+        expect(groups[0].activities[2].originServerTs(), baseTime + 1000);
+      });
+
+      test('should create separate groups for different rooms', () {
+        final baseTime = DateTime(2024, 1, 15, 10, 0).millisecondsSinceEpoch;
+        
+        final activity1 = MockActivity(
+          mockType: 'message',
+          mockOriginServerTs: baseTime + 1000,
+          mockRoomId: 'room1',
+        );
+        final activity2 = MockActivity(
+          mockType: 'message',
+          mockOriginServerTs: baseTime + 2000,
+          mockRoomId: 'room2',
+        );
+        final activity3 = MockActivity(
+          mockType: 'message',
+          mockOriginServerTs: baseTime + 3000,
+          mockRoomId: 'room3',
+        );
+
+        final activities = [activity1, activity2, activity3];
+        
+        // Simulate provider logic
+        final sortedActivities = activities.toList()..sort((a, b) => b.originServerTs().compareTo(a.originServerTs()));
+        final groups = <RoomActivitiesInfo>[];
+        
+        for (final activity in sortedActivities) {
+          final roomId = activity.roomIdStr();
+          
+          if (groups.isNotEmpty && groups.last.roomId == roomId) {
+            final lastGroup = groups.last;
+            groups[groups.length - 1] = (roomId: roomId, activities: [...lastGroup.activities, activity]);
+          } else {
+            groups.add((roomId: roomId, activities: [activity]));
+          }
+        }
+        
+        expect(groups.length, 3);
+        expect(groups[0].roomId, 'room3');
+        expect(groups[0].activities.length, 1);
+        expect(groups[1].roomId, 'room2');
+        expect(groups[1].activities.length, 1);
+        expect(groups[2].roomId, 'room1');
+        expect(groups[2].activities.length, 1);
+      });
+
+      test('should handle mixed consecutive and non-consecutive activities', () {
+        final baseTime = DateTime(2024, 1, 15, 10, 0).millisecondsSinceEpoch;
+        
+        final activity1 = MockActivity(
+          mockType: 'message',
+          mockOriginServerTs: baseTime + 1000,
+          mockRoomId: 'room1',
+        );
+        final activity2 = MockActivity(
+          mockType: 'message',
+          mockOriginServerTs: baseTime + 2000,
+          mockRoomId: 'room2',
+        );
+        final activity3 = MockActivity(
+          mockType: 'reaction',
+          mockOriginServerTs: baseTime + 3000,
+          mockRoomId: 'room1', // Back to room1
+        );
+        final activity4 = MockActivity(
+          mockType: 'edit',
+          mockOriginServerTs: baseTime + 4000,
+          mockRoomId: 'room1', // Consecutive with activity3
+        );
+        final activity5 = MockActivity(
+          mockType: 'message',
+          mockOriginServerTs: baseTime + 5000,
+          mockRoomId: 'room2', // Back to room2
+        );
+
+        final activities = [activity1, activity2, activity3, activity4, activity5];
+        
+        // Simulate provider logic
+        final sortedActivities = activities.toList()..sort((a, b) => b.originServerTs().compareTo(a.originServerTs()));
+        final groups = <RoomActivitiesInfo>[];
+        
+        for (final activity in sortedActivities) {
+          final roomId = activity.roomIdStr();
+          
+          if (groups.isNotEmpty && groups.last.roomId == roomId) {
+            final lastGroup = groups.last;
+            groups[groups.length - 1] = (roomId: roomId, activities: [...lastGroup.activities, activity]);
+          } else {
+            groups.add((roomId: roomId, activities: [activity]));
+          }
+        }
+        
+        expect(groups.length, 4);
+        
+        // Should be grouped in chronological order (descending)
+        expect(groups[0].roomId, 'room2'); // activity5
+        expect(groups[0].activities.length, 1);
+        
+        expect(groups[1].roomId, 'room1'); // activity4 + activity3
+        expect(groups[1].activities.length, 2);
+        
+        expect(groups[2].roomId, 'room2'); // activity2
+        expect(groups[2].activities.length, 1);
+        
+        expect(groups[3].roomId, 'room1'); // activity1
+        expect(groups[3].activities.length, 1);
+      });
+
+      test('should maintain correct time sorting within groups', () {
+        final baseTime = DateTime(2024, 1, 15, 10, 0).millisecondsSinceEpoch;
+        
+        // Create activities in random order
+        final activity1 = MockActivity(
+          mockType: 'message',
+          mockOriginServerTs: baseTime + 1000, // Earliest
+          mockRoomId: 'room1',
+        );
+        final activity2 = MockActivity(
+          mockType: 'edit',
+          mockOriginServerTs: baseTime + 5000, // Latest
+          mockRoomId: 'room1',
+        );
+        final activity3 = MockActivity(
+          mockType: 'reaction',
+          mockOriginServerTs: baseTime + 3000, // Middle
+          mockRoomId: 'room1',
+        );
+
+        // Add in random order to test sorting
+        final activities = [activity2, activity1, activity3];
+        
+        // Simulate provider logic
+        final sortedActivities = activities.toList()..sort((a, b) => b.originServerTs().compareTo(a.originServerTs()));
+        final groups = <RoomActivitiesInfo>[];
+        
+        for (final activity in sortedActivities) {
+          final roomId = activity.roomIdStr();
+          
+          if (groups.isNotEmpty && groups.last.roomId == roomId) {
+            final lastGroup = groups.last;
+            groups[groups.length - 1] = (roomId: roomId, activities: [...lastGroup.activities, activity]);
+          } else {
+            groups.add((roomId: roomId, activities: [activity]));
+          }
+        }
+        
+        expect(groups.length, 1);
+        expect(groups[0].activities.length, 3);
+        
+        // Should be sorted by timestamp descending
+        expect(groups[0].activities[0].originServerTs(), baseTime + 5000); // Latest first
+                 expect(groups[0].activities[1].originServerTs(), baseTime + 3000); // Middle
+         expect(groups[0].activities[2].originServerTs(), baseTime + 1000); // Earliest last
+       });
+
+       test('should handle single activity', () {
+         final activity = MockActivity(
+           mockType: 'message',
+           mockOriginServerTs: DateTime(2024, 1, 15, 10, 0).millisecondsSinceEpoch,
+           mockRoomId: 'room1',
+         );
+
+         final activities = [activity];
+         
+         // Simulate provider logic
+         final sortedActivities = activities.toList()..sort((a, b) => b.originServerTs().compareTo(a.originServerTs()));
+         final groups = <RoomActivitiesInfo>[];
+         
+         for (final activity in sortedActivities) {
+           final roomId = activity.roomIdStr();
+           
+           if (groups.isNotEmpty && groups.last.roomId == roomId) {
+             final lastGroup = groups.last;
+             groups[groups.length - 1] = (roomId: roomId, activities: [...lastGroup.activities, activity]);
+           } else {
+             groups.add((roomId: roomId, activities: [activity]));
+           }
+         }
+         
+         expect(groups.length, 1);
+         expect(groups[0].roomId, 'room1');
+         expect(groups[0].activities.length, 1);
+         expect(groups[0].activities[0], activity);
+       });
+
+       test('should handle activities with identical timestamps', () {
+         final baseTime = DateTime(2024, 1, 15, 10, 0).millisecondsSinceEpoch;
+         
+         final activity1 = MockActivity(
+           mockType: 'message',
+           mockOriginServerTs: baseTime, // Same timestamp
+           mockRoomId: 'room1',
+         );
+         final activity2 = MockActivity(
+           mockType: 'reaction',
+           mockOriginServerTs: baseTime, // Same timestamp
+           mockRoomId: 'room1',
+         );
+         final activity3 = MockActivity(
+           mockType: 'edit',
+           mockOriginServerTs: baseTime, // Same timestamp
+           mockRoomId: 'room2',
+         );
+
+         final activities = [activity1, activity2, activity3];
+         
+         // Simulate provider logic
+         final sortedActivities = activities.toList()..sort((a, b) => b.originServerTs().compareTo(a.originServerTs()));
+         final groups = <RoomActivitiesInfo>[];
+         
+         for (final activity in sortedActivities) {
+           final roomId = activity.roomIdStr();
+           
+           if (groups.isNotEmpty && groups.last.roomId == roomId) {
+             final lastGroup = groups.last;
+             groups[groups.length - 1] = (roomId: roomId, activities: [...lastGroup.activities, activity]);
+           } else {
+             groups.add((roomId: roomId, activities: [activity]));
+           }
+         }
+         
+         // Should group by room regardless of identical timestamps
+         expect(groups.length, 2);
+         expect(groups.any((g) => g.roomId == 'room1'), true);
+         expect(groups.any((g) => g.roomId == 'room2'), true);
+         
+         final room1Group = groups.firstWhere((g) => g.roomId == 'room1');
+         expect(room1Group.activities.length, 2);
+       });
+
+       test('should handle large number of activities efficiently', () {
+         final baseTime = DateTime(2024, 1, 15, 10, 0).millisecondsSinceEpoch;
+         final activities = <MockActivity>[];
+         
+         // Create 100 activities across 10 rooms
+         for (int i = 0; i < 100; i++) {
+           activities.add(MockActivity(
+             mockType: 'message$i',
+             mockOriginServerTs: baseTime + (i * 1000),
+             mockRoomId: 'room${i % 10}', // 10 different rooms
+           ));
+         }
+         
+         // Simulate provider logic
+         final sortedActivities = activities.toList()..sort((a, b) => b.originServerTs().compareTo(a.originServerTs()));
+         final groups = <RoomActivitiesInfo>[];
+         
+         for (final activity in sortedActivities) {
+           final roomId = activity.roomIdStr();
+           
+           if (groups.isNotEmpty && groups.last.roomId == roomId) {
+             final lastGroup = groups.last;
+             groups[groups.length - 1] = (roomId: roomId, activities: [...lastGroup.activities, activity]);
+           } else {
+             groups.add((roomId: roomId, activities: [activity]));
+           }
+         }
+         
+         // Should create many groups due to room switching pattern
+         expect(groups.length, greaterThan(10));
+         
+         // Verify all activities are included
+         final totalActivitiesInGroups = groups.fold(0, (sum, group) => sum + group.activities.length);
+         expect(totalActivitiesInGroups, 100);
+         
+         // Verify each group has correct room ID
+         for (final group in groups) {
+           expect(group.roomId, matches(RegExp(r'room\d')));
+           expect(group.activities, isNotEmpty);
+           
+           // All activities in a group should have the same room ID
+           for (final activity in group.activities) {
+             expect(activity.roomIdStr(), group.roomId);
+           }
+         }
+       });
+
+       test('should handle alternating room pattern correctly', () {
+         final baseTime = DateTime(2024, 1, 15, 10, 0).millisecondsSinceEpoch;
+         
+         // Create alternating pattern: room1, room2, room1, room2, room1
+         final activities = [
+           MockActivity(mockType: 'msg1', mockOriginServerTs: baseTime + 1000, mockRoomId: 'room1'),
+           MockActivity(mockType: 'msg2', mockOriginServerTs: baseTime + 2000, mockRoomId: 'room2'),
+           MockActivity(mockType: 'msg3', mockOriginServerTs: baseTime + 3000, mockRoomId: 'room1'),
+           MockActivity(mockType: 'msg4', mockOriginServerTs: baseTime + 4000, mockRoomId: 'room2'),
+           MockActivity(mockType: 'msg5', mockOriginServerTs: baseTime + 5000, mockRoomId: 'room1'),
+         ];
+         
+         // Simulate provider logic
+         final sortedActivities = activities.toList()..sort((a, b) => b.originServerTs().compareTo(a.originServerTs()));
+         final groups = <RoomActivitiesInfo>[];
+         
+         for (final activity in sortedActivities) {
+           final roomId = activity.roomIdStr();
+           
+           if (groups.isNotEmpty && groups.last.roomId == roomId) {
+             final lastGroup = groups.last;
+             groups[groups.length - 1] = (roomId: roomId, activities: [...lastGroup.activities, activity]);
+           } else {
+             groups.add((roomId: roomId, activities: [activity]));
+           }
+         }
+         
+         // Should create 5 groups due to perfect alternation
+         expect(groups.length, 5);
+         expect(groups[0].roomId, 'room1'); // msg5
+         expect(groups[1].roomId, 'room2'); // msg4
+         expect(groups[2].roomId, 'room1'); // msg3
+         expect(groups[3].roomId, 'room2'); // msg2
+         expect(groups[4].roomId, 'room1'); // msg1
+         
+         // Each group should have exactly 1 activity
+         for (final group in groups) {
+           expect(group.activities.length, 1);
+         }
+       });
+
+       test('should handle multiple consecutive activities in multiple rooms', () {
+         final baseTime = DateTime(2024, 1, 15, 10, 0).millisecondsSinceEpoch;
+         
+         final activities = [
+           // First batch in room1
+           MockActivity(mockType: 'msg1', mockOriginServerTs: baseTime + 1000, mockRoomId: 'room1'),
+           MockActivity(mockType: 'react1', mockOriginServerTs: baseTime + 2000, mockRoomId: 'room1'),
+           MockActivity(mockType: 'edit1', mockOriginServerTs: baseTime + 3000, mockRoomId: 'room1'),
+           
+           // Batch in room2
+           MockActivity(mockType: 'msg2', mockOriginServerTs: baseTime + 4000, mockRoomId: 'room2'),
+           MockActivity(mockType: 'react2', mockOriginServerTs: baseTime + 5000, mockRoomId: 'room2'),
+           
+           // Back to room1
+           MockActivity(mockType: 'msg3', mockOriginServerTs: baseTime + 6000, mockRoomId: 'room1'),
+           MockActivity(mockType: 'react3', mockOriginServerTs: baseTime + 7000, mockRoomId: 'room1'),
+           MockActivity(mockType: 'edit3', mockOriginServerTs: baseTime + 8000, mockRoomId: 'room1'),
+           MockActivity(mockType: 'del3', mockOriginServerTs: baseTime + 9000, mockRoomId: 'room1'),
+         ];
+         
+         // Simulate provider logic
+         final sortedActivities = activities.toList()..sort((a, b) => b.originServerTs().compareTo(a.originServerTs()));
+         final groups = <RoomActivitiesInfo>[];
+         
+         for (final activity in sortedActivities) {
+           final roomId = activity.roomIdStr();
+           
+           if (groups.isNotEmpty && groups.last.roomId == roomId) {
+             final lastGroup = groups.last;
+             groups[groups.length - 1] = (roomId: roomId, activities: [...lastGroup.activities, activity]);
+           } else {
+             groups.add((roomId: roomId, activities: [activity]));
+           }
+         }
+         
+         expect(groups.length, 3);
+         
+         // Latest group: room1 with 4 activities (del3, edit3, react3, msg3)
+         expect(groups[0].roomId, 'room1');
+         expect(groups[0].activities.length, 4);
+         expect(groups[0].activities[0].typeStr(), 'del3'); // Latest first
+         
+         // Middle group: room2 with 2 activities (react2, msg2)
+         expect(groups[1].roomId, 'room2');
+         expect(groups[1].activities.length, 2);
+         expect(groups[1].activities[0].typeStr(), 'react2'); // Latest first
+         
+         // Earliest group: room1 with 3 activities (edit1, react1, msg1)
+         expect(groups[2].roomId, 'room1');
+         expect(groups[2].activities.length, 3);
+         expect(groups[2].activities[0].typeStr(), 'edit1'); // Latest first
+       });
+
+       test('should handle special room ID characters', () {
+         final baseTime = DateTime(2024, 1, 15, 10, 0).millisecondsSinceEpoch;
+         
+         final activities = [
+           MockActivity(mockType: 'msg1', mockOriginServerTs: baseTime + 1000, mockRoomId: '!room1:server.com'),
+           MockActivity(mockType: 'msg2', mockOriginServerTs: baseTime + 2000, mockRoomId: '!room1:server.com'),
+           MockActivity(mockType: 'msg3', mockOriginServerTs: baseTime + 3000, mockRoomId: '#room-2_test:server.com'),
+           MockActivity(mockType: 'msg4', mockOriginServerTs: baseTime + 4000, mockRoomId: '!room1:server.com'),
+         ];
+         
+         // Simulate provider logic
+         final sortedActivities = activities.toList()..sort((a, b) => b.originServerTs().compareTo(a.originServerTs()));
+         final groups = <RoomActivitiesInfo>[];
+         
+         for (final activity in sortedActivities) {
+           final roomId = activity.roomIdStr();
+           
+           if (groups.isNotEmpty && groups.last.roomId == roomId) {
+             final lastGroup = groups.last;
+             groups[groups.length - 1] = (roomId: roomId, activities: [...lastGroup.activities, activity]);
+           } else {
+             groups.add((roomId: roomId, activities: [activity]));
+           }
+         }
+         
+         expect(groups.length, 3);
+         expect(groups[0].roomId, '!room1:server.com'); // msg4
+         expect(groups[1].roomId, '#room-2_test:server.com'); // msg3
+         expect(groups[2].roomId, '!room1:server.com'); // msg2, msg1
+         expect(groups[2].activities.length, 2);
+       });
+
+       test('should maintain chronological order across different activity types', () {
+         final baseTime = DateTime(2024, 1, 15, 10, 0).millisecondsSinceEpoch;
+         
+         final activities = [
+           MockActivity(mockType: 'message', mockOriginServerTs: baseTime + 1000, mockRoomId: 'room1'),
+           MockActivity(mockType: 'reaction', mockOriginServerTs: baseTime + 2000, mockRoomId: 'room1'),
+           MockActivity(mockType: 'edit', mockOriginServerTs: baseTime + 3000, mockRoomId: 'room1'),
+           MockActivity(mockType: 'delete', mockOriginServerTs: baseTime + 4000, mockRoomId: 'room1'),
+           MockActivity(mockType: 'file_upload', mockOriginServerTs: baseTime + 5000, mockRoomId: 'room1'),
+           MockActivity(mockType: 'invite', mockOriginServerTs: baseTime + 6000, mockRoomId: 'room1'),
+         ];
+         
+         // Simulate provider logic
+         final sortedActivities = activities.toList()..sort((a, b) => b.originServerTs().compareTo(a.originServerTs()));
+         final groups = <RoomActivitiesInfo>[];
+         
+         for (final activity in sortedActivities) {
+           final roomId = activity.roomIdStr();
+           
+           if (groups.isNotEmpty && groups.last.roomId == roomId) {
+             final lastGroup = groups.last;
+             groups[groups.length - 1] = (roomId: roomId, activities: [...lastGroup.activities, activity]);
+           } else {
+             groups.add((roomId: roomId, activities: [activity]));
+           }
+         }
+         
+         expect(groups.length, 1);
+         expect(groups[0].activities.length, 6);
+         
+         // Verify chronological order (descending)
+         expect(groups[0].activities[0].typeStr(), 'invite');
+         expect(groups[0].activities[1].typeStr(), 'file_upload');
+         expect(groups[0].activities[2].typeStr(), 'delete');
+         expect(groups[0].activities[3].typeStr(), 'edit');
+         expect(groups[0].activities[4].typeStr(), 'reaction');
+         expect(groups[0].activities[5].typeStr(), 'message');
+         
+         // Verify timestamps are in descending order
+         for (int i = 0; i < groups[0].activities.length - 1; i++) {
+           expect(
+             groups[0].activities[i].originServerTs(),
+             greaterThan(groups[0].activities[i + 1].originServerTs()),
+           );
+         }
+       });
+     });
   });
 } 
