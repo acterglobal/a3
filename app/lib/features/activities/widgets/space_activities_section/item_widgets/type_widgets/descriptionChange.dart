@@ -26,6 +26,8 @@ class ActivityDescriptionChangeItemWidget extends ConsumerWidget {
       actionIcon: PhosphorIconsThin.pencilLine,
       actionTitle: getMessage(lang, userId) ?? '',
       target: '',
+      actionIconBgColor: Colors.blueGrey,
+      actionIconColor: Colors.white,
       activityObject: activity.object(),
       userId: userId,
       roomId: activity.roomIdStr(),
@@ -33,7 +35,6 @@ class ActivityDescriptionChangeItemWidget extends ConsumerWidget {
         context,
         activity.descriptionContent()?.newVal().toString().trim(),
       ),
-      leadingWidget: Icon(PhosphorIconsThin.pencilSimpleLine, size: 25),
       originServerTs: activity.originServerTs(),
     );
   }
