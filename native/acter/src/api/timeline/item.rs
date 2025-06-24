@@ -23,7 +23,7 @@ use matrix_sdk_base::ruma::{
         },
         receipt::Receipt,
         room::message::MessageType,
-        FullStateEventContent,
+        FullStateEventContent, Mentions,
     },
     OwnedEventId, OwnedRoomAliasId, OwnedTransactionId, OwnedUserId,
 };
@@ -112,6 +112,8 @@ pub struct TimelineEventItem {
     #[builder(default)]
     content: Option<TimelineEventContent>,
     #[builder(default)]
+    mentions: Option<Mentions>,
+    #[builder(default)]
     in_reply_to_id: Option<OwnedEventId>,
     #[builder(default)]
     in_reply_to_event: Option<Box<TimelineEventItem>>,
@@ -140,6 +142,9 @@ impl TimelineEventItemBuilder {
                     let msg_type = msg.msgtype();
                     self.msg_type(Some(msg_type.msgtype().to_owned()));
                     self.content(TimelineEventContent::try_from(msg_type).ok());
+                    if let Some(mentions) = msg.mentions() {
+                        self.mentions(Some(mentions.clone()));
+                    }
                     if let Some(in_reply_to) = &msg_like.in_reply_to {
                         self.in_reply_to_id(Some(in_reply_to.event_id.clone()));
                         if let TimelineDetails::Ready(event) = &in_reply_to.event {
@@ -463,6 +468,16 @@ impl TimelineEventItem {
         } else {
             None
         }
+    }
+
+    pub fn room_mentioned(&self) -> bool {
+        self.mentions.as_ref().map_or_else(|| false, |m| m.room)
+    }
+
+    pub fn mentioned_users(&self) -> Vec<String> {
+        self.mentions.as_ref().map_or_else(Vec::new, |m| {
+            m.user_ids.iter().map(ToString::to_string).collect()
+        })
     }
 
     pub fn in_reply_to_id(&self) -> Option<String> {

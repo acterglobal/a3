@@ -121,7 +121,13 @@ class ActivityBiggerVisualContainerWidget extends ConsumerWidget {
 
   /// Subtitle + time or only time if subtitle is null
   Widget _buildSubtitleOrTime() {
-  if (subtitle != null) {
+    Widget? timeWidget = TimeAgoWidget(originServerTs: originServerTs);
+    if (subtitle == null) {
+      return Align(
+        alignment: Alignment.bottomRight,
+        child: timeWidget,
+      );
+    }
     return IntrinsicHeight(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -129,15 +135,14 @@ class ActivityBiggerVisualContainerWidget extends ConsumerWidget {
           Expanded(child: subtitle ?? const SizedBox.shrink()),
           const SizedBox(width: 8),
           Align(
-            alignment: Alignment.bottomCenter,
-            child: TimeAgoWidget(originServerTs: originServerTs),
+            alignment: Alignment.bottomRight,
+            child: timeWidget,
           ),
         ],
       ),
     );
   }
-  return TimeAgoWidget(originServerTs: originServerTs);
-}
+
 
 
   IconData _getActivityObjectIcon() {

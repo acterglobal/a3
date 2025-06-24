@@ -110,6 +110,14 @@ String taskDueDateFormat(DateTime dateTime) {
   return DateFormat('dd/MM/yyyy').format(dateTime);
 }
 
+String formatTimeFromTimestamp(int originServerTs) {
+  final originServerDateTime = DateTime.fromMillisecondsSinceEpoch(
+    originServerTs,
+    isUtc: true,
+  ).toLocal();
+  return DateFormat('hh:mm a').format(originServerDateTime);
+}
+
 String getHumanReadableFileSize(int bytes) {
   if (bytes <= 0) return '0 B';
   const suffixes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
@@ -256,10 +264,4 @@ String formatChatDayDividerDateString(BuildContext context, String dateString) {
     // If parsing fails, return the original string
     return dateString;
   }
-}
-
-// Helper function to get date-only DateTime from activity timestamp
-DateTime getActivityDate(Activity activity) {
-  final activityDate = DateTime.fromMillisecondsSinceEpoch(activity.originServerTs()).toLocal();
-  return DateTime(activityDate.year, activityDate.month, activityDate.day);
 }

@@ -1,9 +1,12 @@
 import 'package:acter/common/extensions/options.dart';
+import 'package:acter/common/providers/keyboard_visbility_provider.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
 import 'package:acter/common/widgets/acter_icon_picker/model/color_data.dart';
+import 'package:acter/common/widgets/acter_search_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/l10n/generated/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void showActerIconPicker({
   required BuildContext context,
@@ -27,7 +30,7 @@ void showActerIconPicker({
   );
 }
 
-class ActerIconPicker extends StatefulWidget {
+class ActerIconPicker extends ConsumerStatefulWidget {
   final Color selectedColor;
   final ActerIcon selectedIcon;
   final Function(Color, ActerIcon)? onIconSelection;
@@ -40,12 +43,15 @@ class ActerIconPicker extends StatefulWidget {
   });
 
   @override
-  State<ActerIconPicker> createState() => _ActerIconPickerState();
+  ConsumerState<ActerIconPicker> createState() => _ActerIconPickerState();
 }
 
-class _ActerIconPickerState extends State<ActerIconPicker> {
+class _ActerIconPickerState extends ConsumerState<ActerIconPicker> {
   final ValueNotifier<Color> selectedColor = ValueNotifier(Colors.blueGrey);
   final ValueNotifier<ActerIcon> selectedIcon = ValueNotifier(ActerIcon.list);
+  final ValueNotifier<List<ActerIcon>> actorIconList = ValueNotifier(
+    ActerIcon.values,
+  );
 
   void _setWidgetValues() {
     widget.selectedColor.map((color) => selectedColor.value = color);
@@ -71,10 +77,7 @@ class _ActerIconPickerState extends State<ActerIconPicker> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          _buildIconPreviewUI(),
-          const SizedBox(height: 24),
-          _buildColorSelector(),
-          const SizedBox(height: 24),
+          _buildIconPreviewAndColorSelectorView(),
           Expanded(child: _buildIconSelector()),
           ActerPrimaryActionButton(
             key: Key('acter-primary-action-button'),
@@ -88,6 +91,26 @@ class _ActerIconPickerState extends State<ActerIconPicker> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildIconPreviewAndColorSelectorView() {
+    final keyboardVisibility = ref.watch(keyboardVisibleProvider);
+
+    return AnimatedSize(
+      duration: const Duration(milliseconds: 800),
+      curve: Curves.easeInOutCubic,
+      child:
+          keyboardVisibility.valueOrNull ?? false
+              ? const SizedBox.shrink()
+              : Column(
+                children: [
+                  _buildIconPreviewUI(),
+                  const SizedBox(height: 24),
+                  _buildColorSelector(),
+                  const SizedBox(height: 24),
+                ],
+              ),
     );
   }
 
@@ -162,9 +185,54 @@ class _ActerIconPickerState extends State<ActerIconPicker> {
     );
   }
 
+  Widget _buildSearchWidget() {
+    return ActerSearchWidget(
+      padding: EdgeInsets.zero,
+      backgroundColor: Colors.white12,
+      onChanged: (searchValue) {
+        actorIconList.value =
+            ActerIcon.values
+                .where(
+                  (icon) => icon.name.toLowerCase().contains(
+                    searchValue.toLowerCase(),
+                  ),
+                )
+                .toList();
+      },
+      onClear: () => actorIconList.value = ActerIcon.values,
+    );
+  }
+
   Widget _buildIconSelector() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(L10n.of(context).selectIcon),
+        const SizedBox(height: 5),
+        _buildSearchWidget(),
+        const SizedBox(height: 5),
+        Expanded(
+          child: ValueListenableBuilder(
+            valueListenable: actorIconList,
+            builder: (context, iconList, child) {
+              if (iconList.isEmpty) {
+                return Center(
+                  key: Key('no-icons-found'),
+                  child: Text(L10n.of(context).noIconsFound),
+                );
+              }
+              return _buildIconsBoxList(iconList);
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildIconsBoxList(List<ActerIcon> iconList) {
     final iconBoxes =
-        ActerIcon.values
+        iconList
             .asMap()
             .map(
               (index, acterIcon) =>
@@ -172,16 +240,7 @@ class _ActerIconPickerState extends State<ActerIconPicker> {
             )
             .values
             .toList();
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(L10n.of(context).selectIcon),
-        const SizedBox(height: 12),
-        Expanded(
-          child: SingleChildScrollView(child: Wrap(children: iconBoxes)),
-        ),
-      ],
-    );
+    return SingleChildScrollView(child: Wrap(children: iconBoxes));
   }
 
   Widget _buildIconBoxItem(ActerIcon acterIconItem, int index) {

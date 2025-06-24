@@ -3179,6 +3179,8 @@
   "@jitsiMeeting": {},
   "updatingLocations": "Updating locations...",
   "@updatingLocations": {},
+  "noIconsFound": "No icons found",
+  "@noIconsFound": {},
   "activityUIShowcase": "Activity UI Showcase",
   "@activityUIShowcase": {},
   "activityUIShowcaseDes2": "Preview different activity components and layouts",

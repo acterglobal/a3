@@ -21797,6 +21797,20 @@ class Api {
           .asFunction<
             _TimelineEventItemSpaceParentContentReturn Function(int)
           >();
+  late final _timelineEventItemRoomMentionedPtr =
+      _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
+        "__TimelineEventItem_room_mentioned",
+      );
+
+  late final _timelineEventItemRoomMentioned =
+      _timelineEventItemRoomMentionedPtr.asFunction<int Function(int)>();
+  late final _timelineEventItemMentionedUsersPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
+        "__TimelineEventItem_mentioned_users",
+      );
+
+  late final _timelineEventItemMentionedUsers =
+      _timelineEventItemMentionedUsersPtr.asFunction<int Function(int)>();
   late final _timelineEventItemInReplyToIdPtr = _lookup<
     ffi.NativeFunction<_TimelineEventItemInReplyToIdReturn Function(ffi.IntPtr)>
   >("__TimelineEventItem_in_reply_to_id");
@@ -45923,6 +45937,31 @@ class TimelineEventItem {
     final tmp4_1 = _Box(_api, tmp4_0, "drop_box_SpaceParentContent");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
     final tmp2 = SpaceParentContent._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// Whether the whole room is mentioned.
+  bool roomMentioned() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._timelineEventItemRoomMentioned(tmp0);
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  /// The list of mentioned users.
+  /// Available only when sender didn’t mention the whole room
+  FfiListFfiString mentionedUsers() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._timelineEventItemMentionedUsers(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListFfiString");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp4 = FfiListFfiString._(_api, tmp3_1);
+    final tmp2 = tmp4;
     return tmp2;
   }
 
@@ -70240,7 +70279,7 @@ class BackupManager {
     return tmp6;
   }
 
-  /// the backup key as it was stored last, might be empty if there isn't any stored
+  /// the backup key as it was stored last, might be empty if there isn’t any stored
   Future<OptionString> storedEncKey() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
