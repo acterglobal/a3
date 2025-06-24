@@ -58,17 +58,6 @@ class _ActerIconPickerState extends ConsumerState<ActerIconPicker> {
     widget.selectedIcon.map((icon) => selectedIcon.value = icon);
   }
 
-  void _filterIconList(String searchValue) {
-    if (searchValue.isEmpty) {
-      actorIconList.value = ActerIcon.values;
-    } else {
-      actorIconList.value =
-          ActerIcon.values.where((icon) {
-            return icon.name.toLowerCase().contains(searchValue.toLowerCase());
-          }).toList();
-    }
-  }
-
   @override
   void initState() {
     super.initState();
@@ -200,8 +189,17 @@ class _ActerIconPickerState extends ConsumerState<ActerIconPicker> {
     return ActerSearchWidget(
       padding: EdgeInsets.zero,
       backgroundColor: Colors.white12,
-      onChanged: _filterIconList,
-      onClear: () => _filterIconList(''),
+      onChanged: (searchValue) {
+        actorIconList.value =
+            ActerIcon.values
+                .where(
+                  (icon) => icon.name.toLowerCase().contains(
+                    searchValue.toLowerCase(),
+                  ),
+                )
+                .toList();
+      },
+      onClear: () => actorIconList.value = ActerIcon.values,
     );
   }
 
