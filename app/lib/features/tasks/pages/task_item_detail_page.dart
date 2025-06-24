@@ -184,7 +184,10 @@ class _TaskItemBody extends ConsumerWidget {
     await openRedactContentDialog(
       context,
       title: L10n.of(context).deleteTaskItem,
-      onSuccess: () => Navigator.pop(context),
+      onSuccess: () async {
+        ref.invalidate(taskItemProvider((taskListId: taskListId, taskId: task.eventIdStr())));
+        Navigator.pop(context);
+      },
       eventId: task.eventIdStr(),
       roomId: task.roomIdStr(),
       isSpace: true,

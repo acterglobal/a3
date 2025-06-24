@@ -38,7 +38,7 @@ url = "mxc://acter.global/tVLtaQaErMyoXmcCroPZdfNG"
 #[tokio::test]
 async fn like_activity_on_news() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("likeOnboost", 2, TMPL).await?;
+        random_users_with_random_space_under_template("likeOnboost", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
@@ -54,13 +54,13 @@ async fn like_activity_on_news() -> Result<()> {
     })
     .await?;
 
-    let mut act_obs = all_activities_observer(&first).await?;
+    let mut act_obs = all_activities_observer(first).await?;
 
     let reactions = news_entry.reactions().await?;
     reactions.send_like().await?;
 
     let activity = Retry::spawn(retry_strategy, || async {
-        get_latest_activity(&first, space_id.to_string(), "reaction").await
+        get_latest_activity(first, space_id.to_string(), "reaction").await
     })
     .await?;
     assert_eq!(activity.type_str(), "reaction");
@@ -76,7 +76,7 @@ async fn like_activity_on_news() -> Result<()> {
 #[tokio::test]
 async fn like_activity_on_story() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("likeOnboost", 2, TMPL).await?;
+        random_users_with_random_space_under_template("likeOnboost", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
@@ -92,13 +92,13 @@ async fn like_activity_on_story() -> Result<()> {
     })
     .await?;
 
-    let mut act_obs = all_activities_observer(&first).await?;
+    let mut act_obs = all_activities_observer(first).await?;
 
     let reactions = story.reactions().await?;
     reactions.send_like().await?;
 
     let activity = Retry::spawn(retry_strategy, || async {
-        get_latest_activity(&first, space_id.to_string(), "reaction").await
+        get_latest_activity(first, space_id.to_string(), "reaction").await
     })
     .await?;
     assert_eq!(activity.type_str(), "reaction");

@@ -39,9 +39,11 @@ class _ActerIconWidgetState extends State<ActerIconWidget> {
   }
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _setWidgetValues();
+  void didUpdateWidget(ActerIconWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.color != widget.color || oldWidget.icon != widget.icon) {
+      _setWidgetValues();
+    }
   }
 
   @override

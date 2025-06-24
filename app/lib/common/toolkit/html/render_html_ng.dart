@@ -1,5 +1,6 @@
 import 'package:acter/common/actions/open_link.dart';
 import 'package:acter/common/toolkit/buttons/user_chip.dart';
+import 'package:acter/common/toolkit/html/utils.dart';
 import 'package:acter/features/chat_ng/utils.dart';
 import 'package:acter/features/deep_linking/parse_acter_uri.dart';
 import 'package:acter/features/deep_linking/types.dart';
@@ -9,8 +10,8 @@ import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_highlight/flutter_highlight.dart';
 import 'package:flutter_highlight/themes/solarized-dark.dart';
-import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:highlight/highlight.dart' show highlight;
 import 'package:logging/logging.dart';
@@ -47,12 +48,6 @@ class MaxSizeWidgetFactory extends WidgetFactory {
     );
   }
 }
-
-final linkMatcher = RegExp(
-  r'(https?:\/\/|matrix:|acter:)([^\s]+)',
-  multiLine: true,
-  unicode: true,
-);
 
 class CodeBlockWidget extends StatefulWidget {
   final String code;
@@ -177,14 +172,7 @@ class RenderHtmlNg extends ConsumerWidget {
     this.maxLines,
     this.roomId,
     this.backgroundColor,
-  }) : html = text
-           .replaceAllMapped(
-             linkMatcher,
-             // we replace links we've found with an html version for the inner
-             // rendering engine
-             (match) => '<a href="${match[0]!}">${match[2]!}</a>',
-           )
-           .replaceAll('\n', '<br>');
+  }) : html = minimalMarkup(text);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) => HtmlWidget(
@@ -297,9 +285,8 @@ class RenderHtmlNg extends ConsumerWidget {
       //   // if the link title has been changed
       //   // we should show the original link
       //   return null;
-      // }
-    } on UriParseError catch (error, stackTrace) {
-      _log.warning('failed to parse acter uri', error, stackTrace);
+    } on UriParseError {
+      _log.fine('not a $uri valid acter URI');
       return null;
     }
   }

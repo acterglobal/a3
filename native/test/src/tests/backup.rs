@@ -12,6 +12,7 @@ async fn can_recover_and_read_message() -> Result<()> {
     let _ = env_logger::try_init();
 
     // enable backup on a)
+    let body = "Hi, everyone";
     let (user_id, room_id, backup_pass) = {
         let (mut user, room_id) = random_user_with_random_convo("recovering_message").await?;
         let state_sync = user.start_sync();
@@ -27,7 +28,7 @@ async fn can_recover_and_read_message() -> Result<()> {
         let convo = user.convo(room_id.to_string()).await?;
         let timeline = convo.timeline_stream();
 
-        let draft = user.text_plain_draft("Hi, everyone".to_owned());
+        let draft = user.text_plain_draft(body.to_owned());
         timeline.send_message(Box::new(draft)).await?;
 
         let msg = Retry::spawn(retry_strategy, || async {
@@ -44,14 +45,14 @@ async fn can_recover_and_read_message() -> Result<()> {
                 .msg_content()
                 .expect("is message")
                 .body(),
-            "Hi, everyone"
+            body
         );
 
         let backup_manager = user.backup_manager();
         let backup_pass = backup_manager.enable().await?;
         assert_eq!(backup_manager.state_str(), "enabled");
 
-        // let's wind down
+        // let’s wind down
         state_sync.cancel();
         let user_id = user.user_id()?;
         user.logout().await?;
@@ -91,7 +92,7 @@ async fn can_recover_and_read_message() -> Result<()> {
         "m.room.encrypted"
     );
 
-    // let's try to enable backuo
+    // let’s try to enable backuo
     let backup = user.backup_manager();
     backup.recover(backup_pass).await?;
     assert_eq!(backup.state_str(), "enabled");
@@ -116,7 +117,7 @@ async fn can_recover_and_read_message() -> Result<()> {
             .msg_content()
             .expect("is message")
             .body(),
-        "Hi, everyone" // WE CAN READ IT AGAIN
+        body // WE CAN READ IT AGAIN
     );
 
     Ok(())

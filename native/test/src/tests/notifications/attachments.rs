@@ -46,7 +46,7 @@ utc_due = "{{ now().as_rfc3339 }}"
 #[tokio::test]
 async fn image_attachment_on_pin() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("aOnpin", 2, TMPL).await?;
+        random_users_with_random_space_under_template("aOnpin", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
@@ -91,12 +91,13 @@ async fn image_attachment_on_pin() -> Result<()> {
         .tempfile()?;
     png_file.as_file_mut().write_all(bytes)?;
 
+    let filename = "Fishy.png";
     let base_draft = first
         .image_draft(
             png_file.path().to_string_lossy().to_string(),
             "image/png".to_owned(),
         )
-        .filename("Fishy.png".to_owned());
+        .filename(filename.to_owned());
     let notification_id = manager
         .content_draft(Box::new(base_draft))
         .await?
@@ -114,7 +115,7 @@ async fn image_attachment_on_pin() -> Result<()> {
         *obj_entry.event_id()
     );
 
-    assert_eq!(notification_item.title(), "🖼️ \"Fishy.png\"");
+    assert_eq!(notification_item.title(), format!("🖼️ \"{}\"", filename));
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(
         notification_item.target_url(),
@@ -135,7 +136,7 @@ async fn image_attachment_on_pin() -> Result<()> {
 #[tokio::test]
 async fn file_attachment_on_event() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("aOevent", 2, TMPL).await?;
+        random_users_with_random_space_under_template("aOevent", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
@@ -180,12 +181,13 @@ async fn file_attachment_on_event() -> Result<()> {
         .tempfile()?;
     png_file.as_file_mut().write_all(bytes)?;
 
+    let filename = "Fishy.doc";
     let base_draft = first
         .file_draft(
             png_file.path().to_string_lossy().to_string(),
             "document/x-src".to_owned(),
         )
-        .filename("Fishy.doc".to_owned());
+        .filename(filename.to_owned());
     let notification_id = manager
         .content_draft(Box::new(base_draft))
         .await?
@@ -204,7 +206,7 @@ async fn file_attachment_on_event() -> Result<()> {
     );
 
     // notification_item.body().expect("found content");
-    assert_eq!(notification_item.title(), "📄 \"Fishy.doc\"");
+    assert_eq!(notification_item.title(), format!("📄 \"{}\"", filename));
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(
         notification_item.target_url(),
@@ -225,7 +227,7 @@ async fn file_attachment_on_event() -> Result<()> {
 #[tokio::test]
 async fn video_attachment_on_tasklist() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("aOevent", 2, TMPL).await?;
+        random_users_with_random_space_under_template("aOevent", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
@@ -270,12 +272,13 @@ async fn video_attachment_on_tasklist() -> Result<()> {
         .tempfile()?;
     png_file.as_file_mut().write_all(bytes)?;
 
+    let filename = "Fishy.mp4";
     let base_draft = first
         .video_draft(
             png_file.path().to_string_lossy().to_string(),
             "video/mpeg4".to_owned(),
         )
-        .filename("Fishy.mp4".to_owned());
+        .filename(filename.to_owned());
     let notification_id = manager
         .content_draft(Box::new(base_draft))
         .await?
@@ -294,7 +297,7 @@ async fn video_attachment_on_tasklist() -> Result<()> {
     );
 
     // notification_item.body().expect("found content");
-    assert_eq!(notification_item.title(), "🎥 \"Fishy.mp4\"");
+    assert_eq!(notification_item.title(), format!("🎥 \"{}\"", filename));
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(
         notification_item.target_url(),
@@ -315,7 +318,7 @@ async fn video_attachment_on_tasklist() -> Result<()> {
 #[tokio::test]
 async fn link_attachment_on_task() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("aOevent", 2, TMPL).await?;
+        random_users_with_random_space_under_template("aOevent", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];

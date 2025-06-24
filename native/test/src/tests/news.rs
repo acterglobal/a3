@@ -91,10 +91,12 @@ async fn news_smoketest() -> Result<()> {
     let main_space = spaces.first().expect("main space should be available");
     assert_eq!(main_space.latest_news_entries(10).await?.len(), 3);
 
-    let mut draft = main_space.news_draft()?;
     let text_draft = user.text_plain_draft("This is text slide".to_owned());
-    draft.add_slide(Box::new(text_draft.into())).await?;
-    let event_id = draft.send().await?;
+    let event_id = {
+        let mut draft = main_space.news_draft()?;
+        draft.add_slide(Box::new(text_draft.into())).await?;
+        draft.send().await?
+    };
     print!("draft sent event id: {}", event_id);
 
     Ok(())
@@ -115,8 +117,9 @@ async fn news_plain_text_test() -> Result<()> {
     .await?;
 
     let space = user.space(room_id.to_string()).await?;
+    let body = "This is a simple text";
+    let text_draft = user.text_plain_draft(body.to_owned());
     let mut draft = space.news_draft()?;
-    let text_draft = user.text_plain_draft("This is a simple text".to_owned());
     draft.add_slide(Box::new(text_draft.into())).await?;
     draft.send().await?;
 
@@ -135,7 +138,7 @@ async fn news_plain_text_test() -> Result<()> {
     assert_eq!(text_slide.type_str(), "text");
     let msg_content = text_slide.msg_content();
     assert!(msg_content.formatted_body().is_none());
-    assert_eq!(msg_content.body(), "This is a simple text");
+    assert_eq!(msg_content.body(), body);
 
     // FIXME: notifications need to be checked against a secondary client..
     // // also check what the notification will be like

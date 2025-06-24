@@ -46,13 +46,17 @@ async fn room_msg_can_download_image() -> Result<()> {
     let mut tmp_png = NamedTempFile::new()?;
     tmp_png.as_file_mut().write_all(bytes)?;
 
+    let mimetype = "image/jpeg";
     let draft = user
         .image_draft(
             tmp_jpg.path().to_string_lossy().to_string(),
-            "image/jpeg".to_owned(),
+            mimetype.to_owned(),
         )
-        .thumbnail_file_path(tmp_png.path().to_string_lossy().to_string())
-        .thumbnail_info(None, None, Some("image/png".to_owned()), Some(size));
+        .thumbnail_image(
+            tmp_png.path().to_string_lossy().to_string(),
+            "image/png".to_owned(),
+        )
+        .thumbnail_info(None, None, Some(size));
     timeline.send_message(Box::new(draft)).await?;
 
     // image msg may reach via pushback action or reset action
@@ -65,7 +69,7 @@ async fn room_msg_can_download_image() -> Result<()> {
                     let value = diff
                         .value()
                         .expect("diff pushback action should have valid value");
-                    if match_media_msg(&value, "image/jpeg", &jpg_name).is_some() {
+                    if match_media_msg(&value, mimetype, &jpg_name).is_some() {
                         found = value.event_item().and_then(|t| t.event_id());
                     }
                 }
@@ -74,7 +78,7 @@ async fn room_msg_can_download_image() -> Result<()> {
                         .values()
                         .expect("diff reset action should have valid values");
                     for value in values.iter() {
-                        if match_media_msg(value, "image/jpeg", &jpg_name).is_some() {
+                        if match_media_msg(value, mimetype, &jpg_name).is_some() {
                             found = value.event_item().and_then(|t| t.event_id());
                             if found.is_some() {
                                 break;

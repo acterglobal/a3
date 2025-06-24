@@ -10,6 +10,7 @@ use anyhow::Result;
 use futures::{pin_mut, stream::StreamExt};
 use matrix_sdk::config::StoreConfig;
 use matrix_sdk_base::ruma::{OwnedRoomId, UserId};
+use rand::{thread_rng, Rng};
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
     Retry,
@@ -72,23 +73,26 @@ pub async fn random_user_with_random_space(prefix: &str) -> Result<(Client, Owne
 
 pub async fn random_users_with_random_space(
     prefix: &str,
-    user_count: u8,
+    observer_count: usize,
 ) -> Result<(Vec<Client>, OwnedRoomId)> {
-    assert!(user_count > 0, "User Counts must be more than 0");
+    assert!(
+        observer_count > 0,
+        "The count of observers must be more than 0"
+    );
     let (main_user, uuid) = random_user_with_uuid(prefix).await?;
-    let mut settings = CreateSpaceSettingsBuilder::default();
-    settings.name(format!("it-room-{prefix}-{uuid}"));
+    let (settings, mut users) = {
+        let mut builder = CreateSpaceSettingsBuilder::default();
+        builder.name(format!("it-room-{prefix}-{uuid}"));
 
-    let mut users = vec![];
-    for _x in 0..user_count {
-        let (new_user, _uuid) = random_user_with_uuid(prefix).await?;
-        settings.add_invitee(new_user.user_id()?.to_string())?;
-        users.push(new_user)
-    }
-
-    let room_id = main_user
-        .create_acter_space(Box::new(settings.build()?))
-        .await?;
+        let mut users = vec![];
+        for _x in 0..observer_count {
+            let (new_user, _uuid) = random_user_with_uuid(prefix).await?;
+            builder.add_invitee(new_user.user_id()?.to_string())?;
+            users.push(new_user);
+        }
+        (builder.build()?, users)
+    };
+    let room_id = main_user.create_acter_space(Box::new(settings)).await?;
 
     for user in users.iter() {
         loop {
@@ -132,19 +136,26 @@ pub async fn random_user_under_token(prefix: &str, registration_token: &str) -> 
 
 pub async fn random_users_with_random_convo(
     prefix: &str,
-) -> Result<(Client, Client, Client, OwnedRoomId)> {
-    let (sisko, _) = random_user_with_uuid(prefix).await?;
-    let (kyra, _) = random_user_with_uuid(prefix).await?;
-    let (worf, _) = random_user_with_uuid(prefix).await?;
+    user_count: u8,
+) -> Result<(Vec<Client>, OwnedRoomId)> {
+    assert!(user_count > 0, "User Counts must be more than 0");
+    let (main_user, uuid) = random_user_with_uuid(prefix).await?;
+    let (settings, mut users) = {
+        let mut builder = CreateConvoSettingsBuilder::default();
+        builder.name(format!("it-room-{prefix}-{uuid}"));
 
-    let uuid = Uuid::new_v4().to_string();
-    let settings = CreateConvoSettingsBuilder::default()
-        .name(format!("it-room-{prefix}-{uuid}"))
-        .invites(vec![kyra.user_id()?, worf.user_id()?])
-        .build()?;
-    let room_id = sisko.create_convo(Box::new(settings)).await?;
+        let mut users = vec![];
+        for _x in 0..user_count {
+            let (new_user, _uuid) = random_user_with_uuid(prefix).await?;
+            builder.add_invitee(new_user.user_id()?.to_string())?;
+            users.push(new_user);
+        }
+        (builder.build()?, users)
+    };
+    let room_id = main_user.create_convo(Box::new(settings)).await?;
 
-    Ok((sisko, kyra, worf, room_id))
+    users.insert(0, main_user);
+    Ok((users, room_id))
 }
 
 pub fn default_user_password(username: &str) -> String {
@@ -207,10 +218,10 @@ pub async fn random_user_with_template(
 
 pub async fn random_users_with_random_space_under_template(
     prefix: &str,
-    user_count: u8,
+    observer_count: usize,
     template: &str,
 ) -> Result<(Vec<Client>, Vec<SyncState>, OwnedRoomId, Engine)> {
-    let (mut clients, room_id) = random_users_with_random_space(prefix, user_count).await?;
+    let (mut clients, room_id) = random_users_with_random_space(prefix, observer_count).await?;
     let user = clients.first().expect("there are more than one");
 
     let mut tmpl_engine = user.template_engine(template).await?;
@@ -236,7 +247,7 @@ pub async fn random_users_with_random_space_under_template(
 
 pub async fn random_users_with_random_chat_and_space_under_template(
     prefix: &str,
-    user_count: u8,
+    observer_count: usize,
     template: &str,
 ) -> Result<(
     Vec<Client>,
@@ -246,7 +257,7 @@ pub async fn random_users_with_random_chat_and_space_under_template(
     Engine,
 )> {
     let (clients, sync_states, space_id, engine) =
-        random_users_with_random_space_under_template(prefix, user_count, template).await?;
+        random_users_with_random_space_under_template(prefix, observer_count, template).await?;
 
     let main_user = clients.first().expect("more than one user generated");
     let user_ids = clients
@@ -302,6 +313,25 @@ pub(crate) fn match_media_msg(
     None
 }
 
+pub(crate) fn match_location_msg(
+    msg: &TimelineItem,
+    body: &str,
+    geo_uri: &str,
+) -> Option<MsgContent> {
+    if !msg.is_virtual() {
+        let event_item = msg.event_item().expect("room msg should have event item");
+        if let Some(msg_content) = event_item.msg_content() {
+            if msg_content.body() == body && msg_content.geo_uri().as_deref() == Some(geo_uri) {
+                // exclude the pending msg
+                if event_item.event_id().is_some() {
+                    return Some(msg_content);
+                }
+            }
+        }
+    }
+    None
+}
+
 pub(crate) fn match_pinned_msg(msg: &TimelineItem) -> Option<(String, RoomPinnedEventsContent)> {
     if msg.is_virtual() {
         return None;
@@ -342,4 +372,15 @@ pub(crate) async fn invite_user(
     room.invite_user_by_id(other_user_id).await?;
 
     Ok(room)
+}
+
+pub fn random_string(length: usize, charset: &[u8]) -> String {
+    let mut rng = thread_rng();
+
+    (0..length)
+        .map(|_| {
+            let idx = rng.gen_range(0..charset.len());
+            charset[idx] as char
+        })
+        .collect()
 }

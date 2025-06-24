@@ -13,13 +13,15 @@ Future<void> saveMsgDraft(
   final chat = await ref.read(chatProvider(roomId).future);
   final chatEditorState = ref.read(chatEditorStateProvider);
   final messageId = chatEditorState.selectedMsgItem?.eventId();
-
-  if (chat != null && messageId != null) {
-    if (chatEditorState.isEditing) {
-      await chat.saveMsgDraft(text, htmlText, 'edit', messageId);
-    } else if (chatEditorState.isReplying) {
-      await chat.saveMsgDraft(text, htmlText, 'reply', messageId);
+  if (chat != null) {
+    if (messageId != null) {
+      if (chatEditorState.isEditing) {
+        await chat.saveMsgDraft(text, htmlText, 'edit', messageId);
+      } else if (chatEditorState.isReplying) {
+        await chat.saveMsgDraft(text, htmlText, 'reply', messageId);
+      }
     } else {
+      // no message id, create a unreferenced draft
       await chat.saveMsgDraft(text, htmlText, 'new', null);
     }
   }
@@ -76,12 +78,9 @@ const List<MaterialAccentColor> chatBubbleDisplayNameColors =
 final _emojiRegex = RegExp(
   r'^(\p{RI}{2}|(?![#*\d](?!\uFE0F?\u20E3))\p{Emoji}(?:\p{EMod}|[\u{E0020}-\u{E007E}]+\u{E007F}|\uFE0F?\u20E3?)(?:\u200D\p{Emoji}(?:\p{EMod}|[\u{E0020}-\u{E007E}]+\u{E007F}|\uFE0F?\u20E3?))*|\s)+$',
   unicode: true,
-  multiLine: true,
 );
 
-bool isOnlyEmojis(String text) {
-  return _emojiRegex.hasMatch(text.trim());
-}
+bool isOnlyEmojis(String text) => _emojiRegex.hasMatch(text.trim());
 
 extension ColorAsCssString on Color {
   String toCssString() =>

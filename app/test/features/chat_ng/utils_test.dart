@@ -27,6 +27,21 @@ void main() {
       expect(isOnlyEmojis('Hello 😊 World'), false);
     });
 
+    test(
+      'should return false for mulitline text with emojis and plaintext',
+      () {
+        expect(isOnlyEmojis('Hello \n😊'), false);
+        expect(isOnlyEmojis('😊\n World'), false);
+        expect(isOnlyEmojis('Hello\n😊👍🎉\nWorld'), false);
+      },
+    );
+
+    test('should return true for mulitline with only emojis', () {
+      expect(isOnlyEmojis('👍🎉 \n😊'), true);
+      expect(isOnlyEmojis('😊\n 👍🎉'), true);
+      expect(isOnlyEmojis('👍🎉\n😊👍🎉\n\r\t  👍🎉'), true);
+    });
+
     test('should return false for plain text', () {
       expect(isOnlyEmojis('Hello'), false);
       expect(isOnlyEmojis('123'), false);
@@ -45,5 +60,27 @@ void main() {
       expect(isOnlyEmojis('👨‍💻'), true); // Person with profession
       expect(isOnlyEmojis('🏴󠁧󠁢󠁥󠁮󠁧󠁿'), true); // Regional indicator
     });
+
+    test(
+      'should return false for multiline text with multiple whitespace characters',
+      () {
+        expect(
+          isOnlyEmojis('Weekly Product Update 🚀 \n\r\nHello dear community!'),
+          false,
+        );
+        expect(
+          isOnlyEmojis('Line 1\n\r\nLine 2\r\n\tIndented line\n\r\nFinal line'),
+          false,
+        );
+        expect(
+          isOnlyEmojis('\n\r\t  Text with various whitespace  \t\r\n'),
+          false,
+        );
+        expect(
+          isOnlyEmojis('🚀\n\r\nActual text content\r\n\t- Bullet point'),
+          false,
+        );
+      },
+    );
   });
 }

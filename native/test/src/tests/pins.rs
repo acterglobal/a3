@@ -51,7 +51,12 @@ async fn pins_smoketest() -> Result<()> {
     })
     .await?;
 
-    assert_eq!(user.pins().await?.len(), 3);
+    let pins = user.pins().await?;
+    assert_eq!(pins.len(), 3);
+
+    let first_pin = pins.first().unwrap();
+    let user_id = user.user_id()?;
+    assert_eq!(first_pin.sender(), user_id);
 
     let spaces = user.spaces().await?;
     assert_eq!(spaces.len(), 1);
@@ -91,14 +96,15 @@ async fn pin_comments() -> Result<()> {
     // ---- let’s make a comment
 
     let comments_listener = comments_manager.subscribe();
+    let body = "I updated the pin";
     let comment_id = comments_manager
         .comment_draft()?
-        .content_text("I updated the pin".to_owned())
+        .content_text(body.to_owned())
         .send()
         .await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
-    Retry::spawn(retry_strategy.clone(), || async {
+    Retry::spawn(retry_strategy, || async {
         if comments_listener.is_empty() {
             bail!("all still empty");
         }
@@ -109,7 +115,7 @@ async fn pin_comments() -> Result<()> {
     let comments = comments_manager.comments().await?;
     assert_eq!(comments.len(), 1);
     assert_eq!(comments[0].event_id(), comment_id);
-    assert_eq!(comments[0].content().body, "I updated the pin");
+    assert_eq!(comments[0].content().body, body);
 
     Ok(())
 }
@@ -206,7 +212,7 @@ async fn pin_attachments() -> Result<()> {
         .iter()
         .find(|a| a.event_id() == png_attach_id)
         .expect("File not found");
-    // FIXME: for some reason this comes back as 'image'` rather than `file`
+    // FIXME: for some reason this comes back as `image` rather than `file`
     // assert_eq!(attachment.type_str(), "file");
     // assert_eq!(
     //     attachment.file_desc().expect("file description should be available").name(),

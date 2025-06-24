@@ -10,7 +10,7 @@ use matrix_sdk_base::{
         assign,
         events::{
             room::{
-                message::{AudioInfo, FileInfo, ForwardThread, VideoInfo},
+                message::{AudioInfo, FileInfo, ForwardThread, LocationInfo, VideoInfo},
                 ImageInfo,
             },
             MessageLikeEventType,
@@ -55,13 +55,18 @@ impl TimelineStream {
 
         async_stream::stream! {
             let (timeline_items, mut timeline_stream) = timeline.subscribe().await;
-            yield TimelineItemDiff::current_items(timeline_items.clone().into_iter().map(|x| TimelineItem::from((x, user_id.clone()))).collect());
+            let values = timeline_items
+                .into_iter()
+                .map(|x| TimelineItem::from((x, user_id.clone())))
+                .collect::<Vec<TimelineItem>>();
+            yield TimelineItemDiff::current_items(values);
 
-            let mut remap = timeline_stream.map(|diff| diff.into_iter().map(|d| remap_for_diff(
-                d,
-                |x| TimelineItem::from((x, user_id.clone())),
-            )).collect::<Vec<_>>()
-            );
+            let mut remap = timeline_stream.map(|diff| {
+                diff
+                    .into_iter()
+                    .map(|d| remap_for_diff(d, |x| TimelineItem::from((x, user_id.clone()))))
+                    .collect::<Vec<ApiVectorDiff<TimelineItem>>>()
+            });
 
             while let Some(d) = remap.next().await {
                 for e in d {
@@ -283,6 +288,7 @@ impl Client {
         });
         MsgDraft::new(MsgContentDraft::Image {
             source,
+            thumbnail_source: None,
             info: Some(info),
             filename: None,
         })
@@ -305,6 +311,7 @@ impl Client {
         });
         MsgDraft::new(MsgContentDraft::Video {
             source,
+            thumbnail_source: None,
             info: Some(info),
             filename: None,
         })
@@ -316,6 +323,7 @@ impl Client {
         });
         MsgDraft::new(MsgContentDraft::File {
             source,
+            thumbnail_source: None,
             info: Some(info),
             filename: None,
         })
@@ -325,7 +333,8 @@ impl Client {
         MsgDraft::new(MsgContentDraft::Location {
             body,
             geo_uri,
-            info: None,
+            thumbnail_source: None,
+            info: Some(LocationInfo::new()),
         })
     }
 }

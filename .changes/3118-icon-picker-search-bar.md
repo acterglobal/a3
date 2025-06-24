@@ -1,0 +1,1 @@
+- [Fix] : Custom icon picker now have search option for better icon aceessibility.

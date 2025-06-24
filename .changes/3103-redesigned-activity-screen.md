@@ -1,0 +1,1 @@
+- [Improvement] : Activity items have been redesigned and the activities are now grouped chronologically, with the most recent first. Consecutive items from the same space are visually grouped to improve readability.

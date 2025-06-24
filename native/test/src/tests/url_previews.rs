@@ -25,7 +25,7 @@ url = "https://acter.global"
 async fn ref_details_as_url_preview() -> Result<()> {
     let _ = env_logger::try_init();
     let (users, _sync_states, _space_id, chat_id, _engine) =
-        random_users_with_random_chat_and_space_under_template("url_preview_ref_details", 2, TMPL)
+        random_users_with_random_chat_and_space_under_template("url_preview_ref_details", 1, TMPL)
             .await?;
 
     let mut user = users[0].clone();
@@ -97,7 +97,7 @@ async fn ref_details_as_url_preview() -> Result<()> {
 async fn url_preview_on_message() -> Result<()> {
     let _ = env_logger::try_init();
     let (users, _sync_states, _space_id, chat_id, _engine) =
-        random_users_with_random_chat_and_space_under_template("url_preview_ref_details", 2, TMPL)
+        random_users_with_random_chat_and_space_under_template("url_preview_ref_details", 1, TMPL)
             .await?;
 
     let mut user = users[0].clone();

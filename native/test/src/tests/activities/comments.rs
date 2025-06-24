@@ -70,9 +70,10 @@ async fn task_comment_activity() -> Result<()> {
     let task = tasks.first().expect("first task should be available");
 
     let comments_manager = task.comments().await?;
+    let body = "Looking forward to it!";
     let comment_id = comments_manager
         .comment_draft()?
-        .content_text("Looking forward to it!".to_owned())
+        .content_text(body.to_owned())
         .send()
         .await?;
 
@@ -86,11 +87,19 @@ async fn task_comment_activity() -> Result<()> {
         Ok(comments)
     })
     .await?;
+
     let activity = user.activity(comment_id.to_string()).await?;
+    assert_eq!(activity.type_str(), "comment");
     assert_eq!(
         activity.msg_content().map(|c| c.body()).as_deref(),
-        Some("Looking forward to it!")
+        Some(body)
     );
+    assert_eq!(activity.title(), None);
+    assert!(activity.title_content().is_none());
+    assert!(activity.description_content().is_none());
+    assert!(activity.date_time_range_content().is_none());
+    assert!(activity.date_content().is_none());
+
     // on task add the "object" is our list this happened on
     let object = activity.object().expect("we have an object");
     assert_eq!(object.type_str(), "task");

@@ -1,4 +1,5 @@
-import 'package:dart_date/dart_date.dart';
+import 'package:acter/common/themes/colors/color_scheme.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:flutter/material.dart';
 
 class TimeAgoWidget extends StatelessWidget {
@@ -13,14 +14,10 @@ class TimeAgoWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final originServerDateTime = DateTime.fromMillisecondsSinceEpoch(
-      originServerTs,
-      isUtc: true,
-    );
-    final time = originServerDateTime.toLocal().timeago();
+    final time = formatTimeFromTimestamp(originServerTs);
     return Text(
       time,
-      style: textStyle ?? Theme.of(context).textTheme.labelMedium,
+      style: textStyle ?? Theme.of(context).textTheme.labelSmall?.copyWith(color: colorScheme.surfaceTint),
     );
   }
 }

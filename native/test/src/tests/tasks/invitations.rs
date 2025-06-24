@@ -33,7 +33,7 @@ utc_due = "{{ now().as_rfc3339 }}"
 async fn task_invitation() -> Result<()> {
     let _ = env_logger::try_init();
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("i0t", 2, TMPL).await?;
+        random_users_with_random_space_under_template("i0t", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
@@ -115,7 +115,7 @@ async fn task_invitation() -> Result<()> {
 async fn accept_and_decline_task_invitation() -> Result<()> {
     let _ = env_logger::try_init();
     let (users, _sync_states, _space_id, _engine) =
-        random_users_with_random_space_under_template("i0t", 2, TMPL).await?;
+        random_users_with_random_space_under_template("i0t", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
@@ -254,7 +254,7 @@ async fn accept_and_decline_task_invitation() -> Result<()> {
 async fn can_invite_after_unassign_task() -> Result<()> {
     let _ = env_logger::try_init();
     let (users, _sync_states, _space_id, _engine) =
-        random_users_with_random_space_under_template("i0t", 2, TMPL).await?;
+        random_users_with_random_space_under_template("i0t", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];

@@ -8,6 +8,7 @@ mod categories;
 mod formatted_body;
 mod invitation;
 mod media_msg;
+mod mention;
 mod msg_draft;
 mod msg_edit;
 mod news;

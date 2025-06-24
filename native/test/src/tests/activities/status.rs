@@ -358,7 +358,8 @@ async fn display_name() -> Result<()> {
     let mut act_obs = all_activities_observer(&observer).await?;
     // ensure it was sent
     let account = observer.account()?;
-    account.set_display_name("Mickey Mouse".to_owned()).await?;
+    let name = "Mickey Mouse";
+    account.set_display_name(name.to_owned()).await?;
 
     // wait for the event to come in
     let activity = get_latest_activity(&admin, room_id.to_string(), "displayName").await?;
@@ -369,7 +370,7 @@ async fn display_name() -> Result<()> {
     };
     let meta = activity.event_meta();
 
-    assert_eq!(r.display_name_new_val().as_deref(), Some("Mickey Mouse"));
+    assert_eq!(r.display_name_new_val().as_deref(), Some(name));
     assert_eq!(meta.sender, observer.user_id()?);
 
     // external API check

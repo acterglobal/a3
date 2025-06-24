@@ -20723,6 +20723,130 @@ class Api {
               int,
             )
           >();
+  late final _calendarEventUpdateBuilderAddPhysicalLocationPtr = _lookup<
+    ffi.NativeFunction<
+      ffi.Void Function(
+        ffi.IntPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__CalendarEventUpdateBuilder_add_physical_location");
+
+  late final _calendarEventUpdateBuilderAddPhysicalLocation =
+      _calendarEventUpdateBuilderAddPhysicalLocationPtr
+          .asFunction<
+            void Function(
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
+  late final _calendarEventUpdateBuilderAddVirtualLocationPtr = _lookup<
+    ffi.NativeFunction<
+      ffi.Void Function(
+        ffi.IntPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__CalendarEventUpdateBuilder_add_virtual_location");
+
+  late final _calendarEventUpdateBuilderAddVirtualLocation =
+      _calendarEventUpdateBuilderAddVirtualLocationPtr
+          .asFunction<
+            void Function(
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _calendarEventUpdateBuilderUnsetLocationsPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
         "__CalendarEventUpdateBuilder_unset_locations",
@@ -20918,7 +21042,7 @@ class Api {
               int,
             )
           >();
-  late final _calendarEventDraftPhysicalLocationPtr = _lookup<
+  late final _calendarEventDraftAddPhysicalLocationPtr = _lookup<
     ffi.NativeFunction<
       ffi.Void Function(
         ffi.IntPtr,
@@ -20952,10 +21076,10 @@ class Api {
         ffi.UintPtr,
       )
     >
-  >("__CalendarEventDraft_physical_location");
+  >("__CalendarEventDraft_add_physical_location");
 
-  late final _calendarEventDraftPhysicalLocation =
-      _calendarEventDraftPhysicalLocationPtr
+  late final _calendarEventDraftAddPhysicalLocation =
+      _calendarEventDraftAddPhysicalLocationPtr
           .asFunction<
             void Function(
               int,
@@ -20989,7 +21113,7 @@ class Api {
               int,
             )
           >();
-  late final _calendarEventDraftVirtualLocationPtr = _lookup<
+  late final _calendarEventDraftAddVirtualLocationPtr = _lookup<
     ffi.NativeFunction<
       ffi.Void Function(
         ffi.IntPtr,
@@ -21014,10 +21138,10 @@ class Api {
         ffi.UintPtr,
       )
     >
-  >("__CalendarEventDraft_virtual_location");
+  >("__CalendarEventDraft_add_virtual_location");
 
-  late final _calendarEventDraftVirtualLocation =
-      _calendarEventDraftVirtualLocationPtr
+  late final _calendarEventDraftAddVirtualLocation =
+      _calendarEventDraftAddVirtualLocationPtr
           .asFunction<
             void Function(
               int,
@@ -21673,6 +21797,20 @@ class Api {
           .asFunction<
             _TimelineEventItemSpaceParentContentReturn Function(int)
           >();
+  late final _timelineEventItemRoomMentionedPtr =
+      _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
+        "__TimelineEventItem_room_mentioned",
+      );
+
+  late final _timelineEventItemRoomMentioned =
+      _timelineEventItemRoomMentionedPtr.asFunction<int Function(int)>();
+  late final _timelineEventItemMentionedUsersPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
+        "__TimelineEventItem_mentioned_users",
+      );
+
+  late final _timelineEventItemMentionedUsers =
+      _timelineEventItemMentionedUsersPtr.asFunction<int Function(int)>();
   late final _timelineEventItemInReplyToIdPtr = _lookup<
     ffi.NativeFunction<_TimelineEventItemInReplyToIdReturn Function(ffi.IntPtr)>
   >("__TimelineEventItem_in_reply_to_id");
@@ -23547,15 +23685,23 @@ class Api {
 
   late final _msgDraftBlurhash =
       _msgDraftBlurhashPtr.asFunction<int Function(int, int, int, int)>();
-  late final _msgDraftThumbnailFilePathPtr = _lookup<
+  late final _msgDraftThumbnailImagePtr = _lookup<
     ffi.NativeFunction<
-      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
     >
-  >("__MsgDraft_thumbnail_file_path");
+  >("__MsgDraft_thumbnail_image");
 
-  late final _msgDraftThumbnailFilePath =
-      _msgDraftThumbnailFilePathPtr
-          .asFunction<int Function(int, int, int, int)>();
+  late final _msgDraftThumbnailImage =
+      _msgDraftThumbnailImagePtr
+          .asFunction<int Function(int, int, int, int, int, int, int)>();
   late final _msgDraftThumbnailInfoPtr = _lookup<
     ffi.NativeFunction<
       ffi.IntPtr Function(
@@ -23565,10 +23711,6 @@ class Api {
         ffi.Uint8,
         ffi.Uint64,
         ffi.Uint8,
-        ffi.IntPtr,
-        ffi.UintPtr,
-        ffi.UintPtr,
-        ffi.Uint8,
         ffi.Uint64,
       )
     >
@@ -23576,9 +23718,7 @@ class Api {
 
   late final _msgDraftThumbnailInfo =
       _msgDraftThumbnailInfoPtr
-          .asFunction<
-            int Function(int, int, int, int, int, int, int, int, int, int, int)
-          >();
+          .asFunction<int Function(int, int, int, int, int, int, int)>();
   late final _msgDraftFilenamePtr = _lookup<
     ffi.NativeFunction<
       ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
@@ -26655,13 +26795,34 @@ class Api {
   late final _activityReactionKey =
       _activityReactionKeyPtr
           .asFunction<_ActivityReactionKeyReturn Function(int)>();
-  late final _activityNewDatePtr =
-      _lookup<ffi.NativeFunction<_ActivityNewDateReturn Function(ffi.IntPtr)>>(
-        "__Activity_new_date",
-      );
+  late final _activityTitleContentPtr = _lookup<
+    ffi.NativeFunction<_ActivityTitleContentReturn Function(ffi.IntPtr)>
+  >("__Activity_title_content");
 
-  late final _activityNewDate =
-      _activityNewDatePtr.asFunction<_ActivityNewDateReturn Function(int)>();
+  late final _activityTitleContent =
+      _activityTitleContentPtr
+          .asFunction<_ActivityTitleContentReturn Function(int)>();
+  late final _activityDescriptionContentPtr = _lookup<
+    ffi.NativeFunction<_ActivityDescriptionContentReturn Function(ffi.IntPtr)>
+  >("__Activity_description_content");
+
+  late final _activityDescriptionContent =
+      _activityDescriptionContentPtr
+          .asFunction<_ActivityDescriptionContentReturn Function(int)>();
+  late final _activityDateContentPtr = _lookup<
+    ffi.NativeFunction<_ActivityDateContentReturn Function(ffi.IntPtr)>
+  >("__Activity_date_content");
+
+  late final _activityDateContent =
+      _activityDateContentPtr
+          .asFunction<_ActivityDateContentReturn Function(int)>();
+  late final _activityDateTimeRangeContentPtr = _lookup<
+    ffi.NativeFunction<_ActivityDateTimeRangeContentReturn Function(ffi.IntPtr)>
+  >("__Activity_date_time_range_content");
+
+  late final _activityDateTimeRangeContent =
+      _activityDateTimeRangeContentPtr
+          .asFunction<_ActivityDateTimeRangeContentReturn Function(int)>();
   late final _activityWhomPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__Activity_whom",
@@ -26688,6 +26849,66 @@ class Api {
 
   late final _activitiesSubscribeStream =
       _activitiesSubscribeStreamPtr.asFunction<int Function(int)>();
+  late final _titleContentChangePtr = _lookup<
+    ffi.NativeFunction<_TitleContentChangeReturn Function(ffi.IntPtr)>
+  >("__TitleContent_change");
+
+  late final _titleContentChange =
+      _titleContentChangePtr
+          .asFunction<_TitleContentChangeReturn Function(int)>();
+  late final _titleContentNewValPtr = _lookup<
+    ffi.NativeFunction<_TitleContentNewValReturn Function(ffi.IntPtr)>
+  >("__TitleContent_new_val");
+
+  late final _titleContentNewVal =
+      _titleContentNewValPtr
+          .asFunction<_TitleContentNewValReturn Function(int)>();
+  late final _descriptionContentChangePtr = _lookup<
+    ffi.NativeFunction<_DescriptionContentChangeReturn Function(ffi.IntPtr)>
+  >("__DescriptionContent_change");
+
+  late final _descriptionContentChange =
+      _descriptionContentChangePtr
+          .asFunction<_DescriptionContentChangeReturn Function(int)>();
+  late final _descriptionContentNewValPtr = _lookup<
+    ffi.NativeFunction<_DescriptionContentNewValReturn Function(ffi.IntPtr)>
+  >("__DescriptionContent_new_val");
+
+  late final _descriptionContentNewVal =
+      _descriptionContentNewValPtr
+          .asFunction<_DescriptionContentNewValReturn Function(int)>();
+  late final _dateContentChangePtr = _lookup<
+    ffi.NativeFunction<_DateContentChangeReturn Function(ffi.IntPtr)>
+  >("__DateContent_change");
+
+  late final _dateContentChange =
+      _dateContentChangePtr
+          .asFunction<_DateContentChangeReturn Function(int)>();
+  late final _dateContentNewValPtr = _lookup<
+    ffi.NativeFunction<_DateContentNewValReturn Function(ffi.IntPtr)>
+  >("__DateContent_new_val");
+
+  late final _dateContentNewVal =
+      _dateContentNewValPtr
+          .asFunction<_DateContentNewValReturn Function(int)>();
+  late final _dateTimeRangeContentStartNewValPtr = _lookup<
+    ffi.NativeFunction<
+      _DateTimeRangeContentStartNewValReturn Function(ffi.IntPtr)
+    >
+  >("__DateTimeRangeContent_start_new_val");
+
+  late final _dateTimeRangeContentStartNewVal =
+      _dateTimeRangeContentStartNewValPtr
+          .asFunction<_DateTimeRangeContentStartNewValReturn Function(int)>();
+  late final _dateTimeRangeContentEndNewValPtr = _lookup<
+    ffi.NativeFunction<
+      _DateTimeRangeContentEndNewValReturn Function(ffi.IntPtr)
+    >
+  >("__DateTimeRangeContent_end_new_val");
+
+  late final _dateTimeRangeContentEndNewVal =
+      _dateTimeRangeContentEndNewValPtr
+          .asFunction<_DateTimeRangeContentEndNewValReturn Function(int)>();
   late final _roomPreviewRoomIdStrPtr = _lookup<
     ffi.NativeFunction<_RoomPreviewRoomIdStrReturn Function(ffi.IntPtr)>
   >("__RoomPreview_room_id_str");
@@ -28504,13 +28725,27 @@ class Api {
   late final _notificationItemReactionKey =
       _notificationItemReactionKeyPtr
           .asFunction<_NotificationItemReactionKeyReturn Function(int)>();
-  late final _notificationItemNewDatePtr = _lookup<
-    ffi.NativeFunction<_NotificationItemNewDateReturn Function(ffi.IntPtr)>
-  >("__NotificationItem_new_date");
+  late final _notificationItemUtcStartPtr = _lookup<
+    ffi.NativeFunction<_NotificationItemUtcStartReturn Function(ffi.IntPtr)>
+  >("__NotificationItem_utc_start");
 
-  late final _notificationItemNewDate =
-      _notificationItemNewDatePtr
-          .asFunction<_NotificationItemNewDateReturn Function(int)>();
+  late final _notificationItemUtcStart =
+      _notificationItemUtcStartPtr
+          .asFunction<_NotificationItemUtcStartReturn Function(int)>();
+  late final _notificationItemUtcEndPtr = _lookup<
+    ffi.NativeFunction<_NotificationItemUtcEndReturn Function(ffi.IntPtr)>
+  >("__NotificationItem_utc_end");
+
+  late final _notificationItemUtcEnd =
+      _notificationItemUtcEndPtr
+          .asFunction<_NotificationItemUtcEndReturn Function(int)>();
+  late final _notificationItemDueDatePtr = _lookup<
+    ffi.NativeFunction<_NotificationItemDueDateReturn Function(ffi.IntPtr)>
+  >("__NotificationItem_due_date");
+
+  late final _notificationItemDueDate =
+      _notificationItemDueDatePtr
+          .asFunction<_NotificationItemDueDateReturn Function(int)>();
   late final _notificationItemMentionsYouPtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
         "__NotificationItem_mentions_you",
@@ -28639,20 +28874,34 @@ class Api {
           .asFunction<void Function(int, int, int, int)>();
   late final _createConvoSettingsBuilderSetParentPtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+      _CreateConvoSettingsBuilderSetParentReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
     >
   >("__CreateConvoSettingsBuilder_set_parent");
 
   late final _createConvoSettingsBuilderSetParent =
       _createConvoSettingsBuilderSetParentPtr
-          .asFunction<void Function(int, int, int, int)>();
-  late final _createConvoSettingsBuilderBuildPtr =
-      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-        "__CreateConvoSettingsBuilder_build",
-      );
+          .asFunction<
+            _CreateConvoSettingsBuilderSetParentReturn Function(
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
+  late final _createConvoSettingsBuilderBuildPtr = _lookup<
+    ffi.NativeFunction<
+      _CreateConvoSettingsBuilderBuildReturn Function(ffi.IntPtr)
+    >
+  >("__CreateConvoSettingsBuilder_build");
 
   late final _createConvoSettingsBuilderBuild =
-      _createConvoSettingsBuilderBuildPtr.asFunction<int Function(int)>();
+      _createConvoSettingsBuilderBuildPtr
+          .asFunction<_CreateConvoSettingsBuilderBuildReturn Function(int)>();
   late final _createSpaceSettingsBuilderSetNamePtr = _lookup<
     ffi.NativeFunction<
       ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
@@ -28730,13 +28979,25 @@ class Api {
           .asFunction<void Function(int, int, int, int)>();
   late final _createSpaceSettingsBuilderSetParentPtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+      _CreateSpaceSettingsBuilderSetParentReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
     >
   >("__CreateSpaceSettingsBuilder_set_parent");
 
   late final _createSpaceSettingsBuilderSetParent =
       _createSpaceSettingsBuilderSetParentPtr
-          .asFunction<void Function(int, int, int, int)>();
+          .asFunction<
+            _CreateSpaceSettingsBuilderSetParentReturn Function(
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _createSpaceSettingsBuilderSetPermissionsPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
         "__CreateSpaceSettingsBuilder_set_permissions",
@@ -28745,13 +29006,15 @@ class Api {
   late final _createSpaceSettingsBuilderSetPermissions =
       _createSpaceSettingsBuilderSetPermissionsPtr
           .asFunction<void Function(int, int)>();
-  late final _createSpaceSettingsBuilderBuildPtr =
-      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-        "__CreateSpaceSettingsBuilder_build",
-      );
+  late final _createSpaceSettingsBuilderBuildPtr = _lookup<
+    ffi.NativeFunction<
+      _CreateSpaceSettingsBuilderBuildReturn Function(ffi.IntPtr)
+    >
+  >("__CreateSpaceSettingsBuilder_build");
 
   late final _createSpaceSettingsBuilderBuild =
-      _createSpaceSettingsBuilderBuildPtr.asFunction<int Function(int)>();
+      _createSpaceSettingsBuilderBuildPtr
+          .asFunction<_CreateSpaceSettingsBuilderBuildReturn Function(int)>();
   late final _invitationsManagerRoomInvitationsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__InvitationsManager_room_invitations",
@@ -43010,6 +43273,312 @@ class CalendarEventUpdateBuilder {
     return;
   }
 
+  /// set the physical location details for this calendar event
+  /// description_html means by markdown
+  /// coordinates follows RFC 5870, for example `geo:51.5074,-0.1278`
+  void addPhysicalLocation(
+    String? name,
+    String? description,
+    String? descriptionHtml,
+    String? coordinates,
+    String? uri,
+    String? address,
+    String? notes,
+  ) {
+    final tmp1 = name;
+    final tmp7 = description;
+    final tmp13 = descriptionHtml;
+    final tmp19 = coordinates;
+    final tmp25 = uri;
+    final tmp31 = address;
+    final tmp37 = notes;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp4 = 0;
+    var tmp5 = 0;
+    var tmp6 = 0;
+    var tmp8 = 0;
+    var tmp10 = 0;
+    var tmp11 = 0;
+    var tmp12 = 0;
+    var tmp14 = 0;
+    var tmp16 = 0;
+    var tmp17 = 0;
+    var tmp18 = 0;
+    var tmp20 = 0;
+    var tmp22 = 0;
+    var tmp23 = 0;
+    var tmp24 = 0;
+    var tmp26 = 0;
+    var tmp28 = 0;
+    var tmp29 = 0;
+    var tmp30 = 0;
+    var tmp32 = 0;
+    var tmp34 = 0;
+    var tmp35 = 0;
+    var tmp36 = 0;
+    var tmp38 = 0;
+    var tmp40 = 0;
+    var tmp41 = 0;
+    var tmp42 = 0;
+    tmp0 = _box.borrow();
+    if (tmp1 == null) {
+      tmp2 = 0;
+    } else {
+      tmp2 = 1;
+      final tmp3 = tmp1;
+      final tmp3_0 = utf8.encode(tmp3);
+      tmp5 = tmp3_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp4_0 = _api.__allocate(tmp5 * 1, 1);
+      final Uint8List tmp4_1 = tmp4_0.asTypedList(tmp5);
+      tmp4_1.setAll(0, tmp3_0);
+      tmp4 = tmp4_0.address;
+      tmp6 = tmp5;
+    }
+    if (tmp7 == null) {
+      tmp8 = 0;
+    } else {
+      tmp8 = 1;
+      final tmp9 = tmp7;
+      final tmp9_0 = utf8.encode(tmp9);
+      tmp11 = tmp9_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
+      final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
+      tmp10_1.setAll(0, tmp9_0);
+      tmp10 = tmp10_0.address;
+      tmp12 = tmp11;
+    }
+    if (tmp13 == null) {
+      tmp14 = 0;
+    } else {
+      tmp14 = 1;
+      final tmp15 = tmp13;
+      final tmp15_0 = utf8.encode(tmp15);
+      tmp17 = tmp15_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp16_0 = _api.__allocate(tmp17 * 1, 1);
+      final Uint8List tmp16_1 = tmp16_0.asTypedList(tmp17);
+      tmp16_1.setAll(0, tmp15_0);
+      tmp16 = tmp16_0.address;
+      tmp18 = tmp17;
+    }
+    if (tmp19 == null) {
+      tmp20 = 0;
+    } else {
+      tmp20 = 1;
+      final tmp21 = tmp19;
+      final tmp21_0 = utf8.encode(tmp21);
+      tmp23 = tmp21_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp22_0 = _api.__allocate(tmp23 * 1, 1);
+      final Uint8List tmp22_1 = tmp22_0.asTypedList(tmp23);
+      tmp22_1.setAll(0, tmp21_0);
+      tmp22 = tmp22_0.address;
+      tmp24 = tmp23;
+    }
+    if (tmp25 == null) {
+      tmp26 = 0;
+    } else {
+      tmp26 = 1;
+      final tmp27 = tmp25;
+      final tmp27_0 = utf8.encode(tmp27);
+      tmp29 = tmp27_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp28_0 = _api.__allocate(tmp29 * 1, 1);
+      final Uint8List tmp28_1 = tmp28_0.asTypedList(tmp29);
+      tmp28_1.setAll(0, tmp27_0);
+      tmp28 = tmp28_0.address;
+      tmp30 = tmp29;
+    }
+    if (tmp31 == null) {
+      tmp32 = 0;
+    } else {
+      tmp32 = 1;
+      final tmp33 = tmp31;
+      final tmp33_0 = utf8.encode(tmp33);
+      tmp35 = tmp33_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp34_0 = _api.__allocate(tmp35 * 1, 1);
+      final Uint8List tmp34_1 = tmp34_0.asTypedList(tmp35);
+      tmp34_1.setAll(0, tmp33_0);
+      tmp34 = tmp34_0.address;
+      tmp36 = tmp35;
+    }
+    if (tmp37 == null) {
+      tmp38 = 0;
+    } else {
+      tmp38 = 1;
+      final tmp39 = tmp37;
+      final tmp39_0 = utf8.encode(tmp39);
+      tmp41 = tmp39_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp40_0 = _api.__allocate(tmp41 * 1, 1);
+      final Uint8List tmp40_1 = tmp40_0.asTypedList(tmp41);
+      tmp40_1.setAll(0, tmp39_0);
+      tmp40 = tmp40_0.address;
+      tmp42 = tmp41;
+    }
+    _api._calendarEventUpdateBuilderAddPhysicalLocation(
+      tmp0,
+      tmp2,
+      tmp4,
+      tmp5,
+      tmp6,
+      tmp8,
+      tmp10,
+      tmp11,
+      tmp12,
+      tmp14,
+      tmp16,
+      tmp17,
+      tmp18,
+      tmp20,
+      tmp22,
+      tmp23,
+      tmp24,
+      tmp26,
+      tmp28,
+      tmp29,
+      tmp30,
+      tmp32,
+      tmp34,
+      tmp35,
+      tmp36,
+      tmp38,
+      tmp40,
+      tmp41,
+      tmp42,
+    );
+    return;
+  }
+
+  /// set the virtual location details for this calendar event
+  /// description_html means by markdown
+  void addVirtualLocation(
+    String? name,
+    String? description,
+    String? descriptionHtml,
+    String uri,
+    String? notes,
+  ) {
+    final tmp1 = name;
+    final tmp7 = description;
+    final tmp13 = descriptionHtml;
+    final tmp19 = uri;
+    final tmp23 = notes;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp4 = 0;
+    var tmp5 = 0;
+    var tmp6 = 0;
+    var tmp8 = 0;
+    var tmp10 = 0;
+    var tmp11 = 0;
+    var tmp12 = 0;
+    var tmp14 = 0;
+    var tmp16 = 0;
+    var tmp17 = 0;
+    var tmp18 = 0;
+    var tmp20 = 0;
+    var tmp21 = 0;
+    var tmp22 = 0;
+    var tmp24 = 0;
+    var tmp26 = 0;
+    var tmp27 = 0;
+    var tmp28 = 0;
+    tmp0 = _box.borrow();
+    if (tmp1 == null) {
+      tmp2 = 0;
+    } else {
+      tmp2 = 1;
+      final tmp3 = tmp1;
+      final tmp3_0 = utf8.encode(tmp3);
+      tmp5 = tmp3_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp4_0 = _api.__allocate(tmp5 * 1, 1);
+      final Uint8List tmp4_1 = tmp4_0.asTypedList(tmp5);
+      tmp4_1.setAll(0, tmp3_0);
+      tmp4 = tmp4_0.address;
+      tmp6 = tmp5;
+    }
+    if (tmp7 == null) {
+      tmp8 = 0;
+    } else {
+      tmp8 = 1;
+      final tmp9 = tmp7;
+      final tmp9_0 = utf8.encode(tmp9);
+      tmp11 = tmp9_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
+      final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
+      tmp10_1.setAll(0, tmp9_0);
+      tmp10 = tmp10_0.address;
+      tmp12 = tmp11;
+    }
+    if (tmp13 == null) {
+      tmp14 = 0;
+    } else {
+      tmp14 = 1;
+      final tmp15 = tmp13;
+      final tmp15_0 = utf8.encode(tmp15);
+      tmp17 = tmp15_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp16_0 = _api.__allocate(tmp17 * 1, 1);
+      final Uint8List tmp16_1 = tmp16_0.asTypedList(tmp17);
+      tmp16_1.setAll(0, tmp15_0);
+      tmp16 = tmp16_0.address;
+      tmp18 = tmp17;
+    }
+    final tmp19_0 = utf8.encode(tmp19);
+    tmp21 = tmp19_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp20_0 = _api.__allocate(tmp21 * 1, 1);
+    final Uint8List tmp20_1 = tmp20_0.asTypedList(tmp21);
+    tmp20_1.setAll(0, tmp19_0);
+    tmp20 = tmp20_0.address;
+    tmp22 = tmp21;
+    if (tmp23 == null) {
+      tmp24 = 0;
+    } else {
+      tmp24 = 1;
+      final tmp25 = tmp23;
+      final tmp25_0 = utf8.encode(tmp25);
+      tmp27 = tmp25_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp26_0 = _api.__allocate(tmp27 * 1, 1);
+      final Uint8List tmp26_1 = tmp26_0.asTypedList(tmp27);
+      tmp26_1.setAll(0, tmp25_0);
+      tmp26 = tmp26_0.address;
+      tmp28 = tmp27;
+    }
+    _api._calendarEventUpdateBuilderAddVirtualLocation(
+      tmp0,
+      tmp2,
+      tmp4,
+      tmp5,
+      tmp6,
+      tmp8,
+      tmp10,
+      tmp11,
+      tmp12,
+      tmp14,
+      tmp16,
+      tmp17,
+      tmp18,
+      tmp20,
+      tmp21,
+      tmp22,
+      tmp24,
+      tmp26,
+      tmp27,
+      tmp28,
+    );
+    return;
+  }
+
+  /// clear all locations of this cal event
   void unsetLocations() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -43427,7 +43996,7 @@ class CalendarEventDraft {
   /// set the physical location details for this calendar event
   /// description_html means by markdown
   /// coordinates follows RFC 5870, for example `geo:51.5074,-0.1278`
-  void physicalLocation(
+  void addPhysicalLocation(
     String? name,
     String? description,
     String? descriptionHtml,
@@ -43571,7 +44140,7 @@ class CalendarEventDraft {
       tmp40 = tmp40_0.address;
       tmp42 = tmp41;
     }
-    _api._calendarEventDraftPhysicalLocation(
+    _api._calendarEventDraftAddPhysicalLocation(
       tmp0,
       tmp2,
       tmp4,
@@ -43607,7 +44176,7 @@ class CalendarEventDraft {
 
   /// set the virtual location details for this calendar event
   /// description_html means by markdown
-  void virtualLocation(
+  void addVirtualLocation(
     String? name,
     String? description,
     String? descriptionHtml,
@@ -43704,7 +44273,7 @@ class CalendarEventDraft {
       tmp26 = tmp26_0.address;
       tmp28 = tmp27;
     }
-    _api._calendarEventDraftVirtualLocation(
+    _api._calendarEventDraftAddVirtualLocation(
       tmp0,
       tmp2,
       tmp4,
@@ -45371,6 +45940,31 @@ class TimelineEventItem {
     return tmp2;
   }
 
+  /// Whether the whole room is mentioned.
+  bool roomMentioned() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._timelineEventItemRoomMentioned(tmp0);
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  /// The list of mentioned users.
+  /// Available only when sender didn’t mention the whole room
+  FfiListFfiString mentionedUsers() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._timelineEventItemMentionedUsers(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListFfiString");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp4 = FfiListFfiString._(_api, tmp3_1);
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
   /// original event id, if this msg is reply to another msg
   String? inReplyToId() {
     var tmp0 = 0;
@@ -45957,6 +46551,7 @@ class MsgContent {
   }
 
   /// available for location msg
+  /// geo_uri follows RFC 5870, for example `geo:51.5074,-0.1278`
   String? geoUri() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -50747,12 +51342,16 @@ class MsgDraft {
   /// for this media to be read and shared upon sending
   ///
   /// available for only image/video/file/location
-  MsgDraft thumbnailFilePath(String value) {
-    final tmp1 = value;
+  MsgDraft thumbnailImage(String source, String mimetype) {
+    final tmp1 = source;
+    final tmp5 = mimetype;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
     var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -50762,21 +51361,36 @@ class MsgDraft {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    final tmp5 = _api._msgDraftThumbnailFilePath(tmp0, tmp2, tmp3, tmp4);
-    final tmp7 = tmp5;
-    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_MsgDraft");
-    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 = MsgDraft._(_api, tmp7_1);
-    return tmp6;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    final tmp9 = _api._msgDraftThumbnailImage(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+    );
+    final tmp11 = tmp9;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_MsgDraft");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp10 = MsgDraft._(_api, tmp11_1);
+    return tmp10;
   }
 
   /// available for only image/video/file/location
-  MsgDraft thumbnailInfo(int? width, int? height, String? mimetype, int? size) {
+  MsgDraft thumbnailInfo(int? width, int? height, int? size) {
     final tmp1 = width;
     final tmp5 = height;
-    final tmp9 = mimetype;
-    final tmp15 = size;
+    final tmp9 = size;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp4 = 0;
@@ -50784,10 +51398,6 @@ class MsgDraft {
     var tmp8 = 0;
     var tmp10 = 0;
     var tmp12 = 0;
-    var tmp13 = 0;
-    var tmp14 = 0;
-    var tmp16 = 0;
-    var tmp18 = 0;
     tmp0 = _box.borrow();
     if (tmp1 == null) {
       tmp2 = 0;
@@ -50808,23 +51418,9 @@ class MsgDraft {
     } else {
       tmp10 = 1;
       final tmp11 = tmp9;
-      final tmp11_0 = utf8.encode(tmp11);
-      tmp13 = tmp11_0.length;
-
-      final ffi.Pointer<ffi.Uint8> tmp12_0 = _api.__allocate(tmp13 * 1, 1);
-      final Uint8List tmp12_1 = tmp12_0.asTypedList(tmp13);
-      tmp12_1.setAll(0, tmp11_0);
-      tmp12 = tmp12_0.address;
-      tmp14 = tmp13;
+      tmp12 = tmp11;
     }
-    if (tmp15 == null) {
-      tmp16 = 0;
-    } else {
-      tmp16 = 1;
-      final tmp17 = tmp15;
-      tmp18 = tmp17;
-    }
-    final tmp19 = _api._msgDraftThumbnailInfo(
+    final tmp13 = _api._msgDraftThumbnailInfo(
       tmp0,
       tmp2,
       tmp4,
@@ -50832,17 +51428,13 @@ class MsgDraft {
       tmp8,
       tmp10,
       tmp12,
-      tmp13,
-      tmp14,
-      tmp16,
-      tmp18,
     );
-    final tmp21 = tmp19;
-    final ffi.Pointer<ffi.Void> tmp21_0 = ffi.Pointer.fromAddress(tmp21);
-    final tmp21_1 = _Box(_api, tmp21_0, "drop_box_MsgDraft");
-    tmp21_1._finalizer = _api._registerFinalizer(tmp21_1);
-    final tmp20 = MsgDraft._(_api, tmp21_1);
-    return tmp20;
+    final tmp15 = tmp13;
+    final ffi.Pointer<ffi.Void> tmp15_0 = ffi.Pointer.fromAddress(tmp15);
+    final tmp15_1 = _Box(_api, tmp15_0, "drop_box_MsgDraft");
+    tmp15_1._finalizer = _api._registerFinalizer(tmp15_1);
+    final tmp14 = MsgDraft._(_api, tmp15_1);
+    return tmp14;
   }
 
   /// available for only file
@@ -50871,6 +51463,7 @@ class MsgDraft {
   }
 
   /// available for only location
+  /// geo_uri follows RFC 5870, for example `geo:51.5074,-0.1278`
   MsgDraft geoUri(String value) {
     final tmp1 = value;
     var tmp0 = 0;
@@ -58502,20 +59095,71 @@ class Activity {
     return tmp2;
   }
 
-  /// the date on eventDateChange (started or ended) or taskDueDateChane
-  UtcDateTime? newDate() {
+  /// titleChange
+  TitleContent? titleContent() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._activityNewDate(tmp0);
+    final tmp1 = _api._activityTitleContent(tmp0);
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     if (tmp3 == 0) {
       return null;
     }
     final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_UtcDateTime");
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_TitleContent");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = UtcDateTime._(_api, tmp4_1);
+    final tmp2 = TitleContent._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// descriptionChange
+  DescriptionContent? descriptionContent() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._activityDescriptionContent(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_DescriptionContent");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = DescriptionContent._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// taskDueDateChange
+  DateContent? dateContent() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._activityDateContent(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_DateContent");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = DateContent._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// eventDateChangethe
+  DateTimeRangeContent? dateTimeRangeContent() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._activityDateTimeRangeContent(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_DateTimeRangeContent");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = DateTimeRangeContent._(_api, tmp4_1);
     return tmp2;
   }
 
@@ -58592,6 +59236,256 @@ class Activities {
       tmp3_1,
       _api.__activitiesSubscribeStreamStreamPoll,
     );
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class TitleContent {
+  final Api _api;
+  final _Box _box;
+
+  TitleContent._(this._api, this._box);
+
+  String change() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._titleContentChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String newVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._titleContentNewVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class DescriptionContent {
+  final Api _api;
+  final _Box _box;
+
+  DescriptionContent._(this._api, this._box);
+
+  String change() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._descriptionContentChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? newVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._descriptionContentNewVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class DateContent {
+  final Api _api;
+  final _Box _box;
+
+  DateContent._(this._api, this._box);
+
+  String change() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._dateContentChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? newVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._dateContentNewVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class DateTimeRangeContent {
+  final Api _api;
+  final _Box _box;
+
+  DateTimeRangeContent._(this._api, this._box);
+
+  UtcDateTime? startNewVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._dateTimeRangeContentStartNewVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_UtcDateTime");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = UtcDateTime._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  UtcDateTime? endNewVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._dateTimeRangeContentEndNewVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_UtcDateTime");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = UtcDateTime._(_api, tmp4_1);
     return tmp2;
   }
 
@@ -63610,11 +64504,11 @@ class NotificationItem {
     return tmp2;
   }
 
-  /// the date on eventDateChange (started or ended) or taskDueDateChane
-  UtcDateTime? newDate() {
+  /// the start datetime on eventDateChange
+  UtcDateTime? utcStart() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._notificationItemNewDate(tmp0);
+    final tmp1 = _api._notificationItemUtcStart(tmp0);
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     if (tmp3 == 0) {
@@ -63624,6 +64518,55 @@ class NotificationItem {
     final tmp4_1 = _Box(_api, tmp4_0, "drop_box_UtcDateTime");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
     final tmp2 = UtcDateTime._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// the end datetime on eventDateChange
+  UtcDateTime? utcEnd() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._notificationItemUtcEnd(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_UtcDateTime");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = UtcDateTime._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// the date on taskDueDateChange
+  String? dueDate() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._notificationItemDueDate(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
     return tmp2;
   }
 
@@ -64003,7 +64946,30 @@ class CreateConvoSettingsBuilder {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    _api._createConvoSettingsBuilderSetParent(tmp0, tmp2, tmp3, tmp4);
+    final tmp5 = _api._createConvoSettingsBuilderSetParent(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5.arg0;
+    final tmp8 = tmp5.arg1;
+    final tmp9 = tmp5.arg2;
+    final tmp10 = tmp5.arg3;
+    if (tmp7 == 0) {
+      debugAllocation("handle error", tmp8, tmp9);
+      final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+      final tmp7_0 = utf8.decode(
+        tmp8_0.asTypedList(tmp9),
+        allowMalformed: true,
+      );
+      if (tmp9 > 0) {
+        final ffi.Pointer<ffi.Void> tmp8_0;
+        tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+        _api.__deallocate(tmp8_0, tmp10, 1);
+      }
+      throw tmp7_0;
+    }
     return;
   }
 
@@ -64011,11 +64977,29 @@ class CreateConvoSettingsBuilder {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._createConvoSettingsBuilderBuild(tmp0);
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_CreateConvoSettings");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = CreateConvoSettings._(_api, tmp3_1);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    final tmp7 = tmp1.arg4;
+    if (tmp3 == 0) {
+      debugAllocation("handle error", tmp4, tmp5);
+      final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      final tmp3_0 = utf8.decode(
+        tmp4_0.asTypedList(tmp5),
+        allowMalformed: true,
+      );
+      if (tmp5 > 0) {
+        final ffi.Pointer<ffi.Void> tmp4_0;
+        tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+        _api.__deallocate(tmp4_0, tmp6, 1);
+      }
+      throw tmp3_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_CreateConvoSettings");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp2 = CreateConvoSettings._(_api, tmp7_1);
     return tmp2;
   }
 
@@ -64225,7 +65209,30 @@ class CreateSpaceSettingsBuilder {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    _api._createSpaceSettingsBuilderSetParent(tmp0, tmp2, tmp3, tmp4);
+    final tmp5 = _api._createSpaceSettingsBuilderSetParent(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5.arg0;
+    final tmp8 = tmp5.arg1;
+    final tmp9 = tmp5.arg2;
+    final tmp10 = tmp5.arg3;
+    if (tmp7 == 0) {
+      debugAllocation("handle error", tmp8, tmp9);
+      final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+      final tmp7_0 = utf8.decode(
+        tmp8_0.asTypedList(tmp9),
+        allowMalformed: true,
+      );
+      if (tmp9 > 0) {
+        final ffi.Pointer<ffi.Void> tmp8_0;
+        tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+        _api.__deallocate(tmp8_0, tmp10, 1);
+      }
+      throw tmp7_0;
+    }
     return;
   }
 
@@ -64244,11 +65251,29 @@ class CreateSpaceSettingsBuilder {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._createSpaceSettingsBuilderBuild(tmp0);
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_CreateSpaceSettings");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = CreateSpaceSettings._(_api, tmp3_1);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    final tmp7 = tmp1.arg4;
+    if (tmp3 == 0) {
+      debugAllocation("handle error", tmp4, tmp5);
+      final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      final tmp3_0 = utf8.decode(
+        tmp4_0.asTypedList(tmp5),
+        allowMalformed: true,
+      );
+      if (tmp5 > 0) {
+        final ffi.Pointer<ffi.Void> tmp4_0;
+        tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+        _api.__deallocate(tmp4_0, tmp6, 1);
+      }
+      throw tmp3_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_CreateSpaceSettings");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp2 = CreateSpaceSettings._(_api, tmp7_1);
     return tmp2;
   }
 
@@ -67057,9 +68082,10 @@ class Client {
   }
 
   /// make draft to send location msg
-  MsgDraft locationDraft(String body, String source) {
+  /// geo_uri follows RFC 5870, for example `geo:51.5074,-0.1278`
+  MsgDraft locationDraft(String body, String geoUri) {
     final tmp1 = body;
-    final tmp5 = source;
+    final tmp5 = geoUri;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -69253,7 +70279,7 @@ class BackupManager {
     return tmp6;
   }
 
-  /// the backup key as it was stored last, might be empty if there isn't any stored
+  /// the backup key as it was stored last, might be empty if there isn’t any stored
   Future<OptionString> storedEncKey() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -73207,7 +74233,100 @@ class _ActivityReactionKeyReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _ActivityNewDateReturn extends ffi.Struct {
+class _ActivityTitleContentReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _ActivityDescriptionContentReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _ActivityDateContentReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _ActivityDateTimeRangeContentReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _TitleContentChangeReturn extends ffi.Struct {
+  @ffi.IntPtr()
+  external int arg0;
+  @ffi.UintPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+}
+
+class _TitleContentNewValReturn extends ffi.Struct {
+  @ffi.IntPtr()
+  external int arg0;
+  @ffi.UintPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+}
+
+class _DescriptionContentChangeReturn extends ffi.Struct {
+  @ffi.IntPtr()
+  external int arg0;
+  @ffi.UintPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+}
+
+class _DescriptionContentNewValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _DateContentChangeReturn extends ffi.Struct {
+  @ffi.IntPtr()
+  external int arg0;
+  @ffi.UintPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+}
+
+class _DateContentNewValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _DateTimeRangeContentStartNewValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _DateTimeRangeContentEndNewValReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.IntPtr()
@@ -73790,11 +74909,29 @@ class _NotificationItemReactionKeyReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _NotificationItemNewDateReturn extends ffi.Struct {
+class _NotificationItemUtcStartReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.IntPtr()
   external int arg1;
+}
+
+class _NotificationItemUtcEndReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _NotificationItemDueDateReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
 }
 
 class _PusherPushkeyReturn extends ffi.Struct {
@@ -73864,6 +75001,30 @@ class _CreateConvoSettingsBuilderAddInviteeReturn extends ffi.Struct {
   external int arg3;
 }
 
+class _CreateConvoSettingsBuilderSetParentReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _CreateConvoSettingsBuilderBuildReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
+}
+
 class _CreateSpaceSettingsBuilderAddInviteeReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -73873,6 +75034,30 @@ class _CreateSpaceSettingsBuilderAddInviteeReturn extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
+}
+
+class _CreateSpaceSettingsBuilderSetParentReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _CreateSpaceSettingsBuilderBuildReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
 }
 
 class _ClientAccountReturn extends ffi.Struct {

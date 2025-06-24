@@ -5,6 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class ChatInputNotifier extends StateNotifier<ChatInputState> {
   ChatInputNotifier() : super(const ChatInputState());
 
+  bool get isSending => state.sendingState == SendingState.sending;
+
   void emojiPickerVisible(bool value) =>
       state = state.copyWith(emojiPickerVisible: value);
 
