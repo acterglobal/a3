@@ -73,7 +73,7 @@ class RefObjectWidget extends ConsumerWidget {
           fallbackWidget: Icon(
             objectDefaultIcon,
             size: 16,
-            color: Theme.of(context).textTheme.labelMedium?.color,
+            color: Theme.of(context).textTheme.labelSmall?.color,
           ),
         ),
         const SizedBox(width: 4),
@@ -87,7 +87,9 @@ class RefObjectWidget extends ConsumerWidget {
     if (title == null) return const SizedBox.shrink();
     return Text(
       title,
-      style: Theme.of(context).textTheme.labelMedium?.copyWith(color: colorScheme.surfaceTint),
+      style: Theme.of(
+        context,
+      ).textTheme.labelSmall?.copyWith(color: colorScheme.surfaceTint),
       maxLines: 2,
       overflow: TextOverflow.ellipsis,
     );

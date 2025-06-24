@@ -18,7 +18,6 @@ class ActivityBiggerVisualContainerWidget extends ConsumerWidget {
   final Widget? subtitle;
   final int originServerTs;
 
-
   const ActivityBiggerVisualContainerWidget({
     super.key,
     this.activityObject,
@@ -35,10 +34,14 @@ class ActivityBiggerVisualContainerWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final avatarInfo = ref.watch(memberAvatarInfoProvider((roomId: roomId, userId: userId)));
-    final displayName = ref
+    final avatarInfo = ref.watch(
+      memberAvatarInfoProvider((roomId: roomId, userId: userId)),
+    );
+    final displayName =
+        ref
             .watch(memberDisplayNameProvider((roomId: roomId, userId: userId)))
-            .valueOrNull ?? userId;
+            .valueOrNull ??
+        userId;
 
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 10),
@@ -77,11 +80,7 @@ class ActivityBiggerVisualContainerWidget extends ConsumerWidget {
               shape: BoxShape.circle,
               color: colorScheme.surfaceContainerLow,
             ),
-            child: Icon(
-              actionIcon,
-              color: colorScheme.onSurface,
-              size: 15,
-            ),
+            child: Icon(actionIcon, color: colorScheme.onSurface, size: 15),
           ),
         ),
       ],
@@ -89,7 +88,11 @@ class ActivityBiggerVisualContainerWidget extends ConsumerWidget {
   }
 
   /// RichText for displayName, action, and target
-  Widget _buildRichTextHeader(BuildContext context, ThemeData theme, String displayName) {
+  Widget _buildRichTextHeader(
+    BuildContext context,
+    ThemeData theme,
+    String displayName,
+  ) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -99,12 +102,14 @@ class ActivityBiggerVisualContainerWidget extends ConsumerWidget {
           child: RichText(
             text: TextSpan(
               children: [
-                TextSpan(text: displayName, style: theme.textTheme.bodyMedium),
+                TextSpan(text: displayName, style: theme.textTheme.bodySmall),
                 TextSpan(
                   text: ' $actionTitle ',
-                  style: theme.textTheme.bodyMedium?.copyWith(color: colorScheme.surfaceTint),
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: colorScheme.surfaceTint,
+                  ),
                 ),
-                TextSpan(text: target, style: theme.textTheme.bodyMedium),
+                TextSpan(text: target, style: theme.textTheme.bodySmall),
               ],
             ),
           ),
@@ -123,10 +128,7 @@ class ActivityBiggerVisualContainerWidget extends ConsumerWidget {
   Widget _buildSubtitleOrTime() {
     Widget? timeWidget = TimeAgoWidget(originServerTs: originServerTs);
     if (subtitle == null) {
-      return Align(
-        alignment: Alignment.bottomRight,
-        child: timeWidget,
-      );
+      return Align(alignment: Alignment.bottomRight, child: timeWidget);
     }
     return IntrinsicHeight(
       child: Row(
@@ -134,16 +136,11 @@ class ActivityBiggerVisualContainerWidget extends ConsumerWidget {
         children: [
           Expanded(child: subtitle ?? const SizedBox.shrink()),
           const SizedBox(width: 8),
-          Align(
-            alignment: Alignment.bottomRight,
-            child: timeWidget,
-          ),
+          Align(alignment: Alignment.bottomRight, child: timeWidget),
         ],
       ),
     );
   }
-
-
 
   IconData _getActivityObjectIcon() {
     return switch (activityObject?.typeStr()) {

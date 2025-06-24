@@ -23,7 +23,10 @@ class ActivityRoomTopicItemWidget extends ConsumerWidget {
       actionTitle: getMessage(lang, userId) ?? '',
       target: '',
       actionIcon: PhosphorIconsThin.pencilSimpleLine,
-      subtitle: getSubtitle(context, activity.roomTopicContent()?.newVal().toString().trim()),
+      subtitle: getSubtitle(
+        context,
+        activity.roomTopicContent()?.newVal().toString().trim(),
+      ),
       originServerTs: activity.originServerTs(),
       leadingWidget: Icon(PhosphorIconsThin.pencilSimpleLine, size: 25),
     );
@@ -50,7 +53,7 @@ class ActivityRoomTopicItemWidget extends ConsumerWidget {
     if (stateMsg == null) return null;
     return Text(
       stateMsg,
-      style: Theme.of(context).textTheme.labelMedium,
+      style: Theme.of(context).textTheme.labelSmall,
       maxLines: 2,
       overflow: TextOverflow.ellipsis,
     );

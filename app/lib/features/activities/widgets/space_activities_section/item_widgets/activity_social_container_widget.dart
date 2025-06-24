@@ -29,7 +29,9 @@ class ActivitySocialContainerWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final displayName =
-        ref.watch(memberDisplayNameProvider((roomId: roomId, userId: userId))).valueOrNull ??
+        ref
+            .watch(memberDisplayNameProvider((roomId: roomId, userId: userId)))
+            .valueOrNull ??
         userId;
 
     return Container(
@@ -47,11 +49,7 @@ class ActivitySocialContainerWidget extends ConsumerWidget {
 
   /// Avatar with Action Icon overlay
   Widget _buildIcon(BuildContext context) {
-    return Icon(
-      icon,
-      color: iconColor ?? colorScheme.surfaceTint,
-      size: 20,
-    );
+    return Icon(icon, color: iconColor ?? colorScheme.surfaceTint, size: 20);
   }
 
   /// Subtitle + time or only time if subtitle is null
@@ -61,21 +59,22 @@ class ActivitySocialContainerWidget extends ConsumerWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Flexible(child: RichText(
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            text: TextSpan(
-              children: [
-                TextSpan(text: displayName, style: theme.textTheme.bodyMedium),
-                TextSpan(
-                  text: ' $actionTitle ${getActivityObjectTitle(context)}',
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: colorScheme.surfaceTint,
+          Flexible(
+            child: RichText(
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              text: TextSpan(
+                children: [
+                  TextSpan(text: displayName, style: theme.textTheme.bodySmall),
+                  TextSpan(
+                    text: ' $actionTitle ${getActivityObjectTitle(context)}',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: colorScheme.surfaceTint,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
           ),
           const SizedBox(width: 5),
           TimeAgoWidget(originServerTs: originServerTs),

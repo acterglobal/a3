@@ -31,7 +31,9 @@ class ActivitySpaceCoreActionsContainerWidget extends ConsumerWidget {
       memberAvatarInfoProvider((roomId: roomId, userId: userId)),
     );
     final displayName =
-        ref.watch(memberDisplayNameProvider((roomId: roomId, userId: userId))).valueOrNull ??
+        ref
+            .watch(memberDisplayNameProvider((roomId: roomId, userId: userId)))
+            .valueOrNull ??
         userId;
 
     return Container(
@@ -83,18 +85,18 @@ class ActivitySpaceCoreActionsContainerWidget extends ConsumerWidget {
           Flexible(
             flex: 1,
             child: RichText(
-            text: TextSpan(
-              children: [
-                TextSpan(text: displayName, style: theme.textTheme.bodyMedium),
-                TextSpan(
-                  text: ' $actionTitle ',
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: colorScheme.surfaceTint,
+              text: TextSpan(
+                children: [
+                  TextSpan(text: displayName, style: theme.textTheme.bodySmall),
+                  TextSpan(
+                    text: ' $actionTitle ',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: colorScheme.surfaceTint,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
           ),
           TimeAgoWidget(originServerTs: originServerTs),
         ],

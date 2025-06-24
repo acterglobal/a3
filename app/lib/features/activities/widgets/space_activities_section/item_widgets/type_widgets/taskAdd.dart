@@ -16,7 +16,7 @@ class ActivityTaskAddItemWidget extends StatelessWidget {
       target: activityObject?.title() ?? '',
       subtitle: Text(
         activity.name() ?? '',
-        style: Theme.of(context).textTheme.labelMedium,
+        style: Theme.of(context).textTheme.labelSmall,
         maxLines: 2,
         overflow: TextOverflow.ellipsis,
       ),

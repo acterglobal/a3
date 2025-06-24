@@ -38,11 +38,13 @@ class ActivityIndividualActionContainerWidget extends ConsumerWidget {
       memberAvatarInfoProvider((roomId: roomId, userId: userId)),
     );
     final displayName =
-        ref.watch(memberDisplayNameProvider((roomId: roomId, userId: userId))).valueOrNull ??
+        ref
+            .watch(memberDisplayNameProvider((roomId: roomId, userId: userId)))
+            .valueOrNull ??
         userId;
 
     return Container(
-      padding: const EdgeInsets.symmetric( vertical: 10),
+      padding: const EdgeInsets.symmetric(vertical: 10),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -78,7 +80,11 @@ class ActivityIndividualActionContainerWidget extends ConsumerWidget {
               shape: BoxShape.circle,
               color: actionIconBgColor ?? Theme.of(context).cardColor,
             ),
-            child: Icon(actionIcon, color: actionIconColor ?? Colors.white, size: 15),
+            child: Icon(
+              actionIcon,
+              color: actionIconColor ?? Colors.white,
+              size: 15,
+            ),
           ),
         ),
       ],
@@ -98,7 +104,7 @@ class ActivityIndividualActionContainerWidget extends ConsumerWidget {
         Flexible(
           child: Text(
             target,
-            style: theme.textTheme.bodyMedium,
+            style: theme.textTheme.bodySmall,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
@@ -122,15 +128,15 @@ class ActivityIndividualActionContainerWidget extends ConsumerWidget {
         Flexible(
           flex: 1,
           child: RichText(
-          text: TextSpan(
-            children: [
-              TextSpan(text: displayName, style: theme.textTheme.bodyMedium),
-              TextSpan(
-                text: ' $actionTitle ',
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: colorScheme.surfaceTint,
+            text: TextSpan(
+              children: [
+                TextSpan(text: displayName, style: theme.textTheme.bodySmall),
+                TextSpan(
+                  text: ' $actionTitle ',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: colorScheme.surfaceTint,
+                  ),
                 ),
-              ),
               ],
             ),
           ),

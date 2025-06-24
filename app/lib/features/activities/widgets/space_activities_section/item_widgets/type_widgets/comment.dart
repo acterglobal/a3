@@ -28,7 +28,7 @@ class ActivityCommentItemWidget extends ConsumerWidget {
         overflow: TextOverflow.ellipsis,
         style: Theme.of(
           context,
-        ).textTheme.labelMedium?.copyWith(color: colorScheme.surfaceTint),
+        ).textTheme.labelSmall?.copyWith(color: colorScheme.surfaceTint),
       ),
       originServerTs: originServerTs,
     );
