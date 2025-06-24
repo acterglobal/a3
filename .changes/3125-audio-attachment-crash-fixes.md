@@ -1,0 +1,1 @@
+- [Fixes] : Resolved crash and improved audio file selection when attaching audio in chat on iOS
