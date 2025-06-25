@@ -27,7 +27,7 @@ class AllActivitiesNotifier extends AsyncNotifier<List<Activity>> {
   Future<List<Activity>> build() async {
     // if we are in showcase mode, return mock activities
     if (includeShowCases) {
-      final mockActivities = ref.watch(mockAllActivitiesProvider);
+      final mockActivities = ref.watch(mockActivitiesProvider);
       return mockActivities;
     }
 

@@ -1,7 +1,5 @@
 import 'package:acter/features/activity_ui_showcase/mocks/providers/mock_activities_provider.dart';
-import 'package:acter/features/activities/providers/activities_providers.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/activity_date_item_widget.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,18 +10,14 @@ class ActivityListShowcasePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
-    final mockActivities = ref.watch(mockAllActivitiesProvider);
-    
-    // Calculate dates directly from mock data
-    final uniqueDates = mockActivities.map((activity) => getActivityDate(activity.originServerTs())).toSet();
-    final sortedDates = uniqueDates.toList()..sort((a, b) => b.compareTo(a));
+    final sortedDates = ref.watch(mockActivitiesDatesProvider);
     
     return Scaffold(
       appBar: AppBar(
         title: Text(lang.spaceActivities),
-      ),  
+      ),
       body: SingleChildScrollView(
-        child: _buildMockActivitiesSection(context, ref, mockActivities, sortedDates),
+        child: _buildMockActivitiesSection(context, ref, sortedDates),
       ),
     );
   }
@@ -31,7 +25,6 @@ class ActivityListShowcasePage extends ConsumerWidget {
   Widget _buildMockActivitiesSection(
     BuildContext context, 
     WidgetRef ref, 
-    List<Activity> activities, 
     List<DateTime> dates
   ) {
 
