@@ -54,7 +54,7 @@ async fn test_policy_rule_server() -> Result<()> {
     assert_eq!(activity.event_id_str(), meta.event_id);
     assert_eq!(activity.room_id_str(), room.room_id_str());
     assert_eq!(activity.type_str(), "policyRuleServer");
-    let ts: u64 = meta.origin_server_ts.get().into();
+    let ts: u64 = meta.timestamp.get().into();
     assert_eq!(activity.origin_server_ts(), ts);
 
     // check the content of activity

@@ -345,7 +345,7 @@ async fn left() -> Result<()> {
     assert_eq!(activity.type_str(), "left");
     assert_eq!(
         activity.origin_server_ts(),
-        Into::<u64>::into(meta.origin_server_ts.get())
+        Into::<u64>::into(meta.timestamp.get())
     );
     assert_triggered_with_latest_activity(&mut act_obs, activity.event_id_str()).await?;
     Ok(())
@@ -379,7 +379,7 @@ async fn display_name() -> Result<()> {
     assert_eq!(activity.room_id_str(), room_id);
     assert_eq!(
         activity.origin_server_ts(),
-        Into::<u64>::into(meta.origin_server_ts.get())
+        Into::<u64>::into(meta.timestamp.get())
     );
     assert_triggered_with_latest_activity(&mut act_obs, activity.event_id_str()).await?;
     Ok(())
@@ -420,7 +420,7 @@ async fn avatar_url() -> Result<()> {
     assert_eq!(activity.room_id_str(), room_id);
     assert_eq!(
         activity.origin_server_ts(),
-        Into::<u64>::into(meta.origin_server_ts.get())
+        Into::<u64>::into(meta.timestamp.get())
     );
     assert_triggered_with_latest_activity(&mut act_obs, activity.event_id_str()).await?;
     Ok(())

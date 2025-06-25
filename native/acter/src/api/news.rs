@@ -443,7 +443,7 @@ impl NewsEntry {
     }
 
     pub fn origin_server_ts(&self) -> u64 {
-        self.content.meta.origin_server_ts.get().into()
+        self.content.meta.timestamp.get().into()
     }
 
     pub async fn ref_details(&self) -> Result<RefDetails> {

@@ -3,7 +3,8 @@ use acter_matrix::{
     executor::Executor,
     models::AnyActerModel,
     referencing::{
-        ExecuteReference, IndexKey, IntoExecuteReference, ModelParam, ObjectListIndex, RoomParam, SectionIndex
+        ExecuteReference, IndexKey, IntoExecuteReference, ModelParam, ObjectListIndex, RoomParam,
+        SectionIndex,
     },
     store::Store,
     templates::Engine,

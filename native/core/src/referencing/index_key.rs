@@ -1,4 +1,5 @@
-use super::{TypeConfig, ObjectListIndex, SectionIndex, SpecialListsIndex};
+use super::{ObjectListIndex, SectionIndex, SpecialListsIndex};
+use crate::config::TypeConfig;
 use serde::{Deserialize, Serialize, de::DeserializeOwned};
 
 // We organize our Index by typed keys
@@ -27,7 +28,6 @@ mod tests {
     use super::*;
     use serde_json;
 
-
     #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
     struct MockTypeConfig;
 
@@ -36,10 +36,11 @@ mod tests {
         type ObjectId = String;
         type ModelType = String;
         type AccountData = String;
+        type UserId = String;
+        type Timestamp = String;
     }
 
     type TestIndexKey = IndexKey<MockTypeConfig>;
-
 
     // Helper function to test round-trip serialization/deserialization
     fn test_round_trip<T>(value: &T) -> T
@@ -268,16 +269,17 @@ mod tests {
         }
         #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
         struct CustomTypeConfig;
-    
+
         impl TypeConfig for CustomTypeConfig {
             type RoomId = CustomRoomId;
             type ObjectId = CustomObjectId;
             type ModelType = String;
             type AccountData = String;
+            type UserId = String;
+            type Timestamp = String;
         }
-    
+
         type CustomIndexKey = IndexKey<CustomTypeConfig>;
-    
 
         let room_id = CustomRoomId("custom_room".to_string());
         let object_id = CustomObjectId("custom_object".to_string());
@@ -287,14 +289,8 @@ mod tests {
             CustomIndexKey::RoomModels(room_id.clone()),
             CustomIndexKey::ObjectHistory(object_id.clone()),
             CustomIndexKey::Section(SectionIndex::Tasks),
-            CustomIndexKey::RoomSection(
-                room_id.clone(),
-                SectionIndex::Pins,
-            ),
-            CustomIndexKey::ObjectList(
-                object_id.clone(),
-                ObjectListIndex::Reactions,
-            ),
+            CustomIndexKey::RoomSection(room_id.clone(), SectionIndex::Pins),
+            CustomIndexKey::ObjectList(object_id.clone(), ObjectListIndex::Reactions),
             CustomIndexKey::Special(SpecialListsIndex::MyDoneTasks),
             CustomIndexKey::Redacted,
             CustomIndexKey::AllHistory,

@@ -45,7 +45,7 @@ impl TestModelBuilder {
         EventMeta {
             event_id: OwnedEventId::try_from(format!("${ev}")).unwrap(),
             sender: user_id!("@test:example.org").to_owned(),
-            origin_server_ts: MilliSecondsSinceUnixEpoch::from_system_time(SystemTime::now())
+            timestamp: MilliSecondsSinceUnixEpoch::from_system_time(SystemTime::now())
                 .expect("We can parse system time"),
             room_id: OwnedRoomId::try_from(format!("!{room_id}:example.org")).unwrap(),
             redacted: None,
@@ -74,7 +74,7 @@ impl TestModelBuilder {
             self.event_meta = Some(EventMeta {
                 event_id,
                 sender: user_id!("@test:example.org").to_owned(),
-                origin_server_ts,
+                timestamp: origin_server_ts,
                 room_id,
                 redacted: None,
             });

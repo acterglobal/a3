@@ -9,7 +9,9 @@ use tokio::sync::broadcast::{channel, Receiver, Sender};
 use tracing::{error, info, trace, trace_span, warn};
 
 use crate::{
-    models::{ActerModel, AnyActerModel, EventMeta, RedactedActerModel},
+    models::{
+        event_meta_for_redacted_source, ActerModel, AnyActerModel, EventMeta, RedactedActerModel,
+    },
     referencing::ExecuteReference,
     store::Store,
     Error, Result,
@@ -151,7 +153,7 @@ impl Executor {
     }
 
     pub async fn live_redact(&self, event: OriginalRoomRedactionEvent) -> Result<()> {
-        let Some(meta) = EventMeta::for_redacted_source(&event) else {
+        let Some(meta) = event_meta_for_redacted_source(&event) else {
             warn!(?event, "Redaction didn’t contain any target. skipping.");
             return Ok(());
         };
@@ -187,7 +189,7 @@ mod tests {
     use crate::{
         events::{comments::CommentEventContent, BelongsTo},
         models::{Comment, TestModelBuilder},
-        referencing::{IntoExecuteReference, IndexKey, ObjectListIndex},
+        referencing::{IndexKey, IntoExecuteReference, ObjectListIndex},
     };
     use matrix_sdk::Client;
     use matrix_sdk_base::{

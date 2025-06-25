@@ -1,0 +1,21 @@
+use acter_core::config::TypeConfig;
+pub use acter_core::referencing::{
+    ModelParam, ObjectListIndex, RoomParam, SectionIndex, SpecialListsIndex,
+};
+use matrix_sdk::ruma::{MilliSecondsSinceUnixEpoch, OwnedEventId, OwnedRoomId, OwnedUserId};
+use std::borrow::Cow;
+
+pub type ModelType = Cow<'static, str>;
+pub type AccountData = Cow<'static, str>;
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Ord, PartialOrd)]
+pub struct MatrixCoreTypeConfig;
+
+impl TypeConfig for MatrixCoreTypeConfig {
+    type RoomId = OwnedRoomId;
+    type ObjectId = OwnedEventId;
+    type ModelType = ModelType;
+    type AccountData = AccountData;
+    type UserId = OwnedUserId;
+    type Timestamp = MilliSecondsSinceUnixEpoch;
+}

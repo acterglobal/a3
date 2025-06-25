@@ -87,7 +87,7 @@ impl Attachment {
     }
 
     pub fn origin_server_ts(&self) -> u64 {
-        self.inner.meta.origin_server_ts.get().into()
+        self.inner.meta.timestamp.get().into()
     }
 
     pub fn ref_details(&self) -> Option<RefDetails> {

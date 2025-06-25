@@ -30,7 +30,7 @@ pub use common::*;
 pub use core::fmt::Debug;
 pub(crate) use execution::default_model_execute;
 pub use invites::{InvitationsManager, InviteStats, MyInvitesManager};
-pub use meta::{can_redact, EventMeta};
+pub use meta::{can_redact, event_meta_for_redacted_source, EventMeta};
 pub use news::{NewsEntry, NewsEntryUpdate};
 pub use pins::{Pin, PinUpdate};
 pub use reactions::{Reaction, ReactionManager, ReactionStats};

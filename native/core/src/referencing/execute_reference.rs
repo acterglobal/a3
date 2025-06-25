@@ -1,7 +1,5 @@
-use super::{
-    AccountData,
-    IndexKey, ModelParam, RoomParam, SectionIndex, SpecialListsIndex, TypeConfig,
-};
+use super::{IndexKey, ModelParam, RoomParam, SectionIndex, SpecialListsIndex};
+use crate::config::TypeConfig;
 use serde::{Deserialize, Serialize, de::DeserializeOwned};
 
 #[derive(Eq, PartialEq, Ord, PartialOrd, Hash, Debug, Clone, Serialize, Deserialize)]
@@ -51,7 +49,6 @@ where
     }
 }
 
-
 impl<C> From<IndexKey<C>> for ExecuteReference<C>
 where
     C: TypeConfig,
@@ -70,12 +67,11 @@ where
     }
 }
 
-
 #[cfg(test)]
 mod tests {
     use std::borrow::Cow;
 
-    use crate::referencing::TypeConfig;
+    use crate::config::TypeConfig;
 
     use super::super::ObjectListIndex;
 
@@ -129,6 +125,8 @@ mod tests {
         type ObjectId = MockObjectId;
         type ModelType = MockModelType;
         type AccountData = Cow<'static, str>;
+        type UserId = String;
+        type Timestamp = String;
     }
 
     type TestExecuteReference = ExecuteReference<MockTypeConfig>;
@@ -528,7 +526,10 @@ mod tests {
             ),
             // From<IndexKey<R, O>> - ObjectList
             (
-                IndexKey::<MockTypeConfig>::ObjectList(object_id.clone(), ObjectListIndex::Comments),
+                IndexKey::<MockTypeConfig>::ObjectList(
+                    object_id.clone(),
+                    ObjectListIndex::Comments,
+                ),
                 TestExecuteReference::Index(IndexKey::ObjectList(
                     object_id.clone(),
                     ObjectListIndex::Comments,

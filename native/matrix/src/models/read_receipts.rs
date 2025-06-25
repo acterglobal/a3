@@ -202,7 +202,7 @@ impl From<OriginalMessageLikeEvent<ReadReceiptEventContent>> for ReadReceipt {
                 room_id,
                 event_id,
                 sender,
-                origin_server_ts,
+                timestamp: origin_server_ts,
                 redacted: None,
             },
         }

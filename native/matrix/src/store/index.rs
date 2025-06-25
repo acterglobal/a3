@@ -273,21 +273,18 @@ impl StoreIndex {
     pub fn new_for(key: &IndexKey, meta: &EventMeta) -> StoreIndex {
         match key {
             IndexKey::AllHistory | IndexKey::ObjectHistory(_) | IndexKey::RoomHistory(_) => {
-                StoreIndex::Ranked(RankedIndex::new_with(
-                    meta.origin_server_ts,
-                    meta.event_id.clone(),
-                ))
+                StoreIndex::Ranked(RankedIndex::new_with(meta.timestamp, meta.event_id.clone()))
             }
             //RSVPs are latest first for collection
-            IndexKey::ObjectList(_, ObjectListIndex::Rsvp) => StoreIndex::Ranked(
-                RankedIndex::new_with(meta.origin_server_ts, meta.event_id.clone()),
-            ),
+            IndexKey::ObjectList(_, ObjectListIndex::Rsvp) => {
+                StoreIndex::Ranked(RankedIndex::new_with(meta.timestamp, meta.event_id.clone()))
+            }
             IndexKey::Section(SectionIndex::Boosts)
             | IndexKey::Section(SectionIndex::Stories)
             | IndexKey::RoomSection(_, SectionIndex::Boosts)
-            | IndexKey::RoomSection(_, SectionIndex::Stories) => StoreIndex::Ranked(
-                RankedIndex::new_with(meta.origin_server_ts, meta.event_id.clone()),
-            ),
+            | IndexKey::RoomSection(_, SectionIndex::Stories) => {
+                StoreIndex::Ranked(RankedIndex::new_with(meta.timestamp, meta.event_id.clone()))
+            }
             IndexKey::ObjectList(_, ObjectListIndex::Tasks) => {
                 StoreIndex::Filo(FiloIndex::new_with(meta.event_id.clone()))
             }
@@ -299,7 +296,7 @@ impl StoreIndex {
         match self {
             StoreIndex::Lifo(l) => l.insert(meta.event_id.clone()),
             StoreIndex::Filo(l) => l.insert(meta.event_id.clone()),
-            StoreIndex::Ranked(r) => r.insert(meta.origin_server_ts, meta.event_id.clone()),
+            StoreIndex::Ranked(r) => r.insert(meta.timestamp, meta.event_id.clone()),
         }
     }
 
