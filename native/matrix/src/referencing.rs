@@ -1,14 +1,26 @@
-use acter_core::referencing::{ExecuteReference as CoreExecuteReference, IndexKey as CoreIndexKey};
+use acter_core::referencing::{ExecuteReference as CoreExecuteReference, IndexKey as CoreIndexKey, TypeConfig};
 pub use acter_core::referencing::{
     ModelParam, ObjectListIndex, RoomParam, SectionIndex, SpecialListsIndex,
 };
 use matrix_sdk::ruma::{OwnedEventId, RoomId, EventId, OwnedRoomId};
 use std::{borrow::Cow};
 
+
 pub type ModelType = Cow<'static, str>;
 pub type AccountData = Cow<'static, str>;
-pub type ExecuteReference = CoreExecuteReference<OwnedRoomId, OwnedEventId, ModelType, AccountData>;
-pub type IndexKey = CoreIndexKey<OwnedRoomId, OwnedEventId>;
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Ord, PartialOrd)]
+pub struct MatrixCoreTypeConfig;
+
+impl TypeConfig for MatrixCoreTypeConfig {
+    type RoomId = OwnedRoomId;
+    type ObjectId = OwnedEventId;
+    type ModelType = ModelType;
+    type AccountData = AccountData;
+}
+
+pub type ExecuteReference = CoreExecuteReference<MatrixCoreTypeConfig>;
+pub type IndexKey = CoreIndexKey<MatrixCoreTypeConfig>;
 pub trait IntoExecuteReference {
     fn into(self) -> ExecuteReference;
 }

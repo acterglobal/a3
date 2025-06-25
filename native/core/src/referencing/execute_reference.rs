@@ -1,37 +1,31 @@
 use super::{
     AccountData,
-    IndexKey, ModelParam, ModelType, ObjectId, RoomId, RoomParam, SectionIndex, SpecialListsIndex,
+    IndexKey, ModelParam, RoomParam, SectionIndex, SpecialListsIndex, TypeConfig,
 };
 use serde::{Deserialize, Serialize, de::DeserializeOwned};
 
 #[derive(Eq, PartialEq, Ord, PartialOrd, Hash, Debug, Clone, Serialize, Deserialize)]
 #[serde(
-    bound = "R: Serialize + DeserializeOwned, O: Serialize + DeserializeOwned, M: Serialize + DeserializeOwned",
+    bound = "C: TypeConfig, C::RoomId: Serialize + DeserializeOwned, C::ObjectId: Serialize + DeserializeOwned",
     rename_all = "snake_case"
 )]
-pub enum ExecuteReference<R, O, M, A>
+pub enum ExecuteReference<C>
 where
-    R: RoomId,
-    O: ObjectId,
-    M: ModelType,
-    A: AccountData
+    C: TypeConfig,
 {
-    Index(IndexKey<R, O>),
-    Model(O),
-    Room(R),
-    RoomAccountData(R, A),
-    ModelParam(O, ModelParam),
-    RoomParam(R, RoomParam),
-    AccountData(A),
-    ModelType(M),
+    Index(IndexKey<C>),
+    Model(C::ObjectId),
+    Room(C::RoomId),
+    RoomAccountData(C::RoomId, C::AccountData),
+    ModelParam(C::ObjectId, ModelParam),
+    RoomParam(C::RoomId, RoomParam),
+    AccountData(C::AccountData),
+    ModelType(C::ModelType),
 }
 
-impl<R, O, M, A> ExecuteReference<R, O, M, A>
+impl<C> ExecuteReference<C>
 where
-    R: RoomId,
-    O: ObjectId,
-    M: ModelType,
-    A: AccountData,
+    C: TypeConfig,
 {
     pub fn as_storage_key(&self) -> String {
         match self {
@@ -58,24 +52,18 @@ where
 }
 
 
-impl<R, O, M, A> From<IndexKey<R, O>> for ExecuteReference<R, O, M, A>
+impl<C> From<IndexKey<C>> for ExecuteReference<C>
 where
-    R: RoomId,
-    O: ObjectId,
-    M: ModelType,
-    A: AccountData,
+    C: TypeConfig,
 {
-    fn from(value: IndexKey<R, O>) -> Self {
+    fn from(value: IndexKey<C>) -> Self {
         ExecuteReference::Index(value)
     }
 }
 
-impl<R, O, M, A> From<SectionIndex> for ExecuteReference<R, O, M, A>
+impl<C> From<SectionIndex> for ExecuteReference<C>
 where
-    R: RoomId,
-    O: ObjectId,
-    M: ModelType,
-    A: AccountData,
+    C: TypeConfig,
 {
     fn from(value: SectionIndex) -> Self {
         ExecuteReference::Index(IndexKey::Section(value))
@@ -86,6 +74,8 @@ where
 #[cfg(test)]
 mod tests {
     use std::borrow::Cow;
+
+    use crate::referencing::TypeConfig;
 
     use super::super::ObjectListIndex;
 
@@ -131,7 +121,17 @@ mod tests {
         }
     }
 
-    type TestExecuteReference = ExecuteReference<MockRoomId, MockObjectId, MockModelType, Cow<'static, str>>;
+    #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+    struct MockTypeConfig;
+
+    impl TypeConfig for MockTypeConfig {
+        type RoomId = MockRoomId;
+        type ObjectId = MockObjectId;
+        type ModelType = MockModelType;
+        type AccountData = Cow<'static, str>;
+    }
+
+    type TestExecuteReference = ExecuteReference<MockTypeConfig>;
 
     #[test]
     fn test_index_variant_serialization() -> Result<(), Box<dyn std::error::Error>> {
@@ -314,7 +314,7 @@ mod tests {
         let object_id = MockObjectId("$test_event_id".to_string());
 
         // Test From<IndexKey<R, O>> implementation
-        let index_key = IndexKey::RoomHistory(room_id.clone());
+        let index_key = IndexKey::<MockTypeConfig>::RoomHistory(room_id.clone());
         let execute_ref: TestExecuteReference = index_key.clone().into();
         assert!(matches!(execute_ref, TestExecuteReference::Index(_)));
         if let TestExecuteReference::Index(ik) = execute_ref {
@@ -352,15 +352,15 @@ mod tests {
 
         // Test From<IndexKey<R, O>> with different variants
         let index_variants = vec![
-            IndexKey::RoomHistory(room_id.clone()),
-            IndexKey::RoomModels(room_id.clone()),
-            IndexKey::ObjectHistory(object_id.clone()),
-            IndexKey::Section(SectionIndex::Boosts),
-            IndexKey::RoomSection(room_id.clone(), SectionIndex::Tasks),
-            IndexKey::ObjectList(object_id.clone(), ObjectListIndex::Comments),
-            IndexKey::Special(SpecialListsIndex::InvitedTo),
-            IndexKey::Redacted,
-            IndexKey::AllHistory,
+            IndexKey::<MockTypeConfig>::RoomHistory(room_id.clone()),
+            IndexKey::<MockTypeConfig>::RoomModels(room_id.clone()),
+            IndexKey::<MockTypeConfig>::ObjectHistory(object_id.clone()),
+            IndexKey::<MockTypeConfig>::Section(SectionIndex::Boosts),
+            IndexKey::<MockTypeConfig>::RoomSection(room_id.clone(), SectionIndex::Tasks),
+            IndexKey::<MockTypeConfig>::ObjectList(object_id.clone(), ObjectListIndex::Comments),
+            IndexKey::<MockTypeConfig>::Special(SpecialListsIndex::InvitedTo),
+            IndexKey::<MockTypeConfig>::Redacted,
+            IndexKey::<MockTypeConfig>::AllHistory,
         ];
 
         for index_key in index_variants {
@@ -500,27 +500,27 @@ mod tests {
             //
             // From<IndexKey<R, O>> - RoomHistory
             (
-                IndexKey::RoomHistory(room_id.clone()),
+                IndexKey::<MockTypeConfig>::RoomHistory(room_id.clone()),
                 TestExecuteReference::Index(IndexKey::RoomHistory(room_id.clone())),
             ),
             // From<IndexKey<R, O>> - RoomModels
             (
-                IndexKey::RoomModels(room_id.clone()),
+                IndexKey::<MockTypeConfig>::RoomModels(room_id.clone()),
                 TestExecuteReference::Index(IndexKey::RoomModels(room_id.clone())),
             ),
             // From<IndexKey<R, O>> - ObjectHistory
             (
-                IndexKey::ObjectHistory(object_id.clone()),
+                IndexKey::<MockTypeConfig>::ObjectHistory(object_id.clone()),
                 TestExecuteReference::Index(IndexKey::ObjectHistory(object_id.clone())),
             ),
             // From<IndexKey<R, O>> - Section
             (
-                IndexKey::Section(SectionIndex::Boosts),
+                IndexKey::<MockTypeConfig>::Section(SectionIndex::Boosts),
                 TestExecuteReference::Index(IndexKey::Section(SectionIndex::Boosts)),
             ),
             // From<IndexKey<R, O>> - RoomSection
             (
-                IndexKey::RoomSection(room_id.clone(), SectionIndex::Tasks),
+                IndexKey::<MockTypeConfig>::RoomSection(room_id.clone(), SectionIndex::Tasks),
                 TestExecuteReference::Index(IndexKey::RoomSection(
                     room_id.clone(),
                     SectionIndex::Tasks,
@@ -528,7 +528,7 @@ mod tests {
             ),
             // From<IndexKey<R, O>> - ObjectList
             (
-                IndexKey::ObjectList(object_id.clone(), ObjectListIndex::Comments),
+                IndexKey::<MockTypeConfig>::ObjectList(object_id.clone(), ObjectListIndex::Comments),
                 TestExecuteReference::Index(IndexKey::ObjectList(
                     object_id.clone(),
                     ObjectListIndex::Comments,
@@ -536,17 +536,17 @@ mod tests {
             ),
             // From<IndexKey<R, O>> - Special
             (
-                IndexKey::Special(SpecialListsIndex::InvitedTo),
+                IndexKey::<MockTypeConfig>::Special(SpecialListsIndex::InvitedTo),
                 TestExecuteReference::Index(IndexKey::Special(SpecialListsIndex::InvitedTo)),
             ),
             // From<IndexKey<R, O>> - Redacted
             (
-                IndexKey::Redacted,
+                IndexKey::<MockTypeConfig>::Redacted,
                 TestExecuteReference::Index(IndexKey::Redacted),
             ),
             // From<IndexKey<R, O>> - AllHistory
             (
-                IndexKey::AllHistory,
+                IndexKey::<MockTypeConfig>::AllHistory,
                 TestExecuteReference::Index(IndexKey::AllHistory),
             ),
         ];

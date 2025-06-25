@@ -1,23 +1,22 @@
-use super::{ObjectId, ObjectListIndex, RoomId, SectionIndex, SpecialListsIndex};
+use super::{TypeConfig, ObjectListIndex, SectionIndex, SpecialListsIndex};
 use serde::{Deserialize, Serialize, de::DeserializeOwned};
 
 // We organize our Index by typed keys
 #[derive(Eq, PartialEq, Ord, PartialOrd, Hash, Debug, Clone, Serialize, Deserialize)]
 #[serde(
-    bound = "R: Serialize + DeserializeOwned, O: Serialize + DeserializeOwned",
+    bound = "C: TypeConfig, C::RoomId: Serialize + DeserializeOwned, C::ObjectId: Serialize + DeserializeOwned",
     rename_all = "snake_case"
 )]
-pub enum IndexKey<R, O>
+pub enum IndexKey<C>
 where
-    R: RoomId,
-    O: ObjectId,
+    C: TypeConfig,
 {
-    RoomHistory(R),
-    RoomModels(R),
-    ObjectHistory(O),
+    RoomHistory(C::RoomId),
+    RoomModels(C::RoomId),
+    ObjectHistory(C::ObjectId),
     Section(SectionIndex),
-    RoomSection(R, SectionIndex),
-    ObjectList(O, ObjectListIndex),
+    RoomSection(C::RoomId, SectionIndex),
+    ObjectList(C::ObjectId, ObjectListIndex),
     Special(SpecialListsIndex),
     Redacted,
     AllHistory,
@@ -27,6 +26,20 @@ where
 mod tests {
     use super::*;
     use serde_json;
+
+
+    #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+    struct MockTypeConfig;
+
+    impl TypeConfig for MockTypeConfig {
+        type RoomId = String;
+        type ObjectId = String;
+        type ModelType = String;
+        type AccountData = String;
+    }
+
+    type TestIndexKey = IndexKey<MockTypeConfig>;
+
 
     // Helper function to test round-trip serialization/deserialization
     fn test_round_trip<T>(value: &T) -> T
@@ -42,7 +55,7 @@ mod tests {
     #[test]
     fn test_room_history_serialization() {
         let room_id = "room123".to_string();
-        let index_key = IndexKey::<String, String>::RoomHistory(room_id.clone());
+        let index_key = TestIndexKey::RoomHistory(room_id.clone());
 
         let result = test_round_trip(&index_key);
         assert!(matches!(result, IndexKey::RoomHistory(r) if r == room_id));
@@ -51,7 +64,7 @@ mod tests {
     #[test]
     fn test_room_models_serialization() {
         let room_id = "room456".to_string();
-        let index_key = IndexKey::<String, String>::RoomModels(room_id.clone());
+        let index_key = TestIndexKey::RoomModels(room_id.clone());
 
         let result = test_round_trip(&index_key);
         assert!(matches!(result, IndexKey::RoomModels(r) if r == room_id));
@@ -60,7 +73,7 @@ mod tests {
     #[test]
     fn test_object_history_serialization() {
         let object_id = "object789".to_string();
-        let index_key = IndexKey::<String, String>::ObjectHistory(object_id.clone());
+        let index_key = TestIndexKey::ObjectHistory(object_id.clone());
 
         let result = test_round_trip(&index_key);
         assert!(matches!(result, IndexKey::ObjectHistory(o) if o == object_id));
@@ -69,7 +82,7 @@ mod tests {
     #[test]
     fn test_section_serialization() {
         let section = SectionIndex::Boosts;
-        let index_key = IndexKey::<String, String>::Section(section);
+        let index_key = TestIndexKey::Section(section);
 
         let result = test_round_trip(&index_key);
         assert!(matches!(result, IndexKey::Section(SectionIndex::Boosts)));
@@ -86,7 +99,7 @@ mod tests {
         ];
 
         for section in sections {
-            let index_key = IndexKey::<String, String>::Section(section);
+            let index_key = TestIndexKey::Section(section);
             let result = test_round_trip(&index_key);
             assert!(matches!(result, IndexKey::Section(_)));
         }
@@ -96,7 +109,7 @@ mod tests {
     fn test_room_section_serialization() {
         let room_id = "room101".to_string();
         let section = SectionIndex::Calendar;
-        let index_key = IndexKey::<String, String>::RoomSection(room_id.clone(), section);
+        let index_key = TestIndexKey::RoomSection(room_id.clone(), section);
 
         let result = test_round_trip(&index_key);
         assert!(matches!(result, IndexKey::RoomSection(r, SectionIndex::Calendar) if r == room_id));
@@ -106,7 +119,7 @@ mod tests {
     fn test_object_list_serialization() {
         let object_id = "object202".to_string();
         let list_index = ObjectListIndex::Comments;
-        let index_key = IndexKey::<String, String>::ObjectList(object_id.clone(), list_index);
+        let index_key = TestIndexKey::ObjectList(object_id.clone(), list_index);
 
         let result = test_round_trip(&index_key);
         assert!(
@@ -128,7 +141,7 @@ mod tests {
         ];
 
         for list_index in list_indices {
-            let index_key = IndexKey::<String, String>::ObjectList(object_id.clone(), list_index);
+            let index_key = TestIndexKey::ObjectList(object_id.clone(), list_index);
             let result = test_round_trip(&index_key);
             assert!(matches!(result, IndexKey::ObjectList(_, _)));
         }
@@ -137,7 +150,7 @@ mod tests {
     #[test]
     fn test_special_serialization() {
         let special_index = SpecialListsIndex::MyOpenTasks;
-        let index_key = IndexKey::<String, String>::Special(special_index);
+        let index_key = TestIndexKey::Special(special_index);
 
         let result = test_round_trip(&index_key);
         assert!(matches!(
@@ -155,7 +168,7 @@ mod tests {
         ];
 
         for special_index in special_indices {
-            let index_key = IndexKey::<String, String>::Special(special_index);
+            let index_key = TestIndexKey::Special(special_index);
             let result = test_round_trip(&index_key);
             assert!(matches!(result, IndexKey::Special(_)));
         }
@@ -163,7 +176,7 @@ mod tests {
 
     #[test]
     fn test_redacted_serialization() {
-        let index_key = IndexKey::<String, String>::Redacted;
+        let index_key = TestIndexKey::Redacted;
 
         let result = test_round_trip(&index_key);
         assert!(matches!(result, IndexKey::Redacted));
@@ -171,7 +184,7 @@ mod tests {
 
     #[test]
     fn test_all_history_serialization() {
-        let index_key = IndexKey::<String, String>::AllHistory;
+        let index_key = TestIndexKey::AllHistory;
 
         let result = test_round_trip(&index_key);
         assert!(matches!(result, IndexKey::AllHistory));
@@ -183,15 +196,15 @@ mod tests {
         let object_id = "test_object".to_string();
 
         let test_cases = vec![
-            IndexKey::<String, String>::RoomHistory(room_id.clone()),
-            IndexKey::<String, String>::RoomModels(room_id.clone()),
-            IndexKey::<String, String>::ObjectHistory(object_id.clone()),
-            IndexKey::<String, String>::Section(SectionIndex::Boosts),
-            IndexKey::<String, String>::RoomSection(room_id.clone(), SectionIndex::Calendar),
-            IndexKey::<String, String>::ObjectList(object_id.clone(), ObjectListIndex::Comments),
-            IndexKey::<String, String>::Special(SpecialListsIndex::MyOpenTasks),
-            IndexKey::<String, String>::Redacted,
-            IndexKey::<String, String>::AllHistory,
+            TestIndexKey::RoomHistory(room_id.clone()),
+            TestIndexKey::RoomModels(room_id.clone()),
+            TestIndexKey::ObjectHistory(object_id.clone()),
+            TestIndexKey::Section(SectionIndex::Boosts),
+            TestIndexKey::RoomSection(room_id.clone(), SectionIndex::Calendar),
+            TestIndexKey::ObjectList(object_id.clone(), ObjectListIndex::Comments),
+            TestIndexKey::Special(SpecialListsIndex::MyOpenTasks),
+            TestIndexKey::Redacted,
+            TestIndexKey::AllHistory,
         ];
 
         for (i, test_case) in test_cases.into_iter().enumerate() {
@@ -205,17 +218,17 @@ mod tests {
         let room_id = "test_room".to_string();
 
         // Test that the serialized format is as expected
-        let room_history = IndexKey::<String, String>::RoomHistory(room_id.clone());
+        let room_history = TestIndexKey::RoomHistory(room_id.clone());
         let serialized = serde_json::to_string(&room_history).expect("Failed to serialize");
         assert!(serialized.contains("room_history"));
         assert!(serialized.contains(&room_id));
 
-        let section = IndexKey::<String, String>::Section(SectionIndex::Boosts);
+        let section = TestIndexKey::Section(SectionIndex::Boosts);
         let serialized = serde_json::to_string(&section).expect("Failed to serialize");
         assert!(serialized.contains("section"));
         assert!(serialized.contains("boosts"));
 
-        let redacted = IndexKey::<String, String>::Redacted;
+        let redacted = TestIndexKey::Redacted;
         let serialized = serde_json::to_string(&redacted).expect("Failed to serialize");
         assert!(serialized.contains("redacted"));
     }
@@ -224,12 +237,12 @@ mod tests {
     fn test_deserialization_errors() {
         // Test invalid JSON
         let invalid_json = r#"{"invalid": "data"}"#;
-        let result: Result<IndexKey<String, String>, _> = serde_json::from_str(invalid_json);
+        let result: Result<TestIndexKey, _> = serde_json::from_str(invalid_json);
         assert!(result.is_err());
 
         // Test missing variant
         let invalid_json = r#"{"NonExistentVariant": "data"}"#;
-        let result: Result<IndexKey<String, String>, _> = serde_json::from_str(invalid_json);
+        let result: Result<TestIndexKey, _> = serde_json::from_str(invalid_json);
         assert!(result.is_err());
     }
 
@@ -253,26 +266,38 @@ mod tests {
                 &self.0
             }
         }
+        #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+        struct CustomTypeConfig;
+    
+        impl TypeConfig for CustomTypeConfig {
+            type RoomId = CustomRoomId;
+            type ObjectId = CustomObjectId;
+            type ModelType = String;
+            type AccountData = String;
+        }
+    
+        type CustomIndexKey = IndexKey<CustomTypeConfig>;
+    
 
         let room_id = CustomRoomId("custom_room".to_string());
         let object_id = CustomObjectId("custom_object".to_string());
 
         let test_cases = vec![
-            IndexKey::<CustomRoomId, CustomObjectId>::RoomHistory(room_id.clone()),
-            IndexKey::<CustomRoomId, CustomObjectId>::RoomModels(room_id.clone()),
-            IndexKey::<CustomRoomId, CustomObjectId>::ObjectHistory(object_id.clone()),
-            IndexKey::<CustomRoomId, CustomObjectId>::Section(SectionIndex::Tasks),
-            IndexKey::<CustomRoomId, CustomObjectId>::RoomSection(
+            CustomIndexKey::RoomHistory(room_id.clone()),
+            CustomIndexKey::RoomModels(room_id.clone()),
+            CustomIndexKey::ObjectHistory(object_id.clone()),
+            CustomIndexKey::Section(SectionIndex::Tasks),
+            CustomIndexKey::RoomSection(
                 room_id.clone(),
                 SectionIndex::Pins,
             ),
-            IndexKey::<CustomRoomId, CustomObjectId>::ObjectList(
+            CustomIndexKey::ObjectList(
                 object_id.clone(),
                 ObjectListIndex::Reactions,
             ),
-            IndexKey::<CustomRoomId, CustomObjectId>::Special(SpecialListsIndex::MyDoneTasks),
-            IndexKey::<CustomRoomId, CustomObjectId>::Redacted,
-            IndexKey::<CustomRoomId, CustomObjectId>::AllHistory,
+            CustomIndexKey::Special(SpecialListsIndex::MyDoneTasks),
+            CustomIndexKey::Redacted,
+            CustomIndexKey::AllHistory,
         ];
 
         for test_case in test_cases {
