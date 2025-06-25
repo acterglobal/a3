@@ -38,7 +38,7 @@ url = "https://acter.global"
 #[tokio::test]
 async fn image_attachment_activity_on_pin() -> Result<()> {
     let (users, _sync_states, _space_id, _engine) =
-        random_users_with_random_space_under_template("aOnpin", 1, TMPL).await?;
+        random_users_with_random_space_under_template("image_on_pin", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
@@ -109,7 +109,7 @@ async fn image_attachment_activity_on_pin() -> Result<()> {
 #[tokio::test]
 async fn file_attachment_activity_on_calendar() -> Result<()> {
     let (users, _sync_states, _space_id, _engine) =
-        random_users_with_random_space_under_template("aOncal", 1, TMPL).await?;
+        random_users_with_random_space_under_template("file_on_cal", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
@@ -180,7 +180,7 @@ async fn file_attachment_activity_on_calendar() -> Result<()> {
 #[tokio::test]
 async fn reference_attachment_activity_on_calendar() -> Result<()> {
     let (users, _sync_states, _space_id, _engine) =
-        random_users_with_random_space_under_template("aOncal", 1, TMPL).await?;
+        random_users_with_random_space_under_template("ref_on_cal", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
