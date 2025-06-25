@@ -19,19 +19,19 @@ main_space = { type = "space", is-default = true, name = "{{ main.display_name }
 
 [objects.acter-event-1]
 type = "calendar-event"
-title = "Onboarding on Acter"
+title = "Onboarding on Acter1"
 utc_start = "{{ future(add_mins=1).as_rfc3339 }}"
 utc_end = "{{ future(add_mins=60).as_rfc3339 }}"
 
 [objects.acter-event-2]
 type = "calendar-event"
-title = "Onboarding on Acter"
+title = "Onboarding on Acter2"
 utc_start = "{{ future(add_days=1).as_rfc3339 }}"
 utc_end = "{{ future(add_days=7).as_rfc3339 }}"
 
 [objects.acter-event-3]
 type = "calendar-event"
-title = "Onboarding on Acter"
+title = "Onboarding on Acter3"
 utc_start = "{{ future(add_days=20).as_rfc3339 }}"
 utc_end = "{{ future(add_days=25).as_rfc3339 }}"
 locations = [
@@ -66,6 +66,7 @@ async fn calendar_smoketest() -> Result<()> {
     let cal_events = main_space.calendar_events().await?;
     assert_eq!(cal_events.len(), 3);
     let main_event = cal_events.first().expect("main event should be available");
+    assert_eq!(main_event.title(), "Onboarding on Acter3");
 
     let locations = main_event.locations();
     assert_eq!(locations.len(), 2);
@@ -97,12 +98,16 @@ async fn edit_calendar_event() -> Result<()> {
     let cal_events = user.calendar_events().await?;
     assert_eq!(cal_events.len(), 3);
 
-    let main_event = cal_events.first().expect("main event should be available");
+    let main_event = cal_events.last().expect("main event should be available");
+    assert_eq!(main_event.title(), "Onboarding on Acter1");
+    assert!(main_event.locations().is_empty());
+    assert!(main_event.physical_locations().is_empty());
+    assert!(main_event.virtual_locations().is_empty());
 
     let subscriber = main_event.subscribe();
 
     // will add title & locations
-    let title = "Onboarding on Acter1";
+    let title = "Onboarding on Acter1 - new";
 
     let loc_name = "Test Location";
     let loc_desc_text = "Philadelphia Office";
@@ -148,8 +153,12 @@ async fn edit_calendar_event() -> Result<()> {
             bail!("title update not yet received");
         }
 
+        if edited_event.locations().len() != 2 {
+            bail!("location update not yet received");
+        }
+
         let phy_loc = edited_event.physical_locations();
-        if phy_loc.is_empty() {
+        if phy_loc.len() != 1 {
             bail!("physical location update not yet received");
         }
         if phy_loc[0].name().as_deref() != Some(loc_name) {
@@ -180,7 +189,7 @@ async fn edit_calendar_event() -> Result<()> {
         }
 
         let vir_loc = edited_event.virtual_locations();
-        if vir_loc.is_empty() {
+        if vir_loc.len() != 1 {
             bail!("virtual location update not yet received");
         }
         if vir_loc[0].name().as_deref() != Some(loc_name) {
@@ -258,6 +267,7 @@ async fn calendar_event_external_link() -> Result<()> {
     assert_eq!(cal_events.len(), 3);
 
     let event = cal_events.first().expect("first event should be available");
+    assert_eq!(event.title(), "Onboarding on Acter3");
 
     // generate the external and internal links
 
