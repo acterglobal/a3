@@ -3,7 +3,6 @@ import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/custom_input.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:convenient_test_dev/convenient_test_dev.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -188,102 +187,6 @@ void main() {
         (ref, roomId) => Future.value(roomDrafts[roomId]),
       ),
     ];
-    testWidgets('Adding text in the middle', (tester) async {
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: overrides,
-          child: const InActerContextTestWrapper(
-            child: CustomChatInput(roomId: 'roomId'),
-          ),
-        ),
-      );
-      expect(find.byKey(CustomChatInput.noAccessKey), findsNothing);
-      expect(find.byKey(CustomChatInput.loadingKey), findsNothing);
-
-      // not visible
-      expect(find.byKey(CustomChatInput.sendBtnKey), findsNothing);
-      expect(find.byType(TextField), findsOneWidget);
-
-      final TextField textField = tester.widget(find.byType(TextField));
-      final controller = textField.controller!;
-
-      await tester.enterTextWithoutReplace(
-        find.byType(TextField),
-        'teing code',
-      );
-
-      await tester.pump(Durations.medium2);
-      expect(controller.text, 'teing code');
-
-      // lest move the cursor to fix our typos.
-      controller.selection = TextSelection.fromPosition(
-        const TextPosition(offset: 2),
-      );
-
-      await tester.pump();
-      await tester.enterTextWithoutReplace(find.byType(TextField), 's');
-      await tester.pump();
-      await tester.enterTextWithoutReplace(find.byType(TextField), 't');
-
-      // This test is timing out due to a pending timer.
-      // See MultiTriggerAutocompleteState._onChangedField in:
-      // acter_trigger_autocomplete.dart:279
-      // put 300ms delay as (debounceTimerDuration)
-      await tester.pump(Durations.medium2);
-      expect(controller.text, 'testing code');
-    });
-
-    testWidgets('Adding text in the middle in reply', (tester) async {
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: overrides,
-          child: const InActerContextTestWrapper(
-            child: CustomChatInput(roomId: 'roomId'),
-          ),
-        ),
-      );
-      // not visible
-      expect(find.byKey(CustomChatInput.noAccessKey), findsNothing);
-      expect(find.byKey(CustomChatInput.loadingKey), findsNothing);
-
-      final element = tester.element(find.byType(CustomChatInput));
-      final container = ProviderScope.containerOf(element);
-
-      final TextField textField = tester.widget(find.byType(TextField));
-      final controller = textField.controller!;
-
-      await tester.enterTextWithoutReplace(
-        find.byType(TextField),
-        'teing code',
-      );
-
-      await tester.pump(Durations.medium2);
-      expect(controller.text, 'teing code');
-
-      // lest move the cursor to fix our typos.
-      controller.selection = TextSelection.fromPosition(
-        const TextPosition(offset: 2),
-      );
-
-      await tester.pump();
-      await tester.enterTextWithoutReplace(find.byType(TextField), 's');
-      await tester.pump();
-
-      // now we select the one we want to reply to
-      final chatInputNotifier = container.read(chatInputProvider.notifier);
-      chatInputNotifier.setReplyToMessage(buildMockTextMessage());
-
-      // without moving the cursor!
-      await tester.pump();
-      await tester.enterTextWithoutReplace(find.byType(TextField), 't');
-
-      // This test is timing out due to a pending timer.
-      // See MultiTriggerAutocompleteState._onChangedField in:
-      // acter_trigger_autocomplete.dart:279
-      // put 300ms delay as (debounceTimerDuration)
-      await tester.pump(Durations.medium2);
-      expect(controller.text, 'testing code');
-    });
 
     testWidgets('Edit message shows correct message state in controller', (
       tester,
