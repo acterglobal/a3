@@ -237,8 +237,7 @@ final isLastMessageProvider = Provider.family<bool, RoomMsgId>((
   roomMsgId,
 ) {
   final messages = ref.watch(renderableChatMessagesProvider(roomMsgId.roomId));
-  // we have reverse order, so first message is the last one in the list
-  return messages.first == roomMsgId.uniqueId;
+  return messages.last == roomMsgId.uniqueId;
 });
 
 /// Provider to fetch user mentions
