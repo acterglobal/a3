@@ -51,7 +51,6 @@ class ActerTheme {
     useMaterial3: true,
     colorScheme: colorScheme,
     primaryColor: brandColor,
-    indicatorColor: brandColor,
     appBarTheme: AppBarTheme(
       color: backgroundColor,
       surfaceTintColor: backgroundColor,
