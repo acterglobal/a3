@@ -6,7 +6,8 @@ use matrix_sdk::ruma::{OwnedEventId, RoomId, EventId, OwnedRoomId};
 use std::{borrow::Cow};
 
 pub type ModelType = Cow<'static, str>;
-pub type ExecuteReference = CoreExecuteReference<OwnedRoomId, OwnedEventId, ModelType>;
+pub type AccountData = Cow<'static, str>;
+pub type ExecuteReference = CoreExecuteReference<OwnedRoomId, OwnedEventId, ModelType, AccountData>;
 pub type IndexKey = CoreIndexKey<OwnedRoomId, OwnedEventId>;
 pub trait IntoExecuteReference {
     fn into(self) -> ExecuteReference;

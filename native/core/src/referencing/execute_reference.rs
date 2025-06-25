@@ -1,35 +1,37 @@
 use super::{
+    AccountData,
     IndexKey, ModelParam, ModelType, ObjectId, RoomId, RoomParam, SectionIndex, SpecialListsIndex,
 };
 use serde::{Deserialize, Serialize, de::DeserializeOwned};
-use std::borrow::Cow;
 
 #[derive(Eq, PartialEq, Ord, PartialOrd, Hash, Debug, Clone, Serialize, Deserialize)]
 #[serde(
     bound = "R: Serialize + DeserializeOwned, O: Serialize + DeserializeOwned, M: Serialize + DeserializeOwned",
     rename_all = "snake_case"
 )]
-pub enum ExecuteReference<R, O, M>
+pub enum ExecuteReference<R, O, M, A>
 where
     R: RoomId,
     O: ObjectId,
     M: ModelType,
+    A: AccountData
 {
     Index(IndexKey<R, O>),
     Model(O),
     Room(R),
-    RoomAccountData(R, Cow<'static, str>),
+    RoomAccountData(R, A),
     ModelParam(O, ModelParam),
     RoomParam(R, RoomParam),
-    AccountData(Cow<'static, str>),
+    AccountData(A),
     ModelType(M),
 }
 
-impl<R, O, M> ExecuteReference<R, O, M>
+impl<R, O, M, A> ExecuteReference<R, O, M, A>
 where
     R: RoomId,
     O: ObjectId,
     M: ModelType,
+    A: AccountData,
 {
     pub fn as_storage_key(&self) -> String {
         match self {
@@ -56,22 +58,24 @@ where
 }
 
 
-impl<R, O, M> From<IndexKey<R, O>> for ExecuteReference<R, O, M>
+impl<R, O, M, A> From<IndexKey<R, O>> for ExecuteReference<R, O, M, A>
 where
     R: RoomId,
     O: ObjectId,
     M: ModelType,
+    A: AccountData,
 {
     fn from(value: IndexKey<R, O>) -> Self {
         ExecuteReference::Index(value)
     }
 }
 
-impl<R, O, M> From<SectionIndex> for ExecuteReference<R, O, M>
+impl<R, O, M, A> From<SectionIndex> for ExecuteReference<R, O, M, A>
 where
     R: RoomId,
     O: ObjectId,
     M: ModelType,
+    A: AccountData,
 {
     fn from(value: SectionIndex) -> Self {
         ExecuteReference::Index(IndexKey::Section(value))
@@ -81,6 +85,8 @@ where
 
 #[cfg(test)]
 mod tests {
+    use std::borrow::Cow;
+
     use super::super::ObjectListIndex;
 
     use super::*;
@@ -125,7 +131,7 @@ mod tests {
         }
     }
 
-    type TestExecuteReference = ExecuteReference<MockRoomId, MockObjectId, MockModelType>;
+    type TestExecuteReference = ExecuteReference<MockRoomId, MockObjectId, MockModelType, Cow<'static, str>>;
 
     #[test]
     fn test_index_variant_serialization() -> Result<(), Box<dyn std::error::Error>> {
