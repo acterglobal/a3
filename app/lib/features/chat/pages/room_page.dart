@@ -354,7 +354,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
         roomId: widget.roomId,
       ),
       '_read_marker' => Center(
-        child: Divider(color: Theme.of(context).indicatorColor),
+        child: Divider(color: Theme.of(context).colorScheme.primary),
       ),
       '_encryptedInfo' => const EncryptedInfoWidget(),
       _ => SystemMessage(
