@@ -5,6 +5,7 @@ import 'package:acter/config/constants.dart';
 import 'package:acter/features/chat_ng/dialogs/message_actions.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
 import 'package:acter/features/chat_ng/widgets/chat_bubble.dart';
+import 'package:acter/features/chat_ng/widgets/events/audio_message_event.dart';
 import 'package:acter/features/chat_ng/widgets/events/file_message_event.dart';
 import 'package:acter/features/chat_ng/widgets/events/image_message_event.dart';
 import 'package:acter/features/chat_ng/widgets/events/state_event_container_widget.dart';
@@ -179,6 +180,20 @@ class MessageEventItem extends ConsumerWidget {
       'm.file' => _buildMediaMsgEventContainer(
         context,
         FileMessageEvent(
+          messageId: messageId,
+          roomId: roomId,
+          content: content,
+          timestamp: timestamp,
+        ),
+        isMe,
+        isFirstMessageBySender,
+        isLastMessageBySender,
+        wasEdited,
+        displayName,
+      ),
+      'm.audio' => _buildMediaMsgEventContainer(
+        context,
+        AudioMessageEvent(
           messageId: messageId,
           roomId: roomId,
           content: content,

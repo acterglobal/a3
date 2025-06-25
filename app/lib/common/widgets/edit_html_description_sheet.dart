@@ -51,18 +51,15 @@ class EditHtmlDescriptionSheet extends ConsumerStatefulWidget {
 
 class _EditHtmlDescriptionSheetState
     extends ConsumerState<EditHtmlDescriptionSheet> {
-  EditorState textEditorState = EditorState.blank();
+  late EditorState textEditorState;
 
   @override
   void initState() {
     super.initState();
-    final document = ActerDocumentHelpers.parse(
+    textEditorState = ActerEditorStateHelpers.fromContent(
       widget.descriptionMarkdownValue ?? '',
-      htmlContent: widget.descriptionHtmlValue,
+      widget.descriptionHtmlValue,
     );
-    if (!document.isEmpty) {
-      textEditorState = EditorState(document: document);
-    }
   }
 
   @override

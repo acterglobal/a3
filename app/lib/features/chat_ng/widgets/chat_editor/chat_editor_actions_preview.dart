@@ -1,7 +1,6 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/html_editor/html_editor.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
-import 'package:acter/features/chat_ng/utils.dart';
 import 'package:acter/features/chat_ng/widgets/events/file_message_event.dart';
 import 'package:acter/features/chat_ng/widgets/events/image_message_event.dart';
 import 'package:acter/features/chat_ng/widgets/events/text_message_event.dart';
@@ -89,22 +88,20 @@ class ChatEditorActionsPreview extends ConsumerWidget {
         GestureDetector(
           key: closePreviewKey,
           onTap: () async {
-            final isEdit = ref.read(chatEditorStateProvider).isEditing;
             final notifier = ref.read(chatEditorStateProvider.notifier);
-
-            notifier.unsetActions();
-            Future.delayed((Duration.zero), () => {});
-            if (!isEdit) {
-              final body = textEditorState.intoMarkdown();
-              final bodyHtml = textEditorState.intoHtml();
-
-              await saveMsgDraft(body, bodyHtml, roomId, ref);
-              textEditorState.updateSelectionWithReason(
-                Selection.single(path: [0], startOffset: body.length - 1),
-                reason: SelectionUpdateReason.uiEvent,
-              );
+            final isEdit = ref.read(chatEditorStateProvider).isEditing;
+            if (isEdit) {
+              textEditorState.clear();
             }
-            if (isEdit) textEditorState.clear();
+            notifier.unsetActions();
+            // clear the text, but we still keep selection
+            final t = textEditorState.transaction;
+            final docChildren = textEditorState.document.root.children;
+            t.afterSelection = Selection.single(
+              path: docChildren.last.path,
+              startOffset: docChildren.last.delta?.length ?? 0,
+            );
+            textEditorState.apply(t);
           },
           child: const Icon(Atlas.xmark_circle),
         ),

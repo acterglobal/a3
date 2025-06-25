@@ -34,17 +34,17 @@ var textTheme = const TextTheme(
   bodyLarge: TextStyle(
     color: Colors.white,
     fontSize: 18,
-    fontWeight: FontWeight.w400,
+    fontWeight: FontWeight.w300,
   ),
   bodyMedium: TextStyle(
     color: Colors.white,
     fontSize: 16,
-    fontWeight: FontWeight.w400,
+    fontWeight: FontWeight.w300,
   ),
   bodySmall: TextStyle(
     color: Colors.white,
     fontSize: 14,
-    fontWeight: FontWeight.w400,
+    fontWeight: FontWeight.w300,
   ),
   labelLarge: TextStyle(
     color: Colors.white,

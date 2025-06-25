@@ -1,1 +1,0 @@
-- [Implement] : Added support for creating, editing, and deleting physical and virtual event locations during event creation and in the event detail page. Users can auto-generate Jitsi Meet links, open physical locations in maps, and join virtual meetings directly from the event.

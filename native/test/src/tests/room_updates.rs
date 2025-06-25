@@ -92,10 +92,10 @@ async fn simple_message_doesnt_trigger_room_update() -> Result<()> {
     })
     .await?;
 
-    // ensure we didin't see any update to the room itself
+    // ensure we didn’t see any update to the room itself
     assert_eq!(room_stream.next().now_or_never().flatten(), None);
 
-    // let's make sure that a reaction does trigger an update either
+    // let’s make sure that a reaction does trigger an update either
     timeline
         .toggle_reaction(sent_event_id, "+1".to_owned())
         .await?;
