@@ -2,24 +2,10 @@ import 'package:acter/features/activity_ui_showcase/mocks/general/mock_activity.
 import 'package:acter/features/activity_ui_showcase/mocks/general/mock_activity_object.dart';
 import 'package:acter_notifify/model/push_styles.dart';
 
-// Activity ID constants (following chat mock pattern)
-final eventCreationEventId = 'event-creation-activity-indiv-1';
-final rsvpYesEventId = 'rsvp-yes-activity-indiv-1';
-final rsvpMaybeEventId = 'rsvp-maybe-activity-indiv-1';
-final taskCompleteEventId = 'task-complete-activity-indiv-1';
-final taskReopenEventId = 'task-reopen-activity-indiv-1';
-
-// Activity Object ID constants (for the activity objects themselves)
-final eventCreationObjectId = 'event-q1-campaign-launch-object-1';
-final rsvpYesObjectId = 'event-brand-strategy-workshop-object-1';
-final rsvpMaybeObjectId = 'event-client-feedback-session-object-1';
-final taskCompleteObjectId = 'task-social-media-calendar-object-1';
-final taskReopenObjectId = 'task-website-content-update-object-1';
-
 final now = DateTime.now();
 
 final eventCreationActivity1 = ActivityMock(
-  mockEventId: eventCreationEventId,
+  mockEventId: 'event-creation-activity-indiv-1',
   mockType: PushStyles.creation.name,
   mockSubType: 'event_created',
   mockSenderId: 'frank',
@@ -27,14 +13,14 @@ final eventCreationActivity1 = ActivityMock(
   mockOriginServerTs:
       now.subtract(const Duration(hours: 1)).millisecondsSinceEpoch,
   mockObject: ActivityMockObject(
-    mockObjectId: eventCreationObjectId,
+    mockObjectId: 'event-q1-campaign-launch-object-1',
     mockType: 'event',
     mockTitle: 'Q1 Campaign Launch',
   ),
 );
 
 final rsvpYesActivity1 = ActivityMock(
-  mockEventId: rsvpYesEventId,
+  mockEventId: 'rsvp-yes-activity-indiv-1',
   mockType: PushStyles.rsvpYes.name,
   mockSubType: 'event_rsvp',
   mockSenderId: 'grace',
@@ -42,14 +28,14 @@ final rsvpYesActivity1 = ActivityMock(
   mockOriginServerTs:
       now.subtract(const Duration(hours: 2)).millisecondsSinceEpoch,
   mockObject: ActivityMockObject(
-    mockObjectId: rsvpYesObjectId,
+    mockObjectId: 'event-brand-strategy-workshop-object-1',
     mockType: 'event',
     mockTitle: 'Brand Strategy Workshop',
   ),
 );
 
 final rsvpMaybeActivity1 = ActivityMock(
-  mockEventId: rsvpMaybeEventId,
+  mockEventId: 'rsvp-maybe-activity-indiv-1',
   mockType: PushStyles.rsvpMaybe.name,
   mockSubType: 'event_rsvp',
   mockSenderId: 'henry',
@@ -57,14 +43,14 @@ final rsvpMaybeActivity1 = ActivityMock(
   mockOriginServerTs:
       now.subtract(const Duration(hours: 3)).millisecondsSinceEpoch,
   mockObject: ActivityMockObject(
-    mockObjectId: rsvpMaybeObjectId,
+    mockObjectId: 'event-client-feedback-session-object-1',
     mockType: 'event',
     mockTitle: 'Client Feedback Session',
   ),
 );
 
 final taskCompleteActivity1 = ActivityMock(
-  mockEventId: taskCompleteEventId,
+  mockEventId: 'task-complete-activity-indiv-1',
   mockType: PushStyles.taskComplete.name,
   mockSubType: 'task_status',
   mockSenderId: 'jack',
@@ -72,14 +58,14 @@ final taskCompleteActivity1 = ActivityMock(
   mockOriginServerTs:
       now.subtract(const Duration(hours: 5)).millisecondsSinceEpoch,
   mockObject: ActivityMockObject(
-    mockObjectId: taskCompleteObjectId,
+    mockObjectId: 'task-social-media-calendar-object-1',
     mockType: 'task',
     mockTitle: 'Social Media Calendar',
   ),
 );
 
 final taskReopenActivity1 = ActivityMock(
-  mockEventId: taskReopenEventId,
+  mockEventId: 'task-reopen-activity-indiv-1',
   mockType: PushStyles.taskReOpen.name,
   mockSubType: 'task_status',
   mockSenderId: 'kelly',
@@ -87,7 +73,7 @@ final taskReopenActivity1 = ActivityMock(
   mockOriginServerTs:
       now.subtract(const Duration(hours: 6)).millisecondsSinceEpoch,
   mockObject: ActivityMockObject(
-    mockObjectId: taskReopenObjectId,
+    mockObjectId: 'task-website-content-update-object-1',
     mockType: 'task',
     mockTitle: 'Website Content Update',
   ),

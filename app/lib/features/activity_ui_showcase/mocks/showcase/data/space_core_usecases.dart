@@ -1,14 +1,10 @@
 import 'package:acter/features/activity_ui_showcase/mocks/general/mock_activity.dart';
 import 'package:acter_notifify/model/push_styles.dart';
 
-// Activity ID constants
-final roomNameEventId = 'room-name-activity-space-core-1';
-final roomAvatarEventId = 'room-avatar-activity-space-core-1';
-
 final now = DateTime.now();
 
 final roomNameActivity1 = ActivityMock(
-  mockEventId: roomNameEventId,
+  mockEventId: 'room-name-activity-space-core-1',
   mockType: PushStyles.roomName.name,
   mockSubType: 'room_settings',
   mockSenderId: '@oscar:acter.global',
@@ -18,7 +14,7 @@ final roomNameActivity1 = ActivityMock(
 );
 
 final roomAvatarActivity1 = ActivityMock(
-  mockEventId: roomAvatarEventId,
+  mockEventId: 'room-avatar-activity-space-core-1',
   mockType: PushStyles.roomAvatar.name,
   mockSubType: 'room_settings',
   mockSenderId: '@paula:acter.global',

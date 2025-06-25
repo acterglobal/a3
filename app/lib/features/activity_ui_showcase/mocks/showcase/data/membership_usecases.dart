@@ -2,23 +2,10 @@ import 'package:acter/features/activity_ui_showcase/mocks/general/mock_activity.
 import 'package:acter/features/chat_ui_showcase/mocks/convo/mock_membership_content.dart';
 import 'package:acter_notifify/model/push_styles.dart';
 
-// Activity ID constants
-final joinedEventId = 'joined-activity-membership-1';
-final invitationAcceptedEventId = 'invitation-accepted-activity-membership-1';
-final invitedEventId = 'invited-activity-membership-1';
-final leftEventId = 'left-activity-membership-1';
-final invitationRejectedEventId = 'invitation-rejected-activity-membership-1';
-final kickedEventId = 'kicked-activity-membership-1';
-final bannedEventId = 'banned-activity-membership-1';
-final unbannedEventId = 'unbanned-activity-membership-1';
-final knockAcceptedEventId = 'knock-accepted-activity-membership-1';
-final knockRetractedEventId = 'knock-retracted-activity-membership-1';
-final knockDeniedEventId = 'knock-denied-activity-membership-1';
-
 final now = DateTime.now();
 
 final joinedActivity1 = ActivityMock(
-  mockEventId: joinedEventId,
+  mockEventId: 'joined-activity-membership-1',
   mockType: PushStyles.joined.name,
   mockSubType: 'membership_change',
   mockSenderId: 'sam',
@@ -32,7 +19,7 @@ final joinedActivity1 = ActivityMock(
 );
 
 final invitationAcceptedActivity1 = ActivityMock(
-  mockEventId: invitationAcceptedEventId,
+  mockEventId: 'invitation-accepted-activity-membership-1',
   mockType: PushStyles.invitationAccepted.name,
   mockSubType: 'invitation_response',
   mockSenderId: 'tina',
@@ -46,7 +33,7 @@ final invitationAcceptedActivity1 = ActivityMock(
 );
 
 final invitedActivity1 = ActivityMock(
-  mockEventId: invitedEventId,
+  mockEventId: 'invited-activity-membership-1',
   mockType: PushStyles.invited.name,
   mockSubType: 'invitation_sent',
   mockSenderId: 'uma',
@@ -60,7 +47,7 @@ final invitedActivity1 = ActivityMock(
 );
 
 final leftActivity1 = ActivityMock(
-  mockEventId: leftEventId,
+  mockEventId: 'left-activity-membership-1',
   mockType: PushStyles.left.name,
   mockSubType: 'membership_change',
   mockSenderId: 'wendy',
@@ -74,7 +61,7 @@ final leftActivity1 = ActivityMock(
 );
 
 final invitationRejectedActivity1 = ActivityMock(
-  mockEventId: invitationRejectedEventId,
+  mockEventId: 'invitation-rejected-activity-membership-1',
   mockType: PushStyles.invitationRejected.name,
   mockSubType: 'invitation_response',
   mockSenderId: 'xavier',
@@ -88,7 +75,7 @@ final invitationRejectedActivity1 = ActivityMock(
 );
 
 final kickedActivity1 = ActivityMock(
-  mockEventId: kickedEventId,
+  mockEventId: 'kicked-activity-membership-1',
   mockType: PushStyles.kicked.name,
   mockSubType: 'membership_change',
   mockSenderId: 'yara',
@@ -101,7 +88,7 @@ final kickedActivity1 = ActivityMock(
 );
 
 final bannedActivity1 = ActivityMock(
-  mockEventId: bannedEventId,
+  mockEventId: 'banned-activity-membership-1',
   mockType: PushStyles.banned.name,
   mockSubType: 'membership_change',
   mockSenderId: 'zara',
@@ -114,7 +101,7 @@ final bannedActivity1 = ActivityMock(
 );
 
 final unbannedActivity1 = ActivityMock(
-  mockEventId: unbannedEventId,
+  mockEventId: 'unbanned-activity-membership-1',
   mockType: PushStyles.unbanned.name,
   mockSubType: 'membership_change',
   mockSenderId: 'zara',
@@ -127,7 +114,7 @@ final unbannedActivity1 = ActivityMock(
 );
 
 final knockAcceptedActivity1 = ActivityMock(
-  mockEventId: knockAcceptedEventId,
+  mockEventId: 'knock-accepted-activity-membership-1',
   mockType: PushStyles.knockAccepted.name,
   mockSubType: 'membership_change',
   mockSenderId: 'zara',
@@ -140,7 +127,7 @@ final knockAcceptedActivity1 = ActivityMock(
 );
 
 final knockRetractedActivity1 = ActivityMock(
-  mockEventId: knockRetractedEventId,
+  mockEventId: 'knock-retracted-activity-membership-1',
   mockType: PushStyles.knockRetracted.name,
   mockSubType: 'membership_change',
   mockSenderId: 'zara',
@@ -153,7 +140,7 @@ final knockRetractedActivity1 = ActivityMock(
 );
 
 final knockDeniedActivity1 = ActivityMock(
-  mockEventId: knockDeniedEventId,
+  mockEventId: 'knock-denied-activity-membership-1',
   mockType: PushStyles.knockDenied.name,
   mockSubType: 'membership_change',
   mockSenderId: 'zara',

@@ -46,3 +46,8 @@ final mockActivitiesDatesProvider = Provider<List<DateTime>>((ref) {
   final mockActivities = ref.watch(mockActivitiesProvider);
   return mockActivities.map((e) => getActivityDate(e.originServerTs())).toSet().toList();
 });
+
+final mockActivitiesIdsProvider = Provider<List<String>>((ref) {
+  final mockActivities = ref.watch(mockActivitiesProvider);
+  return mockActivities.map((e) => e.mockEventId).toList();
+});
