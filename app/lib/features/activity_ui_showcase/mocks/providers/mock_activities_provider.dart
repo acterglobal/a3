@@ -1,4 +1,3 @@
-import 'package:acter/features/activities/providers/activities_providers.dart';
 import 'package:acter/features/activity_ui_showcase/mocks/general/mock_activity.dart';
 import 'package:acter/features/activity_ui_showcase/mocks/showcase/data/biggervisual_usecases.dart';
 import 'package:acter/features/activity_ui_showcase/mocks/showcase/data/individual_actions_usecases.dart';
@@ -7,7 +6,7 @@ import 'package:acter/features/activity_ui_showcase/mocks/showcase/data/social_u
 import 'package:acter/features/activity_ui_showcase/mocks/showcase/data/space_core_usecases.dart';
 import 'package:riverpod/riverpod.dart';
 
-final List<ActivityMock> mockActivitiesListGenerator = [
+final List<MockActivity> mockActivitiesListGenerator = [
   pinCommentActivity1,
   documentAttachmentActivity1,
   reactionActivity2,
@@ -38,16 +37,16 @@ final List<ActivityMock> mockActivitiesListGenerator = [
   roomAvatarActivity1,
 ];
 
-final mockActivitiesProvider = Provider<List<ActivityMock>>((ref) {
+final mockActivitiesProvider = Provider<List<MockActivity>>((ref) {
   return mockActivitiesListGenerator;
 });
 
-final mockActivitiesDatesProvider = Provider<List<DateTime>>((ref) {
+// Family provider to get individual mock activity by ID
+final mockActivityProvider = Provider.family<MockActivity?, String>((ref, activityId) {
   final mockActivities = ref.watch(mockActivitiesProvider);
-  return mockActivities.map((e) => getActivityDate(e.originServerTs())).toSet().toList();
-});
-
-final mockActivitiesIdsProvider = Provider<List<String>>((ref) {
-  final mockActivities = ref.watch(mockActivitiesProvider);
-  return mockActivities.map((e) => e.mockEventId).toList();
+  try {
+    return mockActivities.firstWhere((activity) => activity.mockActivityId == activityId);
+  } catch (e) {
+    return null; // Return null if not found
+  }
 });

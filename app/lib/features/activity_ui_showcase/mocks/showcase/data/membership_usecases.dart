@@ -4,8 +4,8 @@ import 'package:acter_notifify/model/push_styles.dart';
 
 final now = DateTime.now();
 
-final joinedActivity1 = ActivityMock(
-  mockEventId: 'joined-activity-membership-1',
+final joinedActivity1 = MockActivity(
+  mockActivityId: 'joined-activity-membership-1',
   mockType: PushStyles.joined.name,
   mockSubType: 'membership_change',
   mockSenderId: 'sam',
@@ -18,8 +18,8 @@ final joinedActivity1 = ActivityMock(
   ),
 );
 
-final invitationAcceptedActivity1 = ActivityMock(
-  mockEventId: 'invitation-accepted-activity-membership-1',
+final invitationAcceptedActivity1 = MockActivity(
+  mockActivityId: 'invitation-accepted-activity-membership-1',
   mockType: PushStyles.invitationAccepted.name,
   mockSubType: 'invitation_response',
   mockSenderId: 'tina',
@@ -32,8 +32,8 @@ final invitationAcceptedActivity1 = ActivityMock(
   ),
 );
 
-final invitedActivity1 = ActivityMock(
-  mockEventId: 'invited-activity-membership-1',
+final invitedActivity1 = MockActivity(
+  mockActivityId: 'invited-activity-membership-1',
   mockType: PushStyles.invited.name,
   mockSubType: 'invitation_sent',
   mockSenderId: 'uma',
@@ -46,8 +46,8 @@ final invitedActivity1 = ActivityMock(
   ),
 );
 
-final leftActivity1 = ActivityMock(
-  mockEventId: 'left-activity-membership-1',
+final leftActivity1 = MockActivity(
+  mockActivityId: 'left-activity-membership-1',
   mockType: PushStyles.left.name,
   mockSubType: 'membership_change',
   mockSenderId: 'wendy',
@@ -60,8 +60,8 @@ final leftActivity1 = ActivityMock(
   ),
 );
 
-final invitationRejectedActivity1 = ActivityMock(
-  mockEventId: 'invitation-rejected-activity-membership-1',
+final invitationRejectedActivity1 = MockActivity(
+  mockActivityId: 'invitation-rejected-activity-membership-1',
   mockType: PushStyles.invitationRejected.name,
   mockSubType: 'invitation_response',
   mockSenderId: 'xavier',
@@ -74,8 +74,8 @@ final invitationRejectedActivity1 = ActivityMock(
   ),
 );
 
-final kickedActivity1 = ActivityMock(
-  mockEventId: 'kicked-activity-membership-1',
+final kickedActivity1 = MockActivity(
+  mockActivityId: 'kicked-activity-membership-1',
   mockType: PushStyles.kicked.name,
   mockSubType: 'membership_change',
   mockSenderId: 'yara',
@@ -87,8 +87,8 @@ final kickedActivity1 = ActivityMock(
   ),
 );
 
-final bannedActivity1 = ActivityMock(
-  mockEventId: 'banned-activity-membership-1',
+final bannedActivity1 = MockActivity(
+  mockActivityId: 'banned-activity-membership-1',
   mockType: PushStyles.banned.name,
   mockSubType: 'membership_change',
   mockSenderId: 'zara',
@@ -100,8 +100,8 @@ final bannedActivity1 = ActivityMock(
   ),
 );
 
-final unbannedActivity1 = ActivityMock(
-  mockEventId: 'unbanned-activity-membership-1',
+final unbannedActivity1 = MockActivity(
+  mockActivityId: 'unbanned-activity-membership-1',
   mockType: PushStyles.unbanned.name,
   mockSubType: 'membership_change',
   mockSenderId: 'zara',
@@ -113,8 +113,8 @@ final unbannedActivity1 = ActivityMock(
   ),
 );
 
-final knockAcceptedActivity1 = ActivityMock(
-  mockEventId: 'knock-accepted-activity-membership-1',
+final knockAcceptedActivity1 = MockActivity(
+  mockActivityId: 'knock-accepted-activity-membership-1',
   mockType: PushStyles.knockAccepted.name,
   mockSubType: 'membership_change',
   mockSenderId: 'zara',
@@ -126,8 +126,8 @@ final knockAcceptedActivity1 = ActivityMock(
   ),
 );
 
-final knockRetractedActivity1 = ActivityMock(
-  mockEventId: 'knock-retracted-activity-membership-1',
+final knockRetractedActivity1 = MockActivity(
+  mockActivityId: 'knock-retracted-activity-membership-1',
   mockType: PushStyles.knockRetracted.name,
   mockSubType: 'membership_change',
   mockSenderId: 'zara',
@@ -139,8 +139,8 @@ final knockRetractedActivity1 = ActivityMock(
   ),
 );
 
-final knockDeniedActivity1 = ActivityMock(
-  mockEventId: 'knock-denied-activity-membership-1',
+final knockDeniedActivity1 = MockActivity(
+  mockActivityId: 'knock-denied-activity-membership-1',
   mockType: PushStyles.knockDenied.name,
   mockSubType: 'membership_change',
   mockSenderId: 'zara',

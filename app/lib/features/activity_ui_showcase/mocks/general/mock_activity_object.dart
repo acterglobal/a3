@@ -1,13 +1,13 @@
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:mocktail/mocktail.dart';
 
-class ActivityMockObject extends Mock implements ActivityObject {
+class MockActivityObject extends Mock implements ActivityObject {
   final String mockType;
   final String? mockObjectId;
   final String? mockTitle;
   final String? mockEmoji;
 
-  ActivityMockObject({
+  MockActivityObject({
     required this.mockType,
     this.mockObjectId,
     this.mockTitle,

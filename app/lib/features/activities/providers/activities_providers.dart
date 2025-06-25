@@ -67,8 +67,13 @@ final hasUnconfirmedEmailAddresses = StateProvider(
       true,
 );
 
+final activityProvider =
+    AsyncNotifierProviderFamily<AsyncActivityNotifier, Activity?, String>(
+      AsyncActivityNotifier.new,
+    );
+
 final allActivitiesProvider =
-    AsyncNotifierProvider<AllActivitiesNotifier, List<Activity>>(
+    AsyncNotifierProvider<AllActivitiesNotifier, List<String>>(
   AllActivitiesNotifier.new,
 );
 
@@ -78,18 +83,52 @@ DateTime getActivityDate(int timestamp) {
   return DateTime(activityDate.year, activityDate.month, activityDate.day);
 }
 
-final activityDatesProvider = Provider<List<DateTime>>((ref) {
-  final activities = ref.watch(allActivitiesProvider).valueOrNull;
-  if (activities == null || activities.isEmpty) return [];
+// Provider to get activities by id
+final allActivitiesByIdProvider = Provider<AsyncValue<List<Activity>>>((ref) {
   
-  final uniqueDates = activities.map((activity) => getActivityDate(activity.originServerTs())).toSet();
-  return uniqueDates.toList()..sort((a, b) => b.compareTo(a));
+  final activityIds = ref.watch(allActivitiesProvider);
+  
+  return activityIds.when(
+    data: (ids) {
+      if (ids.isEmpty) return const AsyncValue.data([]);
+      
+      final activities = <Activity>[];
+      for (final id in ids) {
+        final activity = ref.watch(activityProvider(id)).valueOrNull;
+        if (activity != null) {
+          activities.add(activity);
+        }
+      }
+      return AsyncValue.data(activities);
+    },
+    loading: () => const AsyncValue.loading(),
+    error: (error, stack) => AsyncValue.error(error, stack),
+  );
+});
+
+final activityDatesProvider = Provider<List<DateTime>>((ref) {
+  final activitiesAsync = ref.watch(allActivitiesByIdProvider);
+  return activitiesAsync.when(
+    data: (activities) {
+      if (activities.isEmpty) return [];
+      
+      final uniqueDates = activities.map((activity) => getActivityDate(activity.originServerTs())).toSet();
+      return uniqueDates.toList()..sort((a, b) => b.compareTo(a));
+    },
+    loading: () => [],
+    error: (_, __) => [],
+  );
 });
 
 // Base provider for activities filtered by date
 final activitiesByDateProvider = Provider.family<List<Activity>, DateTime>((ref, date) {
-  final allActivities = ref.watch(allActivitiesProvider).valueOrNull ?? [];
-  return allActivities.where((activity) => getActivityDate(activity.originServerTs()).isAtSameMomentAs(date)).toList();
+  final activitiesAsync = ref.watch(allActivitiesByIdProvider);
+  return activitiesAsync.when(
+    data: (activities) => activities.where((activity) => 
+      getActivityDate(activity.originServerTs()).isAtSameMomentAs(date)).toList(),
+    loading: () => [],
+    error: (_, __) => [],
+  );
 });
 
 // Provider for consecutive grouped activities using records 

@@ -1,9 +1,8 @@
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:mocktail/mocktail.dart';
 
-class ActivityMock extends Mock implements Activity {
-  final String mockEventId;
-  final String? mockActivityId;
+class MockActivity extends Mock implements Activity {
+  final String mockActivityId;
   final String mockType;
   final String? mockName;
   final String? mockSubType;
@@ -18,9 +17,8 @@ class ActivityMock extends Mock implements Activity {
   final DescriptionContent? mockDescriptionContent;
   final int? mockOriginServerTs;
 
-  ActivityMock({
-    required this.mockEventId,
-    this.mockActivityId,
+  MockActivity({
+    required this.mockActivityId,
     required this.mockType,
     this.mockName,
     this.mockSubType,
@@ -37,7 +35,7 @@ class ActivityMock extends Mock implements Activity {
   });
 
   @override
-  String eventIdStr() => mockEventId;
+  String eventIdStr() => mockActivityId;
 
   @override
   String typeStr() => mockType;

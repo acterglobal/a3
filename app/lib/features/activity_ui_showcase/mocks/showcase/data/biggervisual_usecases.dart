@@ -9,15 +9,15 @@ import 'package:acter_notifify/model/push_styles.dart';
 
 final now = DateTime.now();
 
-final pinCommentActivity1 = ActivityMock(
-  mockEventId: 'pin-comment-activity-bigvis-1',
+final pinCommentActivity1 = MockActivity(
+  mockActivityId: 'pin-comment-activity-bigvis-1',
   mockType: PushStyles.comment.name,
   mockSubType: 'pin',
   mockSenderId: 'alice',
   mockRoomId: 'development-team',
   mockOriginServerTs:
       now.subtract(const Duration(minutes: 5)).millisecondsSinceEpoch,
-  mockObject: ActivityMockObject(
+  mockObject: MockActivityObject(
     mockObjectId: 'pin-project-proposal-object-1',
     mockType: 'pin',
     mockTitle: 'Project Proposal Document',
@@ -28,15 +28,15 @@ final pinCommentActivity1 = ActivityMock(
   ),
 );
 
-final documentAttachmentActivity1 = ActivityMock(
-  mockEventId: 'document-attachment-activity-bigvis-1',
+final documentAttachmentActivity1 = MockActivity(
+  mockActivityId: 'document-attachment-activity-bigvis-1',
   mockType: PushStyles.attachment.name,
   mockSubType: 'document',
   mockSenderId: 'charlie',
   mockRoomId: 'development-team',
   mockOriginServerTs:
       now.subtract(const Duration(minutes: 25)).millisecondsSinceEpoch,
-  mockObject: ActivityMockObject(
+  mockObject: MockActivityObject(
     mockObjectId: 'pin-sprint-planning-object-1',
     mockType: 'pin',
     mockTitle: 'Sprint Planning Notes',
@@ -44,15 +44,15 @@ final documentAttachmentActivity1 = ActivityMock(
   mockMsgContent: MockMsgContent(mockBody: 'Meeting notes and action items'),
 );
 
-final eventReferenceActivity1 = ActivityMock(
-  mockEventId: 'event-reference-activity-bigvis-1',
+final eventReferenceActivity1 = MockActivity(
+  mockActivityId: 'event-reference-activity-bigvis-1',
   mockType: PushStyles.references.name,
   mockSubType: 'event_reference',
   mockSenderId: 'david',
   mockRoomId: 'development-team',
   mockOriginServerTs:
       now.subtract(const Duration(minutes: 25)).millisecondsSinceEpoch,
-  mockObject: ActivityMockObject(
+  mockObject: MockActivityObject(
     mockObjectId: 'event-sprint-planning-object-1',
     mockType: 'event',
     mockTitle: 'Event',
@@ -65,8 +65,8 @@ final eventReferenceActivity1 = ActivityMock(
   ),
 );
 
-final taskAddActivity1 = ActivityMock(
-  mockEventId: 'task-add-activity-bigvis-1',
+final taskAddActivity1 = MockActivity(
+  mockActivityId: 'task-add-activity-bigvis-1',
   mockType: PushStyles.taskAdd.name,
   mockSubType: 'task_list',
   mockSenderId: 'elena',
@@ -74,22 +74,22 @@ final taskAddActivity1 = ActivityMock(
   mockOriginServerTs:
       now.subtract(const Duration(minutes: 45)).millisecondsSinceEpoch,
   mockName: 'Code Review Guidelines',
-  mockObject: ActivityMockObject(
+  mockObject: MockActivityObject(
     mockObjectId: 'task-list-code-review-object-1',
     mockType: 'task-list',
     mockTitle: 'Code Review Process',
   ),
 );
 
-final taskTitleChangeActivity1 = ActivityMock(
-  mockEventId: 'task-title-change-activity-bigvis-1',
+final taskTitleChangeActivity1 = MockActivity(
+  mockActivityId: 'task-title-change-activity-bigvis-1',
   mockType: PushStyles.titleChange.name,
   mockSubType: 'task_title_change',
   mockSenderId: 'elena',
   mockRoomId: 'development-team',
   mockOriginServerTs:
       now.subtract(const Duration(minutes: 50)).millisecondsSinceEpoch,
-  mockObject: ActivityMockObject(
+  mockObject: MockActivityObject(
     mockObjectId: 'task-list-code-review-object-2',
     mockType: 'task-list',
     mockTitle: 'Code Review Process',
@@ -100,8 +100,8 @@ final taskTitleChangeActivity1 = ActivityMock(
   ),
 );
 
-final roomTopicChangeActivity1 = ActivityMock(
-  mockEventId: 'room-topic-change-activity-bigvis-1',
+final roomTopicChangeActivity1 = MockActivity(
+  mockActivityId: 'room-topic-change-activity-bigvis-1',
   mockType: PushStyles.roomTopic.name,
   mockSubType: 'space_description',
   mockSenderId: 'diana',
@@ -118,8 +118,8 @@ final roomTopicChangeActivity1 = ActivityMock(
   ),
 );
 
-final descriptionChangeActivity1 = ActivityMock(
-  mockEventId: 'description-change-activity-bigvis-1',
+final descriptionChangeActivity1 = MockActivity(
+  mockActivityId: 'description-change-activity-bigvis-1',
   mockType: PushStyles.descriptionChange.name,
   mockSubType: 'pin_description_change',
   mockSenderId: 'quinn',
@@ -128,7 +128,7 @@ final descriptionChangeActivity1 = ActivityMock(
       now
           .subtract(const Duration(hours: 12, minutes: 15))
           .millisecondsSinceEpoch,
-  mockObject: ActivityMockObject(
+  mockObject: MockActivityObject(
     mockObjectId: 'pin-community-guidelines-object-1',
     mockType: 'pin',
     mockTitle: 'Community Guidelines',

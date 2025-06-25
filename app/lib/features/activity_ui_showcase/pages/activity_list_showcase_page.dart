@@ -1,6 +1,7 @@
+import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/activity_item_widget.dart';
 import 'package:acter/features/activity_ui_showcase/mocks/providers/mock_activities_provider.dart';
-import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/activity_date_item_widget.dart';
 import 'package:acter/l10n/generated/l10n.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -10,7 +11,7 @@ class ActivityListShowcasePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
-    final sortedDates = ref.watch(mockActivitiesDatesProvider);
+    final sortedDates = ref.watch(mockActivitiesProvider);
     
     return Scaffold(
       appBar: AppBar(
@@ -25,10 +26,10 @@ class ActivityListShowcasePage extends ConsumerWidget {
   Widget _buildMockActivitiesSection(
     BuildContext context, 
     WidgetRef ref, 
-    List<DateTime> dates
+    List<Activity> activities
   ) {
 
-    if (dates.isEmpty) {
+    if (activities.isEmpty) {
       return const Center(child: Text('No mock activities available'));
     }
 
@@ -37,12 +38,12 @@ class ActivityListShowcasePage extends ConsumerWidget {
       children: [
         ListView.builder(
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          itemCount: dates.length,
+          itemCount: activities.length,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           itemBuilder: (context, index) {
-            final date = dates[index];
-            return ActivityDateItemWidget(activityDate: date);
+            final activity = activities[index];
+            return ActivityItemWidget(activity: activity);
           },
         ),
       ],
