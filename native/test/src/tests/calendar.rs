@@ -100,6 +100,7 @@ async fn edit_calendar_event() -> Result<()> {
 
     let main_event = cal_events.last().expect("main event should be available");
     assert_eq!(main_event.title(), "Onboarding on Acter1");
+    assert!(main_event.description().is_none());
     assert!(main_event.locations().is_empty());
     assert!(main_event.physical_locations().is_empty());
     assert!(main_event.virtual_locations().is_empty());
@@ -120,6 +121,8 @@ async fn edit_calendar_event() -> Result<()> {
     main_event
         .update_builder()?
         .title(title.to_owned())
+        .description_text("Here is the description".to_owned())
+        .unset_description_update()
         .add_physical_location(
             Some(loc_name.to_owned()),
             Some(loc_desc_text.to_owned()),
@@ -150,6 +153,7 @@ async fn edit_calendar_event() -> Result<()> {
     let edited_event =
         Retry::spawn(retry_strategy, || async { main_event.refresh().await }).await?;
 
+    assert!(edited_event.description().is_none());
     assert_eq!(edited_event.locations().len(), 2);
 
     let phy_loc = edited_event.physical_locations();
@@ -261,11 +265,10 @@ async fn calendar_event_create() -> Result<()> {
     .await?;
 
     let title = "First meeting";
-    let desc_tech = "This is tech channel";
-    let desc_support = "This is support channel";
+    let description = "This is tech channel";
     let now = Utc::now();
-    let utc_start = now + Duration::days(1);
-    let utc_end = now + Duration::days(2);
+    let tomorrow = now + Duration::days(1);
+    let overmorrow = now + Duration::days(2);
 
     let loc_name = "Test Location";
     let loc_desc_text = "Philadelphia Office";
@@ -278,11 +281,9 @@ async fn calendar_event_create() -> Result<()> {
     let event_id = space
         .calendar_event_draft()?
         .title(title.to_owned())
-        .description_text(desc_tech.to_owned())
-        .unset_description()
-        .description_text(desc_support.to_owned())
-        .utc_start_from_rfc3339(utc_start.to_rfc3339())?
-        .utc_end_from_rfc3339(utc_end.to_rfc3339())?
+        .description_text(description.to_owned())
+        .utc_start_from_rfc3339(tomorrow.to_rfc3339())?
+        .utc_end_from_rfc3339(overmorrow.to_rfc3339())?
         .add_physical_location(
             Some(loc_name.to_owned()),
             Some(loc_desc_text.to_owned()),
@@ -317,14 +318,12 @@ async fn calendar_event_create() -> Result<()> {
 
     assert_eq!(main_event.event_id(), event_id);
     assert_eq!(main_event.title(), title);
-    assert_ne!(
-        main_event.description().map(|c| c.body()).as_deref(),
-        Some(desc_tech)
-    );
     assert_eq!(
         main_event.description().map(|c| c.body()).as_deref(),
-        Some(desc_support)
+        Some(description)
     );
+    assert_eq!(main_event.utc_start().to_rfc3339(), tomorrow.to_rfc3339()); // truncate the decimal part from the timestamp so that assertion works
+    assert_eq!(main_event.utc_end().to_rfc3339(), overmorrow.to_rfc3339()); // truncate the decimal part from the timestamp so that assertion works
     let locations = main_event.locations();
     assert_eq!(locations.len(), 2);
 
@@ -365,9 +364,14 @@ async fn calendar_event_create() -> Result<()> {
 
     let subscriber = main_event.subscribe();
 
+    let someday = now + Duration::days(10);
+
     // clear locations
     main_event
         .update_builder()?
+        .unset_description()
+        .utc_end_from_rfc3339(someday.to_rfc3339())?
+        .unset_utc_end_update()
         .unset_locations()
         .send()
         .await?;
@@ -383,6 +387,9 @@ async fn calendar_event_create() -> Result<()> {
     let edited_event =
         Retry::spawn(retry_strategy, || async { main_event.refresh().await }).await?;
 
+    assert!(edited_event.description().is_none());
+    assert_ne!(edited_event.utc_end().to_rfc3339(), someday.to_rfc3339()); // truncate the decimal part from the timestamp so that assertion works
+    assert_eq!(edited_event.utc_end().to_rfc3339(), overmorrow.to_rfc3339()); // truncate the decimal part from the timestamp so that assertion works
     assert!(edited_event.locations().is_empty());
 
     Ok(())
@@ -405,20 +412,20 @@ async fn calendar_event_rfc2822() -> Result<()> {
 
     let title = "First meeting";
     let now = Utc::now();
-    let utc_start = now + Duration::days(1);
-    let utc_end = now + Duration::days(2);
+    let tomorrow = now + Duration::days(1);
+    let overmorrow = now + Duration::days(2);
 
     let event_id = space
         .calendar_event_draft()?
         .title(title.to_owned())
-        .utc_start_from_rfc2822(utc_start.to_rfc2822())?
-        .utc_end_from_rfc2822(utc_end.to_rfc2822())?
+        .utc_start_from_rfc2822(tomorrow.to_rfc2822())?
+        .utc_end_from_rfc2822(overmorrow.to_rfc2822())?
         .send()
         .await?;
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
-    let cal_events = Retry::spawn(retry_strategy, || async {
+    let cal_events = Retry::spawn(retry_strategy.clone(), || async {
         let cal_events = space.calendar_events().await?;
         if cal_events.len() != 1 {
             bail!("not all calendar_events found");
@@ -431,8 +438,34 @@ async fn calendar_event_rfc2822() -> Result<()> {
 
     assert_eq!(main_event.event_id(), event_id);
     assert_eq!(main_event.title(), title);
-    assert_eq!(main_event.utc_start().to_rfc2822(), utc_start.to_rfc2822()); // truncate the decimal part from the timestamp so that assertion works
-    assert_eq!(main_event.utc_end().to_rfc2822(), utc_end.to_rfc2822()); // truncate the decimal part from the timestamp so that assertion works
+    assert_eq!(main_event.utc_start().to_rfc2822(), tomorrow.to_rfc2822()); // truncate the decimal part from the timestamp so that assertion works
+    assert_eq!(main_event.utc_end().to_rfc2822(), overmorrow.to_rfc2822()); // truncate the decimal part from the timestamp so that assertion works
+
+    let subscriber = main_event.subscribe();
+
+    let someday = now + Duration::days(10);
+    let otherday = now + Duration::days(15);
+
+    main_event
+        .update_builder()?
+        .utc_start_from_rfc2822(someday.to_rfc2822())?
+        .utc_end_from_rfc2822(otherday.to_rfc2822())?
+        .send()
+        .await?;
+
+    Retry::spawn(retry_strategy.clone(), || async {
+        if subscriber.is_empty() {
+            bail!("not been alerted to reload");
+        }
+        Ok(())
+    })
+    .await?;
+
+    let edited_event =
+        Retry::spawn(retry_strategy, || async { main_event.refresh().await }).await?;
+
+    assert_eq!(edited_event.utc_start().to_rfc2822(), someday.to_rfc2822()); // truncate the decimal part from the timestamp so that assertion works
+    assert_eq!(edited_event.utc_end().to_rfc2822(), otherday.to_rfc2822()); // truncate the decimal part from the timestamp so that assertion works
 
     Ok(())
 }
@@ -455,20 +488,20 @@ async fn calendar_event_format() -> Result<()> {
     let title = "First meeting";
     let fmt = "%Y-%m-%dT%H:%M:%S%:z"; // ISO 8601 format with timezone
     let now = Utc::now();
-    let utc_start = (now + Duration::days(1)).format(fmt).to_string();
-    let utc_end = (now + Duration::days(2)).format(fmt).to_string();
+    let tomorrow = (now + Duration::days(1)).format(fmt).to_string();
+    let overmorrow = (now + Duration::days(2)).format(fmt).to_string();
 
     let event_id = space
         .calendar_event_draft()?
         .title(title.to_owned())
-        .utc_start_from_format(utc_start.clone(), fmt.to_owned())?
-        .utc_end_from_format(utc_end.clone(), fmt.to_owned())?
+        .utc_start_from_format(tomorrow.clone(), fmt.to_owned())?
+        .utc_end_from_format(overmorrow.clone(), fmt.to_owned())?
         .send()
         .await?;
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
-    let cal_events = Retry::spawn(retry_strategy, || async {
+    let cal_events = Retry::spawn(retry_strategy.clone(), || async {
         let cal_events = space.calendar_events().await?;
         if cal_events.len() != 1 {
             bail!("not all calendar_events found");
@@ -481,8 +514,34 @@ async fn calendar_event_format() -> Result<()> {
 
     assert_eq!(main_event.event_id(), event_id);
     assert_eq!(main_event.title(), title);
-    assert_eq!(main_event.utc_start().format(fmt).to_string(), utc_start);
-    assert_eq!(main_event.utc_end().format(fmt).to_string(), utc_end);
+    assert_eq!(main_event.utc_start().format(fmt).to_string(), tomorrow);
+    assert_eq!(main_event.utc_end().format(fmt).to_string(), overmorrow);
+
+    let subscriber = main_event.subscribe();
+
+    let someday = (now + Duration::days(10)).format(fmt).to_string();
+    let otherday = (now + Duration::days(15)).format(fmt).to_string();
+
+    main_event
+        .update_builder()?
+        .utc_start_from_format(someday.clone(), fmt.to_owned())?
+        .utc_end_from_format(otherday.clone(), fmt.to_owned())?
+        .send()
+        .await?;
+
+    Retry::spawn(retry_strategy.clone(), || async {
+        if subscriber.is_empty() {
+            bail!("not been alerted to reload");
+        }
+        Ok(())
+    })
+    .await?;
+
+    let edited_event =
+        Retry::spawn(retry_strategy, || async { main_event.refresh().await }).await?;
+
+    assert_eq!(edited_event.utc_start().format(fmt).to_string(), someday); // truncate the decimal part from the timestamp so that assertion works
+    assert_eq!(edited_event.utc_end().format(fmt).to_string(), otherday); // truncate the decimal part from the timestamp so that assertion works
 
     Ok(())
 }
