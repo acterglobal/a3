@@ -61,7 +61,7 @@ class ActerTheme {
     hoverColor: Colors.transparent,
     unselectedWidgetColor: greyColor,
     progressIndicatorTheme: progressIndicatorTheme,
-    tabBarTheme: const TabBarTheme(
+    tabBarTheme: const TabBarThemeData(
       indicatorColor: Colors.white,
       labelColor: Colors.white,
     ),
