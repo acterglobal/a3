@@ -1,0 +1,12 @@
+[package]
+name = "acter-core"
+version = "0.1.0"
+edition = "2024"
+authors = [ "ben@acter.global" ]
+description = "Core types and eingnes of acter"
+homepage = "https://acter.global"
+repository = "https://github.com/acterglobal/a3"
+license-file = "../../LICENSE.txt"
+rust-version.workspace = true
+
+[dependencies]
