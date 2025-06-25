@@ -51,7 +51,6 @@ class MessageEventItem extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final sendingState = item.sendState();
-    final shouldShowSendState = isMe && isLastMessage;
     return SwipeTo(
       swipeSensitivity: Platform.isIOS ? 30 : 5,
       key: Key(messageId), // needed or swipe doesn't work reliably in listview
@@ -63,7 +62,7 @@ class MessageEventItem extends ConsumerWidget {
         children: [
           _buildMessageUI(context, ref, roomId, messageId, item, isMe),
           // DM chats have their own read state widget
-          if (!isDM && (sendingState != null || shouldShowSendState))
+          if (!isDM)
             Align(
               alignment: Alignment.centerRight,
               child: Padding(
@@ -72,9 +71,9 @@ class MessageEventItem extends ConsumerWidget {
                     sendingState != null
                         ? SendingStateWidget(
                           state: sendingState,
-                          showSentIconOnUnknown: isMe && isLastMessage,
+                          showSentIconOnUnknown: isLastMessage,
                         )
-                        : SendingStateWidget.sent(),
+                        : const SizedBox.shrink(),
               ),
             ),
         ],
@@ -251,13 +250,7 @@ class MessageEventItem extends ConsumerWidget {
         timestamp: timestamp,
         displayName: displayName,
         readWidgetBuilder:
-            isDM
-                ? ReadReceiptsWidget.dm(
-                  item: item,
-                  roomId: roomId,
-                  isLastMessage: isLastMessage,
-                )
-                : null,
+            isDM ? ReadReceiptsWidget.dm(item: item, roomId: roomId) : null,
         child: child,
       );
     }
@@ -287,13 +280,7 @@ class MessageEventItem extends ConsumerWidget {
           isEdited: wasEdited,
           displayName: displayName,
           readWidgetBuilder:
-              isDM
-                  ? ReadReceiptsWidget.dm(
-                    item: item,
-                    roomId: roomId,
-                    isLastMessage: isLastMessage,
-                  )
-                  : null,
+              isDM ? ReadReceiptsWidget.dm(item: item, roomId: roomId) : null,
           child: mediaMessageWidget,
         )
         : ChatBubble(

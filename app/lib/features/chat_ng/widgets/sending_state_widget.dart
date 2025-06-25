@@ -17,16 +17,6 @@ class SentStateWidget extends StatelessWidget {
   );
 }
 
-class ReadStateWidget extends StatelessWidget {
-  const ReadStateWidget({super.key});
-  @override
-  Widget build(BuildContext context) => Icon(
-    Icons.done_all,
-    size: 14,
-    color: Theme.of(context).colorScheme.onSecondary,
-  );
-}
-
 class SendingStateWidget extends StatelessWidget {
   final EventSendState state;
   final bool showSentIconOnUnknown;
