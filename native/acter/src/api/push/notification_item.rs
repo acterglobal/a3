@@ -1,4 +1,4 @@
-use acter_core::{
+use acter_matrix::{
     activities::{object::ActivityObject, Activity, ActivityContent},
     events::{
         attachments::{AttachmentContent, FallbackAttachmentContent},

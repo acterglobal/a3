@@ -1,4 +1,4 @@
-use acter_core::{
+use acter_matrix::{
     events::comments::{self, CommentBuilder},
     models::{self, can_redact, ActerModel, AnyActerModel},
 };

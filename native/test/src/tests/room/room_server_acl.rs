@@ -1,5 +1,5 @@
 use acter::api::TimelineItem;
-use acter_core::{models::status::RoomServerAclContent, util::do_vecs_match};
+use acter_matrix::{models::status::RoomServerAclContent, util::do_vecs_match};
 use anyhow::Result;
 use core::time::Duration;
 use futures::{pin_mut, stream::StreamExt, FutureExt};

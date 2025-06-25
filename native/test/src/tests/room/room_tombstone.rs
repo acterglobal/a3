@@ -1,5 +1,5 @@
 use acter::api::TimelineItem;
-use acter_core::models::status::RoomTombstoneContent;
+use acter_matrix::models::status::RoomTombstoneContent;
 use anyhow::Result;
 use core::time::Duration;
 use futures::{pin_mut, stream::StreamExt, FutureExt};

@@ -1,4 +1,4 @@
-use acter_core::{
+use acter_matrix::{
     events::{
         stories::{self, StoryBuilder, StoryContent, StorySlideBuilder},
         Colorize, ColorizeBuilder, ObjRef as CoreObjRef, ObjRefBuilder,

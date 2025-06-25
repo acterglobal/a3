@@ -1,4 +1,4 @@
-use acter_core::events::{
+use acter_matrix::events::{
     attachments::{AttachmentContent, FallbackAttachmentContent},
     news::{FallbackNewsContent, NewsContent},
 };

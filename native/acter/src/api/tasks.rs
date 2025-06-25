@@ -1,4 +1,4 @@
-use acter_core::{
+use acter_matrix::{
     events::{
         tasks::{self, Priority, TaskBuilder, TaskListBuilder},
         Display, RefDetails as CoreRefDetails, RefPreview,
@@ -124,7 +124,7 @@ impl Space {
         let room_id = self.room_id().to_owned();
         let (content, room) = self
             .client
-            .model_with_room::<acter_core::models::TaskList>(key)
+            .model_with_room::<acter_matrix::models::TaskList>(key)
             .await?;
 
         if room_id != content.room_id() {
@@ -428,7 +428,7 @@ impl TaskList {
 
     async fn tasks_with_filter<F>(&self, filter: F) -> Result<Vec<Task>>
     where
-        F: Fn(&acter_core::models::Task) -> bool + Send + Sync + 'static,
+        F: Fn(&acter_matrix::models::Task) -> bool + Send + Sync + 'static,
     {
         let tasks_key = self.content.tasks_key();
         let client = self.client.clone();

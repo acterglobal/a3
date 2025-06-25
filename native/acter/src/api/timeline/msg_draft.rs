@@ -1,4 +1,4 @@
-use acter_core::models::TextMessageContent;
+use acter_matrix::models::TextMessageContent;
 use anyhow::{bail, Result};
 use core::time::Duration;
 use matrix_sdk::room::Room;

@@ -1,4 +1,4 @@
-use acter_core::{models, referencing::ExecuteReference};
+use acter_matrix::{models, referencing::ExecuteReference};
 use anyhow::Result;
 use futures::stream::StreamExt;
 use matrix_sdk::room::Room;

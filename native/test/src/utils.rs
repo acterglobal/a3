@@ -5,7 +5,7 @@ use acter::{
     },
     testing::ensure_user,
 };
-use acter_core::{models::status::RoomPinnedEventsContent, templates::Engine};
+use acter_matrix::{models::status::RoomPinnedEventsContent, templates::Engine};
 use anyhow::Result;
 use futures::{pin_mut, stream::StreamExt};
 use matrix_sdk::config::StoreConfig;

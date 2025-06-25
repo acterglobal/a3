@@ -1,4 +1,4 @@
-use acter_core::{
+use acter_matrix::{
     models::status::{
         MembershipContent, PolicyRuleRoomContent, PolicyRuleServerContent, PolicyRuleUserContent,
         ProfileContent, RoomAvatarContent, RoomCreateContent, RoomEncryptionContent,

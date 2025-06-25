@@ -1,11 +1,11 @@
 [package]
-name = "acter-core"
+name = "acter-matrix"
 authors = [ "ben@acter.global" ]
 version = "0.1.0"
 edition = "2021"
 rust-version = "1.70"
-description = "Core types and features of the acter app"
-homepage = "https://effekto.org"
+description = "Matrix core transport implemenation of acter app"
+homepage = "https://acter.global"
 repository = "https://github.com/acterglobal/a3"
 license-file = "../../LICENSE.txt"
 
