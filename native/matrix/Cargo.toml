@@ -22,6 +22,7 @@ unstable-exhaustive-types = []
 testing = ['dep:uuid']
 
 [dependencies]
+acter-core = { path = "../core" }
 tokio = { version = "1", features = ["rt", "macros"] }
 async-recursion = "1"
 chrono = { version = "0.4", default-features = false, features = ["serde", "clock"] }
@@ -77,6 +78,7 @@ anyhow = "1.0.79"
 env_logger = { workspace = true }
 tracing = { version = "0.1.40", default-features = false, features = ["log"] }
 uuid = { version = "1.6.1", features = ["v4"] }
+acter-core = { path = "../core", features = ["testing"] }
 
 
 [dev-dependencies.matrix-sdk-base]

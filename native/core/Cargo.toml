@@ -9,4 +9,12 @@ repository = "https://github.com/acterglobal/a3"
 license-file = "../../LICENSE.txt"
 rust-version.workspace = true
 
+[features]
+testing = []
+
 [dependencies]
+strum = { workspace = true }
+serde = { version = "1", features = ["derive"] }
+
+[dev-dependencies]
+serde_json = "1"

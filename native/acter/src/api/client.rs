@@ -3,7 +3,7 @@ use acter_matrix::{
     executor::Executor,
     models::AnyActerModel,
     referencing::{
-        ExecuteReference, IndexKey, ModelParam, ObjectListIndex, RoomParam, SectionIndex,
+        ExecuteReference, IndexKey, IntoExecuteReference, ModelParam, ObjectListIndex, RoomParam, SectionIndex
     },
     store::Store,
     templates::Engine,
@@ -400,7 +400,7 @@ impl Client {
 
     pub fn subscribe_model_stream(&self, key: String) -> Result<impl Stream<Item = bool>> {
         let model_id = EventId::parse(key)?;
-        Ok(BroadcastStream::new(self.subscribe(model_id)).map(|_| true))
+        Ok(BroadcastStream::new(self.subscribe(model_id.to_owned())).map(|_| true))
     }
 
     pub fn subscribe_model_param_stream(
@@ -433,7 +433,7 @@ impl Client {
 
     pub fn subscribe_room_stream(&self, key: String) -> Result<impl Stream<Item = bool>> {
         let model_id = RoomId::parse(key)?;
-        Ok(BroadcastStream::new(self.subscribe(model_id)).map(|_| true))
+        Ok(BroadcastStream::new(self.subscribe(model_id.to_owned())).map(|_| true))
     }
 
     pub fn subscribe_room_param_stream(
@@ -486,8 +486,8 @@ impl Client {
         )
     }
 
-    pub fn subscribe<K: Into<ExecuteReference>>(&self, key: K) -> Receiver<()> {
-        self.executor().subscribe(key)
+    pub fn subscribe<K: IntoExecuteReference>(&self, key: K) -> Receiver<()> {
+        self.executor().subscribe(key.into())
     }
 
     pub async fn wait_for(&self, key: String, timeout: Option<u8>) -> Result<AnyActerModel> {

@@ -93,11 +93,17 @@ dependencies = [
 [[package]]
 name = "acter-core"
 version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
+ "strum",
+]
 
 [[package]]
 name = "acter-matrix"
 version = "0.1.0"
 dependencies = [
+ "acter-core",
  "anyhow",
  "async-recursion",
  "async-stream",

@@ -421,7 +421,7 @@ mod tests {
     use super::*;
     use crate::{
         models::{TestModel, TestModelBuilder},
-        referencing::{SectionIndex, SpecialListsIndex},
+        referencing::{IntoExecuteReference, SectionIndex, SpecialListsIndex},
     };
     use anyhow::bail;
     use matrix_sdk::ruma::MilliSecondsSinceUnixEpoch;
@@ -545,9 +545,9 @@ mod tests {
         let res_keys = store.save(AnyActerModel::TestModel(model.clone())).await?;
         assert_eq!(
             vec![
-                ExecuteReference::from(key.clone()),
-                IndexKey::Special(SpecialListsIndex::Test1).into(),
-                IndexKey::Special(SpecialListsIndex::Test2).into()
+                IntoExecuteReference::into(key.clone()),
+                IntoExecuteReference::into(IndexKey::Special(SpecialListsIndex::Test1)),
+                IntoExecuteReference::into(IndexKey::Special(SpecialListsIndex::Test2))
             ],
             res_keys
         );
@@ -597,8 +597,8 @@ mod tests {
         let res_keys = store.save(AnyActerModel::TestModel(model.clone())).await?;
         assert_eq!(
             vec![
-                ExecuteReference::from(key.clone()),
-                IndexKey::Special(SpecialListsIndex::Test1).into()
+                IntoExecuteReference::into(key.clone()),
+                IntoExecuteReference::into(IndexKey::Special(SpecialListsIndex::Test1))
             ],
             res_keys
         );
@@ -624,8 +624,8 @@ mod tests {
             .await?;
         assert_eq!(
             vec![
-                ExecuteReference::from(key.clone()),
-                IndexKey::Special(SpecialListsIndex::Test1).into()
+                IntoExecuteReference::into(key.clone()),
+                IntoExecuteReference::into(IndexKey::Special(SpecialListsIndex::Test1))
             ],
             res_keys
         );
@@ -674,8 +674,8 @@ mod tests {
         let res_keys = store.save(AnyActerModel::TestModel(model.clone())).await?;
         assert_eq!(
             vec![
-                ExecuteReference::from(key.clone()),
-                IndexKey::RoomHistory(room_id.clone()).into()
+                IntoExecuteReference::into(key.clone()),
+                IntoExecuteReference::into(IndexKey::RoomHistory(room_id.clone()))
             ],
             res_keys
         );
@@ -702,8 +702,8 @@ mod tests {
             .await?;
         assert_eq!(
             vec![
-                ExecuteReference::from(key.clone()),
-                IndexKey::RoomHistory(room_id.clone()).into()
+                IntoExecuteReference::into(key.clone()),
+                IntoExecuteReference::into(IndexKey::RoomHistory(room_id.clone()))
             ],
             res_keys
         );
@@ -752,8 +752,8 @@ mod tests {
         let res_keys = store.save(AnyActerModel::TestModel(model.clone())).await?;
         assert_eq!(
             vec![
-                ExecuteReference::from(key.clone()),
-                IndexKey::Section(SectionIndex::Boosts).into()
+                IntoExecuteReference::into(key.clone()),
+                IntoExecuteReference::into(IndexKey::Section(SectionIndex::Boosts))
             ],
             res_keys
         );
@@ -780,8 +780,8 @@ mod tests {
             .await?;
         assert_eq!(
             vec![
-                ExecuteReference::from(key.clone()),
-                IndexKey::Section(SectionIndex::Boosts).into()
+                IntoExecuteReference::into(key.clone()),
+                IntoExecuteReference::into(IndexKey::Section(SectionIndex::Boosts))
             ],
             res_keys
         );
@@ -823,9 +823,9 @@ mod tests {
             let res_keys = store.save(AnyActerModel::TestModel(model.clone())).await?;
             assert_eq!(
                 vec![
-                    ExecuteReference::from(key.clone()),
-                    IndexKey::Special(SpecialListsIndex::Test1).into(),
-                    IndexKey::Special(SpecialListsIndex::Test2).into()
+                    IntoExecuteReference::into(key.clone()),
+                    IntoExecuteReference::into(IndexKey::Special(SpecialListsIndex::Test1)),
+                    IntoExecuteReference::into(IndexKey::Special(SpecialListsIndex::Test2)),
                 ],
                 res_keys
             );
@@ -872,10 +872,10 @@ mod tests {
             let res_keys = store.save(AnyActerModel::TestModel(model.clone())).await?;
             assert_eq!(
                 vec![
-                    ExecuteReference::from(key.clone()),
-                    IndexKey::Special(SpecialListsIndex::Test1).into(),
-                    IndexKey::Special(SpecialListsIndex::Test2).into(),
-                    IndexKey::Special(SpecialListsIndex::Test3).into(),
+                    IntoExecuteReference::into(key.clone()),
+                    IntoExecuteReference::into(IndexKey::Special(SpecialListsIndex::Test1)),
+                    IntoExecuteReference::into(IndexKey::Special(SpecialListsIndex::Test2)),
+                    IntoExecuteReference::into(IndexKey::Special(SpecialListsIndex::Test3)),
                 ],
                 res_keys
             );
@@ -917,8 +917,8 @@ mod tests {
             let res_keys = store.save(AnyActerModel::TestModel(model.clone())).await?;
             assert_eq!(
                 vec![
-                    ExecuteReference::from(key.clone()),
-                    IndexKey::Special(SpecialListsIndex::Test2).into()
+                    IntoExecuteReference::into(key.clone()),
+                    IntoExecuteReference::into(IndexKey::Special(SpecialListsIndex::Test2))
                 ],
                 res_keys
             );

@@ -187,7 +187,7 @@ mod tests {
     use crate::{
         events::{comments::CommentEventContent, BelongsTo},
         models::{Comment, TestModelBuilder},
-        referencing::{IndexKey, ObjectListIndex},
+        referencing::{IntoExecuteReference, IndexKey, ObjectListIndex},
     };
     use matrix_sdk::Client;
     use matrix_sdk_base::{
@@ -225,7 +225,7 @@ mod tests {
         let executor = fresh_executor().await?;
         let model = TestModelBuilder::default().simple().build().unwrap();
         let model_id = model.event_id();
-        let sub = executor.subscribe(model_id);
+        let sub = executor.subscribe(IntoExecuteReference::into(model_id));
         assert!(sub.is_empty(), "Already received an event");
 
         executor.handle(model.into()).await?;
@@ -240,7 +240,7 @@ mod tests {
         let executor = fresh_executor().await?;
         let model = TestModelBuilder::default().simple().build().unwrap();
         let model_id = model.event_id().to_owned();
-        let mut sub = executor.subscribe(model_id.clone());
+        let mut sub = executor.subscribe(IntoExecuteReference::into(model_id.clone()));
         assert!(sub.is_empty());
 
         executor.handle(model.into()).await?;
@@ -268,7 +268,7 @@ mod tests {
         let model = TestModelBuilder::default().simple().build().unwrap();
         let parent_id = model.event_id().to_owned();
         let parent_idx = IndexKey::ObjectList(parent_id.clone(), ObjectListIndex::Attachments);
-        let mut sub = executor.subscribe(parent_idx.clone());
+        let mut sub = executor.subscribe(IntoExecuteReference::into(parent_idx.clone()));
         assert!(sub.is_empty());
 
         executor.handle(model.into()).await?;
@@ -296,7 +296,7 @@ mod tests {
         let model = TestModelBuilder::default().simple().build().unwrap();
         let parent_id = model.event_id().to_owned();
         let parent_idx = Comment::index_for(parent_id.clone());
-        let mut sub = executor.subscribe(parent_idx.clone());
+        let mut sub = executor.subscribe(IntoExecuteReference::into(parent_idx.clone()));
         assert!(sub.is_empty());
 
         executor.handle(model.into()).await?;
