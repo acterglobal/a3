@@ -1,0 +1,1 @@
+- [New] : Add member search functionality to chat profile
