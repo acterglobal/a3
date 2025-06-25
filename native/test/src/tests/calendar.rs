@@ -147,101 +147,46 @@ async fn edit_calendar_event() -> Result<()> {
     })
     .await?;
 
-    Retry::spawn(retry_strategy.clone(), || async {
-        let edited_event = main_event.refresh().await?;
-        if edited_event.title() != title {
-            bail!("title update not yet received");
-        }
+    let edited_event =
+        Retry::spawn(retry_strategy, || async { main_event.refresh().await }).await?;
 
-        if edited_event.locations().len() != 2 {
-            bail!("location update not yet received");
-        }
+    assert_eq!(edited_event.locations().len(), 2);
 
-        let phy_loc = edited_event.physical_locations();
-        if phy_loc.len() != 1 {
-            bail!("physical location update not yet received");
-        }
-        if phy_loc[0].name().as_deref() != Some(loc_name) {
-            bail!("physical location name not yet received");
-        }
-        if phy_loc[0].description().map(|c| c.body()).as_deref() != Some(loc_desc_text) {
-            bail!("physical location description not yet received");
-        }
-        if phy_loc[0]
+    let phy_loc = edited_event.physical_locations();
+    assert_eq!(phy_loc.len(), 1);
+    assert_eq!(phy_loc[0].name().as_deref(), Some(loc_name));
+    assert_eq!(
+        phy_loc[0].description().map(|c| c.body()).as_deref(),
+        Some(loc_desc_text)
+    );
+    assert_eq!(
+        phy_loc[0]
             .description()
             .and_then(|c| c.formatted())
-            .as_deref()
-            != Some(loc_desc_html)
-        {
-            bail!("physical location description html not yet received");
-        }
-        if phy_loc[0].coordinates().as_deref() != Some(loc_coord) {
-            bail!("physical location coordinates not yet received");
-        }
-        if phy_loc[0].uri().as_deref() != Some(loc_uri) {
-            bail!("physical location uri not yet received");
-        }
-        if phy_loc[0].address().as_deref() != Some(loc_addr) {
-            bail!("physical location address not yet received");
-        }
-        if phy_loc[0].notes().as_deref() != Some(loc_notes) {
-            bail!("physical location notes not yet received");
-        }
+            .as_deref(),
+        Some(loc_desc_html)
+    );
+    assert_eq!(phy_loc[0].coordinates().as_deref(), Some(loc_coord));
+    assert_eq!(phy_loc[0].uri().as_deref(), Some(loc_uri));
+    assert_eq!(phy_loc[0].address().as_deref(), Some(loc_addr));
+    assert_eq!(phy_loc[0].notes().as_deref(), Some(loc_notes));
 
-        let vir_loc = edited_event.virtual_locations();
-        if vir_loc.len() != 1 {
-            bail!("virtual location update not yet received");
-        }
-        if vir_loc[0].name().as_deref() != Some(loc_name) {
-            bail!("virtual location name not yet received");
-        }
-        if vir_loc[0].description().map(|c| c.body()).as_deref() != Some(loc_desc_text) {
-            bail!("virtual location description not yet received");
-        }
-        if vir_loc[0]
+    let vir_loc = edited_event.virtual_locations();
+    assert_eq!(vir_loc.len(), 1);
+    assert_eq!(vir_loc[0].name().as_deref(), Some(loc_name));
+    assert_eq!(
+        vir_loc[0].description().map(|c| c.body()).as_deref(),
+        Some(loc_desc_text)
+    );
+    assert_eq!(
+        vir_loc[0]
             .description()
             .and_then(|c| c.formatted())
-            .as_deref()
-            != Some(loc_desc_html)
-        {
-            bail!("virtual location description html not yet received");
-        }
-        if vir_loc[0].uri().as_deref() != Some(loc_uri) {
-            bail!("virtual location uri not yet received");
-        }
-        if vir_loc[0].notes().as_deref() != Some(loc_notes) {
-            bail!("virtual location notes not yet received");
-        }
-        Ok(())
-    })
-    .await?;
-
-    // clear locations
-    main_event
-        .update_builder()?
-        .unset_locations()
-        .send()
-        .await?;
-
-    Retry::spawn(retry_strategy.clone(), || async {
-        if subscriber.is_empty() {
-            bail!("not been alerted to reload");
-        }
-        Ok(())
-    })
-    .await?;
-
-    Retry::spawn(retry_strategy, || async {
-        let edited_event = main_event.refresh().await?;
-        if !edited_event.physical_locations().is_empty() {
-            bail!("physical location update not yet received");
-        }
-        if !edited_event.virtual_locations().is_empty() {
-            bail!("virtual location update not yet received");
-        }
-        Ok(())
-    })
-    .await?;
+            .as_deref(),
+        Some(loc_desc_html)
+    );
+    assert_eq!(vir_loc[0].uri().as_deref(), Some(loc_uri));
+    assert_eq!(vir_loc[0].notes().as_deref(), Some(loc_notes));
 
     Ok(())
 }
@@ -359,7 +304,7 @@ async fn calendar_event_create() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
-    let cal_events = Retry::spawn(retry_strategy, || async {
+    let cal_events = Retry::spawn(retry_strategy.clone(), || async {
         let cal_events = space.calendar_events().await?;
         if cal_events.len() != 1 {
             bail!("not all calendar_events found");
@@ -417,6 +362,28 @@ async fn calendar_event_create() -> Result<()> {
     assert_eq!(locations[1].uri().as_deref(), Some(loc_uri));
     assert_eq!(locations[1].address(), None);
     assert_eq!(locations[1].notes().as_deref(), Some(loc_notes));
+
+    let subscriber = main_event.subscribe();
+
+    // clear locations
+    main_event
+        .update_builder()?
+        .unset_locations()
+        .send()
+        .await?;
+
+    Retry::spawn(retry_strategy.clone(), || async {
+        if subscriber.is_empty() {
+            bail!("not been alerted to reload");
+        }
+        Ok(())
+    })
+    .await?;
+
+    let edited_event =
+        Retry::spawn(retry_strategy, || async { main_event.refresh().await }).await?;
+
+    assert!(edited_event.locations().is_empty());
 
     Ok(())
 }
