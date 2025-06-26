@@ -1,3 +1,4 @@
+import 'package:acter/features/activities/providers/activities_providers.dart';
 import 'package:acter/features/activity_ui_showcase/mocks/general/mock_activity.dart';
 import 'package:acter/features/activity_ui_showcase/mocks/showcase/data/biggervisual_usecases.dart';
 import 'package:acter/features/activity_ui_showcase/mocks/showcase/data/individual_actions_usecases.dart';
@@ -49,4 +50,9 @@ final mockActivityProvider = Provider.family<MockActivity?, String>((ref, activi
   } catch (e) {
     return null; // Return null if not found
   }
+});
+
+final mockActivitiesDatesProvider = Provider<List<DateTime>>((ref) {
+  final mockActivities = ref.watch(mockActivitiesProvider);
+  return mockActivities.map((e) => getActivityDate(e.originServerTs())).toSet().toList();
 });

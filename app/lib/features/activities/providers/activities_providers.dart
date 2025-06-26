@@ -84,51 +84,36 @@ DateTime getActivityDate(int timestamp) {
 }
 
 // Provider to get activities by id
-final allActivitiesByIdProvider = Provider<AsyncValue<List<Activity>>>((ref) {
+final allActivitiesByIdProvider = FutureProvider<List<Activity>>((ref) async {
   
-  final activityIds = ref.watch(allActivitiesProvider);
+  final activityIds = await ref.watch(allActivitiesProvider.future);
   
-  return activityIds.when(
-    data: (ids) {
-      if (ids.isEmpty) return const AsyncValue.data([]);
-      
-      final activities = <Activity>[];
-      for (final id in ids) {
-        final activity = ref.watch(activityProvider(id)).valueOrNull;
-        if (activity != null) {
-          activities.add(activity);
-        }
-      }
-      return AsyncValue.data(activities);
-    },
-    loading: () => const AsyncValue.loading(),
-    error: (error, stack) => AsyncValue.error(error, stack),
-  );
+  if (activityIds.isEmpty) return [];
+  
+  final activities = <Activity>[];
+  for (final id in activityIds) {
+    final activity = ref.watch(activityProvider(id)).valueOrNull;
+    if (activity != null) {
+      activities.add(activity);
+    }
+  }
+  return activities;
 });
 
 final activityDatesProvider = Provider<List<DateTime>>((ref) {
-  final activitiesAsync = ref.watch(allActivitiesByIdProvider);
-  return activitiesAsync.when(
-    data: (activities) {
-      if (activities.isEmpty) return [];
-      
-      final uniqueDates = activities.map((activity) => getActivityDate(activity.originServerTs())).toSet();
-      return uniqueDates.toList()..sort((a, b) => b.compareTo(a));
-    },
-    loading: () => [],
-    error: (_, __) => [],
-  );
+  final activities = ref.watch(allActivitiesByIdProvider).valueOrNull ?? [];
+  
+  if (activities.isEmpty) return [];
+  
+  final uniqueDates = activities.map((activity) => getActivityDate(activity.originServerTs())).toSet();
+  return uniqueDates.toList()..sort((a, b) => b.compareTo(a));
 });
 
 // Base provider for activities filtered by date
 final activitiesByDateProvider = Provider.family<List<Activity>, DateTime>((ref, date) {
-  final activitiesAsync = ref.watch(allActivitiesByIdProvider);
-  return activitiesAsync.when(
-    data: (activities) => activities.where((activity) => 
-      getActivityDate(activity.originServerTs()).isAtSameMomentAs(date)).toList(),
-    loading: () => [],
-    error: (_, __) => [],
-  );
+  final activities = ref.watch(allActivitiesByIdProvider).valueOrNull ?? [];
+  return activities.where((activity) => 
+    getActivityDate(activity.originServerTs()).isAtSameMomentAs(date)).toList();
 });
 
 // Provider for consecutive grouped activities using records 
