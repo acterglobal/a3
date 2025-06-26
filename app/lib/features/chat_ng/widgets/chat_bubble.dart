@@ -125,10 +125,8 @@ class ChatBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final size = MediaQuery.sizeOf(context);
     final msgWidth = messageWidth?.toDouble();
-    final defaultWidth =
-        context.isLargeScreen ? size.width * 0.5 : size.width * 0.75;
+    final defaultWidth = defaultMessageMaxWidth(context);
     final String? name = displayName;
 
     final Widget wrappedChild =
