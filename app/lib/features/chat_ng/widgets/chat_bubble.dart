@@ -181,8 +181,15 @@ class ChatBubble extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                 ],
-                wrappedChild,
-                _buildTimestampAndEditedLabel(context),
+                Wrap(
+                  clipBehavior: Clip.none,
+                  alignment: WrapAlignment.end,
+                  crossAxisAlignment: WrapCrossAlignment.end,
+                  children: [
+                    wrappedChild,
+                    _buildTimestampAndEditedLabel(context),
+                  ],
+                ),
               ],
             ),
           ),
@@ -199,7 +206,9 @@ class ChatBubble extends StatelessWidget {
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
+      mainAxisSize: MainAxisSize.min,
       children: [
+        const SizedBox(width: 6),
         if (isEdited) ...[
           Text(L10n.of(context).edited, style: textStyle),
           const SizedBox(width: 6),
