@@ -37,7 +37,7 @@ jobs:
 
       - name: Build Rust docs
         run: |
-          cargo doc -p acter -p acter-core -p matrix-sdk-store-file-event-cache
+          cargo doc -p acter -p acter-matrix -p acter-core -p matrix-sdk-store-file-event-cache
           echo --- Moving docs
           mv target/doc/ docs/api/main/rust
 
