@@ -46,14 +46,14 @@ class ActivitySpaceCoreActionsContainerWidget extends ConsumerWidget {
             actionIcon: PhosphorIconsRegular.pencilSimpleLine,
           ),
           const SizedBox(width: 10),
-          _buildSubtitleOrTime(context, displayName),
+          _buildTitleOrTime(context, displayName),
         ],
       ),
     );
   }
 
   /// Subtitle + time or only time if subtitle is null
-  Widget _buildSubtitleOrTime(BuildContext context, String displayName) {
+  Widget _buildTitleOrTime(BuildContext context, String displayName) {
     final theme = Theme.of(context);
     return Expanded(
       child: Row(
