@@ -150,7 +150,7 @@ async fn news_plain_text_test() -> Result<()> {
     update.swap_slides(0, 1)?;
     update.send().await?;
 
-    Retry::spawn(retry_strategy, || async {
+    Retry::spawn(retry_strategy.clone(), || async {
         if subscriber.is_empty() {
             bail!("not been alerted to reload");
         }
