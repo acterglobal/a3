@@ -1,3 +1,4 @@
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/features/chat/widgets/skeletons/members_list_skeleton_widget.dart';
 import 'package:acter/features/member/widgets/member_list_entry.dart';
@@ -15,12 +16,19 @@ class MemberList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final membersLoader = ref.watch(membersIdsProvider(roomId));
+    final searchValue = ref.watch(searchValueProvider);
+    final membersLoader = ref.watch(
+      membersIdWithSearchProvider((roomId: roomId, searchValue: searchValue)),
+    );
     final lang = L10n.of(context);
     return membersLoader.when(
       data: (members) {
         if (members.isEmpty) {
-          return Center(child: Text(lang.noMembersFound));
+          return Container(
+            padding: const EdgeInsets.all(16),
+            alignment: Alignment.center,
+            child: Text(lang.noMembersFound),
+          );
         }
         return ListView.builder(
           shrinkWrap: true,
