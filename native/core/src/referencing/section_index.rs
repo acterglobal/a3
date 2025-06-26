@@ -1,14 +1,12 @@
 use serde::{Deserialize, Serialize};
-use strum::{Display, EnumString};
 
-#[derive(
-    Eq, PartialEq, Ord, PartialOrd, Hash, Debug, Clone, Display, EnumString, Serialize, Deserialize,
-)]
-#[strum(serialize_all = "snake_case")]
+#[derive(Eq, PartialEq, Ord, PartialOrd, Hash, Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "strum", derive(strum::Display, strum::EnumString))]
+#[cfg_attr(feature = "strum", strum(serialize_all = "snake_case"))]
 #[repr(u8)]
 #[serde(rename_all = "snake_case")]
 pub enum SectionIndex {
-    #[strum(serialize = "news", serialize = "boosts")]
+    #[cfg_attr(feature = "strum", strum(serialize = "news", serialize = "boosts"))]
     Boosts = 0,
     Calendar,
     Pins,

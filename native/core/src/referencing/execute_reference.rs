@@ -393,7 +393,7 @@ mod tests {
             let execute_ref =
                 TestExecuteReference::ModelParam(object_id.clone(), model_param.clone());
             let storage_key = execute_ref.as_storage_key();
-            assert_eq!(storage_key, format!("$test_event_id::{}", model_param));
+            assert_eq!(storage_key, format!("$test_event_id::{model_param}"));
         }
 
         // Test RoomParam variants
@@ -401,7 +401,7 @@ mod tests {
             let room_param = RoomParam::LatestMessage;
             let execute_ref = TestExecuteReference::RoomParam(room_id.clone(), room_param.clone());
             let storage_key = execute_ref.as_storage_key();
-            assert_eq!(storage_key, format!("!test:example.org::{}", room_param));
+            assert_eq!(storage_key, format!("!test:example.org::{room_param}"));
         }
 
         // Test ModelType variant

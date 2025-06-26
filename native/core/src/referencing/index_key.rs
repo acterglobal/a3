@@ -210,7 +210,7 @@ mod tests {
 
         for (i, test_case) in test_cases.into_iter().enumerate() {
             let result = test_round_trip(&test_case);
-            assert_eq!(test_case, result, "failed to round trip variant {}", i);
+            assert_eq!(test_case, result, "failed to round trip variant {i}");
         }
     }
 

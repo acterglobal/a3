@@ -282,10 +282,10 @@ impl Display for MakeStoreConfigError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             MakeStoreConfigError::OpenStoreError(i) => {
-                write!(f, "MakeStoreConfigError::OpenStoreError {}", i)
+                write!(f, "MakeStoreConfigError::OpenStoreError {i}")
             }
             MakeStoreConfigError::EventCacheStoreError(i) => {
-                write!(f, "MakeStoreConfigError::EventCacheStoreError {}", i)
+                write!(f, "MakeStoreConfigError::EventCacheStoreError {i}")
             }
         }
     }

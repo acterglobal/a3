@@ -18,6 +18,7 @@ dependencies = [
 name = "acter"
 version = "0.1.0"
 dependencies = [
+ "acter-core",
  "acter-matrix",
  "android_logger",
  "anyhow",

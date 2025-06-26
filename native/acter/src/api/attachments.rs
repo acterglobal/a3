@@ -141,7 +141,7 @@ impl Attachment {
                                 .and_then(|info| info.mimetype.as_deref())
                                 .and_then(|mimetype| {
                                     mime2ext::mime2ext(mimetype).map(|ext| {
-                                        format!("{}-thumbnail.{}", evt_id, ext)
+                                        format!("{evt_id}-thumbnail.{ext}")
                                     })
                                 });
                             (request, filename)
@@ -161,7 +161,7 @@ impl Attachment {
                                 .and_then(|info| info.mimetype.as_deref())
                                 .and_then(|mimetype| {
                                     mime2ext::mime2ext(mimetype).map(|ext| {
-                                        format!("{}-thumbnail.{}", evt_id, ext)
+                                        format!("{evt_id}-thumbnail.{ext}")
                                     })
                                 });
                             (request, filename)
@@ -181,7 +181,7 @@ impl Attachment {
                                 .and_then(|info| info.mimetype.as_deref())
                                 .and_then(|mimetype| {
                                     mime2ext::mime2ext(mimetype).map(|ext| {
-                                        format!("{}-thumbnail.{}", evt_id, ext)
+                                        format!("{evt_id}-thumbnail.{ext}")
                                     })
                                 });
                             (request, filename)
@@ -202,7 +202,7 @@ impl Attachment {
                                 .and_then(|info| info.mimetype.as_deref())
                                 .and_then(|mimetype| {
                                     mime2ext::mime2ext(mimetype).map(|ext| {
-                                        format!("{}-thumbnail.{}", evt_id, ext)
+                                        format!("{evt_id}-thumbnail.{ext}")
                                     })
                                 });
                             (request, filename)
@@ -221,7 +221,7 @@ impl Attachment {
                                 .and_then(|info| info.mimetype.as_deref())
                                 .and_then(|mimetype| {
                                     mime2ext::mime2ext(mimetype)
-                                        .map(|ext| format!("{}.{}", evt_id, ext))
+                                        .map(|ext| format!("{evt_id}.{ext}"))
                                 });
                             (Some(request), filename)
                         }
@@ -236,7 +236,7 @@ impl Attachment {
                                 .and_then(|info| info.mimetype.as_deref())
                                 .and_then(|mimetype| {
                                     mime2ext::mime2ext(mimetype)
-                                        .map(|ext| format!("{}.{}", evt_id, ext))
+                                        .map(|ext| format!("{evt_id}.{ext}"))
                                 });
                             (Some(request), filename)
                         }
@@ -251,7 +251,7 @@ impl Attachment {
                                 .and_then(|info| info.mimetype.as_deref())
                                 .and_then(|mimetype| {
                                     mime2ext::mime2ext(mimetype)
-                                        .map(|ext| format!("{}.{}",evt_id, ext))
+                                        .map(|ext| format!("{evt_id}.{ext}"))
                                 });
                             (Some(request), filename)
                         }
@@ -266,7 +266,7 @@ impl Attachment {
                                 .and_then(|info| info.mimetype.as_deref())
                                 .and_then(|mimetype| {
                                     mime2ext::mime2ext(mimetype)
-                                        .map(|ext| format!("{}.{}", evt_id, ext))
+                                        .map(|ext| format!("{evt_id}.{ext}"))
                                 });
                             (Some(request), filename)
                         }

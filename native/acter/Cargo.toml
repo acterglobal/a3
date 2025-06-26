@@ -81,6 +81,10 @@ ruma-common = { workspace = true, features = ["client"] }
 path = "../matrix"
 features = ["templates", "client"]
 
+[dependencies.acter-core]
+path = "../core"
+features = ["strum"]
+
 [dependencies.matrix-sdk]
 workspace = true
 features = [

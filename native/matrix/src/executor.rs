@@ -88,7 +88,7 @@ impl Executor {
                     // we have overflow activated, this only fails because it has been closed
                     let _ = o.remove();
                 } else {
-                    counter = counter.checked_add(1).unwrap_or(u32::MAX);
+                    counter = counter.saturating_add(1);
                 }
             } else {
                 trace!("No one to notify");

@@ -97,7 +97,7 @@ async fn news_smoketest() -> Result<()> {
         draft.add_slide(Box::new(text_draft.into())).await?;
         draft.send().await?
     };
-    print!("draft sent event id: {}", event_id);
+    print!("draft sent event id: {event_id}");
 
     Ok(())
 }

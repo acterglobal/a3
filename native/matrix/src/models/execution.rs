@@ -13,12 +13,10 @@ pub async fn default_model_execute(
     store: &Store,
     model: AnyActerModel,
 ) -> Result<Vec<ExecuteReference>, crate::Error> {
-    Ok(
-        core_default_model_execute::<MatrixCoreTypeConfig, AnyActerModel, Store, crate::Error>(
+    core_default_model_execute::<MatrixCoreTypeConfig, AnyActerModel, Store, crate::Error>(
             store, model,
         )
-        .await?,
-    )
+        .await
 }
 
 pub async fn transition_tree(
@@ -26,14 +24,14 @@ pub async fn transition_tree(
     parents: Vec<OwnedEventId>,
     model: &AnyActerModel,
 ) -> Result<Vec<AnyActerModel>, crate::Error> {
-    Ok(core_transition_tree::<
+    core_transition_tree::<
         MatrixCoreTypeConfig,
         AnyActerModel,
         Store,
         std::vec::IntoIter<OwnedEventId>,
         crate::Error,
     >(store, parents.into_iter(), model)
-    .await?)
+    .await
 }
 
 impl CoreModel<MatrixCoreTypeConfig> for AnyActerModel {
@@ -49,7 +47,7 @@ impl CoreModel<MatrixCoreTypeConfig> for AnyActerModel {
     }
 
     async fn execute(self, store: &Self::Store) -> Result<Vec<ExecuteReference>, Self::Error> {
-        Ok(default_model_execute(store, self).await?)
+        default_model_execute(store, self).await
     }
 
     fn transition(&mut self, model: &Self) -> Result<bool, Self::Error> {
