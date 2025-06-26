@@ -15,7 +15,7 @@ class ReadStateWidget extends StatelessWidget {
   Widget build(BuildContext context) => Icon(
     Icons.done_all,
     size: 14,
-    color: Theme.of(context).colorScheme.onSecondary,
+    color: Theme.of(context).colorScheme.onSecondary.withValues(alpha: 0.7),
   );
 }
 
@@ -83,9 +83,20 @@ class _DmReadReceipts extends ConsumerWidget {
   final String roomId;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (item.eventId() == null) return const SizedBox.shrink();
-    if (ref.watch(messageReadReceiptsProvider(item)).isNotEmpty) {
-      return const ReadStateWidget();
+    final readReceipts = ref.watch(messageReadReceiptsProvider(item));
+    if (readReceipts.isNotEmpty) {
+      final userId = readReceipts.keys.first;
+      final displayName =
+          ref
+              .watch(
+                memberDisplayNameProvider((roomId: roomId, userId: userId)),
+              )
+              .valueOrNull;
+      String message = '${L10n.of(context).seenBy}: ${displayName ?? userId}';
+      if (displayName != null) {
+        message = '${L10n.of(context).seenBy}: $displayName ($userId) ';
+      }
+      return Tooltip(message: message, child: const ReadStateWidget());
     }
 
     final sendState = item.sendState();
