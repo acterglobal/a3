@@ -1,4 +1,4 @@
-use acter_core::spaces::CreateSpaceSettingsBuilder;
+use acter_matrix::spaces::CreateSpaceSettingsBuilder;
 use anyhow::Result;
 use clap::{Parser, Subcommand};
 use futures::stream::StreamExt;

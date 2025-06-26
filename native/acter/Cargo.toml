@@ -10,7 +10,7 @@ license-file = "../../LICENSE.txt"
 
 [features]
 default = ["dart", "uniffi"]
-testing = ["acter-core/testing"]
+testing = ["acter-matrix/testing"]
 cbindgen = []
 tracing = ["dep:tracing-subscriber", "dep:tracing-appender", "dep:tracing-log"]
 tracing-console = ["tracing", "dep:console-subscriber", "tokio/tracing"]
@@ -77,8 +77,8 @@ ruma = { workspace = true, features = ["api", "html", "rand", "unstable-msc2448"
 ruma-common = { workspace = true, features = ["client"] }
 
 
-[dependencies.acter-core]
-path = "../core"
+[dependencies.acter-matrix]
+path = "../matrix"
 features = ["templates", "client"]
 
 [dependencies.matrix-sdk]

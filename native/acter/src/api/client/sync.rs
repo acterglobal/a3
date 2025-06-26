@@ -1,4 +1,4 @@
-use acter_core::{
+use acter_matrix::{
     events::AnySyncActerEvent, executor::Executor, models::AnyActerModel,
     referencing::ExecuteReference, spaces::is_acter_space,
 };
@@ -496,7 +496,7 @@ impl Client {
                     trace!(?token, "sync found token!");
                     sync_settings = sync_settings.token(token);
                 }
-                Err(acter_core::Error::ModelNotFound(_)) => {
+                Err(acter_matrix::Error::ModelNotFound(_)) => {
                     trace!("First start, no sync token");
                 }
                 Err(error) => {

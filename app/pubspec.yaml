@@ -33,7 +33,7 @@ dependencies:
   # UI
   flutter_adaptive_scaffold: ^0.3.1
   atlas_icons: ^0.0.12
-  skeletonizer: ^1.1.1
+  skeletonizer: ^2.0.1
   flutter_chat_ui: ^1.6.9
   flutter_chat_types: ^3.3.2
   scroll_to_index: ^3.0.1
@@ -74,7 +74,7 @@ dependencies:
   # Code Generation
   flutter_localizations:
     sdk: flutter
-  intl: ^0.19.0
+  intl: ^0.20.2
   freezed: ^2.5.7
   acter_flutter_sdk:
     path: ../packages/rust_sdk
@@ -86,7 +86,7 @@ dependencies:
   go_router: ^14.1.4
 
   # widgets
-  settings_ui: '2.0.2'
+  settings_ui: "2.0.2"
 
   # Utilities
   audioplayers: ^6.4.0
@@ -109,7 +109,7 @@ dependencies:
   shared_preferences: ^2.2.0
   image_picker_for_web: ^3.0.1
   riverpod_infinite_scroll:
-    git: 
+    git:
       url: https://github.com/acterglobal/riverpod_infinite_scroll.git
   infinite_scroll_pagination: ^4.0.0
   logging: ^1.2.0
@@ -144,7 +144,6 @@ dependencies:
     git:
       url: https://github.com/acterglobal/window_manager
       ref: main
-
 
   shake_detector:
     path: ../packages/shake_detector
@@ -186,20 +185,13 @@ dev_dependencies:
   icons_launcher: ^3.0.0
   flutter_lints: ^5.0.0
   build_runner: ^2.4.12
-  convenient_test: ^1.3.7
   convenient_test_dev: ^1.3.7
-  convenient_test_manager_dart:
-    git:
-      url: https://github.com/gnunicorn/flutter_convenient_test/
-      ref: ben-cli-limit-tests
-      path: packages/convenient_test_manager_dart
   msix: ^3.7.0
   uuid: ^4.0.0
-  enough_mail: ^2.1.6
   sentry_dart_plugin: ^2.0.0
   translations_cleaner: ^0.0.5
   enven: ^1.0.1
-  mockingjay: ^1.0.0
+  mockingjay: ^2.0.0
   test_screenshot: ^0.0.7
   hrk_flutter_test_batteries: ^1.2.0
 

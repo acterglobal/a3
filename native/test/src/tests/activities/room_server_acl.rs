@@ -1,4 +1,4 @@
-use acter_core::util::do_vecs_match;
+use acter_matrix::util::do_vecs_match;
 use anyhow::{bail, Result};
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},

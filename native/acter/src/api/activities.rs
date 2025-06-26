@@ -1,7 +1,7 @@
 use std::ops::Deref;
 
-pub use acter_core::activities::object::ActivityObject;
-use acter_core::{
+pub use acter_matrix::activities::object::ActivityObject;
+use acter_matrix::{
     activities::Activity as CoreActivity,
     events::news::{FallbackNewsContent, NewsContent},
     models::{
@@ -25,7 +25,7 @@ use tracing::error;
 
 use super::{Client, MsgContent, RefDetails, RUNTIME};
 
-use acter_core::activities::ActivityContent;
+use acter_matrix::activities::ActivityContent;
 
 #[derive(Clone, Debug)]
 pub struct Activity {

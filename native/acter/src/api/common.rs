@@ -1,4 +1,4 @@
-use acter_core::events::{
+use acter_matrix::events::{
     rsvp::RsvpStatus, ColorizeBuilder, DisplayBuilder, ObjRefBuilder, Position,
 };
 use anyhow::{Context, Result};

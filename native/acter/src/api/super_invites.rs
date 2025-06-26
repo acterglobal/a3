@@ -1,6 +1,6 @@
 // internal API
 
-use acter_core::{
+use acter_matrix::{
     events::{RefDetails as CoreRefDetails, RefPreview},
     super_invites::{api, CreateToken, Token, TokenInfo, UpdateToken},
 };

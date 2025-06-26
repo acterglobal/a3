@@ -1,5 +1,5 @@
 use acter::api::TimelineItem;
-use acter_core::models::status::RoomPowerLevelsContent;
+use acter_matrix::models::status::RoomPowerLevelsContent;
 use anyhow::Result;
 use core::time::Duration;
 use futures::{pin_mut, stream::StreamExt, FutureExt};

@@ -1,4 +1,4 @@
-pub use acter_core::events::settings::{
+pub use acter_matrix::events::settings::{
     ActerUserAppSettingsContent, ActerUserAppSettingsContentBuilder, AppChatSettings, AutoDownload,
 };
 use anyhow::Result;

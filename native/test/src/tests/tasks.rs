@@ -1,7 +1,7 @@
 mod invitations;
 
 use acter::testing::wait_for;
-use acter_core::models::ActerModel;
+use acter_matrix::models::ActerModel;
 use anyhow::{bail, Context, Result};
 use matrix_sdk_base::ruma::{
     events::room::redaction::RoomRedactionEvent, MilliSecondsSinceUnixEpoch,

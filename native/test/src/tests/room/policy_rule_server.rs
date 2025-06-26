@@ -1,5 +1,5 @@
 use acter::{api::TimelineItem, matrix_sdk::ruma::events::policy::rule::Recommendation};
-use acter_core::models::status::PolicyRuleServerContent;
+use acter_matrix::models::status::PolicyRuleServerContent;
 use anyhow::Result;
 use core::time::Duration;
 use futures::{pin_mut, stream::StreamExt, FutureExt};

@@ -3,6 +3,7 @@ import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/features/events/model/event_location_model.dart';
+import 'package:acter/features/events/widgets/event_location_list_widget.dart';
 import 'package:acter/router/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/toolkit/html_editor/html_editor.dart';
@@ -22,7 +23,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 import 'package:acter/features/events/providers/event_location_provider.dart';
-import 'package:acter/features/events/actions/show_event_location_list.dart';
 
 final _log = Logger('a3::cal_event::create');
 
@@ -85,6 +85,22 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
     _selectedEndTime = TimeOfDay.fromDateTime(_selectedEndDate);
     _endDateController.text = eventDateFormat(_selectedEndDate);
     _endTimeController.text = _selectedEndTime.format(context);
+
+    // Set template locations if available
+    final locations = ref.watch(asyncEventLocationsProvider(event.eventId().toString())).valueOrNull ?? [];
+    for (final location in locations) {
+      final draftLocation = EventLocationDraft(
+        name: location.name() ?? '',
+        type: location.locationType().toLowerCase() == LocationType.virtual.name
+            ? LocationType.virtual
+            : LocationType.physical,
+        url: location.uri(),
+        address: location.address(),
+        note: location.notes(),
+      );
+      ref.read(eventDraftLocationsProvider.notifier).addLocation(draftLocation);
+    }
+    
     _setSpaceId(event.roomIdStr());
     setState(() {});
   }
@@ -149,7 +165,8 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
               const SizedBox(height: 10),
               _eventDateAndTime(),
               const SizedBox(height: 10),
-              _buildEventLocationWidget(),
+              _buildEventLocationListWidget(),
+              _buildJitsiCallLinkWidget(),
               const SizedBox(height: 10),
               _eventDescriptionField(),
               const SizedBox(height: 10),
@@ -191,56 +208,44 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
     );
   }
 
-  // Event location field
-  Widget _buildEventLocationWidget() {
+  // Event location list widget
+  Widget _buildEventLocationListWidget() {
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      child: Column(
-        children: [
-          ListTile(
-            leading: Icon(
-              Icons.map_outlined,
-              color: Theme.of(context).colorScheme.primary,
-              size: 30,
-            ),
-            title: Text(L10n.of(context).eventLocations),
-            trailing: IconButton(
-              icon: const Icon(Icons.add_circle_outline, size: 26),
-              tooltip: L10n.of(context).addLocation,
-              onPressed: () => showEventLocationList(context),
-            ),
-          ),
-          _buildJitsiCallLinkWidget(),
-          const SizedBox(height: 10),
-        ],
-      ),
+      margin: EdgeInsets.only(bottom: 10),
+      child: Padding(padding: const EdgeInsets.all(8.0), child: EventLocationListWidget(),),
     );
   }
 
   // Jitsi call link field
   Widget _buildJitsiCallLinkWidget() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Transform.scale(
-          scale: 0.6,
-          child: Switch(
-            value: _isJitsiEnabled,
-            onChanged: (value) {
-        setState(() {
-          _isJitsiEnabled = value;
-            });
-          },
+    return Card(
+      margin: EdgeInsets.only(bottom: 10),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Transform.scale(
+              scale: 0.6,
+              child: Switch(
+                value: _isJitsiEnabled,
+                onChanged: (value) {
+                  setState(() {
+                    _isJitsiEnabled = value;
+                  });
+                },
+              ),
+            ),
+            Text(L10n.of(context).createJitsiCallLink, style: Theme.of(context).textTheme.bodyMedium,),
+            const SizedBox(width: 10),
+          ],
         ),
       ),
-      Text(L10n.of(context).createJitsiCallLink),
-      const SizedBox(width: 10),
-        
-    ]);
+    );
   }
 
   // Create Jitsi call link
-  String createJitsiCallLink(String title) {   
+  String createJitsiCallLink(String title) {
     // Generate a random 10-digit number
     final random = DateTime.now().millisecondsSinceEpoch % 10000000000;
     // Format the number to ensure it's 10 digits by padding with zeros if needed
@@ -537,13 +542,27 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
       final locations = ref.read(eventDraftLocationsProvider);
       for (final location in locations) {
         if (location.type == LocationType.physical) {
-          draft.addPhysicalLocation(location.name, '', '', '', '',location.address,location.note);
+          draft.addPhysicalLocation(
+            location.name,
+            '',
+            '',
+            '',
+            '',
+            location.address,
+            location.note,
+          );
         }
         if (location.type == LocationType.virtual) {
-          draft.addVirtualLocation(location.name, '', '',location.url ?? '',location.note);
+          draft.addVirtualLocation(
+            location.name,
+            '',
+            '',
+            location.url ?? '',
+            location.note,
+          );
         }
       }
-      
+
       // Add Jitsi link if enabled
       if (_isJitsiEnabled) {
         final jitsiLink = createJitsiCallLink(title);

@@ -1,4 +1,4 @@
-use acter_core::models::{self, ActerModel, AnyActerModel};
+use acter_matrix::models::{self, ActerModel, AnyActerModel};
 use anyhow::{bail, Result};
 use futures::stream::StreamExt;
 use matrix_sdk::room::Room;

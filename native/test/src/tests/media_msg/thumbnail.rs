@@ -481,7 +481,7 @@ async fn news_can_support_image_thumbnail() -> Result<()> {
             thumb_mimetype.to_owned(),
         )
         .thumbnail_info(None, None, Some(size));
-    draft.add_slide(Box::new(image_draft.into())).await?;
+    draft.add_slide(Box::new(image_draft.into()));
     draft.send().await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
@@ -556,7 +556,7 @@ async fn news_can_support_video_thumbnail() -> Result<()> {
             thumb_mimetype.to_owned(),
         )
         .thumbnail_info(None, None, Some(size));
-    draft.add_slide(Box::new(video_draft.into())).await?;
+    draft.add_slide(Box::new(video_draft.into()));
     draft.send().await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);

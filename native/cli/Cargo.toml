@@ -19,8 +19,8 @@ matrix-sdk-base = { workspace = true }
 tokio = { version = "1", features = ["full", "time"] }
 tracing = { version = "0.1.40", features = ["log"] }
 
-[dependencies.acter-core]
-path = "../core"
+[dependencies.acter-matrix]
+path = "../matrix"
 
 [dependencies.acter]
 path = "../acter"

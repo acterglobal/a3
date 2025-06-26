@@ -1,4 +1,4 @@
-use acter_core::{
+use acter_matrix::{
     events::{
         stories::{self, StoryBuilder, StoryContent, StorySlideBuilder},
         Colorize, ColorizeBuilder, ObjRef as CoreObjRef, ObjRefBuilder,
@@ -385,6 +385,7 @@ impl Story {
             client: self.client.clone(),
             room: self.room.clone(),
             content: self.content.updater(),
+            slides: None,
         })
     }
 
@@ -460,9 +461,8 @@ pub struct StoryDraft {
 }
 
 impl StoryDraft {
-    pub async fn add_slide(&mut self, draft: Box<StorySlideDraft>) -> Result<bool> {
+    pub fn add_slide(&mut self, draft: Box<StorySlideDraft>) {
         self.slides.push(*draft);
-        Ok(true)
     }
 
     pub fn slides(&self) -> Vec<StorySlideDraft> {
@@ -520,53 +520,47 @@ pub struct StoryUpdateBuilder {
     client: Client,
     room: Room,
     content: stories::StoryUpdateBuilder,
+    slides: Option<Vec<StorySlideDraft>>,
 }
 
 impl StoryUpdateBuilder {
-    #[allow(clippy::ptr_arg)]
-    pub async fn add_slide(&mut self, draft: Box<StorySlideDraft>) -> Result<bool> {
-        let client = self.client.clone();
-        let room = self.room.clone();
-        let mut slides = vec![];
-
-        let slide = RUNTIME
-            .spawn(async move {
-                let draft = draft.build(&client, &room).await?;
-                anyhow::Ok(draft)
-            })
-            .await??;
-
-        slides.push(slide);
-
-        self.content.slides(Some(slides));
-        Ok(true)
+    pub fn add_slide(&mut self, draft: Box<StorySlideDraft>) {
+        if let Some(slides) = self.slides.as_mut() {
+            slides.push(*draft);
+            self.slides = Some(slides.to_vec());
+        } else {
+            self.slides = Some(vec![*draft]);
+        }
     }
 
     pub fn swap_slides(&mut self, from: u8, to: u8) -> Result<&mut Self> {
-        let content = self.content.build()?;
-        let mut slides = content.slides.expect("content slides");
+        let Some(slides) = self.slides.as_mut() else {
+            bail!("No slides to swap");
+        };
         if to > slides.len() as u8 {
             bail!("upper bound is exceeded")
         }
         slides.swap(from as usize, to as usize);
-        self.content.slides(Some(slides));
+        self.slides = Some(slides.to_vec());
         Ok(self)
     }
 
     pub fn unset_slides(&mut self) -> &mut Self {
-        self.content.slides(Some(vec![]));
+        self.slides = Some(vec![]);
         self
     }
 
     pub fn unset_slides_update(&mut self) -> &mut Self {
-        self.content.slides(None);
+        self.slides = None;
         self
     }
 
     pub async fn send(&self) -> Result<OwnedEventId> {
+        let client = self.client.clone();
         let room = self.room.clone();
         let my_id = self.client.user_id()?;
-        let content = self.content.build()?;
+        let mut inner = self.content.clone();
+        let drafts = self.slides.clone().context("No slides to send")?;
 
         RUNTIME
             .spawn(async move {
@@ -576,6 +570,13 @@ impl StoryUpdateBuilder {
                 if !permitted {
                     bail!("No permissions to send message in this room");
                 }
+                let mut slides = vec![];
+                for draft in drafts {
+                    let slide = draft.build(&client, &room).await?;
+                    slides.push(slide);
+                }
+                inner.slides(Some(slides));
+                let content = inner.build()?;
                 let response = room.send(content).await?;
                 Ok(response.event_id)
             })
