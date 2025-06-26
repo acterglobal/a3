@@ -1,6 +1,6 @@
 use std::time::{SystemTime, UNIX_EPOCH};
 
-use acter_core::{events::UtcDateTime, store::Store, Error as SdkError};
+use acter_matrix::{events::UtcDateTime, store::Store, Error as SdkError};
 use anyhow::{bail, Result};
 use futures::{Stream, StreamExt};
 use matrix_sdk::encryption::{recovery::RecoveryState, CrossSigningResetAuthType, Encryption};

@@ -1,4 +1,4 @@
-use acter_core::referencing::ExecuteReference;
+use acter_matrix::referencing::ExecuteReference;
 use tokio::sync::broadcast::Receiver;
 
 use super::Room;

@@ -1,7 +1,7 @@
 use std::collections::BTreeSet;
 
 use crate::{Client, Room, RUNTIME};
-use acter_core::{
+use acter_matrix::{
     models::MyInvitesManager,
     referencing::{ExecuteReference, IndexKey, SpecialListsIndex},
 };

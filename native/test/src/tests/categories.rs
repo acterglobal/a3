@@ -1,4 +1,4 @@
-use acter_core::events::DisplayBuilder;
+use acter_matrix::events::DisplayBuilder;
 use anyhow::{bail, Result};
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},

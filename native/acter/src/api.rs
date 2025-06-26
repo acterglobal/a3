@@ -54,7 +54,7 @@ mod verification;
 pub mod read_receipts;
 
 pub use account::{Account, ExternalId, ThreePidEmailTokenResponse};
-pub use acter_core::{
+pub use acter_matrix::{
     activities::status::{DateContent, DateTimeRangeContent, DescriptionContent, TitleContent},
     events::{
         calendar::EventLocationInfo, news::NewsContent, stories::StoryContent, Category,

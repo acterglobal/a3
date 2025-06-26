@@ -1,4 +1,4 @@
-use acter_core::{
+use acter_matrix::{
     events::{
         news::{self, FallbackNewsContent, NewsContent, NewsEntryBuilder, NewsSlideBuilder},
         Colorize, ColorizeBuilder, ObjRef as CoreObjRef, ObjRefBuilder,

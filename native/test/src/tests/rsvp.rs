@@ -1,4 +1,4 @@
-use acter_core::events::rsvp::RsvpStatus;
+use acter_matrix::events::rsvp::RsvpStatus;
 use anyhow::{bail, Result};
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
