@@ -1,1 +1,0 @@
-- [fix] Chat Editor: bug fixes over message draft not saving and editor cursor selection.
