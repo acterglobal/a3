@@ -12,8 +12,9 @@ class AsyncNotifierMock extends AllActivitiesNotifier {
   AsyncNotifierMock(this.mockActivities);
   
   @override
-  Future<List<Activity>> build() async {
-    return mockActivities;
+  Future<List<String>> build() async {
+    // Convert activities to list of activity IDs
+    return mockActivities.map((activity) => activity.eventIdStr()).toList();
   }
 }
 
