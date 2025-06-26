@@ -14,9 +14,9 @@ pub async fn default_model_execute(
     model: AnyActerModel,
 ) -> Result<Vec<ExecuteReference>, crate::Error> {
     core_default_model_execute::<MatrixCoreTypeConfig, AnyActerModel, Store, crate::Error>(
-            store, model,
-        )
-        .await
+        store, model,
+    )
+    .await
 }
 
 pub async fn transition_tree(
