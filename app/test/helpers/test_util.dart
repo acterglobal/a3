@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -43,6 +45,51 @@ extension PumpUntilFound on WidgetTester {
       }
     }
   }
+
+  // Future<void> pumpWithRunAsyncUntil(
+  //   FutureOr<bool> Function() canStop, {
+  //   Duration? pumpDuration,
+  //   Duration? realDelayDuration,
+  //   Duration? fakeClockTimeout,
+  //   Duration? wallClockTimeout,
+  // }) async {
+  //   final startTime = DateTime.now();
+  //   // final fakeTimeout = fakeClockTimeout ?? const Duration(minutes: 1);
+  //   final wallTimeout = wallClockTimeout ?? const Duration(minutes: 1);
+  //   final endTime = startTime.add(wallTimeout);
+
+  //   return TestAsyncUtils.guard(() async {
+  //     var count = 0;
+
+  //     do {
+  //       // Check wall clock timeout
+  //       final now = DateTime.now();
+  //       if (now.isAfter(endTime)) {
+  //         throw FlutterError(
+  //           'pumpWithRunAsyncUntil timed out '
+  //           '(startTime=$startTime, endTime=$endTime, now=$now, pumpCount=$count)',
+  //         );
+  //       }
+
+  //       // Progress logging every 10 cycles
+  //       if (count > 0 && count % 10 == 0) {
+  //         debugPrint(
+  //           'pumpWithRunAsyncUntil has been running for $count cycles',
+  //         );
+  //       }
+
+  //       // Equivalent of pumpWithRunAsync
+  //       await runAsync(() async {
+  //         if (realDelayDuration != null) {
+  //           await Future.delayed(realDelayDuration);
+  //         }
+  //       });
+
+  //       await pump(pumpDuration ?? const Duration(milliseconds: 100));
+  //       count++;
+  //     } while (!await canStop());
+  //   });
+  // }
 }
 
 extension ActerProviderTesting on WidgetTester {

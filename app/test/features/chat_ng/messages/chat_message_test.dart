@@ -1,12 +1,20 @@
-import 'package:acter/features/chat/utils.dart';
+// import 'package:acter/common/providers/chat_providers.dart';
+// import 'package:acter/common/toolkit/errors/inline_error_button.dart';
+
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
+import 'package:acter/features/chat_ng/utils.dart';
+// import 'package:acter/features/chat_ng/widgets/events/image_message_event.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show TimelineEventItem;
+    show TimelineEventItem, OptionString, Convo;
+// import 'package:flutter/material.dart' show Durations;
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+// import '../../../helpers/error_helpers.dart';
+// import '../../../helpers/mock_chat_providers.dart';
+// import '../../../helpers/test_util.dart';
 import '../../comments/mock_data/mock_message_content.dart';
 import '../diff_applier_test.dart';
 
@@ -40,6 +48,28 @@ class MockTimelineEventItem extends Mock implements TimelineEventItem {
 
   @override
   int originServerTs() => DateTime.now().millisecondsSinceEpoch;
+}
+
+class FixedOptionStringMock extends Mock implements OptionString {
+  final String? result;
+
+  FixedOptionStringMock(this.result);
+
+  @override
+  String? text() => result;
+}
+
+/// Mocked version of ActerSdk for test purposes
+class RetryMediaConvoMock extends Mock implements Convo {
+  bool shouldFail = true;
+  @override
+  Future<OptionString> mediaPath(String eventId, bool isThumb) async {
+    if (shouldFail) {
+      shouldFail = false;
+      return FixedOptionStringMock('bad_path');
+    }
+    return FixedOptionStringMock(null);
+  }
 }
 
 void main() {
@@ -93,6 +123,33 @@ void main() {
         expect(result, true);
       });
     });
+
+    // group('Image Messages Test', () {
+    //   testWidgets('shows errors and retries', (tester) async {
+    //     final content = MockMsgContent(bodyText: 'msgContent.body()');
+    //     await tester.pumpProviderWidget(
+    //       overrides: [
+    //         // Provider first provides a broken path to trigger the error
+    //         // then null, so it would check for auto-download but not attempt
+    //         chatProvider.overrideWith(
+    //           () => MockAsyncConvoNotifier(retVal: RetryMediaConvoMock()),
+    //         ),
+    //         autoDownloadMediaProvider.overrideWith((a, b) => false),
+    //       ],
+    //       child: ImageMessageEvent(
+    //         messageId: 'eventId',
+    //         roomId: '!roomId',
+    //         content: content,
+    //       ),
+    //     );
+
+    //     await tester.pumpWithRunAsyncUntil(
+    //       () => findsOne.matches(find.byType(ActerInlineErrorButton), {}),
+    //     );
+    //     // expect(find.byType(ActerInlineErrorButton), findsOneWidget);
+    //     await tester.ensureInlineErrorWithRetryWorks();
+    //   });
+    // });
   });
 
   group('emoji only detection unit tests', () {

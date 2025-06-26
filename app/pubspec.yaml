@@ -86,7 +86,7 @@ dependencies:
   go_router: ^14.1.4
 
   # widgets
-  settings_ui: '2.0.2'
+  settings_ui: "2.0.2"
 
   # Utilities
   audioplayers: ^6.4.0
@@ -109,7 +109,7 @@ dependencies:
   shared_preferences: ^2.2.0
   image_picker_for_web: ^3.0.1
   riverpod_infinite_scroll:
-    git: 
+    git:
       url: https://github.com/acterglobal/riverpod_infinite_scroll.git
   infinite_scroll_pagination: ^4.0.0
   logging: ^1.2.0
@@ -144,7 +144,6 @@ dependencies:
     git:
       url: https://github.com/acterglobal/window_manager
       ref: main
-
 
   shake_detector:
     path: ../packages/shake_detector
@@ -188,11 +187,6 @@ dev_dependencies:
   build_runner: ^2.4.12
   msix: ^3.7.0
   uuid: ^4.0.0
-  # TODO: move to upstream version this once enough_mail is published
-  enough_mail: 
-    git:
-      url: https://github.com/Enough-Software/enough_mail.git
-      ref: main
   sentry_dart_plugin: ^2.0.0
   translations_cleaner: ^0.0.5
   enven: ^1.0.1
