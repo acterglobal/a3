@@ -94,7 +94,7 @@ async fn news_smoketest() -> Result<()> {
     let text_draft = user.text_plain_draft("This is text slide".to_owned());
     let event_id = {
         let mut draft = main_space.news_draft()?;
-        draft.add_slide(Box::new(text_draft.into())).await?;
+        draft.add_slide(Box::new(text_draft.into()));
         draft.send().await?
     };
     print!("draft sent event id: {}", event_id);
@@ -120,7 +120,7 @@ async fn news_plain_text_test() -> Result<()> {
     let body = "This is a simple text";
     let text_draft = user.text_plain_draft(body.to_owned());
     let mut draft = space.news_draft()?;
-    draft.add_slide(Box::new(text_draft.into())).await?;
+    draft.add_slide(Box::new(text_draft.into()));
     draft.send().await?;
 
     Retry::spawn(retry_strategy, || async {
@@ -180,7 +180,7 @@ async fn news_slide_color_test() -> Result<()> {
         Some(0xFF112233),
         Some(0xFF112233),
     )?));
-    draft.add_slide(Box::new(slide_draft)).await?;
+    draft.add_slide(Box::new(slide_draft));
     draft.send().await?;
 
     Retry::spawn(retry_strategy, || async {
@@ -227,7 +227,7 @@ async fn news_markdown_text_test() -> Result<()> {
     let space = user.space(room_id.to_string()).await?;
     let mut draft = space.news_draft()?;
     let text_draft = user.text_markdown_draft("## This is a simple text".to_owned());
-    draft.add_slide(Box::new(text_draft.into())).await?;
+    draft.add_slide(Box::new(text_draft.into()));
     draft.send().await?;
 
     Retry::spawn(retry_strategy, || async {
@@ -314,7 +314,7 @@ async fn news_markdown_text_with_reference_test() -> Result<()> {
     let ref_details = pin.ref_details().await?;
     let obj_ref_builder = new_obj_ref_builder(None, Box::new(ref_details))?;
     text_draft.add_reference(Box::new(obj_ref_builder));
-    draft.add_slide(Box::new(text_draft)).await?;
+    draft.add_slide(Box::new(text_draft));
     draft.send().await?;
 
     Retry::spawn(retry_strategy, || async {
@@ -377,7 +377,7 @@ async fn news_jpg_image_with_text_test() -> Result<()> {
         tmp_file.path().to_string_lossy().to_string(),
         "image/jpg".to_owned(),
     );
-    draft.add_slide(Box::new(image_draft.into())).await?;
+    draft.add_slide(Box::new(image_draft.into()));
     draft.send().await?;
 
     Retry::spawn(retry_strategy, || async {
@@ -435,7 +435,7 @@ async fn news_png_image_with_text_test() -> Result<()> {
         tmp_file.path().to_string_lossy().to_string(),
         "image/png".to_owned(),
     );
-    draft.add_slide(Box::new(image_draft.into())).await?;
+    draft.add_slide(Box::new(image_draft.into()));
     draft.send().await?;
 
     Retry::spawn(retry_strategy, || async {
@@ -495,10 +495,10 @@ async fn news_multiple_slide_test() -> Result<()> {
     );
 
     // we add three slides
-    draft.add_slide(Box::new(image_draft.into())).await?;
-    draft.add_slide(Box::new(markdown_draft.into())).await?;
-    draft.add_slide(Box::new(plain_draft.into())).await?;
-    draft.add_slide(Box::new(video_draft.into())).await?;
+    draft.add_slide(Box::new(image_draft.into()));
+    draft.add_slide(Box::new(markdown_draft.into()));
+    draft.add_slide(Box::new(plain_draft.into()));
+    draft.add_slide(Box::new(video_draft.into()));
     draft.send().await?;
 
     Retry::spawn(retry_strategy, || async {
@@ -560,7 +560,7 @@ async fn news_like_reaction_test() -> Result<()> {
         tmp_file.path().to_string_lossy().to_string(),
         "image/png".to_owned(),
     );
-    draft.add_slide(Box::new(image_draft.into())).await?;
+    draft.add_slide(Box::new(image_draft.into()));
     draft.send().await?;
 
     Retry::spawn(retry_strategy, || async {
@@ -649,7 +649,7 @@ async fn news_read_receipt_test() -> Result<()> {
     let space = user.space(room_id.to_string()).await?;
     let mut draft = space.news_draft()?;
     let text_draft = user.text_markdown_draft("## This is a simple text".to_owned());
-    draft.add_slide(Box::new(text_draft.into())).await?;
+    draft.add_slide(Box::new(text_draft.into()));
     draft.send().await?;
 
     Retry::spawn(retry_strategy.clone(), || async {
@@ -739,12 +739,12 @@ async fn multi_news_read_receipt_test() -> Result<()> {
     let space = user.space(room_id.to_string()).await?;
     let mut draft = space.news_draft()?;
     let text_draft = user.text_markdown_draft("## This is a simple text".to_owned());
-    draft.add_slide(Box::new(text_draft.into())).await?;
+    draft.add_slide(Box::new(text_draft.into()));
     let first_news_id = draft.send().await?;
 
     let mut draft = space.news_draft()?;
     let text_draft = user.text_markdown_draft("## This is a second news".to_owned());
-    draft.add_slide(Box::new(text_draft.into())).await?;
+    draft.add_slide(Box::new(text_draft.into()));
     let second_news_id = draft.send().await?;
 
     let slides = Retry::spawn(retry_strategy.clone(), || async {

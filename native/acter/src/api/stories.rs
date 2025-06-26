@@ -460,9 +460,8 @@ pub struct StoryDraft {
 }
 
 impl StoryDraft {
-    pub async fn add_slide(&mut self, draft: Box<StorySlideDraft>) -> Result<bool> {
+    pub fn add_slide(&mut self, draft: Box<StorySlideDraft>) {
         self.slides.push(*draft);
-        Ok(true)
     }
 
     pub fn slides(&self) -> Vec<StorySlideDraft> {

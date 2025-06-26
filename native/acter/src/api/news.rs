@@ -485,9 +485,8 @@ pub struct NewsEntryDraft {
 }
 
 impl NewsEntryDraft {
-    pub async fn add_slide(&mut self, draft: Box<NewsSlideDraft>) -> Result<bool> {
+    pub fn add_slide(&mut self, draft: Box<NewsSlideDraft>) {
         self.slides.push(*draft);
-        Ok(true)
     }
 
     pub fn slides(&self) -> Vec<NewsSlideDraft> {
