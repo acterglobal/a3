@@ -40,7 +40,7 @@ serde_json = "1"
 serde_repr = "0.1"
 strum = { workspace = true }
 thiserror = "2"
-tracing = { version = "0.1.40", features = ["log"] }
+tracing = { workspace = true }
 url = { workspace = true }
 urlencoding = { workspace = true }
 uuid = { version = "1.6.1", features = ["v4"], optional = true }

@@ -273,12 +273,15 @@ impl Store {
         ))
     }
 
-    pub async fn save_many(&self, models: Vec<AnyActerModel>) -> Result<Vec<ExecuteReference>> {
+    pub async fn save_many<I: Iterator<Item = AnyActerModel> + Send>(
+        &self,
+        models: I,
+    ) -> Result<Vec<ExecuteReference>> {
         let mut total_keys = Vec::new();
         let mut total_indizes = Vec::new();
         {
             let mut dirty = self.dirty.lock()?; // hold the lock
-            for mdl in models.into_iter() {
+            for mdl in models {
                 let (keys, indizes) = self.model_inner_under_lock(mdl)?;
                 dirty.extend(keys.clone());
                 total_keys.extend(keys);
@@ -487,12 +490,7 @@ mod tests {
             })
             .collect();
         let res_keys = store
-            .save_many(
-                models
-                    .iter()
-                    .map(|m| AnyActerModel::TestModel(m.clone()))
-                    .collect(),
-            )
+            .save_many(models.iter().map(|m| AnyActerModel::TestModel(m.clone())))
             .await?;
         assert_eq!(
             models
@@ -1027,8 +1025,7 @@ mod tests {
                 first_room_models
                     .iter()
                     .chain(second_room_models.iter())
-                    .map(|m| AnyActerModel::TestModel(m.clone()))
-                    .collect(),
+                    .map(|m| AnyActerModel::TestModel(m.clone())),
             )
             .await?;
 

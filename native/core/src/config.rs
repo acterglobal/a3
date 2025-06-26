@@ -1,7 +1,8 @@
 use serde::{Deserialize, Serialize};
 
 pub trait ActerKeyable = AsRef<str>;
-pub trait ActerCoreSerial = Serialize + for<'de> Deserialize<'de> + std::fmt::Debug + Clone + Sized;
+pub trait ActerCoreSerial =
+    Serialize + for<'de> Deserialize<'de> + std::fmt::Debug + Clone + Sized + Send + Sync;
 
 pub trait ObjectId = ActerCoreSerial + ActerKeyable;
 pub trait RoomId = ActerCoreSerial + ActerKeyable;

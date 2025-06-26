@@ -94,9 +94,11 @@ dependencies = [
 name = "acter-core"
 version = "0.1.0"
 dependencies = [
+ "async-recursion",
  "serde",
  "serde_json",
  "strum",
+ "tracing",
 ]
 
 [[package]]
@@ -142,6 +144,7 @@ name = "acter-test"
 version = "0.1.0"
 dependencies = [
  "acter",
+ "acter-core",
  "acter-matrix",
  "anyhow",
  "chrono",
