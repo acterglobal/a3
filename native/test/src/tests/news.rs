@@ -125,22 +125,54 @@ async fn news_plain_text_test() -> Result<()> {
         .send()
         .await?;
 
-    Retry::spawn(retry_strategy, || async {
-        if space.latest_news_entries(1).await?.len() != 1 {
+    let news_entry = Retry::spawn(retry_strategy.clone(), || async {
+        let news_entries = space.latest_news_entries(1).await?;
+        if news_entries.len() != 1 {
             bail!("news not found");
+        }
+        Ok(news_entries[0].clone())
+    })
+    .await?;
+
+    assert_eq!(news_entry.slides_count(), 1);
+    let _event_id = news_entry.event_id();
+    let text_slide = news_entry.get_slide(0).expect("we have a slide");
+    assert_eq!(text_slide.type_str(), "text");
+    let msg_content = text_slide.msg_content();
+    assert!(msg_content.formatted_body().is_none());
+    assert_eq!(msg_content.body(), body);
+
+    let subscriber = news_entry.subscribe();
+
+    let second_draft = user.text_plain_draft("This is second slide".to_owned());
+    let third_draft = user.text_plain_draft("This is third slide".to_owned());
+    let mut update = news_entry.update_builder()?;
+    update.add_slide(Box::new(second_draft.into()));
+    update.add_slide(Box::new(third_draft.into()));
+    update.swap_slides(0, 1)?;
+    update.send().await?;
+
+    Retry::spawn(retry_strategy.clone(), || async {
+        if subscriber.is_empty() {
+            bail!("not been alerted to reload");
         }
         Ok(())
     })
     .await?;
 
-    let slides = space.latest_news_entries(1).await?;
-    let second_news = slides.first().expect("Item is there");
-    let _event_id = second_news.event_id();
-    let text_slide = second_news.get_slide(0).expect("we have a slide");
-    assert_eq!(text_slide.type_str(), "text");
-    let msg_content = text_slide.msg_content();
-    assert!(msg_content.formatted_body().is_none());
-    assert_eq!(msg_content.body(), body);
+    let edited_entry =
+        Retry::spawn(retry_strategy, || async { news_entry.refresh().await }).await?;
+
+    assert_ne!(edited_entry.slides_count(), 3); // update doesn't append slides
+    assert_eq!(edited_entry.slides_count(), 2); // update replaces old slides with new slides
+
+    let third_slide = edited_entry.get_slide(0).expect("exists");
+    assert_eq!(third_slide.type_str(), "text");
+    assert_eq!(third_slide.msg_content().body(), "This is third slide");
+
+    let second_slide = edited_entry.get_slide(1).expect("exists");
+    assert_eq!(second_slide.type_str(), "text");
+    assert_eq!(second_slide.msg_content().body(), "This is second slide");
 
     // FIXME: notifications need to be checked against a secondary client..
     // // also check what the notification will be like

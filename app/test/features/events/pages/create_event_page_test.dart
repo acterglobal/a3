@@ -349,8 +349,39 @@ void main() {
 
       // Verify location widget exists
       expect(find.text(lang.eventLocations), findsOneWidget);
-      expect(find.byIcon(Icons.map_outlined), findsOneWidget);
       expect(find.byIcon(Icons.add_circle_outline), findsOneWidget);
+      
+      // Verify empty state message is shown when no locations are added
+      expect(find.text(lang.noLocationsAdded), findsOneWidget);
+    });
+
+    testWidgets('displays location icons when locations are added', (tester) async {
+      await pumpCreateEventPage(tester);
+
+      // Add a physical location to the provider
+      final physicalLocation = EventLocationDraft(
+        name: 'Test Office',
+        type: LocationType.physical,
+        address: '123 Test St',
+        note: 'Test note',
+      );
+      mockLocationNotifier.addLocation(physicalLocation);
+      
+      // Add a virtual location to the provider
+      final virtualLocation = EventLocationDraft(
+        name: 'Test Meeting',
+        type: LocationType.virtual,
+        url: 'https://test.com',
+        note: 'Test virtual note',
+      );
+      mockLocationNotifier.addLocation(virtualLocation);
+
+      await tester.pump();
+
+      // Verify both location icons are displayed
+      expect(find.byIcon(Icons.map_outlined), findsOneWidget); // Physical location icon
+      expect(find.byIcon(Icons.language), findsOneWidget); // Virtual location icon
+      expect(find.byIcon(Icons.add_circle_outline), findsOneWidget); // Add button icon
     });
 
     testWidgets('adds physical location to event', (tester) async {

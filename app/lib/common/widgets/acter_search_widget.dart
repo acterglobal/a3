@@ -12,6 +12,7 @@ class ActerSearchWidget extends StatefulWidget {
   final String? hintText;
   final String? initialText;
   final Widget? leading;
+  final Color? backgroundColor;
   final Iterable<Widget>? trailing;
   final EdgeInsetsGeometry padding;
   final ValueChanged<String> onChanged;
@@ -23,6 +24,7 @@ class ActerSearchWidget extends StatefulWidget {
     this.initialText,
     this.leading,
     this.trailing,
+    this.backgroundColor,
     this.padding = const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
     required this.onChanged,
     required this.onClear,
@@ -60,7 +62,14 @@ class _ActerSearchWidgetState extends State<ActerSearchWidget> {
           Theme.of(context).textTheme.bodyMedium,
         ),
         trailing: widget.trailing ?? searchTrailingUIWidget(),
-        onChanged: (value) => widget.onChanged(value),
+        onChanged: (value) {
+          widget.onChanged(value);
+          setState(() {});
+        },
+        backgroundColor:
+            widget.backgroundColor != null
+                ? WidgetStateProperty.all(widget.backgroundColor!)
+                : null,
       ),
     );
   }

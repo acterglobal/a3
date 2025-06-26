@@ -20,7 +20,7 @@ class ChatEditorState {
     MessageAction? actionType,
   }) {
     return ChatEditorState(
-      selectedMsgItem: selectedMsgItem ?? this.selectedMsgItem,
+      selectedMsgItem: selectedMsgItem,
       actionType: actionType ?? this.actionType,
     );
   }

@@ -444,7 +444,7 @@ object NewsEntryDraft {
 
 object NewsEntryUpdateBuilder {
     /// set the slides for this news entry
-    fn add_slide(draft: NewsSlideDraft) -> Future<Result<NewsEntryUpdateBuilder>>;
+    fn add_slide(draft: NewsSlideDraft);
 
     /// reset slides for this news entry
     fn unset_slides();
@@ -558,7 +558,7 @@ object StoryDraft {
 
 object StoryUpdateBuilder {
     /// set the slides for this news entry
-    fn add_slide(draft: StorySlideDraft) -> Future<Result<StoryUpdateBuilder>>;
+    fn add_slide(draft: StorySlideDraft);
 
     /// reset slides for this news entry
     fn unset_slides();
