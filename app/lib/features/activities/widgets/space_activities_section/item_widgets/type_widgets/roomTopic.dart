@@ -1,3 +1,4 @@
+import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/containers/activity_bigger_visual_container_widget.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -53,7 +54,9 @@ class ActivityRoomTopicItemWidget extends ConsumerWidget {
     if (stateMsg == null) return null;
     return Text(
       stateMsg,
-      style: Theme.of(context).textTheme.labelSmall,
+      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: colorScheme.surfaceTint,
+                  ),
       maxLines: 2,
       overflow: TextOverflow.ellipsis,
     );

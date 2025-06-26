@@ -105,10 +105,10 @@ class ActivityIndividualActionContainerWidget extends ConsumerWidget {
           child: RichText(
             text: TextSpan(
               children: [
-                TextSpan(text: displayName, style: theme.textTheme.bodySmall),
+                TextSpan(text: displayName, style: theme.textTheme.labelSmall),
                 TextSpan(
                   text: ' $actionTitle ',
-                  style: theme.textTheme.bodySmall?.copyWith(
+                  style: theme.textTheme.labelSmall?.copyWith(
                     color: colorScheme.surfaceTint,
                   ),
                 ),

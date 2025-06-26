@@ -1,0 +1,1 @@
+- [Fix] : Adjusts the font size in the Activity Screen to ensure the subtitle appears smaller than the title.
