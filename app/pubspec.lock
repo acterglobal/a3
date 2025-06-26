@@ -5,10 +5,10 @@ packages:
     dependency: transitive
     description:
       name: _fe_analyzer_shared
-      sha256: c81659312e021e3b780a502206130ea106487b34793bce61e26dc0f9b84807af
+      sha256: da0d9209ca76bde579f2da330aeb9df62b6319c834fa7baae052021b0462401f
       url: "https://pub.dev"
     source: hosted
-    version: "83.0.0"
+    version: "85.0.0"
   acter_avatar:
     dependency: "direct main"
     description:
@@ -43,10 +43,10 @@ packages:
     dependency: transitive
     description:
       name: analyzer
-      sha256: "9c35a79bf2a150b3ea0d40010fbbb45b5ebea143d47096e0f82fd922a324b49b"
+      sha256: "3394478cd571a8dbbe130a35e10bd365a2a8e7a867308142f7fd20336a08c3be"
       url: "https://pub.dev"
     source: hosted
-    version: "7.4.6"
+    version: "7.5.1"
   android_intent_plus:
     dependency: "direct main"
     description:
@@ -125,7 +125,7 @@ packages:
     description:
       path: "."
       ref: ben-mobile-expandable-editor
-      resolved-ref: "78c292daae8286c69ebe1e22787f7783ef3cc487"
+      resolved-ref: d89357e67f844c17eb5b5af7450aab2e175093b3
       url: "https://github.com/acterglobal/appflowy-editor"
     source: git
     version: "5.2.0"
@@ -735,10 +735,10 @@ packages:
     dependency: "direct main"
     description:
       name: file_picker
-      sha256: ab13ae8ef5580a411c458d6207b6774a6c237d77ac37011b13994879f68a8810
+      sha256: ef9908739bdd9c476353d6adff72e88fd00c625f5b959ae23f7567bd5137db0a
       url: "https://pub.dev"
     source: hosted
-    version: "8.3.7"
+    version: "10.2.0"
   file_selector_linux:
     dependency: transitive
     description:
