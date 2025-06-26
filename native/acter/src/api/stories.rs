@@ -524,7 +524,7 @@ pub struct StoryUpdateBuilder {
 }
 
 impl StoryUpdateBuilder {
-    pub async fn add_slide(&mut self, draft: Box<StorySlideDraft>) {
+    pub fn add_slide(&mut self, draft: Box<StorySlideDraft>) {
         if let Some(slides) = self.slides.as_mut() {
             slides.push(*draft);
             self.slides = Some(slides.to_vec());
