@@ -424,7 +424,7 @@ object NewsEntry {
 
 object NewsEntryDraft {
     /// create news slide draft
-    fn add_slide(base_draft: NewsSlideDraft) -> Future<Result<bool>>;
+    fn add_slide(base_draft: NewsSlideDraft);
 
     /// change position of slides draft of this news entry
     fn swap_slides(from: u8, to:u8);
@@ -441,7 +441,7 @@ object NewsEntryDraft {
 
 object NewsEntryUpdateBuilder {
     /// set the slides for this news entry
-    fn add_slide(draft: NewsSlideDraft) -> Future<Result<bool>>;
+    fn add_slide(draft: NewsSlideDraft);
 
     /// reset slides for this news entry
     fn unset_slides();
@@ -535,7 +535,7 @@ object Story {
 
 object StoryDraft {
     /// create news slide draft
-    fn add_slide(base_draft: StorySlideDraft) -> Future<Result<bool>>;
+    fn add_slide(base_draft: StorySlideDraft);
 
     /// change position of slides draft of this news entry
     fn swap_slides(from: u8, to:u8);
@@ -552,7 +552,7 @@ object StoryDraft {
 
 object StoryUpdateBuilder {
     /// set the slides for this news entry
-    fn add_slide(draft: StorySlideDraft) -> Future<Result<bool>>;
+    fn add_slide(draft: StorySlideDraft);
 
     /// reset slides for this news entry
     fn unset_slides();
