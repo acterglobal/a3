@@ -118,8 +118,7 @@ final activityDatesProvider = Provider<List<DateTime>>((ref) {
 // Base provider for activities filtered by date
 final activitiesByDateProvider = Provider.family<List<Activity>, DateTime>((ref, date) {
   final activities = ref.watch(allActivitiesByIdProvider).valueOrNull ?? [];
-  return activities.where((activity) =>
-    getActivityDate(activity.originServerTs()).isAtSameMomentAs(date)).toList();
+  return activities.where((activity) => getActivityDate(activity.originServerTs()).isAtSameMomentAs(date)).toList();
 });
 
 // Provider for consecutive grouped activities using records 
