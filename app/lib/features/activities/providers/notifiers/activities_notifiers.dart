@@ -79,20 +79,14 @@ class AllActivitiesNotifier extends AsyncNotifier<List<String>> {
       return state.valueOrNull ?? [];
     }
 
-    if (loadMore && _isLoadingMore) {
-      return state.valueOrNull ?? [];
-    }
-
-    if (loadMore) {
-      _isLoadingMore = true;
-    }
-
     try {
+      // Ensure we have an Activities object
+      _activities ??= client.allActivities();
+
       final activityIds = await _activities?.getIds(_currentOffset, _pageSize);
       
-      if (activityIds == null || activityIds.length == 0) {
+      if (activityIds == null || activityIds.isEmpty) {
         _hasMoreData = false;
-        if (loadMore) _isLoadingMore = false;
         return state.valueOrNull ?? [];
       }
 
@@ -112,11 +106,9 @@ class AllActivitiesNotifier extends AsyncNotifier<List<String>> {
         result = newActivityIds;
       }
 
-      if (loadMore) _isLoadingMore = false;
       return result;
     } catch (e, s) {
       _log.severe('Failed to fetch activities', e, s);
-      if (loadMore) _isLoadingMore = false;
       rethrow;
     }
   }
@@ -125,18 +117,23 @@ class AllActivitiesNotifier extends AsyncNotifier<List<String>> {
   Future<void> loadMore() async {
     if (!_hasMoreData || _isLoadingMore) return;
 
+    // Set loading state and notify providers
     _isLoadingMore = true;
+    // Force a state update to notify providers about loading state change
+    state = AsyncValue.data(state.valueOrNull ?? []);
 
     try {
       final client = await ref.read(alwaysClientProvider.future);
       final newActivities = await _fetchAllActivities(client, loadMore: true);
       
-      // Update state with new activities
+      // Clear loading state and update with new activities
+      _isLoadingMore = false;
       state = AsyncValue.data(newActivities);
     } catch (e, s) {
       _log.severe('Failed to load more activities', e, s);
       _isLoadingMore = false;
-      // Don't change the state on error, keep existing data
+      // Force state update to notify providers about loading state change
+      state = AsyncValue.data(state.valueOrNull ?? []);
     }
   }
 

@@ -72,12 +72,10 @@ class ActivitiesPage extends ConsumerWidget {
             hasMoreActivities && 
             !isLoadingMore &&
             scrollInfo.metrics.maxScrollExtent > 0) {
-          // Add a small delay to prevent multiple rapid calls
-          Future.delayed(const Duration(milliseconds: 100), () {
-            if (hasMoreActivities && !isLoadingMore) {
+          
+           if (hasMoreActivities && !isLoadingMore) {
               loadMoreActivities();
             }
-          });
         }
         return false;
       },
