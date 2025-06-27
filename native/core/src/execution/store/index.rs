@@ -407,4 +407,374 @@ mod tests {
             VectorDiff::Remove { index: 0 }
         ));
     }
+
+    #[test]
+    fn test_ranked_index_deref() {
+        let mut index = RankedIndex::<u64, &'static str>::default();
+        index.insert(10, "10");
+        index.insert(20, "20");
+
+        // Test Deref implementation
+        let vector_ref: &ObservableVector<(u64, &'static str)> = &index;
+        assert_eq!(vector_ref.len(), 2);
+        assert_eq!(vector_ref[0], (20, "20"));
+        assert_eq!(vector_ref[1], (10, "10"));
+    }
+
+    #[test]
+    fn test_lifo_index_deref() {
+        let mut index = LifoIndex::<&'static str>::default();
+        index.insert("first");
+        index.insert("second");
+
+        // Test Deref implementation
+        let vector_ref: &ObservableVector<&'static str> = &index;
+        assert_eq!(vector_ref.len(), 2);
+        assert_eq!(vector_ref[0], "second");
+        assert_eq!(vector_ref[1], "first");
+    }
+
+    #[test]
+    fn test_filo_index_deref() {
+        let mut index = FiloIndex::<&'static str>::default();
+        index.insert("first");
+        index.insert("second");
+
+        // Test Deref implementation
+        let vector_ref: &ObservableVector<&'static str> = &index;
+        assert_eq!(vector_ref.len(), 2);
+        assert_eq!(vector_ref[0], "first");
+        assert_eq!(vector_ref[1], "second");
+    }
+
+    #[test]
+    fn test_store_index_initialization() {
+        use crate::config::TypeConfig;
+        use crate::meta::EventMeta;
+        use crate::referencing::{IndexKey, ObjectListIndex, SectionIndex};
+
+        // Mock TypeConfig for testing
+        #[derive(Debug, Clone, PartialEq, Eq)]
+        struct MockConfig;
+
+        impl TypeConfig for MockConfig {
+            type RoomId = String;
+            type ObjectId = String;
+            type ModelType = String;
+            type AccountData = String;
+            type UserId = String;
+            type Timestamp = u64;
+        }
+
+        let meta = EventMeta::<MockConfig> {
+            event_id: "test_event".to_string(),
+            sender: "@user:example.com".to_string(),
+            timestamp: 12345,
+            room_id: "!room:example.com".to_string(),
+            redacted: None,
+        };
+
+        // Test AllHistory
+        let key = IndexKey::AllHistory;
+        let index = StoreIndex::<MockConfig>::new_for(&key, &meta);
+        assert!(matches!(index, StoreIndex::Ranked(_)));
+
+        // Test ObjectHistory
+        let key = IndexKey::ObjectHistory("obj1".to_string());
+        let index = StoreIndex::<MockConfig>::new_for(&key, &meta);
+        assert!(matches!(index, StoreIndex::Ranked(_)));
+
+        // Test RoomHistory
+        let key = IndexKey::RoomHistory("room1".to_string());
+        let index = StoreIndex::<MockConfig>::new_for(&key, &meta);
+        assert!(matches!(index, StoreIndex::Ranked(_)));
+
+        // Test ObjectList with Rsvp
+        let key = IndexKey::ObjectList("obj1".to_string(), ObjectListIndex::Rsvp);
+        let index = StoreIndex::<MockConfig>::new_for(&key, &meta);
+        assert!(matches!(index, StoreIndex::Ranked(_)));
+
+        // Test ObjectList with Tasks
+        let key = IndexKey::ObjectList("obj1".to_string(), ObjectListIndex::Tasks);
+        let index = StoreIndex::<MockConfig>::new_for(&key, &meta);
+        assert!(matches!(index, StoreIndex::Filo(_)));
+
+        // Test Section Boosts
+        let key = IndexKey::Section(SectionIndex::Boosts);
+        let index = StoreIndex::<MockConfig>::new_for(&key, &meta);
+        assert!(matches!(index, StoreIndex::Ranked(_)));
+
+        // Test Section Stories
+        let key = IndexKey::Section(SectionIndex::Stories);
+        let index = StoreIndex::<MockConfig>::new_for(&key, &meta);
+        assert!(matches!(index, StoreIndex::Ranked(_)));
+
+        // Test RoomSection Boosts
+        let key = IndexKey::RoomSection("room1".to_string(), SectionIndex::Boosts);
+        let index = StoreIndex::<MockConfig>::new_for(&key, &meta);
+        assert!(matches!(index, StoreIndex::Ranked(_)));
+
+        // Test RoomSection Stories
+        let key = IndexKey::RoomSection("room1".to_string(), SectionIndex::Stories);
+        let index = StoreIndex::<MockConfig>::new_for(&key, &meta);
+        assert!(matches!(index, StoreIndex::Ranked(_)));
+
+        // Test default case (should be Lifo)
+        let key = IndexKey::ObjectList("obj1".to_string(), ObjectListIndex::Comments);
+        let index = StoreIndex::<MockConfig>::new_for(&key, &meta);
+        assert!(matches!(index, StoreIndex::Lifo(_)));
+    }
+
+    #[test]
+    fn test_store_index_operations() {
+        use crate::config::TypeConfig;
+        use crate::meta::EventMeta;
+        use crate::referencing::{IndexKey, ObjectListIndex};
+
+        // Mock TypeConfig for testing
+        #[derive(Debug, Clone, PartialEq, Eq)]
+        struct MockConfig;
+
+        impl TypeConfig for MockConfig {
+            type RoomId = String;
+            type ObjectId = String;
+            type ModelType = String;
+            type AccountData = String;
+            type UserId = String;
+            type Timestamp = u64;
+        }
+
+        let meta1 = EventMeta::<MockConfig> {
+            event_id: "event1".to_string(),
+            sender: "@user1:example.com".to_string(),
+            timestamp: 100,
+            room_id: "!room1:example.com".to_string(),
+            redacted: None,
+        };
+        let meta2 = EventMeta::<MockConfig> {
+            event_id: "event2".to_string(),
+            sender: "@user2:example.com".to_string(),
+            timestamp: 200,
+            room_id: "!room2:example.com".to_string(),
+            redacted: None,
+        };
+
+        // Test Lifo index operations
+        let key = IndexKey::ObjectList("obj1".to_string(), ObjectListIndex::Comments);
+        let mut index = StoreIndex::<MockConfig>::new_for(&key, &meta1);
+
+        index.insert(&meta2);
+
+        assert_eq!(index.values(), [&"event2", &"event1"]);
+
+        index.remove(&"event1".to_string());
+        assert_eq!(index.values(), [&"event2"]);
+
+        // Test Filo index operations
+        let key = IndexKey::ObjectList("obj1".to_string(), ObjectListIndex::Tasks);
+        let mut index = StoreIndex::<MockConfig>::new_for(&key, &meta1);
+
+        index.insert(&meta2);
+
+        assert_eq!(index.values(), [&"event1", &"event2"]);
+
+        index.remove(&"event1".to_string());
+        assert_eq!(index.values(), [&"event2"]);
+
+        // Test Ranked index operations
+        let key = IndexKey::AllHistory;
+        let mut index = StoreIndex::<MockConfig>::new_for(&key, &meta1);
+
+        index.insert(&meta2);
+
+        assert_eq!(index.values(), [&"event2", &"event1"]); // Higher timestamp first
+
+        index.remove(&"event1".to_string());
+        assert_eq!(index.values(), [&"event2"]);
+    }
+
+    #[test]
+    fn test_store_index_debug() {
+        use crate::config::TypeConfig;
+        use crate::meta::EventMeta;
+        use crate::referencing::{IndexKey, ObjectListIndex};
+
+        // Mock TypeConfig for testing
+        #[derive(Debug, Clone, PartialEq, Eq)]
+        struct MockConfig;
+
+        impl TypeConfig for MockConfig {
+            type RoomId = String;
+            type ObjectId = String;
+            type ModelType = String;
+            type AccountData = String;
+            type UserId = String;
+            type Timestamp = u64;
+        }
+
+        let meta = EventMeta::<MockConfig> {
+            event_id: "test_event".to_string(),
+            sender: "@user:example.com".to_string(),
+            timestamp: 12345,
+            room_id: "!room:example.com".to_string(),
+            redacted: None,
+        };
+
+        // Test Debug for Lifo
+        let key = IndexKey::ObjectList("obj1".to_string(), ObjectListIndex::Comments);
+        let index = StoreIndex::<MockConfig>::new_for(&key, &meta);
+        assert_eq!(format!("{index:?}"), "Lifo");
+
+        // Test Debug for Filo
+        let key = IndexKey::ObjectList("obj1".to_string(), ObjectListIndex::Tasks);
+        let index = StoreIndex::<MockConfig>::new_for(&key, &meta);
+        assert_eq!(format!("{index:?}"), "Filo");
+
+        // Test Debug for Ranked
+        let key = IndexKey::AllHistory;
+        let index = StoreIndex::<MockConfig>::new_for(&key, &meta);
+        assert_eq!(format!("{index:?}"), "Ranked");
+    }
+
+    #[tokio::test]
+    async fn test_ranked_index_update_stream_all_cases() {
+        let mut index = RankedIndex::<u64, &'static str>::default();
+        let stream = index.update_stream();
+        pin_mut!(stream);
+
+        // Test Append
+        index.insert(10, "10");
+        let next = stream.next().await.unwrap();
+        assert!(
+            matches!(
+                next,
+                VectorDiff::Insert { index: 0, value } if value == "10"
+            ),
+            "{next:?}"
+        );
+
+        // we do internal calls to make sure all these are going through properly
+        index.vector.push_back((20, "20"));
+        let next = stream.next().await.unwrap();
+        assert!(
+            matches!(
+                next,
+                VectorDiff::PushBack { value } if value == "20"
+            ),
+            "{next:?}"
+        );
+
+        index.vector.push_front((5, "5"));
+
+        let next = stream.next().await.unwrap();
+        assert!(
+            matches!(
+                next,
+                VectorDiff::PushFront { value } if value == "5"
+            ),
+            "{next:?}"
+        );
+
+        index.vector.append([(25, "25"), (35, "35")].into());
+
+        let next = stream.next().await.unwrap();
+        assert!(
+            matches!(
+                next,
+                VectorDiff::Append { ref values } if *values == vec!["25", "35"].into()
+            ),
+            "{next:?}"
+        );
+
+        // // Test Set
+        // // Note: ObservableVector doesn't have a direct set method, so we'll test other cases
+
+        // Test Remove
+        index.remove(&"10");
+        let next = stream.next().await.unwrap();
+        assert!(matches!(next, VectorDiff::Remove { index: 1 }), "{next:?}");
+
+        // Test Clear
+        index.remove(&"5");
+        index.remove(&"20");
+        let next = stream.next().await.unwrap();
+        assert!(matches!(next, VectorDiff::Remove { index: 0 }), "{next:?}");
+        let next = stream.next().await.unwrap();
+        assert!(matches!(next, VectorDiff::Remove { index: 0 }), "{next:?}");
+    }
+
+    #[tokio::test]
+    async fn test_lifo_index_update_stream_all_cases() {
+        let mut index = LifoIndex::<&'static str>::default();
+        let stream = index.update_stream();
+        pin_mut!(stream);
+
+        // Test PushFront
+        index.insert("first");
+        index.insert("second");
+
+        let next = stream.next().await.unwrap();
+        assert!(
+            matches!(
+                next,
+                VectorDiff::PushFront { value } if value == "first"
+            ),
+            "{next:?}"
+        );
+        let next = stream.next().await.unwrap();
+        assert!(
+            matches!(
+                next,
+                VectorDiff::PushFront { value } if value == "second"
+            ),
+            "{next:?}"
+        );
+
+        // Test Remove
+        index.remove(&"first");
+        let next = stream.next().await.unwrap();
+        assert!(matches!(next, VectorDiff::Remove { index: 1 }), "{next:?}");
+
+        // Test Clear
+        index.remove(&"second");
+        let next = stream.next().await.unwrap();
+        assert!(matches!(next, VectorDiff::Remove { index: 0 }), "{next:?}");
+    }
+
+    #[tokio::test]
+    async fn test_filo_index_update_stream_all_cases() {
+        let mut index = FiloIndex::<&'static str>::default();
+        let stream = index.update_stream();
+        pin_mut!(stream);
+
+        // Test PushBack
+        index.insert("first");
+        index.insert("second");
+        let next = stream.next().await.unwrap();
+        assert!(
+            matches!(
+                next,
+                VectorDiff::PushBack { value } if value == "first"
+            ),
+            "{next:?}"
+        );
+        let next = stream.next().await.unwrap();
+        assert!(
+            matches!(
+                next,
+                VectorDiff::PushBack { value } if value == "second"
+            ),
+            "{next:?}"
+        );
+
+        // Test Remove
+        index.remove(&"first");
+        let next = stream.next().await.unwrap();
+        assert!(matches!(next, VectorDiff::Remove { index: 0 }), "{next:?}");
+
+        // Test Clear
+        index.remove(&"second");
+        let next = stream.next().await.unwrap();
+        assert!(matches!(next, VectorDiff::Remove { index: 0 }), "{next:?}");
+    }
 }
