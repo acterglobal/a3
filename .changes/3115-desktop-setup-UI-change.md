@@ -1,1 +1,0 @@
-- [Fix] : Desktop setup width now adjusts to the screen size, consistent with other onboarding UI elements. 

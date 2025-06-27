@@ -1,6 +1,8 @@
+import 'package:acter/common/providers/network_provider.dart';
 import 'package:acter/common/providers/notifiers/chat_notifiers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/features/search/providers/quick_search_providers.dart';
+import 'package:acter/features/settings/providers/app_settings_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:riverpod/riverpod.dart';
 
@@ -68,3 +70,17 @@ List<Convo> _filterByTerm(Ref ref, List<Convo> chatList, String searchValue) =>
       final chatName = roomInfo.displayName ?? roomId;
       return chatName.toLowerCase().contains(searchValue);
     }).toList();
+
+final autoDownloadMediaProvider = FutureProvider.family<bool, String>((
+  ref,
+  roomId,
+) async {
+  // this should also check for local room settings...
+  final userSettings = await ref.read(userAppSettingsProvider.future);
+  final globalAutoDownload = (userSettings.autoDownloadChat() ?? 'always');
+  if (globalAutoDownload == 'wifiOnly') {
+    return ref.watch(hasWifiNetworkProvider);
+  }
+
+  return globalAutoDownload == 'always';
+});

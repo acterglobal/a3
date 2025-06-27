@@ -1,3 +1,4 @@
+import 'package:acter/features/activities/actions/activity_item_click_action.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/containers/activity_bigger_visual_container_widget.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -14,6 +15,7 @@ class ActivityAttachmentItemWidget extends StatelessWidget {
     final subType = activity.subTypeStr();
     final (icon, label) = getAttachmentIconAndLabel(context, subType ?? '');
     return ActivityBiggerVisualContainerWidget(
+      onTap: () => onTapActivityItem(context, activityObject),
       actionIconBgColor: Colors.blue,
       actionIconColor: Colors.white,
       actionIcon: PhosphorIconsRegular.paperclip,

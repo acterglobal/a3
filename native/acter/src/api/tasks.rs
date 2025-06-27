@@ -1,7 +1,7 @@
 use acter_matrix::{
     events::{
         tasks::{self, Priority, TaskBuilder, TaskListBuilder},
-        Display, RefDetails as CoreRefDetails, RefPreview,
+        Display, RefDetails as CoreRefDetails, RefPreview, UtcDateTime,
     },
     models::{self, can_redact, ActerModel, AnyActerModel, TaskStats},
     referencing::{IndexKey, SectionIndex, SpecialListsIndex},
@@ -761,27 +761,32 @@ impl TaskDraft {
         self.content.utc_due_time_of_day(Some(seconds));
         self
     }
+
     pub fn unset_utc_due_time_of_day(&mut self) -> &mut Self {
         self.content.utc_due_time_of_day(None);
         self
     }
 
-    pub fn utc_start_from_rfc3339(&mut self, utc_start: String) -> Result<()> {
-        let dt = DateTime::parse_from_rfc3339(&utc_start)?.into();
-        self.content.utc_start(Some(dt));
-        Ok(())
+    pub fn utc_start_from_rfc3339(&mut self, utc_start: String) -> Result<&mut Self> {
+        let dt = DateTime::parse_from_rfc3339(&utc_start)?;
+        self.content.utc_start(Some(UtcDateTime::from(dt)));
+        Ok(self)
     }
 
-    pub fn utc_start_from_rfc2822(&mut self, utc_start: String) -> Result<()> {
-        let dt = DateTime::parse_from_rfc2822(&utc_start)?.into();
-        self.content.utc_start(Some(dt));
-        Ok(())
+    pub fn utc_start_from_rfc2822(&mut self, utc_start: String) -> Result<&mut Self> {
+        let dt = DateTime::parse_from_rfc2822(&utc_start)?;
+        self.content.utc_start(Some(UtcDateTime::from(dt)));
+        Ok(self)
     }
 
-    pub fn utc_start_from_format(&mut self, utc_start: String, format: String) -> Result<()> {
-        let dt = DateTime::parse_from_str(&utc_start, &format)?.into();
-        self.content.utc_start(Some(dt));
-        Ok(())
+    pub fn utc_start_from_format(
+        &mut self,
+        utc_start: String,
+        format: String,
+    ) -> Result<&mut Self> {
+        let dt = DateTime::parse_from_str(&utc_start, &format)?;
+        self.content.utc_start(Some(UtcDateTime::from(dt)));
+        Ok(self)
     }
 
     pub fn unset_utc_start(&mut self) -> &mut Self {
@@ -952,6 +957,7 @@ impl TaskUpdateBuilder {
         self.content.categories(None);
         self
     }
+
     pub fn mark_done(&mut self) -> &mut Self {
         self.content.progress_percent(Some(Some(100)));
         self
@@ -991,22 +997,26 @@ impl TaskUpdateBuilder {
         self
     }
 
-    pub fn utc_start_from_rfc3339(&mut self, utc_start: String) -> Result<()> {
-        let dt = DateTime::parse_from_rfc3339(&utc_start)?.into();
-        self.content.utc_start(Some(Some(dt)));
-        Ok(())
+    pub fn utc_start_from_rfc3339(&mut self, utc_start: String) -> Result<&mut Self> {
+        let dt = DateTime::parse_from_rfc3339(&utc_start)?;
+        self.content.utc_start(Some(Some(UtcDateTime::from(dt))));
+        Ok(self)
     }
 
-    pub fn utc_start_from_rfc2822(&mut self, utc_start: String) -> Result<()> {
-        let dt = DateTime::parse_from_rfc2822(&utc_start)?.into();
-        self.content.utc_start(Some(Some(dt)));
-        Ok(())
+    pub fn utc_start_from_rfc2822(&mut self, utc_start: String) -> Result<&mut Self> {
+        let dt = DateTime::parse_from_rfc2822(&utc_start)?;
+        self.content.utc_start(Some(Some(UtcDateTime::from(dt))));
+        Ok(self)
     }
 
-    pub fn utc_start_from_format(&mut self, utc_start: String, format: String) -> Result<()> {
-        let dt = DateTime::parse_from_str(&utc_start, &format)?.into();
-        self.content.utc_start(Some(Some(dt)));
-        Ok(())
+    pub fn utc_start_from_format(
+        &mut self,
+        utc_start: String,
+        format: String,
+    ) -> Result<&mut Self> {
+        let dt = DateTime::parse_from_str(&utc_start, &format)?;
+        self.content.utc_start(Some(Some(UtcDateTime::from(dt))));
+        Ok(self)
     }
 
     pub fn unset_utc_start(&mut self) -> &mut Self {

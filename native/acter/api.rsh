@@ -406,6 +406,9 @@ object NewsEntry {
     /// get timestamp of this event
     fn origin_server_ts() -> u64;
 
+    /// make a builder for updating the news entry
+    fn update_builder() -> Result<NewsEntryUpdateBuilder>;
+
     /// whether or not this user can redact this item
     fn can_redact() -> Future<Result<bool>>;
 
@@ -424,10 +427,10 @@ object NewsEntry {
 
 object NewsEntryDraft {
     /// create news slide draft
-    fn add_slide(base_draft: NewsSlideDraft) -> Future<Result<bool>>;
+    fn add_slide(base_draft: NewsSlideDraft);
 
     /// change position of slides draft of this news entry
-    fn swap_slides(from: u8, to:u8);
+    fn swap_slides(from: u8, to:u8) -> Result<()>;
 
     /// get a copy of the news slide set for this news entry draft
     fn slides() -> Vec<NewsSlideDraft>;
@@ -441,14 +444,14 @@ object NewsEntryDraft {
 
 object NewsEntryUpdateBuilder {
     /// set the slides for this news entry
-    fn add_slide(draft: NewsSlideDraft) -> Future<Result<bool>>;
+    fn add_slide(draft: NewsSlideDraft);
 
     /// reset slides for this news entry
     fn unset_slides();
     fn unset_slides_update();
 
     /// set position of slides for this news entry
-    fn swap_slides(from: u8, to: u8);
+    fn swap_slides(from: u8, to: u8) -> Result<()>;
 
     /// update this news entry
     fn send() -> Future<Result<EventId>>;
@@ -520,6 +523,9 @@ object Story {
     /// get timestamp of this event
     fn origin_server_ts() -> u64;
 
+    /// make a builder for updating the story
+    fn update_builder() -> Result<StoryUpdateBuilder>;
+
     /// whether or not this user can redact this item
     fn can_redact() -> Future<Result<bool>>;
 
@@ -535,10 +541,10 @@ object Story {
 
 object StoryDraft {
     /// create news slide draft
-    fn add_slide(base_draft: StorySlideDraft) -> Future<Result<bool>>;
+    fn add_slide(base_draft: StorySlideDraft);
 
     /// change position of slides draft of this news entry
-    fn swap_slides(from: u8, to:u8);
+    fn swap_slides(from: u8, to:u8) -> Result<()>;
 
     /// get a copy of the news slide set for this news entry draft
     fn slides() -> Vec<StorySlideDraft>;
@@ -552,14 +558,14 @@ object StoryDraft {
 
 object StoryUpdateBuilder {
     /// set the slides for this news entry
-    fn add_slide(draft: StorySlideDraft) -> Future<Result<bool>>;
+    fn add_slide(draft: StorySlideDraft);
 
     /// reset slides for this news entry
     fn unset_slides();
     fn unset_slides_update();
 
     /// set position of slides for this news entry
-    fn swap_slides(from: u8, to: u8);
+    fn swap_slides(from: u8, to: u8) -> Result<()>;
 
     /// update this news entry
     fn send() -> Future<Result<EventId>>;
@@ -1637,50 +1643,43 @@ object SpaceDiff {
 object MsgDraft {
 
     /// add a user mention
-    fn add_mention(user_id: string) -> Result<MsgDraft>;
+    fn add_mention(user_id: string) -> Result<()>;
 
     /// add a ref details
-    fn add_ref_details(details: RefDetails) -> Result<MsgDraft>;
+    fn add_ref_details(details: RefDetails) -> Result<()>;
 
     /// add a url preview
-    fn add_url_preview(details: LocalUrlPreview) -> Result<MsgDraft>;
+    fn add_url_preview(details: LocalUrlPreview) -> Result<()>;
 
     /// whether to mention the entire room
-    fn add_room_mention(mention: bool) -> Result<MsgDraft>;
+    fn add_room_mention(mention: bool) -> Result<()>;
 
     /// available for only image/audio/video/file
-    fn mimetype(value: string) -> MsgDraft;
-
-    /// available for only image/audio/video/file
-    fn size(value: u64) -> MsgDraft;
+    fn size(value: u64);
 
     /// available for only image/video
-    fn width(value: u64) -> MsgDraft;
+    fn width(value: u64);
 
     /// available for only image/video
-    fn height(value: u64) -> MsgDraft;
+    fn height(value: u64);
 
     /// available for only audio/video
-    fn duration(value: u64) -> MsgDraft;
+    fn duration(value: u64);
 
     /// available for only image/video
-    fn blurhash(value: string) -> MsgDraft;
+    fn blurhash(value: string);
 
     /// Provide the file system path to a static thumbnail
     /// for this media to be read and shared upon sending
     ///
     /// available for only image/video/file/location
-    fn thumbnail_image(source: string, mimetype: string) -> MsgDraft;
+    fn thumbnail_image(source: string, mimetype: string);
 
     /// available for only image/video/file/location
-    fn thumbnail_info(width: Option<u64>, height: Option<u64>, size: Option<u64>) -> MsgDraft;
+    fn thumbnail_info(width: Option<u64>, height: Option<u64>, size: Option<u64>);
 
     /// available for only file
-    fn filename(value: string) -> MsgDraft;
-
-    /// available for only location
-    /// geo_uri follows RFC 5870, for example `geo:51.5074,-0.1278`
-    fn geo_uri(value: string) -> MsgDraft;
+    fn filename(value: string);
 
     /// convert this into a NewsSlideDraft;
     fn into_news_slide_draft() -> NewsSlideDraft;

@@ -522,21 +522,18 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
         _selectedEndTime,
       );
 
-      // Convert utc time zone
-      final utcStartDateTime = startDateTime.toUtc().toIso8601String();
-      final utcEndDateTime = endDateTime.toUtc().toIso8601String();
-
       // Creating calendar event
-      final space = await ref.read(spaceProvider(spaceId).future);
-      final draft = space.calendarEventDraft();
       final title = _eventNameController.text;
-      // Description text
-      final plainDescription = textEditorState.intoMarkdown();
-      final htmlBodyDescription = textEditorState.intoHtml();
-      draft.title(title);
-      draft.utcStartFromRfc3339(utcStartDateTime);
-      draft.utcEndFromRfc3339(utcEndDateTime);
-      draft.descriptionHtml(plainDescription, htmlBodyDescription);
+      final space = await ref.read(spaceProvider(spaceId).future);
+      final draft =
+          space.calendarEventDraft()
+            ..title(title)
+            ..utcStartFromRfc3339(startDateTime.toUtc().toIso8601String())
+            ..utcEndFromRfc3339(endDateTime.toUtc().toIso8601String())
+            ..descriptionHtml(
+              textEditorState.intoMarkdown(),
+              textEditorState.intoHtml(),
+            );
 
       // Add locations to the event
       final locations = ref.read(eventDraftLocationsProvider);
@@ -576,8 +573,7 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
 
       /// Event is created, set RSVP status to `Yes` by default for host.
       final rsvpManager = await calendarEvent.rsvps();
-      final rsvpDraft = rsvpManager.rsvpDraft();
-      rsvpDraft.status('yes');
+      final rsvpDraft = rsvpManager.rsvpDraft()..status('yes');
       await rsvpDraft.send();
       _log.info('Created Calendar Event: $eventId');
 
