@@ -77,23 +77,29 @@ final allActivitiesProvider =
   AllActivitiesNotifier.new,
 );
 
+// Helper function to check if activity type is supported
+bool isActivityTypeSupported(String activityType) {
+  final pushStyle = PushStyles.values.asNameMap()[activityType];
+  return pushStyle != null && supportedActivityTypes.contains(pushStyle);
+}
+
 // Helper function to get date-only DateTime from activity timestamp
 DateTime getActivityDate(int timestamp) {
   final activityDate = DateTime.fromMillisecondsSinceEpoch(timestamp).toLocal();
   return DateTime(activityDate.year, activityDate.month, activityDate.day);
 }
 
-// Provider to get activities by id
+// Provider to get activities by id with filtering for supported types
 final allActivitiesByIdProvider = FutureProvider<List<Activity>>((ref) async {
-  
+
   final activityIds = await ref.watch(allActivitiesProvider.future);
-  
+
   if (activityIds.isEmpty) return [];
-  
+
   final activities = <Activity>[];
   for (final id in activityIds) {
     final activity = ref.watch(activityProvider(id)).valueOrNull;
-    if (activity != null) {
+    if (activity != null && isActivityTypeSupported(activity.typeStr())) {
       activities.add(activity);
     }
   }
@@ -102,9 +108,9 @@ final allActivitiesByIdProvider = FutureProvider<List<Activity>>((ref) async {
 
 final activityDatesProvider = Provider<List<DateTime>>((ref) {
   final activities = ref.watch(allActivitiesByIdProvider).valueOrNull ?? [];
-  
+
   if (activities.isEmpty) return [];
-  
+
   final uniqueDates = activities.map((activity) => getActivityDate(activity.originServerTs())).toSet();
   return uniqueDates.toList()..sort((a, b) => b.compareTo(a));
 });
@@ -112,8 +118,7 @@ final activityDatesProvider = Provider<List<DateTime>>((ref) {
 // Base provider for activities filtered by date
 final activitiesByDateProvider = Provider.family<List<Activity>, DateTime>((ref, date) {
   final activities = ref.watch(allActivitiesByIdProvider).valueOrNull ?? [];
-  return activities.where((activity) => 
-    getActivityDate(activity.originServerTs()).isAtSameMomentAs(date)).toList();
+  return activities.where((activity) => getActivityDate(activity.originServerTs()).isAtSameMomentAs(date)).toList();
 });
 
 // Provider for consecutive grouped activities using records 

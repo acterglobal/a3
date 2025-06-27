@@ -63,7 +63,7 @@ class AllActivitiesNotifier extends AsyncNotifier<List<String>> {
     _activities?.drop();
     _activities = null; // Prevent double free
     _activities = client.allActivities();
-    final activityIds = await _activities?.getIds(0, 200); // adjust as needed
+    final activityIds = await _activities?.getIds(0, 500); // adjust as needed
     if (activityIds == null) return [];
     
     return asDartStringList(activityIds);
