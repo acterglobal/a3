@@ -58,8 +58,9 @@ class MessageActionsWidget extends ConsumerWidget {
       makeMenuItem(
         pressed: () {
           final messageBody = item.msgContent()?.body();
+          final messageHtml = item.msgContent()?.formattedBody();
           if (messageBody == null) return;
-          copyMessageAction(context, messageBody);
+          copyMessageAction(context, messageBody, messageHtml);
         },
         text: Text(lang.copyMessage),
         icon: const Icon(Icons.copy_all_outlined, size: 14),
