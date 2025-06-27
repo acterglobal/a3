@@ -284,6 +284,9 @@ mod tests {
         let room_id = CustomRoomId("custom_room".to_string());
         let object_id = CustomObjectId("custom_object".to_string());
 
+        assert_eq!(room_id.as_ref(), "custom_room");
+        assert_eq!(object_id.as_ref(), "custom_object");
+
         let test_cases = vec![
             CustomIndexKey::RoomHistory(room_id.clone()),
             CustomIndexKey::RoomModels(room_id.clone()),
