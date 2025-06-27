@@ -42,5 +42,5 @@ void onTapActivityItem(BuildContext context, ActivityObject? activityObject) {
           pathParameters: {'updateId': objectId},
         );
     default: _log.warning('Unknown activity type: $activityType');
-  };
+  }
 }
