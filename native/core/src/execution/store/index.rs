@@ -645,46 +645,34 @@ mod tests {
         // Test Append
         index.insert(10, "10");
         let next = stream.next().await.unwrap();
-        assert!(
-            matches!(
-                next,
-                VectorDiff::Insert { index: 0, value } if value == "10"
-            ),
-            "{next:?}"
-        );
+        assert!(matches!(
+            next,
+            VectorDiff::Insert { index: 0, value } if value == "10"
+        ));
 
         // we do internal calls to make sure all these are going through properly
         index.vector.push_back((20, "20"));
         let next = stream.next().await.unwrap();
-        assert!(
-            matches!(
-                next,
-                VectorDiff::PushBack { value } if value == "20"
-            ),
-            "{next:?}"
-        );
+        assert!(matches!(
+            next,
+            VectorDiff::PushBack { value } if value == "20"
+        ));
 
         index.vector.push_front((5, "5"));
 
         let next = stream.next().await.unwrap();
-        assert!(
-            matches!(
-                next,
-                VectorDiff::PushFront { value } if value == "5"
-            ),
-            "{next:?}"
-        );
+        assert!(matches!(
+            next,
+            VectorDiff::PushFront { value } if value == "5"
+        ));
 
         index.vector.append([(25, "25"), (35, "35")].into());
 
         let next = stream.next().await.unwrap();
-        assert!(
-            matches!(
-                next,
-                VectorDiff::Append { ref values } if *values == vec!["25", "35"].into()
-            ),
-            "{next:?}"
-        );
+        assert!(matches!(
+            next,
+            VectorDiff::Append { ref values } if *values == vec!["25", "35"].into()
+        ));
 
         // // Test Set
         // // Note: ObservableVector doesn't have a direct set method, so we'll test other cases
@@ -714,21 +702,15 @@ mod tests {
         index.insert("second");
 
         let next = stream.next().await.unwrap();
-        assert!(
-            matches!(
-                next,
-                VectorDiff::PushFront { value } if value == "first"
-            ),
-            "{next:?}"
-        );
+        assert!(matches!(
+            next,
+            VectorDiff::PushFront { value } if value == "first"
+        ));
         let next = stream.next().await.unwrap();
-        assert!(
-            matches!(
-                next,
-                VectorDiff::PushFront { value } if value == "second"
-            ),
-            "{next:?}"
-        );
+        assert!(matches!(
+            next,
+            VectorDiff::PushFront { value } if value == "second"
+        ));
 
         // Test Remove
         index.remove(&"first");
@@ -751,21 +733,15 @@ mod tests {
         index.insert("first");
         index.insert("second");
         let next = stream.next().await.unwrap();
-        assert!(
-            matches!(
-                next,
-                VectorDiff::PushBack { value } if value == "first"
-            ),
-            "{next:?}"
-        );
+        assert!(matches!(
+            next,
+            VectorDiff::PushBack { value } if value == "first"
+        ));
         let next = stream.next().await.unwrap();
-        assert!(
-            matches!(
-                next,
-                VectorDiff::PushBack { value } if value == "second"
-            ),
-            "{next:?}"
-        );
+        assert!(matches!(
+            next,
+            VectorDiff::PushBack { value } if value == "second"
+        ));
 
         // Test Remove
         index.remove(&"first");

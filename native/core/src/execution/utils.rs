@@ -241,6 +241,32 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn test_mock_implementations() {
+        let room_id = MockRoomId("!room1:example.com".to_string());
+        let object_id = MockObjectId("obj1".to_string());
+        let model_type = MockModelType("model1".to_string());
+        let account_data = "account1".to_string();
+        let user_id = "user1".to_string();
+        let timestamp = "2021-01-01T00:00:00Z".to_string();
+
+        assert_eq!(room_id.as_ref(), "!room1:example.com");
+        assert_eq!(object_id.as_ref(), "obj1");
+        assert_eq!(model_type.as_ref(), "model1");
+        assert_eq!(account_data, "account1");
+        assert_eq!(user_id, "user1");
+        assert_eq!(timestamp, "2021-01-01T00:00:00Z");
+
+        let store = MockStore::new();
+
+        let model = MockModel::new("obj1", 10, None);
+        assert_eq!(model.object_id(), object_id);
+        assert_eq!(model.value, 10);
+        assert_eq!(model.parent_ids, None);
+        assert_eq!(model.transition_count, 0);
+        model.execute(&store).await.unwrap();
+    }
+
+    #[tokio::test]
     async fn test_transition_tree_simple_no_transitions() {
         let store = MockStore::new();
 
