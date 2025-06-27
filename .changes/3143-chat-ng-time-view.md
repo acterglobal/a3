@@ -1,1 +1,1 @@
-- [UI-UX] : Chat time now appears on the same line as the message, making chats look cleaner.
+- [UI-UX] : Improved chat message area with better alignment of time indicator especially for short messages.
