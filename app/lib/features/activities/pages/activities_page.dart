@@ -1,4 +1,5 @@
 import 'package:acter/common/widgets/empty_state_widget.dart';
+import 'package:acter/features/activities/providers/activities_providers.dart';
 import 'package:acter/features/activities/widgets/invitation_section/invitation_section_widget.dart';
 import 'package:acter/features/activities/widgets/security_and_privacy_section/security_and_privacy_section_widget.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/space_activities_section_widget.dart';
@@ -39,7 +40,7 @@ class ActivitiesPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: buildActivityAppBar(context),
-      body: buildActivityBody(context, sectionWidgetList),
+      body: buildActivityBody(context, ref, sectionWidgetList),
     );
   }
 
@@ -53,15 +54,38 @@ class ActivitiesPage extends ConsumerWidget {
 
   Widget buildActivityBody(
     BuildContext context,
+    WidgetRef ref,
     List<Widget> sectionWidgetList,
   ) {
     final isActivityEmpty = sectionWidgetList.isEmpty;
     if (isActivityEmpty) return buildEmptyStateWidget(context);
 
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: sectionWidgetList,
+    final hasMoreActivities = ref.watch(hasMoreActivitiesProvider);
+    final isLoadingMore = ref.watch(isLoadingMoreActivitiesProvider);
+    final loadMoreActivities = ref.watch(loadMoreActivitiesProvider);
+
+    return NotificationListener<ScrollNotification>(
+      onNotification: (ScrollNotification scrollInfo) {
+        // Check if user has scrolled to near the bottom (80% of the way)
+        // and ensure we have more data to load and aren't already loading
+        if (scrollInfo.metrics.pixels >= scrollInfo.metrics.maxScrollExtent * 0.8 &&
+            hasMoreActivities && 
+            !isLoadingMore &&
+            scrollInfo.metrics.maxScrollExtent > 0) {
+          // Add a small delay to prevent multiple rapid calls
+          Future.delayed(const Duration(milliseconds: 100), () {
+            if (hasMoreActivities && !isLoadingMore) {
+              loadMoreActivities();
+            }
+          });
+        }
+        return false;
+      },
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: sectionWidgetList,
+        ),
       ),
     );
   }
