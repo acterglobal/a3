@@ -233,11 +233,13 @@ class MessageEventItem extends ConsumerWidget {
             ? RepliedToPreview(roomId: roomId, messageId: messageId, isMe: isMe)
             : null;
 
-    final child = TextMessageEvent(
-      content: content,
-      roomId: roomId,
-      repliedTo: repliedToBuilder,
-      isNotice: isNotice,
+    final child = IntrinsicWidth(
+      child: TextMessageEvent(
+        content: content,
+        roomId: roomId,
+        repliedTo: repliedToBuilder,
+        isNotice: isNotice,
+      ),
     );
 
     if (isMe) {

@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:async';
 
 import 'package:acter/common/models/types.dart';
+import 'package:acter/common/extensions/acter_build_context.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/models/media_chat_state/media_chat_state.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
@@ -89,31 +90,41 @@ class _AudioMessageEventState extends ConsumerState<AudioMessageEvent> {
 
   Widget _buildAudioEventUI(File? mediaFile, bool isDownloading) {
     final msgSize = widget.content.size();
+    final defaultWidth = defaultMessageMaxWidth(context);
 
-    return Row(
-      children: [
-        _buildAudioControls(mediaFile, isDownloading),
-        SizedBox(width: 10),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(widget.content.body()),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  if (msgSize != null) Text(formatBytes(msgSize.truncate())),
-                  if (widget.timestamp != null)
-                    MessageTimestampWidget(
-                      timestamp: widget.timestamp.expect('should not be null'),
-                    ),
-                ],
-              ),
-            ],
+    return Container(
+      constraints: BoxConstraints(maxWidth: defaultWidth),
+      child: Row(
+        children: [
+          _buildAudioControls(mediaFile, isDownloading),
+          SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  widget.content.body(),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    if (msgSize != null) Text(formatBytes(msgSize.truncate())),
+                    Spacer(),
+                    if (widget.timestamp != null)
+                      MessageTimestampWidget(
+                        timestamp: widget.timestamp.expect(
+                          'should not be null',
+                        ),
+                      ),
+                  ],
+                ),
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 

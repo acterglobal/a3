@@ -3,6 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 const largeScreenBreakPoint = 770;
 
+double defaultMessageMaxWidth(BuildContext context) {
+  final size = MediaQuery.sizeOf(context);
+  return context.isLargeScreen ? size.width * 0.5 : size.width * 0.75;
+}
+
 extension ActerBuildContext on BuildContext {
   bool get isLargeScreen =>
       MediaQuery.of(this).size.width >= largeScreenBreakPoint;
