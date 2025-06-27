@@ -72,15 +72,28 @@ final allActivitiesProvider =
   AllActivitiesNotifier.new,
 );
 
+// Helper function to check if activity type is supported
+bool isActivityTypeSupported(String activityType) {
+  final pushStyle = PushStyles.values.asNameMap()[activityType];
+  return pushStyle != null && supportedActivityTypes.contains(pushStyle);
+}
+
 // Helper function to get date-only DateTime from activity timestamp
 DateTime getActivityDate(int timestamp) {
   final activityDate = DateTime.fromMillisecondsSinceEpoch(timestamp).toLocal();
   return DateTime(activityDate.year, activityDate.month, activityDate.day);
 }
 
+// Provider to get filtered activities (only supported types)
+final filteredActivitiesProvider = Provider<List<Activity>>((ref) {
+  final allActivities = ref.watch(allActivitiesProvider).valueOrNull ?? [];
+  return allActivities.where((activity) => isActivityTypeSupported(activity.typeStr())).toList();
+});
+
 final activityDatesProvider = Provider<List<DateTime>>((ref) {
-  final activities = ref.watch(allActivitiesProvider).valueOrNull;
-  if (activities == null || activities.isEmpty) return [];
+  final activities = ref.watch(filteredActivitiesProvider);
+  
+  if (activities.isEmpty) return [];
   
   final uniqueDates = activities.map((activity) => getActivityDate(activity.originServerTs())).toSet();
   return uniqueDates.toList()..sort((a, b) => b.compareTo(a));
@@ -88,8 +101,9 @@ final activityDatesProvider = Provider<List<DateTime>>((ref) {
 
 // Base provider for activities filtered by date
 final activitiesByDateProvider = Provider.family<List<Activity>, DateTime>((ref, date) {
-  final allActivities = ref.watch(allActivitiesProvider).valueOrNull ?? [];
-  return allActivities.where((activity) => getActivityDate(activity.originServerTs()).isAtSameMomentAs(date)).toList();
+  final activities = ref.watch(filteredActivitiesProvider);
+  return activities.where((activity) => 
+    getActivityDate(activity.originServerTs()).isAtSameMomentAs(date)).toList();
 });
 
 // Provider for consecutive grouped activities using records 
