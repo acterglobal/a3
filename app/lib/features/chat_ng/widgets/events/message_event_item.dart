@@ -12,6 +12,7 @@ import 'package:acter/features/chat_ng/widgets/events/state_event_container_widg
 import 'package:acter/features/chat_ng/widgets/events/text_message_event.dart';
 import 'package:acter/features/chat_ng/widgets/events/video_message_event.dart';
 import 'package:acter/common/extensions/options.dart';
+import 'package:acter/features/chat_ng/widgets/read_receipts_widget.dart';
 import 'package:acter/features/chat_ng/widgets/replied_to_preview.dart';
 import 'package:acter/features/chat_ng/widgets/sending_state_widget.dart';
 import 'package:acter/l10n/generated/l10n.dart';
@@ -60,7 +61,8 @@ class MessageEventItem extends ConsumerWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           _buildMessageUI(context, ref, roomId, messageId, item, isMe),
-          if (sendingState != null || (isMe && isLastMessage))
+          // DM chats have their own read state widget
+          if (!isDM)
             Align(
               alignment: Alignment.centerRight,
               child: Padding(
@@ -69,9 +71,9 @@ class MessageEventItem extends ConsumerWidget {
                     sendingState != null
                         ? SendingStateWidget(
                           state: sendingState,
-                          showSentIconOnUnknown: isMe && isLastMessage,
+                          showSentIconOnUnknown: isLastMessage,
                         )
-                        : SendingStateWidget.sent(),
+                        : const SizedBox.shrink(),
               ),
             ),
         ],
@@ -247,6 +249,8 @@ class MessageEventItem extends ConsumerWidget {
         isEdited: wasEdited,
         timestamp: timestamp,
         displayName: displayName,
+        readWidgetBuilder:
+            isDM ? ReadReceiptsWidget.dm(item: item, roomId: roomId) : null,
         child: child,
       );
     }
@@ -275,6 +279,8 @@ class MessageEventItem extends ConsumerWidget {
           isLastMessageBySender: isLastMessageBySender,
           isEdited: wasEdited,
           displayName: displayName,
+          readWidgetBuilder:
+              isDM ? ReadReceiptsWidget.dm(item: item, roomId: roomId) : null,
           child: mediaMessageWidget,
         )
         : ChatBubble(

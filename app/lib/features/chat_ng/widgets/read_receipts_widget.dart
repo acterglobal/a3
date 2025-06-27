@@ -1,6 +1,7 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
+import 'package:acter/features/chat_ng/widgets/sending_state_widget.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -8,21 +9,115 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:quds_popup_menu/quds_popup_menu.dart';
 
+class ReadStateWidget extends StatelessWidget {
+  const ReadStateWidget({super.key});
+  @override
+  Widget build(BuildContext context) => Icon(
+    Icons.done_all,
+    size: 14,
+    color: Theme.of(context).colorScheme.onSecondary.withValues(alpha: 0.7),
+  );
+}
+
 class ReadReceiptsWidget extends ConsumerWidget {
   static const readReceiptsPopupMenuKey = Key('read_receipts_popup_menu');
   final TimelineEventItem item;
   final String roomId;
-  final String messageId;
   final int showAvatarsLimit;
+  final bool? isDM;
 
-  const ReadReceiptsWidget({
+  const ReadReceiptsWidget._({
     super.key,
     required this.item,
     required this.roomId,
-    required this.messageId,
     this.showAvatarsLimit = 5,
+    this.isDM,
   });
 
+  factory ReadReceiptsWidget.group({
+    Key? key,
+    required TimelineEventItem item,
+    required String roomId,
+
+    int showAvatarsLimit = 5,
+  }) {
+    return ReadReceiptsWidget._(
+      key: key,
+      item: item,
+      roomId: roomId,
+      isDM: false,
+      showAvatarsLimit: showAvatarsLimit,
+    );
+  }
+
+  factory ReadReceiptsWidget.dm({
+    Key? key,
+    required TimelineEventItem item,
+    required String roomId,
+  }) {
+    return ReadReceiptsWidget._(
+      key: key,
+      item: item,
+      roomId: roomId,
+      isDM: true,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isDM = this.isDM;
+
+    return isDM != null && isDM
+        ? _DmReadReceipts(item: item, roomId: roomId)
+        : _GroupReadReceipts(
+          item: item,
+          roomId: roomId,
+          showAvatarsLimit: showAvatarsLimit,
+        );
+  }
+}
+
+class _DmReadReceipts extends ConsumerWidget {
+  const _DmReadReceipts({required this.item, required this.roomId});
+  final TimelineEventItem item;
+  final String roomId;
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final readReceipts = ref.watch(messageReadReceiptsProvider(item));
+    if (readReceipts.isNotEmpty) {
+      final userId = readReceipts.keys.first;
+      final displayName =
+          ref
+              .watch(
+                memberDisplayNameProvider((roomId: roomId, userId: userId)),
+              )
+              .valueOrNull;
+      String message = '${L10n.of(context).seenBy}: ${displayName ?? userId}';
+      if (displayName != null) {
+        message = '${L10n.of(context).seenBy}: $displayName ($userId) ';
+      }
+      return Tooltip(message: message, child: const ReadStateWidget());
+    }
+
+    final sendState = item.sendState();
+    if (sendState != null) {
+      return SendingStateWidget(state: sendState);
+    }
+
+    return const SizedBox.shrink();
+  }
+}
+
+class _GroupReadReceipts extends ConsumerWidget {
+  const _GroupReadReceipts({
+    required this.item,
+    required this.roomId,
+    required this.showAvatarsLimit,
+  });
+
+  final TimelineEventItem item;
+  final String roomId;
+  final int showAvatarsLimit;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);

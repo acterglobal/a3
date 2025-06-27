@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/common_providers.dart';
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
 import 'package:acter/features/chat_ng/widgets/events/chat_event.dart';
 import 'package:acter/features/chat_ui_showcase/mocks/showcase/data/general_usecases.dart';
@@ -69,6 +70,7 @@ void main() {
           messageReadReceiptsProvider.overrideWith(
             (ref, item) => {'@acter1:m-1.acter.global': 1716230400},
           ),
+          isDirectChatProvider.overrideWith((ref, roomId) => true),
         ],
         child: ListView(
           shrinkWrap: true,

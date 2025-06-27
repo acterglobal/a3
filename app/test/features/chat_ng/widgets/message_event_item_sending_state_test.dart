@@ -97,7 +97,7 @@ void main() {
       );
 
       expect(find.byType(SendingStateWidget), findsOneWidget);
-      expect(find.byIcon(Icons.send), findsOneWidget);
+      expect(find.byIcon(Icons.schedule), findsOneWidget);
     });
 
     testWidgets('shows sent icon for last message by user', (tester) async {
@@ -200,7 +200,7 @@ void main() {
       );
 
       expect(find.byType(SendingStateWidget), findsOneWidget);
-      expect(find.byIcon(Icons.send), findsOneWidget);
+      expect(find.byIcon(Icons.schedule), findsOneWidget);
     });
 
     testWidgets('shows sent icon for unknown state when last message', (

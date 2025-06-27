@@ -10,8 +10,11 @@ class SentStateWidget extends StatelessWidget {
   const SentStateWidget({super.key});
 
   @override
-  Widget build(BuildContext context) =>
-      Icon(Icons.check, color: Theme.of(context).colorScheme.primary);
+  Widget build(BuildContext context) => Icon(
+    Icons.check,
+    size: 14,
+    color: Theme.of(context).colorScheme.onSecondary,
+  );
 }
 
 class SendingStateWidget extends StatelessWidget {
@@ -27,7 +30,7 @@ class SendingStateWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) => switch (state.state()) {
     'NotSentYet' => PulsatingIcon(
-      icon: Icons.send,
+      icon: Icons.schedule,
       color: Theme.of(context).colorScheme.onSecondary,
     ),
     'SendingFailed' => _buildSendingFailed(context),
