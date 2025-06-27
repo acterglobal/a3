@@ -90,7 +90,7 @@ mod tests {
     }
 
     // Mock types for testing
-    #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+    #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
     struct MockRoomId(String);
 
     impl AsRef<str> for MockRoomId {
@@ -99,7 +99,7 @@ mod tests {
         }
     }
 
-    #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+    #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
     struct MockObjectId(String);
 
     impl AsRef<str> for MockObjectId {
@@ -117,7 +117,7 @@ mod tests {
         }
     }
 
-    #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+    #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
     struct MockTypeConfig;
 
     impl TypeConfig for MockTypeConfig {

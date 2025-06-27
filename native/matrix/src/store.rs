@@ -6,9 +6,9 @@ use std::collections::HashSet;
 use std::sync::{Arc, Mutex};
 use tracing::{debug, error, info, instrument, trace, warn};
 
-mod index;
-pub use index::{LifoIndex, RankedIndex, StoreIndex};
+pub use acter_core::execution::{LifoIndex, RankedIndex, StoreIndex};
 
+use crate::config::MatrixCoreTypeConfig;
 use crate::referencing::{ExecuteReference, IndexKey};
 use crate::{
     models::{ActerModel, AnyActerModel},
@@ -20,7 +20,7 @@ pub struct Store {
     pub(crate) client: Client,
     user_id: OwnedUserId,
     models: Arc<HashMap<OwnedEventId, AnyActerModel>>,
-    indizes: Arc<HashMap<IndexKey, StoreIndex>>,
+    indizes: Arc<HashMap<IndexKey, StoreIndex<MatrixCoreTypeConfig>>>,
     dirty: Arc<Mutex<HashSet<OwnedEventId>>>, // our key mutex;
 }
 
@@ -143,7 +143,7 @@ impl Store {
             vec![]
         };
 
-        let indizes: HashMap<IndexKey, StoreIndex> = HashMap::new();
+        let indizes: HashMap<IndexKey, StoreIndex<MatrixCoreTypeConfig>> = HashMap::new();
         let models: HashMap<OwnedEventId, AnyActerModel> = HashMap::new();
         for m in models_vec {
             let Some(m) = m else {

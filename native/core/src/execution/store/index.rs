@@ -2,25 +2,25 @@ use std::{fmt::Debug, ops::Deref};
 
 use eyeball_im::{ObservableVector, ObservableVectorTransactionEntry, VectorDiff};
 use futures::{Stream, StreamExt};
-use matrix_sdk::ruma::{MilliSecondsSinceUnixEpoch, OwnedEventId};
 
 use crate::{
-    models::EventMeta,
+    config::TypeConfig,
+    meta::EventMeta,
     referencing::{IndexKey, ObjectListIndex, SectionIndex},
 };
 
 /// Keeps an index of items sorted by the given rank, highest rank first
 pub struct RankedIndex<K, T>
 where
-    K: 'static + Ord + Clone,
-    T: 'static + Clone + Eq,
+    K: Ord + Clone + 'static,
+    T: Clone + Eq + 'static,
 {
     vector: ObservableVector<(K, T)>,
 }
 impl<K, T> Default for RankedIndex<K, T>
 where
-    K: 'static + Ord + Clone,
-    T: 'static + Clone + Eq,
+    K: Ord + Clone + 'static,
+    T: Clone + Eq + 'static,
 {
     fn default() -> Self {
         Self {
@@ -31,8 +31,8 @@ where
 
 impl<K, T> Deref for RankedIndex<K, T>
 where
-    K: 'static + Ord + Clone,
-    T: 'static + Clone + Eq,
+    K: Ord + Clone + 'static,
+    T: Clone + Eq + 'static,
 {
     type Target = ObservableVector<(K, T)>;
 
@@ -43,8 +43,8 @@ where
 
 impl<K, T> RankedIndex<K, T>
 where
-    K: 'static + Ord + Clone,
-    T: 'static + Clone + Eq,
+    K: Ord + Clone + 'static,
+    T: Clone + Eq + 'static,
 {
     pub fn new_with(rank: K, value: T) -> Self {
         let mut m = RankedIndex::default();
@@ -82,7 +82,7 @@ where
         self.vector.iter().map(|(_k, v)| v).collect()
     }
 
-    pub fn update_stream(&self) -> impl Stream<Item = VectorDiff<T>> {
+    pub fn update_stream(&self) -> impl Stream<Item = VectorDiff<T>> + use<K, T> {
         self.vector.subscribe().into_stream().map(|v| match v {
             VectorDiff::Append { values } => VectorDiff::Append {
                 values: values.into_iter().map(|(_k, v)| v).collect(),
@@ -115,7 +115,7 @@ impl GenericIndexVectorHandler {
     /// All instances of this element from the vector
     pub fn remove<T>(vector: &mut ObservableVector<T>, value: &T)
     where
-        T: 'static + Clone + Eq,
+        T: Clone + Eq + 'static,
     {
         let mut t = vector.transaction();
         let mut entries = t.entries();
@@ -130,14 +130,16 @@ impl GenericIndexVectorHandler {
     /// Returns the current list of values in order of when they were added
     pub fn values<T>(vector: &ObservableVector<T>) -> Vec<&T>
     where
-        T: 'static + Clone + Eq,
+        T: Clone + Eq + 'static,
     {
         vector.iter().collect()
     }
 
-    pub fn update_stream<T>(vector: &ObservableVector<T>) -> impl Stream<Item = VectorDiff<T>>
+    pub fn update_stream<T>(
+        vector: &ObservableVector<T>,
+    ) -> impl Stream<Item = VectorDiff<T>> + use<T>
     where
-        T: 'static + Clone + Eq,
+        T: Clone + Eq + 'static,
     {
         vector.subscribe().into_stream()
     }
@@ -147,14 +149,14 @@ impl GenericIndexVectorHandler {
 /// latest first
 pub struct LifoIndex<T>
 where
-    T: 'static + Clone + Eq,
+    T: Clone + Eq + 'static,
 {
     vector: ObservableVector<T>,
 }
 
 impl<T> LifoIndex<T>
 where
-    T: 'static + Clone + Eq,
+    T: Clone + Eq + 'static,
 {
     pub fn new_with(value: T) -> Self {
         let mut m = LifoIndex::default();
@@ -172,18 +174,18 @@ where
     }
 
     /// Returns the current list of values in order of when they were added
-    pub fn values(&self) -> Vec<&T> {
+    pub fn values<'a>(&'a self) -> Vec<&'a T> {
         GenericIndexVectorHandler::values(&self.vector)
     }
 
-    pub fn update_stream(&self) -> impl Stream<Item = VectorDiff<T>> {
+    pub fn update_stream(&self) -> impl Stream<Item = VectorDiff<T>> + use<T> {
         GenericIndexVectorHandler::update_stream(&self.vector)
     }
 }
 
 impl<T> Default for LifoIndex<T>
 where
-    T: 'static + Clone + Eq,
+    T: Clone + Eq + 'static,
 {
     fn default() -> Self {
         Self {
@@ -194,7 +196,7 @@ where
 
 impl<T> Deref for LifoIndex<T>
 where
-    T: 'static + Clone + Eq,
+    T: Clone + Eq + 'static,
 {
     type Target = ObservableVector<T>;
 
@@ -207,14 +209,14 @@ where
 /// latest last
 pub struct FiloIndex<T>
 where
-    T: 'static + Clone + Eq,
+    T: Clone + Eq + 'static,
 {
     vector: ObservableVector<T>,
 }
 
 impl<T> FiloIndex<T>
 where
-    T: 'static + Clone + Eq,
+    T: Clone + Eq + 'static,
 {
     pub fn new_with(value: T) -> Self {
         let mut m = FiloIndex::default();
@@ -236,14 +238,14 @@ where
         GenericIndexVectorHandler::values(&self.vector)
     }
 
-    pub fn update_stream(&self) -> impl Stream<Item = VectorDiff<T>> {
+    pub fn update_stream(&self) -> impl Stream<Item = VectorDiff<T>> + use<T> {
         GenericIndexVectorHandler::update_stream(&self.vector)
     }
 }
 
 impl<T> Default for FiloIndex<T>
 where
-    T: 'static + Clone + Eq,
+    T: Clone + Eq + 'static,
 {
     fn default() -> Self {
         Self {
@@ -254,7 +256,7 @@ where
 
 impl<T> Deref for FiloIndex<T>
 where
-    T: 'static + Clone + Eq,
+    T: Clone + Eq + 'static,
 {
     type Target = ObservableVector<T>;
 
@@ -263,28 +265,35 @@ where
     }
 }
 
-pub enum StoreIndex {
-    Lifo(LifoIndex<OwnedEventId>),
-    Filo(FiloIndex<OwnedEventId>),
-    Ranked(RankedIndex<MilliSecondsSinceUnixEpoch, OwnedEventId>),
+pub enum StoreIndex<C: TypeConfig>
+where
+    C::ObjectId: 'static,
+    C::Timestamp: 'static,
+{
+    Lifo(LifoIndex<C::ObjectId>),
+    Filo(FiloIndex<C::ObjectId>),
+    Ranked(RankedIndex<C::Timestamp, C::ObjectId>),
 }
 
-impl StoreIndex {
-    pub fn new_for(key: &IndexKey, meta: &EventMeta) -> StoreIndex {
+impl<C: TypeConfig> StoreIndex<C> {
+    pub fn new_for(key: &IndexKey<C>, meta: &EventMeta<C>) -> StoreIndex<C> {
         match key {
             IndexKey::AllHistory | IndexKey::ObjectHistory(_) | IndexKey::RoomHistory(_) => {
-                StoreIndex::Ranked(RankedIndex::new_with(meta.timestamp, meta.event_id.clone()))
+                StoreIndex::Ranked(RankedIndex::new_with(
+                    meta.timestamp.clone(),
+                    meta.event_id.clone(),
+                ))
             }
             //RSVPs are latest first for collection
-            IndexKey::ObjectList(_, ObjectListIndex::Rsvp) => {
-                StoreIndex::Ranked(RankedIndex::new_with(meta.timestamp, meta.event_id.clone()))
-            }
+            IndexKey::ObjectList(_, ObjectListIndex::Rsvp) => StoreIndex::Ranked(
+                RankedIndex::new_with(meta.timestamp.clone(), meta.event_id.clone()),
+            ),
             IndexKey::Section(SectionIndex::Boosts)
             | IndexKey::Section(SectionIndex::Stories)
             | IndexKey::RoomSection(_, SectionIndex::Boosts)
-            | IndexKey::RoomSection(_, SectionIndex::Stories) => {
-                StoreIndex::Ranked(RankedIndex::new_with(meta.timestamp, meta.event_id.clone()))
-            }
+            | IndexKey::RoomSection(_, SectionIndex::Stories) => StoreIndex::Ranked(
+                RankedIndex::new_with(meta.timestamp.clone(), meta.event_id.clone()),
+            ),
             IndexKey::ObjectList(_, ObjectListIndex::Tasks) => {
                 StoreIndex::Filo(FiloIndex::new_with(meta.event_id.clone()))
             }
@@ -292,16 +301,16 @@ impl StoreIndex {
         }
     }
 
-    pub fn insert(&mut self, meta: &EventMeta) {
+    pub fn insert(&mut self, meta: &EventMeta<C>) {
         match self {
             StoreIndex::Lifo(l) => l.insert(meta.event_id.clone()),
             StoreIndex::Filo(l) => l.insert(meta.event_id.clone()),
-            StoreIndex::Ranked(r) => r.insert(meta.timestamp, meta.event_id.clone()),
+            StoreIndex::Ranked(r) => r.insert(meta.timestamp.clone(), meta.event_id.clone()),
         }
     }
 
     /// All instances of this element from the vector
-    pub fn remove(&mut self, value: &OwnedEventId) {
+    pub fn remove(&mut self, value: &C::ObjectId) {
         match self {
             StoreIndex::Lifo(idx) => idx.remove(value),
             StoreIndex::Filo(idx) => idx.remove(value),
@@ -310,7 +319,7 @@ impl StoreIndex {
     }
 
     /// Returns the current list of values in order of when they were added
-    pub fn values(&self) -> Vec<&OwnedEventId> {
+    pub fn values(&self) -> Vec<&C::ObjectId> {
         match self {
             StoreIndex::Lifo(idx) => idx.values(),
             StoreIndex::Filo(idx) => idx.values(),
@@ -327,7 +336,7 @@ impl StoreIndex {
     // }
 }
 
-impl Debug for StoreIndex {
+impl<C: TypeConfig> Debug for StoreIndex<C> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Lifo(_) => f.debug_tuple("Lifo").finish(),

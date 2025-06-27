@@ -250,10 +250,10 @@ mod tests {
     #[test]
     fn test_with_custom_types() {
         // Test with custom types that implement the required traits
-        #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+        #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
         struct CustomRoomId(String);
 
-        #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+        #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
         struct CustomObjectId(String);
 
         impl AsRef<str> for CustomRoomId {
