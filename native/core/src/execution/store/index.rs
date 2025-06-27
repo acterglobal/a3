@@ -174,7 +174,7 @@ where
     }
 
     /// Returns the current list of values in order of when they were added
-    pub fn values<'a>(&'a self) -> Vec<&'a T> {
+    pub fn values(&self) -> Vec<&T> {
         GenericIndexVectorHandler::values(&self.vector)
     }
 

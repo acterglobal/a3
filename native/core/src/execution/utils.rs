@@ -5,12 +5,13 @@ use super::traits::{Model, Store};
 use crate::{config::TypeConfig, referencing::ExecuteReference};
 
 #[async_recursion]
-pub async fn transition_tree<C: TypeConfig, M, S, I, E>(
+pub async fn transition_tree<C, M, S, I, E>(
     store: &S,
     parents: I,
     model: &M,
 ) -> Result<Vec<M>, E>
 where
+    C: TypeConfig,
     M: Model<C> + Sync,
     S: Store<C, Model = M> + Sync,
     S::Model: Model<C>,
