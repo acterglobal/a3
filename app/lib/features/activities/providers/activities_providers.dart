@@ -67,8 +67,13 @@ final hasUnconfirmedEmailAddresses = StateProvider(
       true,
 );
 
+final activityProvider =
+    AsyncNotifierProviderFamily<AsyncActivityNotifier, Activity?, String>(
+      AsyncActivityNotifier.new,
+    );
+
 final allActivitiesProvider =
-    AsyncNotifierProvider<AllActivitiesNotifier, List<Activity>>(
+    AsyncNotifierProvider<AllActivitiesNotifier, List<String>>(
   AllActivitiesNotifier.new,
 );
 
@@ -78,9 +83,27 @@ DateTime getActivityDate(int timestamp) {
   return DateTime(activityDate.year, activityDate.month, activityDate.day);
 }
 
+// Provider to get activities by id
+final allActivitiesByIdProvider = FutureProvider<List<Activity>>((ref) async {
+  
+  final activityIds = await ref.watch(allActivitiesProvider.future);
+  
+  if (activityIds.isEmpty) return [];
+  
+  final activities = <Activity>[];
+  for (final id in activityIds) {
+    final activity = ref.watch(activityProvider(id)).valueOrNull;
+    if (activity != null) {
+      activities.add(activity);
+    }
+  }
+  return activities;
+});
+
 final activityDatesProvider = Provider<List<DateTime>>((ref) {
-  final activities = ref.watch(allActivitiesProvider).valueOrNull;
-  if (activities == null || activities.isEmpty) return [];
+  final activities = ref.watch(allActivitiesByIdProvider).valueOrNull ?? [];
+  
+  if (activities.isEmpty) return [];
   
   final uniqueDates = activities.map((activity) => getActivityDate(activity.originServerTs())).toSet();
   return uniqueDates.toList()..sort((a, b) => b.compareTo(a));
@@ -88,8 +111,9 @@ final activityDatesProvider = Provider<List<DateTime>>((ref) {
 
 // Base provider for activities filtered by date
 final activitiesByDateProvider = Provider.family<List<Activity>, DateTime>((ref, date) {
-  final allActivities = ref.watch(allActivitiesProvider).valueOrNull ?? [];
-  return allActivities.where((activity) => getActivityDate(activity.originServerTs()).isAtSameMomentAs(date)).toList();
+  final activities = ref.watch(allActivitiesByIdProvider).valueOrNull ?? [];
+  return activities.where((activity) => 
+    getActivityDate(activity.originServerTs()).isAtSameMomentAs(date)).toList();
 });
 
 // Provider for consecutive grouped activities using records 

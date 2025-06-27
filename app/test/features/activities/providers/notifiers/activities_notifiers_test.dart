@@ -37,7 +37,7 @@ void main() {
       final notifier = AllActivitiesNotifier();
 
       // Act & Assert
-      expect(notifier, isA<AsyncNotifier<List<Activity>>>());
+      expect(notifier, isA<AsyncNotifier<List<String>>>());
     });
 
     test('spaces can call getRoomIdStr method', () {
