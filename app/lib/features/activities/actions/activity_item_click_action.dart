@@ -7,49 +7,46 @@ import 'package:logging/logging.dart';
 final _log = Logger('ActivityItemClickAction');
 
 void onTapActivityItem(BuildContext context, ActivityObject? activityObject) {
+  final String activityType = activityObject?.typeStr() ?? '';
+  final String objectId = activityObject?.objectIdStr() ?? '';
+  final String taskListId = activityObject?.taskListIdStr() ?? '';
 
-    final String activityType = activityObject?.typeStr() ?? '';
-    final String objectId = activityObject?.objectIdStr() ?? '';
-    final String taskListId = activityObject?.taskListIdStr() ?? '';
+  if (activityType.isEmpty || objectId.isEmpty) {
+    _log.info('onTapActivityItem : activityType or objectId is null');
+    return;
+  }
 
-    if (activityType.isEmpty || objectId.isEmpty) {
-      _log.info('onTapActivityItem : activityType or objectId is null');
-      return;
-    }
-
-    switch (activityType) {
-      case 'pin':
-        context.pushNamed(Routes.pin.name, pathParameters: {'pinId': objectId});
-        break;
-      case 'task':
-         context.pushNamed(
-            Routes.taskItemDetails.name,
-            pathParameters: {'taskId': objectId, 'taskListId': taskListId},
-          );
-        break;
-      case 'task-list':
-        context.pushNamed(
+  final activityActions = {
+    'pin': () => context.pushNamed(
+          Routes.pin.name,
+          pathParameters: {'pinId': objectId},
+        ),
+    'task': () => context.pushNamed(
+          Routes.taskItemDetails.name,
+          pathParameters: {'taskId': objectId, 'taskListId': taskListId},
+        ),
+    'task-list': () => context.pushNamed(
           Routes.taskListDetails.name,
           pathParameters: {'taskListId': objectId},
-        );
-        break;
-      case 'event':
-        context.pushNamed(
+        ),
+    'event': () => context.pushNamed(
           Routes.calendarEvent.name,
           pathParameters: {'calendarId': objectId},
-        );
-        break;
-      case 'news':
-        context.pushNamed(
+        ),
+    'news': () => context.pushNamed(
           Routes.update.name,
           pathParameters: {'updateId': objectId},
-        );
-        break;
-      case 'story':
-        context.pushNamed(
+        ),
+    'story': () => context.pushNamed(
           Routes.update.name,
           pathParameters: {'updateId': objectId},
-        );
-        break;
-    }
+        ),
+  };
+
+  final action = activityActions[activityType];
+  if (action != null) {
+    action();
+  } else {
+    _log.warning('Unknown activity type: $activityType');
   }
+}
