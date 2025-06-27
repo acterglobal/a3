@@ -1,4 +1,4 @@
-use crate::config::TypeConfig;
+use crate::traits::TypeConfig;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]

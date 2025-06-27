@@ -11,13 +11,3 @@ pub trait ModelType = ActerCoreSerial + ActerKeyable;
 pub trait AccountData = ActerCoreSerial + ActerKeyable;
 pub trait UserId = ActerCoreSerial + ActerKeyable;
 pub trait Timestamp = ActerCoreSerial + Ord + PartialOrd;
-
-// Configure the types related as one
-pub trait TypeConfig {
-    type RoomId: RoomId;
-    type ObjectId: ObjectId;
-    type ModelType: ModelType;
-    type AccountData: AccountData;
-    type UserId: UserId;
-    type Timestamp: Timestamp;
-}

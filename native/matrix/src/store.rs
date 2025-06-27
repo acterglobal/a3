@@ -6,7 +6,7 @@ use std::collections::HashSet;
 use std::sync::{Arc, Mutex};
 use tracing::{debug, error, info, instrument, trace, warn};
 
-pub use acter_core::execution::{LifoIndex, RankedIndex, StoreIndex};
+pub use acter_core::store::{LifoIndex, RankedIndex, StoreIndex};
 
 use crate::config::MatrixCoreTypeConfig;
 use crate::referencing::{ExecuteReference, IndexKey};

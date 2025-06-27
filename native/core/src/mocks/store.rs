@@ -3,8 +3,8 @@ use std::collections::HashMap;
 use std::sync::Arc;
 use tokio::sync::RwLock;
 
-use crate::execution::{Model, Store};
-use crate::{config::TypeConfig, referencing::ExecuteReference};
+use crate::referencing::ExecuteReference;
+use crate::traits::{ModelT, StoreT, TypeConfig};
 
 // Mock types for testing
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -70,7 +70,7 @@ impl MockModel {
     }
 }
 
-impl Model<MockTypeConfig> for MockModel {
+impl ModelT<MockTypeConfig> for MockModel {
     type Error = MockError;
     type Store = MockStore;
 
@@ -85,7 +85,7 @@ impl Model<MockTypeConfig> for MockModel {
     async fn execute(
         self,
         store: &Self::Store,
-    ) -> Result<Vec<ExecuteReference<MockTypeConfig>>, <Self::Store as Store<MockTypeConfig>>::Error>
+    ) -> Result<Vec<ExecuteReference<MockTypeConfig>>, <Self::Store as StoreT<MockTypeConfig>>::Error>
     {
         store.save(self).await
     }
@@ -139,7 +139,7 @@ impl MockStore {
     }
 }
 
-impl Store<MockTypeConfig> for MockStore {
+impl StoreT<MockTypeConfig> for MockStore {
     type Model = MockModel;
     type Error = MockError;
 

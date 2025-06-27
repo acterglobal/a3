@@ -1,5 +1,5 @@
 use super::{ObjectListIndex, SectionIndex, SpecialListsIndex};
-use crate::config::TypeConfig;
+use crate::traits::TypeConfig;
 use serde::{Deserialize, Serialize, de::DeserializeOwned};
 
 // We organize our Index by typed keys

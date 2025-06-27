@@ -4,9 +4,9 @@ use eyeball_im::{ObservableVector, ObservableVectorTransactionEntry, VectorDiff}
 use futures::{Stream, StreamExt};
 
 use crate::{
-    config::TypeConfig,
     meta::EventMeta,
     referencing::{IndexKey, ObjectListIndex, SectionIndex},
+    traits::TypeConfig,
 };
 
 /// Keeps an index of items sorted by the given rank, highest rank first
@@ -449,9 +449,9 @@ mod tests {
 
     #[test]
     fn test_store_index_initialization() {
-        use crate::config::TypeConfig;
         use crate::meta::EventMeta;
         use crate::referencing::{IndexKey, ObjectListIndex, SectionIndex};
+        use crate::traits::TypeConfig;
 
         // Mock TypeConfig for testing
         #[derive(Debug, Clone, PartialEq, Eq)]
@@ -527,9 +527,9 @@ mod tests {
 
     #[test]
     fn test_store_index_operations() {
-        use crate::config::TypeConfig;
         use crate::meta::EventMeta;
         use crate::referencing::{IndexKey, ObjectListIndex};
+        use crate::traits::TypeConfig;
 
         // Mock TypeConfig for testing
         #[derive(Debug, Clone, PartialEq, Eq)]
@@ -595,9 +595,9 @@ mod tests {
 
     #[test]
     fn test_store_index_debug() {
-        use crate::config::TypeConfig;
         use crate::meta::EventMeta;
         use crate::referencing::{IndexKey, ObjectListIndex};
+        use crate::traits::TypeConfig;
 
         // Mock TypeConfig for testing
         #[derive(Debug, Clone, PartialEq, Eq)]

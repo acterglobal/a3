@@ -1,7 +1,7 @@
-use acter_core::config::TypeConfig;
 pub use acter_core::referencing::{
     ModelParam, ObjectListIndex, RoomParam, SectionIndex, SpecialListsIndex,
 };
+use acter_core::traits::TypeConfig;
 use matrix_sdk::ruma::{MilliSecondsSinceUnixEpoch, OwnedEventId, OwnedRoomId, OwnedUserId};
 use std::borrow::Cow;
 

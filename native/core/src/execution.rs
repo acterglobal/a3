@@ -1,20 +1,22 @@
 use async_recursion::async_recursion;
 use tracing::trace;
 
-use super::traits::{Model, Store};
-use crate::{config::TypeConfig, referencing::ExecuteReference};
+use crate::{
+    referencing::ExecuteReference,
+    traits::{ModelT, StoreT, TypeConfig},
+};
 
 #[async_recursion]
 pub async fn transition_tree<C, M, S, I, E>(store: &S, parents: I, model: &M) -> Result<Vec<M>, E>
 where
     C: TypeConfig,
-    M: Model<C> + Sync,
-    S: Store<C, Model = M> + Sync,
-    S::Model: Model<C>,
+    M: ModelT<C> + Sync,
+    S: StoreT<C, Model = M> + Sync,
+    S::Model: ModelT<C>,
     I: Iterator<Item = C::ObjectId> + Send,
     E: core::error::Error + Send,
-    E: From<<S as Store<C>>::Error>,
-    E: From<<M as Model<C>>::Error>,
+    E: From<<S as StoreT<C>>::Error>,
+    E: From<<M as ModelT<C>>::Error>,
 {
     let mut models = vec![];
     for p in parents {
@@ -43,12 +45,12 @@ pub async fn default_model_execute<C: TypeConfig, M, S, E>(
     model: M,
 ) -> Result<Vec<ExecuteReference<C>>, E>
 where
-    M: Model<C> + Sync,
-    S: Store<C, Model = M> + Sync,
-    S::Model: Model<C>,
+    M: ModelT<C> + Sync,
+    S: StoreT<C, Model = M> + Sync,
+    S::Model: ModelT<C>,
     E: core::error::Error + Send,
-    E: From<<S as Store<C>>::Error>,
-    E: From<<M as Model<C>>::Error>,
+    E: From<<S as StoreT<C>>::Error>,
+    E: From<<M as ModelT<C>>::Error>,
 {
     trace!(object_id=?model.object_id(), ?model, "handling");
     let Some(belongs_to) = model.belongs_to() else {

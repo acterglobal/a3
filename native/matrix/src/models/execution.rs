@@ -1,6 +1,9 @@
-use acter_core::execution::{
-    default_model_execute as core_default_model_execute, transition_tree as core_transition_tree,
-    Model as CoreModel, Store as CoreStore,
+use acter_core::{
+    execution::{
+        default_model_execute as core_default_model_execute,
+        transition_tree as core_transition_tree,
+    },
+    traits::{ModelT, StoreT},
 };
 use matrix_sdk::ruma::OwnedEventId;
 
@@ -34,7 +37,7 @@ pub async fn transition_tree(
     .await
 }
 
-impl CoreModel<MatrixCoreTypeConfig> for AnyActerModel {
+impl ModelT<MatrixCoreTypeConfig> for AnyActerModel {
     type Error = crate::Error;
     type Store = Store;
 
@@ -55,7 +58,7 @@ impl CoreModel<MatrixCoreTypeConfig> for AnyActerModel {
     }
 }
 
-impl CoreStore<MatrixCoreTypeConfig> for Store {
+impl StoreT<MatrixCoreTypeConfig> for Store {
     type Model = AnyActerModel;
     type Error = crate::Error;
 
