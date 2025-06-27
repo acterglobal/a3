@@ -85,9 +85,13 @@ jobs:
     strategy:
       matrix:
         include:
-          - name: SDK
+          - name: Matrix SDK
             package: acter
-            needs_flutter: true
+            needs_flutter: false
+          - name: Core on WASM
+            package: acter-core
+            cargo_flags: --target wasm32-unknown-unknown
+            needs_flutter: false
     steps:
       - uses: actions/checkout@v4
       - name: Install rust toolchain
@@ -98,7 +102,7 @@ jobs:
           flutter-version: '3.32'
           channel: 'stable'
       - name: Release Build
-        run: cargo build -p ${{matrix.package}} --release
+        run: cargo build -p ${{matrix.package}} --release ${{matrix.cargo_flags}}
 
 
   ffigen:
