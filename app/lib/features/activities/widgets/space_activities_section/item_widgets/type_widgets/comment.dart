@@ -23,7 +23,7 @@ class ActivityCommentItemWidget extends ConsumerWidget {
       userId: activity.senderIdStr(),
       roomId: activity.roomIdStr(),
       actionTitle: L10n.of(context).commentedOn,
-      target: activityObject?.title() ?? '',
+      target: getActivityObjectTitle(context),
       subtitle: Text(
         activity.msgContent()?.body() ?? '',
         maxLines: 2,
@@ -35,4 +35,13 @@ class ActivityCommentItemWidget extends ConsumerWidget {
       originServerTs: originServerTs,
     );
   }
+
+   String getActivityObjectTitle(BuildContext context) {
+    return switch (activity.object()?.typeStr()) {
+      'news' => L10n.of(context).boost,
+      'story' => L10n.of(context).story,
+      _ => activity.object()?.title() ?? '',
+    };
+  }
+  
 }

@@ -3184,5 +3184,9 @@
   "updatingLocations": "Updating locations...",
   "@updatingLocations": {},
   "noIconsFound": "No icons found",
-  "@noIconsFound": {}
+  "@noIconsFound": {},
+  "activityUIShowcase": "Activity UI Showcase",
+  "@activityUIShowcase": {},
+  "showcaseList": "Showcase List",
+  "@showcaseList": {}
 }
