@@ -87,7 +87,7 @@ jobs:
         include:
           - name: Matrix SDK
             package: acter
-            needs_flutter: false
+            needs_flutter: true
           - name: Core on WASM
             package: acter-core
             cargo_flags: --target wasm32-unknown-unknown
