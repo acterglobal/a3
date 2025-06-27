@@ -106,6 +106,30 @@ final allActivitiesByIdProvider = FutureProvider<List<Activity>>((ref) async {
   return activities;
 });
 
+// Provider to check if more activities can be loaded
+final hasMoreActivitiesProvider = Provider<bool>((ref) {
+  // Watch the provider to ensure we get updates when state changes
+  ref.watch(allActivitiesProvider);
+  final notifier = ref.read(allActivitiesProvider.notifier);
+  return notifier.hasMoreData;
+});
+
+// Provider to check if currently loading more activities
+final isLoadingMoreActivitiesProvider = Provider<bool>((ref) {
+  // Watch the provider to ensure we get updates when state changes
+  ref.watch(allActivitiesProvider);
+  final notifier = ref.read(allActivitiesProvider.notifier);
+  return notifier.isLoadingMore;
+});
+
+// Provider function to load more activities
+final loadMoreActivitiesProvider = Provider<Future<void> Function()>((ref) {
+  return () async {
+    final notifier = ref.read(allActivitiesProvider.notifier);
+    await notifier.loadMore();
+  };
+});
+
 final activityDatesProvider = Provider<List<DateTime>>((ref) {
   final activities = ref.watch(allActivitiesByIdProvider).valueOrNull ?? [];
 
@@ -118,7 +142,8 @@ final activityDatesProvider = Provider<List<DateTime>>((ref) {
 // Base provider for activities filtered by date
 final activitiesByDateProvider = Provider.family<List<Activity>, DateTime>((ref, date) {
   final activities = ref.watch(allActivitiesByIdProvider).valueOrNull ?? [];
-  return activities.where((activity) => getActivityDate(activity.originServerTs()).isAtSameMomentAs(date)).toList();
+  return activities.where((activity) =>
+    getActivityDate(activity.originServerTs()).isAtSameMomentAs(date)).toList();
 });
 
 // Provider for consecutive grouped activities using records 

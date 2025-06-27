@@ -9,6 +9,8 @@ Widget? buildSpaceActivitiesSectionWidget(BuildContext context, WidgetRef ref) {
   final activityDates = ref.watch(activityDatesProvider);
   if (activityDates.isEmpty) return null;
 
+  final isLoadingMore = ref.watch(isLoadingMoreActivitiesProvider);
+
   return Column(
     mainAxisSize: MainAxisSize.min,
     children: [
@@ -22,10 +24,27 @@ Widget? buildSpaceActivitiesSectionWidget(BuildContext context, WidgetRef ref) {
         itemCount: activityDates.length,
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
-        itemBuilder:
-            (context, index) =>
-                ActivityDateItemWidget(activityDate: activityDates[index]),
+        itemBuilder: (context, index) {
+          return ActivityDateItemWidget(activityDate: activityDates[index]);
+        },
       ),
+      // Show loading indicator when loading more
+      if (isLoadingMore)
+        Container(
+          padding: const EdgeInsets.all(80.0),
+          child: const Column(
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(height: 8),
+              Text(
+                'Loading more activities...',
+                style: TextStyle(fontSize: 12, color: Colors.grey),
+              ),
+            ],
+          ),
+        ),
+      // Add some bottom spacing
+      const SizedBox(height: 16),
     ],
   );
 }

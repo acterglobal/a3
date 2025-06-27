@@ -40,6 +40,25 @@ void main() {
       expect(notifier, isA<AsyncNotifier<List<String>>>());
     });
 
+    test('notifier has pagination properties', () {
+      // Arrange
+      final notifier = AllActivitiesNotifier();
+
+      // Act & Assert
+      expect(notifier.hasMoreData, isA<bool>());
+      expect(notifier.isLoadingMore, isA<bool>());
+      expect(() => notifier.loadMore(), returnsNormally);
+    });
+
+    test('initial pagination state is correct', () {
+      // Arrange
+      final notifier = AllActivitiesNotifier();
+
+      // Act & Assert
+      expect(notifier.hasMoreData, true); // Should start with true
+      expect(notifier.isLoadingMore, false); // Should start with false
+    });
+
     test('spaces can call getRoomIdStr method', () {
       // Arrange
       final mockSpace = MockSpace();
@@ -65,16 +84,28 @@ void main() {
       verify(() => mockClient.allActivities()).called(1);
     });
 
-    test('activities can call getIds method', () async {
+    test('activities can call getIds method with pagination', () async {
       // Arrange
-      when(() => mockActivities.getIds(0, 200)).thenAnswer((_) async => MockFfiListFfiString(items: []));
+      when(() => mockActivities.getIds(0, 100)).thenAnswer((_) async => MockFfiListFfiString(items: []));
 
       // Act
-      final ids = await mockActivities.getIds(0, 200);
+      final ids = await mockActivities.getIds(0, 100);
 
       // Assert
       expect(ids, isNotNull);
-      verify(() => mockActivities.getIds(0, 200)).called(1);
+      verify(() => mockActivities.getIds(0, 100)).called(1);
+    });
+
+    test('activities can call getIds method with different offsets', () async {
+      // Arrange
+      when(() => mockActivities.getIds(100, 100)).thenAnswer((_) async => MockFfiListFfiString(items: []));
+
+      // Act
+      final ids = await mockActivities.getIds(100, 100);
+
+      // Assert
+      expect(ids, isNotNull);
+      verify(() => mockActivities.getIds(100, 100)).called(1);
     });
 
     test('activities can call drop method', () {
@@ -173,10 +204,10 @@ void main() {
 
     test('async exception handling pattern works', () async {
       // Arrange
-      when(() => mockActivities.getIds(0, 200)).thenThrow(Exception('Async error'));
+      when(() => mockActivities.getIds(0, 100)).thenThrow(Exception('Async error'));
 
       // Act & Assert
-      expect(() => mockActivities.getIds(0, 200), throwsA(isA<Exception>()));
+      expect(() => mockActivities.getIds(0, 100), throwsA(isA<Exception>()));
     });
 
     test('stream error handling pattern works', () async {
@@ -251,6 +282,11 @@ void main() {
       for (int i = 0; i < spaces.length; i++) {
         verify(() => spaces[i].getRoomIdStr()).called(1);
       }
+    });
+
+    test('pagination constants are correctly defined', () {
+      // Act & Assert
+      expect(AllActivitiesNotifier.pageSize, 100);
     });
   });
 } 
