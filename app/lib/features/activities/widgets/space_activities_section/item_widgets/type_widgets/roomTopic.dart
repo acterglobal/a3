@@ -1,9 +1,11 @@
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/containers/activity_bigger_visual_container_widget.dart';
 import 'package:acter/l10n/generated/l10n.dart';
+import 'package:acter/router/routes.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
@@ -19,6 +21,7 @@ class ActivityRoomTopicItemWidget extends ConsumerWidget {
     final lang = L10n.of(context);
     final userId = activity.senderIdStr();
     return ActivityBiggerVisualContainerWidget(
+      onTap: () => context.pushNamed(Routes.space.name, pathParameters: {'spaceId': activity.roomIdStr()}),
       userId: userId,
       roomId: activity.roomIdStr(),
       actionTitle: getMessage(lang, userId) ?? '',
