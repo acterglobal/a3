@@ -11,9 +11,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class InviteIndividualUsers extends ConsumerWidget {
   final String roomId;
+  final Task? task;
   final bool isFullPageMode;
 
-  const InviteIndividualUsers({super.key, required this.roomId, this.isFullPageMode = true});
+  const InviteIndividualUsers({
+    super.key, 
+    required this.roomId, 
+    this.isFullPageMode = true,
+    this.task,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -72,11 +78,12 @@ class InviteIndividualUsers extends ConsumerWidget {
                     roomId: roomId,
                     userProfile: profile,
                     includeSharedRooms: isSuggestion,
+                    task: task,
                   );
                 },
               ),
             ),
-            if (!isFullPageMode)...[
+            if (!isFullPageMode || task != null)...[
               const SizedBox(height: 16),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),

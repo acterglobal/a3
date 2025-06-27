@@ -31,12 +31,33 @@ import '../../../helpers/mock_room_providers.dart';
 import '../../../helpers/mock_space_providers.dart';
 import '../../../helpers/mock_updates_providers.dart';
 import '../../../helpers/test_util.dart';
+import '../../../helpers/mock_invites.dart';
 
 class MockItemPositionsListener extends Mock implements ItemPositionsListener {}
 
-class MockMembership extends Mock implements Member {}
+class MockMember extends Mock implements Member {
+  final String _userId;
+  final bool _canString;
 
-// class MockRoomInfo extends Mock implements RoomInfo {}
+  MockMember({String? userId, bool? canString}) 
+    : _userId = userId ?? 'test_user_id',
+      _canString = canString ?? false;
+
+  @override
+  UserId userId() => MockUserId(_userId);
+
+  @override
+  UserProfile getProfile() {
+    return MockUserProfile(
+      userId: _userId,
+      displayName: 'Test Member',
+      sharedRooms: [],
+    );
+  }
+
+  @override
+  bool canString(String action) => _canString;
+}
 
 class MockSpaceHierarchyRoomInfo extends Mock
     implements SpaceHierarchyRoomInfo {
@@ -74,8 +95,23 @@ class MockSpaceHierarchyRoomInfo extends Mock
 class MockFfiListFfiString extends Mock implements FfiListFfiString {
   final List<String> items;
   MockFfiListFfiString({required this.items});
-  // @override
-  // List<String> toDartList() => items;
+  
+  @override
+  bool get isEmpty => items.isEmpty;
+  
+  @override
+  List<FfiString> toList({bool growable = true}) => items.map((s) => MockFfiString(s)).toList();
+}
+
+class MockFfiString extends Mock implements FfiString {
+  final String value;
+  MockFfiString(this.value);
+  
+  @override
+  String toString() => value;
+  
+  @override
+  String toDartString() => value;
 }
 
 class MockSpace extends Mock implements Space {}
@@ -183,6 +219,7 @@ void main() {
         expect(find.text(lang.suggestedSpaces), findsNothing);
         expect(find.text(lang.members), findsAtLeast(1));
       });
+
       testWidgets('renders different sections based on active tab', (
         WidgetTester tester,
       ) async {
@@ -221,7 +258,12 @@ void main() {
             ...extendedOverrides,
             spaceProvider(testSpaceId).overrideWith((ref) async => MockSpace()),
             maybeRoomProvider.overrideWith(
-              () => MockAlwaysTheSameRoomNotifier(room: MockRoom()),
+              () => MockAlwaysTheSameRoomNotifier(
+                room: MockRoom(
+                  roomId: testSpaceId,
+                  displayName: 'Test Space',
+                ),
+              ),
             ),
             spaceRelationsProvider(
               testSpaceId,
@@ -261,7 +303,12 @@ void main() {
             ...extendedOverrides,
             spaceProvider(testSpaceId).overrideWith((ref) async => MockSpace()),
             maybeRoomProvider.overrideWith(
-              () => MockAlwaysTheSameRoomNotifier(room: MockRoom()),
+              () => MockAlwaysTheSameRoomNotifier(
+                room: MockRoom(
+                  roomId: testSpaceId,
+                  displayName: 'Test Space',
+                ),
+              ),
             ),
             spaceRelationsProvider(
               testSpaceId,
@@ -294,15 +341,12 @@ void main() {
         );
       });
     });
+
     group('Tab Provider Changes updates properly', () {
       const testSpaceId = 'test-space-id';
-      late MockMembership mockMembership;
-      late MockRoom mockRoom;
       late MockSpace mockSpace;
 
       setUp(() {
-        mockMembership = MockMembership();
-        mockRoom = MockRoom();
         mockSpace = MockSpace();
       });
 
@@ -320,7 +364,12 @@ void main() {
           ),
           spaceProvider(testSpaceId).overrideWith((ref) async => mockSpace),
           maybeRoomProvider.overrideWith(
-            () => MockAlwaysTheSameRoomNotifier(room: mockRoom),
+            () => MockAlwaysTheSameRoomNotifier(
+              room: MockRoom(
+                roomId: testSpaceId,
+                displayName: 'Test Space',
+              ),
+            ),
           ),
 
           spaceRelationsProvider(testSpaceId).overrideWith((ref) async {
@@ -404,12 +453,9 @@ void main() {
         expect(find.byKey(Key(TabEntry.suggestedChats.name)), findsAtLeast(1));
         expect(find.byKey(Key(TabEntry.suggestedSpaces.name)), findsAtLeast(1));
       });
-      testWidgets('when news are activated', (tester) async {
-        when(() => mockMembership.canString(any())).thenReturn(true);
 
-        when(
-          () => mockSpace.isActerSpace(),
-        ).thenAnswer((_) => Future.value(true));
+      testWidgets('when news are activated', (tester) async {
+        when(() => mockSpace.isActerSpace()).thenAnswer((_) => Future.value(true));
 
         bool active = false;
         when(() => mockSpace.appSettings()).thenAnswer(
@@ -422,7 +468,7 @@ void main() {
             ),
           ),
         );
-        when(() => mockRoom.topic()).thenReturn('Test Topic');
+
         await tester.pumpProviderWidget(
           overrides: [
             maybeSpaceProvider.overrideWith(
@@ -432,7 +478,12 @@ void main() {
               ),
             ),
             maybeRoomProvider.overrideWith(
-              () => MockAlwaysTheSameRoomNotifier(room: mockRoom),
+              () => MockAlwaysTheSameRoomNotifier(
+                room: MockRoom(
+                  roomId: testSpaceId,
+                  displayName: 'Test Space',
+                ),
+              ),
             ),
             updateListProvider.overrideWith(
               (ref, spaceId) => Future.value([MockUpdatesEntry()]),
