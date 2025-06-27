@@ -34,12 +34,11 @@ void main() {
 
     // Set up mock behavior
     when(() => mockSpace.calendarEventDraft()).thenReturn(mockDraft);
-    when(() => mockDraft.send()).thenAnswer((_) async => MockEventId('test-event-id'));
     when(() => mockDraft.title(any())).thenReturn(null);
     when(() => mockDraft.utcStartFromRfc3339(any())).thenReturn(null);
     when(() => mockDraft.utcEndFromRfc3339(any())).thenReturn(null);
     when(() => mockDraft.descriptionHtml(any(), any())).thenReturn(null);
-    
+
     // Set up location-related mock behavior
     when(() => mockDraft.addPhysicalLocation(
       any(),
@@ -50,7 +49,7 @@ void main() {
       any(),
       any(),
     )).thenReturn(null);
-    
+
     when(() => mockDraft.addVirtualLocation(
       any(),
       any(),
@@ -58,7 +57,9 @@ void main() {
       any(),
       any(),
     )).thenReturn(null);
-    
+
+    when(() => mockDraft.send()).thenAnswer((_) async => MockEventId('test-event-id'));
+
     when(() => mockClient.waitForCalendarEvent(any(), any())).thenAnswer((_) async => mockEvent);
   });
 
@@ -572,7 +573,7 @@ void main() {
         '123 Main St, City',
         'Main entrance',
       )).called(1);
-      
+
       verify(() => mockDraft.addVirtualLocation(
         'Zoom Meeting',
         '',
@@ -604,10 +605,10 @@ void main() {
       // Verify the link format
       expect(link, startsWith('https://meet.jit.si/'));
       expect(link, matches(RegExp(r'^https://meet\.jit\.si/[a-zA-Z0-9]{10,}$')));
-      
+
       // Verify the title is cleaned (no spaces or special characters)
       expect(link, contains('TestEventName'));
-      
+
       // Verify the random number is appended
       expect(link, matches(RegExp(r'\d{10}$')));
     });

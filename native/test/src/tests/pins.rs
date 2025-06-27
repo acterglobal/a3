@@ -154,9 +154,10 @@ async fn pin_attachments() -> Result<()> {
     jpg_file.as_file_mut().write_all(bytes)?;
 
     let attachments_listener = attachments_manager.subscribe();
+    let mimetype = "image/jpeg";
     let base_draft = user.image_draft(
         jpg_file.path().to_string_lossy().to_string(),
-        "image/jpeg".to_owned(),
+        mimetype.to_owned(),
     );
     let jpg_attach_id = attachments_manager
         .content_draft(Box::new(base_draft))
@@ -180,6 +181,13 @@ async fn pin_attachments() -> Result<()> {
         .expect("first attachment should be available");
     assert_eq!(attachment.event_id(), jpg_attach_id);
     assert_eq!(attachment.type_str(), "image");
+    assert_eq!(
+        attachment
+            .msg_content()
+            .and_then(|c| c.mimetype())
+            .as_deref(),
+        Some(mimetype)
+    );
 
     // go for the second
 
@@ -188,9 +196,10 @@ async fn pin_attachments() -> Result<()> {
     png_file.as_file_mut().write_all(bytes)?;
 
     let attachments_listener = attachments_manager.subscribe();
+    let mimetype = "image/png";
     let base_draft = user.file_draft(
         png_file.path().to_string_lossy().to_string(),
-        "image/png".to_owned(),
+        mimetype.to_owned(),
     );
     let png_attach_id = attachments_manager
         .content_draft(Box::new(base_draft))
@@ -208,10 +217,18 @@ async fn pin_attachments() -> Result<()> {
 
     let attachments = attachments_manager.attachments().await?;
     assert_eq!(attachments.len(), 2);
-    let _attachment = attachments
-        .iter()
+    let attachment = attachments
+        .into_iter()
         .find(|a| a.event_id() == png_attach_id)
         .expect("File not found");
+    assert_eq!(
+        attachment
+            .msg_content()
+            .and_then(|c| c.mimetype())
+            .as_deref(),
+        Some(mimetype)
+    );
+
     // FIXME: for some reason this comes back as `image` rather than `file`
     // assert_eq!(attachment.type_str(), "file");
     // assert_eq!(
@@ -222,6 +239,124 @@ async fn pin_attachments() -> Result<()> {
     //     attachment.file_desc().expect("file description should be available").source().url(),
     //     "mxc://acter.global/tVLtaQaErMyoXmcCroPZdfNG"
     // );
+
+    // go for the third
+
+    let bytes = include_bytes!("./fixtures/sample-3s.mp3");
+    let mut mp3_file = NamedTempFile::new()?;
+    mp3_file.as_file_mut().write_all(bytes)?;
+
+    let attachments_listener = attachments_manager.subscribe();
+    let mimetype = "audio/mp3";
+    let base_draft = user.audio_draft(
+        mp3_file.path().to_string_lossy().to_string(),
+        mimetype.to_owned(),
+    );
+    let mp3_attach_id = attachments_manager
+        .content_draft(Box::new(base_draft))
+        .await?
+        .send()
+        .await?;
+
+    let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
+    Retry::spawn(retry_strategy.clone(), || async {
+        if attachments_listener.is_empty() {
+            bail!("all still empty");
+        }
+        Ok(())
+    })
+    .await?;
+
+    let attachments = attachments_manager.attachments().await?;
+    assert_eq!(attachments.len(), 3);
+    let attachment = attachments
+        .into_iter()
+        .find(|a| a.event_id() == mp3_attach_id)
+        .expect("File not found");
+    assert_eq!(attachment.event_id(), mp3_attach_id);
+    assert_eq!(attachment.type_str(), "audio");
+    assert_eq!(
+        attachment
+            .msg_content()
+            .and_then(|c| c.mimetype())
+            .as_deref(),
+        Some(mimetype)
+    );
+
+    // go for the fourth
+
+    let bytes = include_bytes!("./fixtures/big_buck_bunny.mp4");
+    let mut mp4_file = NamedTempFile::new()?;
+    mp4_file.as_file_mut().write_all(bytes)?;
+
+    let attachments_listener = attachments_manager.subscribe();
+    let mimetype = "video/mpeg4";
+    let base_draft = user.video_draft(
+        mp4_file.path().to_string_lossy().to_string(),
+        mimetype.to_owned(),
+    );
+    let mp4_attach_id = attachments_manager
+        .content_draft(Box::new(base_draft))
+        .await?
+        .send()
+        .await?;
+
+    let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
+    Retry::spawn(retry_strategy.clone(), || async {
+        if attachments_listener.is_empty() {
+            bail!("all still empty");
+        }
+        Ok(())
+    })
+    .await?;
+
+    let attachments = attachments_manager.attachments().await?;
+    assert_eq!(attachments.len(), 4);
+    let attachment = attachments
+        .into_iter()
+        .find(|a| a.event_id() == mp4_attach_id)
+        .expect("File not found");
+    assert_eq!(attachment.event_id(), mp4_attach_id);
+    assert_eq!(attachment.type_str(), "video");
+    assert_eq!(
+        attachment
+            .msg_content()
+            .and_then(|c| c.mimetype())
+            .as_deref(),
+        Some(mimetype)
+    );
+
+    // go for the fifth
+
+    let attachments_listener = attachments_manager.subscribe();
+    let url = "https://acter.global";
+    let link_attach_id = attachments_manager
+        .link_draft(url.to_owned(), Some("Acter Website".to_owned()))
+        .await?
+        .send()
+        .await?;
+
+    let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
+    Retry::spawn(retry_strategy.clone(), || async {
+        if attachments_listener.is_empty() {
+            bail!("all still empty");
+        }
+        Ok(())
+    })
+    .await?;
+
+    let attachments = attachments_manager.attachments().await?;
+    assert_eq!(attachments.len(), 5);
+    let attachment = attachments
+        .into_iter()
+        .find(|a| a.event_id() == link_attach_id)
+        .expect("Link not found");
+    assert_eq!(attachment.event_id(), link_attach_id);
+    assert_eq!(attachment.type_str(), "link");
+    assert_eq!(
+        attachment.msg_content().map(|c| c.body()).as_deref(),
+        Some(url)
+    );
 
     Ok(())
 }

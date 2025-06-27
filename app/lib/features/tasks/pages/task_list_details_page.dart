@@ -279,8 +279,9 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
     final lang = L10n.of(context);
     EasyLoading.show(status: lang.updatingDescription);
     try {
-      final updater = taskListData.updateBuilder();
-      updater.descriptionHtml(plainDescription, htmlBodyDescription);
+      final updater =
+          taskListData.updateBuilder()
+            ..descriptionHtml(plainDescription, htmlBodyDescription);
       await updater.send();
 
       await autosubscribe(

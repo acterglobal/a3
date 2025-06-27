@@ -93,6 +93,7 @@ enum Routes {
   settings('/settings'),
   settingsLabs('/settings/labs'),
   settingsChat('/settings/chat'),
+  settingsActivity('/settings/activity'),
   settingsCalendar('/settings/calendar'),
   settingsCustomizations('/settings/customizations'),
   settingSessions('/settings/sessions'),
@@ -119,6 +120,9 @@ enum Routes {
 
   chatListShowcase('/demo/chat/chat-showcase'),
   chatRoomShowcase('/demo/chat/chat-showcase/:roomId([^/]+)'),
+
+  // activities
+  activityListShowcase('/demo/activity/activity-showcase'),
 
   // onboarding
   showCaseOnboardingEncryptionRecovery('/demo/onboarding/encryption-recovery'),

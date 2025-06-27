@@ -1,4 +1,4 @@
-use acter_core::{
+use acter_matrix::{
     client::CoreClient,
     executor::Executor,
     models::AnyActerModel,

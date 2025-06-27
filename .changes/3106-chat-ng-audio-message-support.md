@@ -1,1 +1,0 @@
-- [New] : Chat-NG now supports audio messages in chat.

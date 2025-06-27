@@ -1,5 +1,5 @@
 use acter::api::{new_convo_settings_builder, new_join_rule_builder, new_space_settings_builder};
-use acter_core::{
+use acter_matrix::{
     referencing::{IndexKey, SectionIndex},
     spaces::new_app_permissions_builder,
 };
