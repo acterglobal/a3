@@ -10,7 +10,7 @@ license-file = "../../LICENSE.txt"
 rust-version.workspace = true
 
 [features]
-testing = []
+testing = [ "dep:tokio", "dep:thiserror"]
 strum = ["dep:strum"]
 
 [dependencies]
@@ -20,6 +20,10 @@ tracing = { workspace = true }
 async-recursion = "1"
 eyeball-im = { workspace = true }
 futures = { version = "0.3.30" }
+
+# for testing-feature only
+tokio = { version = "1", features = ["full"], optional = true }
+thiserror = { version = "2", optional = true }
 
 [dev-dependencies]
 serde_json = "1"

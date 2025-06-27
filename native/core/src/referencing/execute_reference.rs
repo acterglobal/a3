@@ -71,12 +71,24 @@ where
 mod tests {
     use std::borrow::Cow;
 
-    use crate::config::TypeConfig;
+    use crate::mocks::{MockModelType, MockObjectId, MockRoomId};
 
     use super::super::ObjectListIndex;
 
     use super::*;
     use serde_json;
+
+    #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+    pub struct MockTypeConfig;
+
+    impl TypeConfig for MockTypeConfig {
+        type RoomId = MockRoomId;
+        type ObjectId = MockObjectId;
+        type ModelType = MockModelType;
+        type AccountData = Cow<'static, str>;
+        type UserId = String;
+        type Timestamp = String;
+    }
 
     // Helper function to test round-trip serialization/deserialization
     fn test_round_trip<T>(value: &T) -> Result<(), Box<dyn std::error::Error>>
@@ -87,46 +99,6 @@ mod tests {
         let deserialized: T = serde_json::from_str(&serialized)?;
         assert_eq!(value, &deserialized);
         Ok(())
-    }
-
-    // Mock types for testing
-    #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-    struct MockRoomId(String);
-
-    impl AsRef<str> for MockRoomId {
-        fn as_ref(&self) -> &str {
-            &self.0
-        }
-    }
-
-    #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-    struct MockObjectId(String);
-
-    impl AsRef<str> for MockObjectId {
-        fn as_ref(&self) -> &str {
-            &self.0
-        }
-    }
-
-    #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-    struct MockModelType(String);
-
-    impl AsRef<str> for MockModelType {
-        fn as_ref(&self) -> &str {
-            &self.0
-        }
-    }
-
-    #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-    struct MockTypeConfig;
-
-    impl TypeConfig for MockTypeConfig {
-        type RoomId = MockRoomId;
-        type ObjectId = MockObjectId;
-        type ModelType = MockModelType;
-        type AccountData = Cow<'static, str>;
-        type UserId = String;
-        type Timestamp = String;
     }
 
     type TestExecuteReference = ExecuteReference<MockTypeConfig>;
