@@ -35,14 +35,17 @@ class HtmlEditorClipboardServiceData {
 }
 
 class HtmlEditorClipboardService {
-  Future<void> setRichText(String text) async {
+  Future<void> setFormattedText(String text) async {
     final item = DataWriterItem();
 
     if (text.isNotEmpty) {
       final doc = defaultHtmlCodec.decode(text);
       if (doc.root.children.isNotEmpty) {
         final html = documentToHTML(doc);
+
         item.add(Formats.htmlText(html));
+        // we don't plain text in-app but clipboard needs fallback as it fails on Android
+        item.add(Formats.plainText(text));
         await SystemClipboard.instance?.write([item]);
       }
     }

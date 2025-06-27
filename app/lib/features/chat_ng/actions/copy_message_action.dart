@@ -9,7 +9,9 @@ Future<void> copyMessageAction(
   String body,
   String? html,
 ) async {
-  await HtmlEditorClipboardService().setRichText(html ?? minimalMarkup(body));
+  await HtmlEditorClipboardService().setFormattedText(
+    html ?? minimalMarkup(body),
+  );
   if (context.mounted) {
     EasyLoading.showToast(L10n.of(context).messageCopiedToClipboard);
     Navigator.pop(context);

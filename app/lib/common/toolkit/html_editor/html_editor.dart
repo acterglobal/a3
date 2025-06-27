@@ -10,6 +10,7 @@ import 'package:acter/common/toolkit/html_editor/clipboard/commands/custom_copy_
 import 'package:acter/common/toolkit/html_editor/clipboard/commands/custom_paste_command.dart';
 import 'package:acter/common/toolkit/html_editor/mentions/commands/mention_movements.dart';
 import 'package:acter/common/toolkit/html_editor/mentions/mention_detection.dart';
+import 'package:acter/common/toolkit/html_editor/services/clipboard_service.dart';
 import 'package:acter/config/constants.dart';
 import 'package:acter/common/toolkit/html_editor/services/constants.dart';
 import 'package:acter/common/toolkit/html_editor/mentions/mention_shortcuts.dart';
@@ -466,7 +467,16 @@ class _HtmlEditorState extends ConsumerState<HtmlEditor> {
               closeToolbar();
             },
             onCut: () => cutCommand.execute(editorState),
-            onPaste: () => pasteCommand.execute(editorState),
+            onPaste: () async {
+              final data = await HtmlEditorClipboardService()
+                  .getFormattedText();
+              final richText = data.richText;
+              if (richText != null && richText.isNotEmpty) {
+                customPasteCommand.execute(editorState);
+              } else {
+                pasteCommand.execute(editorState);
+              }
+            },
             onSelectAll: () => selectAllCommand.execute(editorState),
             onLiveTextInput: null,
             onLookUp: null,
