@@ -35,7 +35,7 @@ pub use news::{NewsEntry, NewsEntryUpdate};
 pub use pins::{Pin, PinUpdate};
 pub use reactions::{Reaction, ReactionManager, ReactionStats};
 pub use read_receipts::{ReadReceipt, ReadReceiptStats, ReadReceiptsManager};
-pub use redaction::RedactedActerModel;
+pub use redaction::{RedactedActerModel, RedactionContent};
 pub use rsvp::{Rsvp, RsvpManager, RsvpStats};
 pub use status::{ActerSupportedRoomStatusEvents, RoomStatus};
 pub use stories::{Story, StoryUpdate};

@@ -70,15 +70,16 @@ where
 #[cfg(test)]
 mod tests {
     use std::borrow::Cow;
+    use std::hash::Hash;
 
-    use crate::mocks::{MockModelType, MockObjectId, MockRoomId};
+    use crate::mocks::{MockError, MockModelType, MockObjectId, MockRoomId};
 
     use super::super::ObjectListIndex;
 
     use super::*;
     use serde_json;
 
-    #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+    #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Hash)]
     pub struct MockTypeConfig;
 
     impl TypeConfig for MockTypeConfig {
@@ -88,6 +89,8 @@ mod tests {
         type AccountData = Cow<'static, str>;
         type UserId = String;
         type Timestamp = String;
+        type RedactionReason = String;
+        type Error = MockError;
     }
 
     // Helper function to test round-trip serialization/deserialization

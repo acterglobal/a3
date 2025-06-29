@@ -7,29 +7,30 @@ use crate::{
 };
 
 #[async_recursion]
-pub async fn transition_tree<C, M, S, I, E>(store: &S, parents: I, model: &M) -> Result<Vec<M>, E>
+pub async fn transition_tree<C, M, S, I>(
+    store: &S,
+    parents: I,
+    model: &M,
+) -> Result<Vec<M>, C::Error>
 where
     C: TypeConfig,
     M: ModelT<C> + Sync,
     S: StoreT<C, Model = M> + Sync,
     S::Model: ModelT<C>,
     I: Iterator<Item = C::ObjectId> + Send,
-    E: core::error::Error + Send,
-    E: From<<S as StoreT<C>>::Error>,
-    E: From<<M as ModelT<C>>::Error>,
 {
     let mut models = vec![];
     for p in parents {
         let mut parent = store.get(&p).await?;
         if parent.transition(model)? {
             if let Some(grandparents) = parent.belongs_to() {
-                let mut parent_models =
-                    transition_tree::<C, M, S, std::vec::IntoIter<<C as TypeConfig>::ObjectId>, E>(
-                        store,
-                        grandparents.into_iter(),
-                        &parent,
-                    )
-                    .await?;
+                let mut parent_models = transition_tree::<
+                    C,
+                    M,
+                    S,
+                    std::vec::IntoIter<<C as TypeConfig>::ObjectId>,
+                >(store, grandparents.into_iter(), &parent)
+                .await?;
                 if !parent_models.is_empty() {
                     models.append(&mut parent_models);
                 }
@@ -40,34 +41,30 @@ where
     Ok(models)
 }
 
-pub async fn default_model_execute<C: TypeConfig, M, S, E>(
+pub async fn default_model_execute<C: TypeConfig, M, S>(
     store: &S,
     model: M,
-) -> Result<Vec<ExecuteReference<C>>, E>
+) -> Result<Vec<ExecuteReference<C>>, C::Error>
 where
     M: ModelT<C> + Sync,
     S: StoreT<C, Model = M> + Sync,
     S::Model: ModelT<C>,
-    E: core::error::Error + Send,
-    E: From<<S as StoreT<C>>::Error>,
-    E: From<<M as ModelT<C>>::Error>,
 {
     trace!(object_id=?model.object_id(), ?model, "handling");
     let Some(belongs_to) = model.belongs_to() else {
         trace!(object_id=?model.object_id(), "saving simple model");
-        return Ok(store.save(model).await?);
+        return store.save(model).await;
     };
 
     trace!(object_id=?model.object_id(), ?belongs_to, "transitioning tree");
-    let mut models =
-        transition_tree::<C, M, S, std::vec::IntoIter<<C as TypeConfig>::ObjectId>, E>(
-            store,
-            belongs_to.into_iter(),
-            &model,
-        )
-        .await?;
+    let mut models = transition_tree::<C, M, S, std::vec::IntoIter<<C as TypeConfig>::ObjectId>>(
+        store,
+        belongs_to.into_iter(),
+        &model,
+    )
+    .await?;
     models.push(model);
-    Ok(store.save_many(models.into_iter()).await?)
+    store.save_many(models.into_iter()).await
 }
 
 #[cfg(test)]
@@ -88,7 +85,7 @@ mod tests {
         let child = MockModel::new("child1", 5, Some(vec!["parent1"]));
 
         let parents = vec![MockObjectId("parent1".to_string())];
-        let result = transition_tree::<MockTypeConfig, MockModel, MockStore, _, MockError>(
+        let result = transition_tree::<MockTypeConfig, MockModel, MockStore, _>(
             &store,
             parents.into_iter(),
             &child,
@@ -112,7 +109,7 @@ mod tests {
         let child = MockModel::new("child1", 10, Some(vec!["parent1"]));
 
         let parents = vec![MockObjectId("parent1".to_string())];
-        let result = transition_tree::<MockTypeConfig, MockModel, MockStore, _, MockError>(
+        let result = transition_tree::<MockTypeConfig, MockModel, MockStore, _>(
             &store,
             parents.into_iter(),
             &child,
@@ -145,7 +142,7 @@ mod tests {
             MockObjectId("parent1".to_string()),
             MockObjectId("parent2".to_string()),
         ];
-        let result = transition_tree::<MockTypeConfig, MockModel, MockStore, _, MockError>(
+        let result = transition_tree::<MockTypeConfig, MockModel, MockStore, _>(
             &store,
             parents.into_iter(),
             &child,
@@ -182,7 +179,7 @@ mod tests {
         let child = MockModel::new("child", 15, Some(vec!["parent"]));
 
         let parents = vec![MockObjectId("parent".to_string())];
-        let result = transition_tree::<MockTypeConfig, MockModel, MockStore, _, MockError>(
+        let result = transition_tree::<MockTypeConfig, MockModel, MockStore, _>(
             &store,
             parents.into_iter(),
             &child,
@@ -211,7 +208,7 @@ mod tests {
         let child = MockModel::new("child1", 10, None);
         let parents: Vec<MockObjectId> = vec![];
 
-        let result = transition_tree::<MockTypeConfig, MockModel, MockStore, _, MockError>(
+        let result = transition_tree::<MockTypeConfig, MockModel, MockStore, _>(
             &store,
             parents.into_iter(),
             &child,
@@ -230,7 +227,7 @@ mod tests {
         let child = MockModel::new("child1", 10, Some(vec!["nonexistent"]));
         let parents = vec![MockObjectId("nonexistent".to_string())];
 
-        let result = transition_tree::<MockTypeConfig, MockModel, MockStore, _, MockError>(
+        let result = transition_tree::<MockTypeConfig, MockModel, MockStore, _>(
             &store,
             parents.into_iter(),
             &child,
@@ -252,8 +249,7 @@ mod tests {
         let model = MockModel::new("simple", 10, None);
 
         let result =
-            default_model_execute::<MockTypeConfig, MockModel, MockStore, MockError>(&store, model)
-                .await;
+            default_model_execute::<MockTypeConfig, MockModel, MockStore>(&store, model).await;
 
         assert!(result.is_ok());
         let references = result.unwrap();
@@ -275,8 +271,7 @@ mod tests {
         let model = MockModel::new("child", 15, Some(vec!["parent1", "parent2"]));
 
         let result =
-            default_model_execute::<MockTypeConfig, MockModel, MockStore, MockError>(&store, model)
-                .await;
+            default_model_execute::<MockTypeConfig, MockModel, MockStore>(&store, model).await;
 
         assert!(result.is_ok());
         let references = result.unwrap();
@@ -314,8 +309,7 @@ mod tests {
         let child = MockModel::new("child", 20, Some(vec!["parent"]));
 
         let result =
-            default_model_execute::<MockTypeConfig, MockModel, MockStore, MockError>(&store, child)
-                .await;
+            default_model_execute::<MockTypeConfig, MockModel, MockStore>(&store, child).await;
 
         assert!(result.is_ok());
         let references = result.unwrap();
@@ -351,8 +345,7 @@ mod tests {
         let model = MockModel::new("child", 15, Some(vec!["parent1", "parent2"]));
 
         let result =
-            default_model_execute::<MockTypeConfig, MockModel, MockStore, MockError>(&store, model)
-                .await;
+            default_model_execute::<MockTypeConfig, MockModel, MockStore>(&store, model).await;
 
         assert!(result.is_ok());
         let references = result.unwrap();
@@ -382,8 +375,7 @@ mod tests {
         let model = MockModel::new("child", 15, Some(vec!["nonexistent"]));
 
         let result =
-            default_model_execute::<MockTypeConfig, MockModel, MockStore, MockError>(&store, model)
-                .await;
+            default_model_execute::<MockTypeConfig, MockModel, MockStore>(&store, model).await;
 
         assert!(result.is_err());
         assert_eq!(
@@ -406,7 +398,7 @@ mod tests {
 
         // First transition
         let parents = vec![MockObjectId("parent".to_string())];
-        let result1 = transition_tree::<MockTypeConfig, MockModel, MockStore, _, MockError>(
+        let result1 = transition_tree::<MockTypeConfig, MockModel, MockStore, _>(
             &store,
             parents.clone().into_iter(),
             &child1,
@@ -424,7 +416,7 @@ mod tests {
         store.save(current_parent).await.unwrap();
 
         // Second transition should update the already-transitioned parent
-        let result2 = transition_tree::<MockTypeConfig, MockModel, MockStore, _, MockError>(
+        let result2 = transition_tree::<MockTypeConfig, MockModel, MockStore, _>(
             &store,
             parents.clone().into_iter(),
             &child2,
@@ -457,7 +449,7 @@ mod tests {
         let leaf = MockModel::new("leaf", 100, Some(vec!["level2"]));
 
         let parents = vec![MockObjectId("level2".to_string())];
-        let result = transition_tree::<MockTypeConfig, MockModel, MockStore, _, MockError>(
+        let result = transition_tree::<MockTypeConfig, MockModel, MockStore, _>(
             &store,
             parents.into_iter(),
             &leaf,

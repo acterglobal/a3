@@ -3,22 +3,30 @@ use crate::{
     traits::{Error, ModelT, TypeConfig},
 };
 
-pub trait StoreT<C: TypeConfig>: Send {
+pub trait StoreError: Error {
+    fn is_not_found(&self) -> bool;
+}
+
+pub trait StoreT<C: TypeConfig>: Send + Sync {
     type Model: ModelT<C>;
-    type Error: Error;
 
     fn get(
         &self,
         id: &C::ObjectId,
-    ) -> impl core::future::Future<Output = Result<Self::Model, Self::Error>> + Send;
+    ) -> impl core::future::Future<Output = Result<Self::Model, C::Error>> + Send;
 
     fn save(
         &self,
         model: Self::Model,
-    ) -> impl core::future::Future<Output = Result<Vec<ExecuteReference<C>>, Self::Error>> + Send;
+    ) -> impl core::future::Future<Output = Result<Vec<ExecuteReference<C>>, C::Error>> + Send;
 
     fn save_many<I: Iterator<Item = Self::Model> + Send>(
         &self,
         models: I,
-    ) -> impl core::future::Future<Output = Result<Vec<ExecuteReference<C>>, Self::Error>> + Send;
+    ) -> impl core::future::Future<Output = Result<Vec<ExecuteReference<C>>, C::Error>> + Send;
+
+    fn clear_room(
+        &self,
+        room_id: &C::RoomId,
+    ) -> impl core::future::Future<Output = Result<Vec<ExecuteReference<C>>, C::Error>> + Send;
 }

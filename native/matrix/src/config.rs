@@ -1,3 +1,4 @@
+use crate::models::RedactionContent;
 pub use acter_core::referencing::{
     ModelParam, ObjectListIndex, RoomParam, SectionIndex, SpecialListsIndex,
 };
@@ -18,4 +19,6 @@ impl TypeConfig for MatrixCoreTypeConfig {
     type AccountData = AccountData;
     type UserId = OwnedUserId;
     type Timestamp = MilliSecondsSinceUnixEpoch;
+    type RedactionReason = RedactionContent;
+    type Error = crate::Error;
 }

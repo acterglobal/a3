@@ -1,10 +1,11 @@
+use core::hash::Hash;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::sync::Arc;
 use tokio::sync::RwLock;
 
 use crate::referencing::ExecuteReference;
-use crate::traits::{ModelT, StoreT, TypeConfig};
+use crate::traits::{ModelT, StoreError, StoreT, TypeConfig};
 
 // Mock types for testing
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -34,7 +35,7 @@ impl AsRef<str> for MockModelType {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Hash)]
 pub struct MockTypeConfig;
 
 impl TypeConfig for MockTypeConfig {
@@ -44,6 +45,8 @@ impl TypeConfig for MockTypeConfig {
     type AccountData = String;
     type UserId = String;
     type Timestamp = String;
+    type RedactionReason = String;
+    type Error = MockError;
 }
 
 // Mock model for testing
@@ -71,9 +74,6 @@ impl MockModel {
 }
 
 impl ModelT<MockTypeConfig> for MockModel {
-    type Error = MockError;
-    type Store = MockStore;
-
     fn belongs_to(&self) -> Option<Vec<MockObjectId>> {
         self.parent_ids.clone()
     }
@@ -82,15 +82,14 @@ impl ModelT<MockTypeConfig> for MockModel {
         self.id.clone()
     }
 
-    async fn execute(
+    async fn execute<T: StoreT<MockTypeConfig, Model = Self> + Sync + 'static>(
         self,
-        store: &Self::Store,
-    ) -> Result<Vec<ExecuteReference<MockTypeConfig>>, <Self::Store as StoreT<MockTypeConfig>>::Error>
-    {
+        store: &T,
+    ) -> Result<Vec<ExecuteReference<MockTypeConfig>>, <MockTypeConfig as TypeConfig>::Error> {
         store.save(self).await
     }
 
-    fn transition(&mut self, model: &Self) -> Result<bool, Self::Error> {
+    fn transition(&mut self, model: &Self) -> Result<bool, <MockTypeConfig as TypeConfig>::Error> {
         // Simulate transition logic: if the incoming model has a higher value, transition occurs
         if model.value > self.value {
             self.value = model.value;
@@ -100,6 +99,18 @@ impl ModelT<MockTypeConfig> for MockModel {
             Ok(false)
         }
     }
+
+    fn is_redacted(&self) -> bool {
+        false
+    }
+
+    async fn redact<T: StoreT<MockTypeConfig, Model = Self> + Sync + 'static>(
+        &self,
+        _store: &T,
+        _reason: Option<<MockTypeConfig as TypeConfig>::RedactionReason>,
+    ) -> Result<Vec<ExecuteReference<MockTypeConfig>>, <MockTypeConfig as TypeConfig>::Error> {
+        Ok(vec![])
+    }
 }
 
 // Mock error type
@@ -107,6 +118,12 @@ impl ModelT<MockTypeConfig> for MockModel {
 pub enum MockError {
     #[error("Model not found: {0}")]
     NotFound(String),
+}
+
+impl StoreError for MockError {
+    fn is_not_found(&self) -> bool {
+        matches!(self, MockError::NotFound(_))
+    }
 }
 
 // Mock store for testing
@@ -141,9 +158,11 @@ impl MockStore {
 
 impl StoreT<MockTypeConfig> for MockStore {
     type Model = MockModel;
-    type Error = MockError;
 
-    async fn get(&self, id: &MockObjectId) -> Result<Self::Model, Self::Error> {
+    async fn get(
+        &self,
+        id: &MockObjectId,
+    ) -> Result<Self::Model, <MockTypeConfig as TypeConfig>::Error> {
         self.get_model(id)
             .await
             .ok_or_else(|| MockError::NotFound(id.0.clone()))
@@ -152,7 +171,7 @@ impl StoreT<MockTypeConfig> for MockStore {
     async fn save(
         &self,
         model: Self::Model,
-    ) -> Result<Vec<ExecuteReference<MockTypeConfig>>, Self::Error> {
+    ) -> Result<Vec<ExecuteReference<MockTypeConfig>>, <MockTypeConfig as TypeConfig>::Error> {
         self.insert(model.clone()).await;
         Ok(vec![ExecuteReference::Model(model.object_id())])
     }
@@ -160,13 +179,20 @@ impl StoreT<MockTypeConfig> for MockStore {
     async fn save_many<I: Iterator<Item = Self::Model> + Send>(
         &self,
         models: I,
-    ) -> Result<Vec<ExecuteReference<MockTypeConfig>>, Self::Error> {
+    ) -> Result<Vec<ExecuteReference<MockTypeConfig>>, <MockTypeConfig as TypeConfig>::Error> {
         let mut references = Vec::new();
         for model in models {
             self.insert(model.clone()).await;
             references.push(ExecuteReference::Model(model.object_id()));
         }
         Ok(references)
+    }
+
+    async fn clear_room(
+        &self,
+        _room_id: &MockRoomId,
+    ) -> Result<Vec<ExecuteReference<MockTypeConfig>>, <MockTypeConfig as TypeConfig>::Error> {
+        Ok(vec![])
     }
 }
 

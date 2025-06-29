@@ -27,11 +27,14 @@ where
 
 #[cfg(test)]
 mod tests {
+    use crate::mocks::MockError;
+
     use super::*;
     use serde_json;
+    use std::hash::Hash;
 
     // Test implementation of TypeConfig for testing
-    #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+    #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Hash)]
     struct TestConfig;
 
     impl TypeConfig for TestConfig {
@@ -41,6 +44,8 @@ mod tests {
         type AccountData = String;
         type UserId = String;
         type Timestamp = u64;
+        type RedactionReason = String;
+        type Error = MockError;
     }
 
     #[test]

@@ -95,9 +95,12 @@ dependencies = [
 name = "acter-core"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "async-recursion",
+ "env_logger",
  "eyeball-im",
  "futures",
+ "scc",
  "serde",
  "serde_json",
  "strum",

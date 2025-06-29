@@ -21,6 +21,7 @@ use matrix_sdk_base::ruma::{
     EventId, OwnedEventId, RoomId, UserId,
 };
 use serde::{Deserialize, Serialize};
+use std::borrow::Cow;
 use tracing::{error, trace, warn};
 
 #[cfg(any(test, feature = "testing"))]
@@ -199,7 +200,10 @@ impl AnyActerModel {
                     reason,
                 } = *details;
                 trace!(?meta.room_id, model_type, ?meta.event_id, "redacted event");
-                if let Err(e) = executor.redact(model_type, meta, reason).await {
+                if let Err(e) = executor
+                    .redact(Cow::Owned(model_type), meta, Some(reason.into()))
+                    .await
+                {
                     error!("Failure redacting {:}", e);
                 }
             }

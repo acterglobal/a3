@@ -25,10 +25,13 @@ where
 
 #[cfg(test)]
 mod tests {
+    use crate::mocks::MockError;
+
     use super::*;
     use serde_json;
+    use std::hash::Hash;
 
-    #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+    #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Hash)]
     struct MockTypeConfig;
 
     impl TypeConfig for MockTypeConfig {
@@ -38,6 +41,8 @@ mod tests {
         type AccountData = String;
         type UserId = String;
         type Timestamp = String;
+        type RedactionReason = String;
+        type Error = MockError;
     }
 
     type TestIndexKey = IndexKey<MockTypeConfig>;
@@ -267,7 +272,7 @@ mod tests {
                 &self.0
             }
         }
-        #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+        #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Hash)]
         struct CustomTypeConfig;
 
         impl TypeConfig for CustomTypeConfig {
@@ -277,6 +282,8 @@ mod tests {
             type AccountData = String;
             type UserId = String;
             type Timestamp = String;
+            type RedactionReason = String;
+            type Error = MockError;
         }
 
         type CustomIndexKey = IndexKey<CustomTypeConfig>;

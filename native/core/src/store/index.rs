@@ -349,6 +349,8 @@ impl<C: TypeConfig> Debug for StoreIndex<C> {
 #[cfg(test)]
 mod tests {
 
+    use crate::mocks::MockError;
+
     use super::*;
     use futures::pin_mut;
 
@@ -452,9 +454,10 @@ mod tests {
         use crate::meta::EventMeta;
         use crate::referencing::{IndexKey, ObjectListIndex, SectionIndex};
         use crate::traits::TypeConfig;
+        use core::hash::Hash;
 
         // Mock TypeConfig for testing
-        #[derive(Debug, Clone, PartialEq, Eq)]
+        #[derive(Debug, Clone, PartialEq, Eq, Hash)]
         struct MockConfig;
 
         impl TypeConfig for MockConfig {
@@ -464,6 +467,8 @@ mod tests {
             type AccountData = String;
             type UserId = String;
             type Timestamp = u64;
+            type RedactionReason = String;
+            type Error = MockError;
         }
 
         let meta = EventMeta::<MockConfig> {
@@ -530,9 +535,10 @@ mod tests {
         use crate::meta::EventMeta;
         use crate::referencing::{IndexKey, ObjectListIndex};
         use crate::traits::TypeConfig;
+        use core::hash::Hash;
 
         // Mock TypeConfig for testing
-        #[derive(Debug, Clone, PartialEq, Eq)]
+        #[derive(Debug, Clone, PartialEq, Eq, Hash)]
         struct MockConfig;
 
         impl TypeConfig for MockConfig {
@@ -542,6 +548,8 @@ mod tests {
             type AccountData = String;
             type UserId = String;
             type Timestamp = u64;
+            type RedactionReason = String;
+            type Error = MockError;
         }
 
         let meta1 = EventMeta::<MockConfig> {
@@ -598,9 +606,10 @@ mod tests {
         use crate::meta::EventMeta;
         use crate::referencing::{IndexKey, ObjectListIndex};
         use crate::traits::TypeConfig;
+        use core::hash::Hash;
 
         // Mock TypeConfig for testing
-        #[derive(Debug, Clone, PartialEq, Eq)]
+        #[derive(Debug, Clone, PartialEq, Eq, Hash)]
         struct MockConfig;
 
         impl TypeConfig for MockConfig {
@@ -610,6 +619,8 @@ mod tests {
             type AccountData = String;
             type UserId = String;
             type Timestamp = u64;
+            type RedactionReason = String;
+            type Error = MockError;
         }
 
         let meta = EventMeta::<MockConfig> {
