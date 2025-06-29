@@ -262,7 +262,7 @@ impl From<OriginalMessageLikeEvent<AttachmentEventContent>> for Attachment {
                 room_id,
                 event_id,
                 sender,
-                origin_server_ts,
+                timestamp: origin_server_ts,
                 redacted: None,
             },
         }
@@ -320,7 +320,7 @@ impl From<OriginalMessageLikeEvent<AttachmentUpdateEventContent>> for Attachment
                 room_id,
                 event_id,
                 sender,
-                origin_server_ts,
+                timestamp: origin_server_ts,
                 redacted: None,
             },
         }

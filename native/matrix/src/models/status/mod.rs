@@ -71,7 +71,7 @@ impl TryFrom<AnyStateEvent> for RoomStatus {
             event_id: event.event_id().to_owned(),
             room_id: event.room_id().to_owned(),
             sender: event.sender().to_owned(),
-            origin_server_ts: event.origin_server_ts(),
+            timestamp: event.origin_server_ts(),
             redacted: None,
         };
         let make_err = |event| {

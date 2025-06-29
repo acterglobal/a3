@@ -1,14 +1,13 @@
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
-}
+#![feature(trait_alias)]
+#![feature(associated_type_defaults)]
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+pub mod execution;
+pub mod meta;
+pub mod referencing;
+pub mod store;
+pub mod traits;
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
-}
+pub mod executor;
+
+#[cfg(any(test, feature = "testing"))]
+pub mod mocks;

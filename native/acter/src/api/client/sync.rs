@@ -1,6 +1,9 @@
 use acter_matrix::{
-    events::AnySyncActerEvent, executor::Executor, models::AnyActerModel,
-    referencing::ExecuteReference, spaces::is_acter_space,
+    events::AnySyncActerEvent,
+    executor::Executor,
+    models::{event_meta_for_redacted_source, AnyActerModel, EventMeta},
+    referencing::ExecuteReference,
+    spaces::is_acter_space,
 };
 use anyhow::Result;
 use core::time::Duration;
@@ -235,7 +238,12 @@ impl Client {
 
                 if let RoomRedactionEvent::Original(t) = ev.into_full_event(room_id.to_owned()) {
                     trace!(?room_id, "received redaction");
-                    if let Err(error) = executor.live_redact(t).await {
+                    let Some(meta) = event_meta_for_redacted_source(&t) else {
+                        warn!(?room_id, "redaction event has no meta");
+                        return;
+                    };
+
+                    if let Err(error) = executor.live_redact(meta, Some(t.into())).await {
                         error!(?room_id, ?error, "redaction failed");
                     }
                 } else {

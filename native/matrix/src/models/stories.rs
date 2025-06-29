@@ -96,7 +96,7 @@ impl From<OriginalMessageLikeEvent<StoryEventContent>> for Story {
                 room_id,
                 event_id,
                 sender,
-                origin_server_ts,
+                timestamp: origin_server_ts,
                 redacted: None,
             },
         }
@@ -154,7 +154,7 @@ impl From<OriginalMessageLikeEvent<StoryUpdateEventContent>> for StoryUpdate {
                 room_id,
                 event_id,
                 sender,
-                origin_server_ts,
+                timestamp: origin_server_ts,
                 redacted: None,
             },
         }
