@@ -283,7 +283,7 @@ void main() {
   group('LoadingStateNotifier Implementation Tests', () {
     testWidgets('should initialize with false state', (tester) async {
       // Arrange
-      final notifier = LoadingStateNotifier();
+      final notifier = LoadingActivitiesStateNotifier();
 
       // Act & Assert
       expect(notifier.state, false);
@@ -292,7 +292,7 @@ void main() {
 
     testWidgets('should update state when setLoading is called', (tester) async {
       // Arrange
-      final notifier = LoadingStateNotifier();
+      final notifier = LoadingActivitiesStateNotifier();
       bool stateChanged = false;
       
       notifier.addListener((state) {
@@ -309,7 +309,7 @@ void main() {
 
     testWidgets('should handle multiple state changes', (tester) async {
       // Arrange
-      final notifier = LoadingStateNotifier();
+      final notifier = LoadingActivitiesStateNotifier();
       final states = <bool>[];
       
       notifier.addListener((state) {
@@ -328,7 +328,7 @@ void main() {
 
     testWidgets('should dispose properly', (tester) async {
       // Arrange
-      final notifier = LoadingStateNotifier();
+      final notifier = LoadingActivitiesStateNotifier();
 
       // Act
       notifier.dispose();
@@ -535,11 +535,11 @@ void main() {
   group('Notifier Integration and Coverage Tests', () {
     testWidgets('should handle all notifiers together', (tester) async {
       // Test that all notifier types can coexist
-      final loadingNotifier = LoadingStateNotifier();
+      final loadingNotifier = LoadingActivitiesStateNotifier();
       final activitiesNotifier = AllActivitiesNotifier();
       final activityNotifier = AsyncActivityNotifier();
 
-      expect(loadingNotifier, isA<LoadingStateNotifier>());
+      expect(loadingNotifier, isA<LoadingActivitiesStateNotifier>());
       expect(activitiesNotifier, isA<AllActivitiesNotifier>());
       expect(activityNotifier, isA<AsyncActivityNotifier>());
 
@@ -558,7 +558,7 @@ void main() {
     });
 
     testWidgets('should handle complex state scenarios', (tester) async {
-      final loadingNotifier = LoadingStateNotifier();
+      final loadingNotifier = LoadingActivitiesStateNotifier();
       final states = <bool>[];
       
       loadingNotifier.addListener((state) {
@@ -578,7 +578,7 @@ void main() {
 
     testWidgets('should test all public methods and properties', (tester) async {
       // Test LoadingStateNotifier public interface
-      final loadingNotifier = LoadingStateNotifier();
+      final loadingNotifier = LoadingActivitiesStateNotifier();
       expect(loadingNotifier.state, isA<bool>());
       expect(loadingNotifier.setLoading, isA<Function>());
       expect(loadingNotifier.mounted, true);
@@ -622,7 +622,7 @@ void main() {
       streamController.close();
       
       // State notifier error resilience
-      final loadingNotifier = LoadingStateNotifier();
+      final loadingNotifier = LoadingActivitiesStateNotifier();
       expect(() => loadingNotifier.setLoading(true), returnsNormally);
       expect(() => loadingNotifier.setLoading(false), returnsNormally);
       

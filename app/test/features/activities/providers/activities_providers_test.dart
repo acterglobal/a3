@@ -210,7 +210,7 @@ void main() {
 
     test('LoadingStateNotifier direct test', () {
       // Test LoadingStateNotifier directly without provider container
-      final notifier = LoadingStateNotifier();
+      final notifier = LoadingActivitiesStateNotifier();
       
       // Test initial state
       expect(notifier.state, false);
