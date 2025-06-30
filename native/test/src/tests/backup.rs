@@ -186,7 +186,7 @@ async fn key_is_kept_and_reset() -> Result<()> {
 }
 
 #[tokio::test]
-async fn identiy_reset_and_fresh_key() -> Result<()> {
+async fn identity_reset_and_fresh_key() -> Result<()> {
     let _ = env_logger::try_init();
 
     // enabled backup stores the key
