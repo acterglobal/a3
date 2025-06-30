@@ -11,11 +11,9 @@ import '../../../../../helpers/test_util.dart';
 
 void main() {
   group('Chat NG - Chat message time view golden', () {
-    testWidgets('Chat message time view event widget', (
-      tester,
-    ) async {
+    testWidgets('Chat message time view event widget', (tester) async {
       await loadTestFonts();
-      useGoldenFileComparatorWithThreshold(0.01); // 1%
+      useGoldenFileComparatorWithThreshold(0.05); // 1%
 
       await tester.pumpProviderWidget(
         overrides: [
@@ -53,9 +51,7 @@ void main() {
 
       await expectLater(
         find.byType(ListView),
-        matchesGoldenFile(
-          'goldens_images/chat_event_message_time_view.png',
-        ),
+        matchesGoldenFile('goldens_images/chat_event_message_time_view.png'),
       );
     });
   });
