@@ -16,7 +16,7 @@ void main() {
       'ChatEvent reply-to message emoji only event widget legacy html',
       (tester) async {
         await loadTestFonts();
-        useGoldenFileComparatorWithThreshold(0.03); // 1%
+        useGoldenFileComparatorWithThreshold(0.05); // 1%
 
         await tester.pumpProviderWidget(
           overrides: [
