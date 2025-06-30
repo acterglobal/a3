@@ -458,16 +458,17 @@ async fn fetch_details_for_event(
             if let Some(event) = item.as_event() {
                 if let TimelineItemContent::MsgLike(MsgLikeContent {
                     kind: MsgLikeKind::Message(msg),
-                    in_reply_to,
+                    in_reply_to: Some(in_reply_to),
                     ..
                 }) = event.content()
                 {
-                    if let Some(info) = in_reply_to {
-                        info!("fetching replied_to: {}", info.event_id);
-                        if let Err(err) = timeline.fetch_details_for_event(&info.event_id).await {
-                            error!("error when fetching replied_to_info via timeline: {err}");
-                            return Ok(false);
-                        }
+                    info!("fetching replied_to: {}", in_reply_to.event_id);
+                    if let Err(err) = timeline
+                        .fetch_details_for_event(&in_reply_to.event_id)
+                        .await
+                    {
+                        error!("error when fetching replied_to_info via timeline: {err}");
+                        return Ok(false);
                     }
                 }
             }
