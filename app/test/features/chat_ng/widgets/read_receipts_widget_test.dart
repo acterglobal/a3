@@ -150,14 +150,18 @@ void main() {
           tester: tester,
           readReceipts: readReceipts,
         );
+
+        expect(find.byIcon(Icons.done_all), findsOneWidget);
       });
 
-      expect(find.byIcon(Icons.done_all), findsOneWidget);
-    });
-    testWidgets('does not display icon when not seen', (tester) async {
-      await creatDMReadReceiptWidgetUnderTest(tester: tester, readReceipts: {});
+      testWidgets('does not display icon when not seen', (tester) async {
+        await creatDMReadReceiptWidgetUnderTest(
+          tester: tester,
+          readReceipts: {},
+        );
 
-      expect(find.byIcon(Icons.done_all), findsNothing);
+        expect(find.byIcon(Icons.done_all), findsNothing);
+      });
     });
   });
 }
