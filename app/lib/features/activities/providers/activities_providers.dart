@@ -114,19 +114,52 @@ final hasMoreActivitiesProvider = Provider<bool>((ref) {
   return notifier.hasMoreData;
 });
 
+final loadingStateProvider = StateNotifierProvider<LoadingStateNotifier, bool>((ref) {
+  return LoadingStateNotifier();
+});
+
 // Provider to check if currently loading more activities
 final isLoadingMoreActivitiesProvider = Provider<bool>((ref) {
-  // Watch the provider to ensure we get updates when state changes
-  ref.watch(allActivitiesProvider);
-  final notifier = ref.read(allActivitiesProvider.notifier);
-  return notifier.isLoadingMore;
+  // Use only the dedicated loading state for reliability
+  return ref.watch(loadingStateProvider);
 });
 
 // Provider function to load more activities
 final loadMoreActivitiesProvider = Provider<Future<void> Function()>((ref) {
   return () async {
-    final notifier = ref.read(allActivitiesProvider.notifier);
-    await notifier.loadMore();
+    final loadingNotifier = ref.read(loadingStateProvider.notifier);
+    final activitiesNotifier = ref.read(allActivitiesProvider.notifier);
+    
+    // Set loading state immediately
+    loadingNotifier.setLoading(true);
+    
+    // Start timing for minimum loading duration
+    final startTime = DateTime.now();
+    const minLoadingDuration = Duration(seconds: 5);
+    
+    try {
+      await activitiesNotifier.loadMore();
+      
+      // Calculate how much time has passed
+      final elapsed = DateTime.now().difference(startTime);
+      final remainingTime = minLoadingDuration - elapsed;
+      
+      // If less than 5 seconds have passed, wait for the remaining time
+      if (remainingTime.inMilliseconds > 0) {
+        await Future.delayed(remainingTime);
+      }
+    } catch (e) {
+      // Even on error, show loading for minimum duration
+      final elapsed = DateTime.now().difference(startTime);
+      final remainingTime = minLoadingDuration - elapsed;
+      
+      if (remainingTime.inMilliseconds > 0) {
+        await Future.delayed(remainingTime);
+      }
+    } finally {
+      // Always clear loading state after minimum duration
+      loadingNotifier.setLoading(false);
+    }
   };
 });
 

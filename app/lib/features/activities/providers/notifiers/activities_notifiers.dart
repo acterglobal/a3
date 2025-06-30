@@ -63,7 +63,6 @@ class AllActivitiesNotifier extends AsyncNotifier<List<String>> {
   static const int _pageSize = 100;
   int _currentOffset = 0;
   bool _hasMoreData = true;
-  bool _isLoadingMore = false;
 
   Future<List<String>> _fetchAllActivities(Client client, {bool loadMore = false}) async {
     if (!loadMore) {
@@ -115,31 +114,20 @@ class AllActivitiesNotifier extends AsyncNotifier<List<String>> {
 
   // Method to load more activities (called when scrolling)
   Future<void> loadMore() async {
-    if (!_hasMoreData || _isLoadingMore) return;
-
-    // Set loading state and notify providers
-    _isLoadingMore = true;
-    // Force a state update to notify providers about loading state change
-    state = AsyncValue.data(state.valueOrNull ?? []);
+    if (!_hasMoreData) return;
 
     try {
       final client = await ref.read(alwaysClientProvider.future);
       final newActivities = await _fetchAllActivities(client, loadMore: true);
-      
-      // Clear loading state and update with new activities
-      _isLoadingMore = false;
       state = AsyncValue.data(newActivities);
     } catch (e, s) {
       _log.severe('Failed to load more activities', e, s);
-      _isLoadingMore = false;
-      // Force state update to notify providers about loading state change
-      state = AsyncValue.data(state.valueOrNull ?? []);
+      state = AsyncValue.error(e, s);
     }
   }
 
   // Getter to check if more data can be loaded
   bool get hasMoreData => _hasMoreData;
-  bool get isLoadingMore => _isLoadingMore;
 
   @override
   Future<List<String>> build() async {
@@ -153,8 +141,6 @@ class AllActivitiesNotifier extends AsyncNotifier<List<String>> {
       final sub = stream.listen(
         (data) async {
           try {
-            // Reset loading state when refreshing
-            _isLoadingMore = false;
             state = AsyncValue.data(await _fetchAllActivities(client));
           } catch (e, s) {
             _log.severe('Failed to refresh activities', e, s);
@@ -181,3 +167,13 @@ class AllActivitiesNotifier extends AsyncNotifier<List<String>> {
     return await _fetchAllActivities(client);
   }
 }
+
+// Create a separate StateNotifier for loading state management
+class LoadingStateNotifier extends StateNotifier<bool> {
+  LoadingStateNotifier() : super(false);
+
+  void setLoading(bool loading) {
+    state = loading;
+  }
+}
+

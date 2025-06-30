@@ -57,6 +57,7 @@ class ActivitiesPage extends ConsumerWidget {
     WidgetRef ref,
     List<Widget> sectionWidgetList,
   ) {
+    final lang = L10n.of(context);
     final isActivityEmpty = sectionWidgetList.isEmpty;
     if (isActivityEmpty) return buildEmptyStateWidget(context);
 
@@ -66,23 +67,46 @@ class ActivitiesPage extends ConsumerWidget {
 
     return NotificationListener<ScrollNotification>(
       onNotification: (ScrollNotification scrollInfo) {
-        // Check if user has scrolled to near the bottom (80% of the way)
-        // and ensure we have more data to load and aren't already loading
-        if (scrollInfo.metrics.pixels >= scrollInfo.metrics.maxScrollExtent * 0.8 &&
-            hasMoreActivities && 
-            !isLoadingMore &&
-            scrollInfo.metrics.maxScrollExtent > 0) {
+
+        if (scrollInfo is ScrollUpdateNotification) {
+          final pixels = scrollInfo.metrics.pixels;
+          final maxExtent = scrollInfo.metrics.maxScrollExtent;
+          final progress = maxExtent > 0 ? pixels / maxExtent : 0;
           
-           if (hasMoreActivities && !isLoadingMore) {
-              loadMoreActivities();
-            }
+          // Check if user has scrolled to near the bottom (90% of the way)
+          // and ensure we have more data to load and aren't already loading
+          if (progress >= 0.9 &&
+              hasMoreActivities && 
+              !isLoadingMore &&
+              maxExtent > 0) {
+            loadMoreActivities();
+          }
         }
         return false;
       },
       child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: sectionWidgetList,
+          children: [
+            ...sectionWidgetList,
+            // Show loading indicator at the bottom when loading more activities
+            if (isLoadingMore)
+              Container(
+                padding: const EdgeInsets.all(20.0),
+                child: Center(
+                  child: Column(
+                    children: [
+                      CircularProgressIndicator(),
+                      SizedBox(height: 8),
+                      Text(
+                        lang.loadingMoreActivities,
+                        style: TextStyle(fontSize: 12, color: Colors.grey),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+          ],
         ),
       ),
     );
