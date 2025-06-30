@@ -15,7 +15,7 @@ async fn can_recover_and_read_message() -> Result<()> {
     let body = "Hi, everyone";
     let (user_id, room_id, backup_pass) = {
         let (mut user, room_id) = random_user_with_random_convo("recovering_message").await?;
-        let state_sync = user.start_sync();
+        let state_sync = user.start_sync().await?;
         state_sync.await_has_synced_history().await?;
 
         // wait for sync to catch up
@@ -73,7 +73,7 @@ async fn can_recover_and_read_message() -> Result<()> {
 
     let mut user = login_test_user(user_id.localpart().to_owned()).await?;
 
-    let _state_sync = user.start_sync();
+    let _state_sync = user.start_sync().await?;
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
@@ -146,7 +146,7 @@ async fn key_is_kept_and_reset() -> Result<()> {
 
     // enabled backup stores the key
     let (mut user, _room_id) = random_user_with_random_convo("recovering_message").await?;
-    let _state_sync = user.start_sync();
+    let _state_sync = user.start_sync().await?;
 
     let backup_manager = user.backup_manager();
     let backup_pass = backup_manager.enable().await?;
@@ -191,7 +191,7 @@ async fn identiy_reset_and_fresh_key() -> Result<()> {
 
     // enabled backup stores the key
     let (mut user, _room_id) = random_user_with_random_convo("recovering_message").await?;
-    let _state_sync = user.start_sync();
+    let _state_sync = user.start_sync().await?;
 
     let backup_manager = user.backup_manager();
     let backup_pass = backup_manager.enable().await?;

@@ -17,7 +17,7 @@ async fn message_redaction() -> Result<()> {
     let _ = env_logger::try_init();
 
     let (mut user, room_id) = random_user_with_random_convo("redact").await?;
-    let syncer = user.start_sync();
+    let syncer = user.start_sync().await?;
     syncer.await_has_synced_history().await?;
 
     // wait for sync to catch up

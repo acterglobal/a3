@@ -13,7 +13,7 @@ async fn upgrade_flow() -> Result<()> {
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
 
     let mut user = random_user("upgrade").await?;
-    let _sync_state = user.start_sync();
+    let _sync_state = user.start_sync().await?;
 
     let spaces = user.spaces().await?;
     assert_eq!(spaces.len(), 0);

@@ -12,7 +12,7 @@ async fn super_invites_flow_with_registration_and_rooms() -> Result<()> {
     let _ = env_logger::try_init();
     let (mut user, room_id) = random_user_with_random_space("super_invites_flow").await?;
 
-    let state_sync = user.start_sync();
+    let state_sync = user.start_sync().await?;
     state_sync.await_has_synced_history().await?;
 
     // wait for sync to catch up
@@ -54,7 +54,7 @@ async fn super_invites_flow_with_registration_and_rooms() -> Result<()> {
     assert_eq!(new_rooms.len(), 1);
     assert_eq!(new_rooms[0], room_id);
 
-    let state_sync = new_user.start_sync();
+    let state_sync = new_user.start_sync().await?;
     state_sync.await_has_synced_history().await?;
     let _space = new_user.space(room_id.to_string()).await?; // we are part of that space now! yay!
 
@@ -72,7 +72,7 @@ async fn super_invites_manage() -> Result<()> {
     let _ = env_logger::try_init();
     let (mut user, room_id) = random_user_with_random_space("super_invites_manage").await?;
 
-    let state_sync = user.start_sync();
+    let state_sync = user.start_sync().await?;
     state_sync.await_has_synced_history().await?;
 
     // wait for sync to catch up

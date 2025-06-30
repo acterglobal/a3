@@ -70,10 +70,10 @@ async fn setup_accounts(
 
     observer.install_default_acter_push_rules().await?;
 
-    let sync_state1 = admin.start_sync();
+    let sync_state1 = admin.start_sync().await?;
     sync_state1.await_has_synced_history().await?;
 
-    let sync_state2 = observer.start_sync();
+    let sync_state2 = observer.start_sync().await?;
     sync_state2.await_has_synced_history().await?;
 
     Ok(((admin, sync_state1), (observer, sync_state2), room_id))

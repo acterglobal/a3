@@ -404,7 +404,7 @@ async fn create_with_default_space_settings() -> Result<()> {
 async fn create_with_custom_space_settings() -> Result<()> {
     let _ = env_logger::try_init();
     let mut user = random_user("space_custom_settings").await?;
-    let sync_state = user.start_sync();
+    let sync_state = user.start_sync().await?;
     sync_state.await_has_synced_history().await?;
 
     let mut permissions_builder = new_app_permissions_builder(); // all on by default
@@ -837,7 +837,7 @@ async fn update_topic() -> Result<()> {
     let _ = env_logger::try_init();
     let (mut user, space_id) = random_user_with_random_space("space_update_topic").await?;
 
-    let sync_state = user.start_sync();
+    let sync_state = user.start_sync().await?;
     sync_state.await_has_synced_history().await?;
 
     // wait for sync to catch up

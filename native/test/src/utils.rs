@@ -200,7 +200,7 @@ pub async fn random_user_with_template(
     )
     .await?;
 
-    let sync_state = user.start_sync();
+    let sync_state = user.start_sync().await?;
 
     let tmpl_engine = user.template_engine(template).await?;
     let exec_stream = tmpl_engine.execute()?;
@@ -242,7 +242,7 @@ pub async fn random_users_with_random_space_under_template(
 
     let mut sync_states = vec![];
     for mut client in clients.clone() {
-        let sync_state = client.start_sync();
+        let sync_state = client.start_sync().await?;
         sync_states.push(sync_state);
     }
 

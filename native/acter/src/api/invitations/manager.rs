@@ -7,7 +7,6 @@ use acter_matrix::{
 };
 use anyhow::Result;
 use futures::{stream::select, Stream};
-use log::{trace, warn};
 use ruma::OwnedRoomId;
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, StreamExt};

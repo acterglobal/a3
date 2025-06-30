@@ -20,7 +20,7 @@ async fn simple_message_doesnt_trigger_room_update() -> Result<()> {
     let _ = env_logger::try_init();
 
     let (mut user, room_id) = random_user_with_random_convo("room_update_test").await?;
-    let state_sync = user.start_sync();
+    let state_sync = user.start_sync().await?;
     state_sync.await_has_synced_history().await?;
 
     // wait for sync to catch up
@@ -110,7 +110,7 @@ async fn state_update_triggers_room_update() -> Result<()> {
     let _ = env_logger::try_init();
 
     let (mut user, room_id) = random_user_with_random_convo("room_update_test").await?;
-    let state_sync = user.start_sync();
+    let state_sync = user.start_sync().await?;
     state_sync.await_has_synced_history().await?;
 
     // wait for sync to catch up
@@ -138,10 +138,10 @@ async fn joining_room_triggers_room_update() -> Result<()> {
     let _ = env_logger::try_init();
 
     let (mut sisko, room_id) = random_user_with_random_space("spI").await?;
-    let _sisko_syncer = sisko.start_sync();
+    let _sisko_syncer = sisko.start_sync().await?;
 
     let mut kyra = random_user("spI").await?;
-    let _kyra_syncer = kyra.start_sync();
+    let _kyra_syncer = kyra.start_sync().await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
 

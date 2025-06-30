@@ -13634,6 +13634,47 @@ class Api {
     return tmp7;
   }
 
+  SyncState? __clientStartSyncFuturePoll(int boxed, int postCobject, int port) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _clientStartSyncFuturePoll(tmp1, tmp3, tmp5);
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(
+        tmp10_0.asTypedList(tmp11),
+        allowMalformed: true,
+      );
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_SyncState");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = SyncState._(this, tmp13_1);
+    return tmp7;
+  }
+
   String? __clientRestoreTokenFuturePoll(int boxed, int postCobject, int port) {
     final tmp0 = boxed;
     final tmp2 = postCobject;
@@ -35372,6 +35413,19 @@ class Api {
               int,
             )
           >();
+  late final _clientStartSyncFuturePollPtr =
+      _lookup<
+        ffi.NativeFunction<
+          _ClientStartSyncFuturePollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+          )
+        >
+      >("__Client_start_sync_future_poll");
+
+  late final _clientStartSyncFuturePoll = _clientStartSyncFuturePollPtr
+      .asFunction<_ClientStartSyncFuturePollReturn Function(int, int, int)>();
   late final _clientRestoreTokenFuturePollPtr =
       _lookup<
         ffi.NativeFunction<
@@ -66195,15 +66249,15 @@ class Client {
   Client._(this._api, this._box);
 
   /// start the sync
-  SyncState startSync() {
+  Future<SyncState> startSync() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._clientStartSync(tmp0);
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_SyncState");
+    final tmp3_1 = _Box(_api, tmp3_0, "__Client_start_sync_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = SyncState._(_api, tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__clientStartSyncFuturePoll);
     return tmp2;
   }
 
@@ -80435,6 +80489,21 @@ class _InvitationsManagerRoomInvitationsFuturePollReturn extends ffi.Struct {
 }
 
 class _InvitationsManagerObjectInvitationsFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+}
+
+class _ClientStartSyncFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()

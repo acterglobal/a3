@@ -48,7 +48,7 @@ use tracing::{error, info, trace, warn};
 
 use crate::{Convo, Room, Space, RUNTIME};
 
-use super::Client;
+use super::{Client, SyncController};
 
 #[derive(Clone, Debug, Default)]
 pub struct HistoryLoadState {
@@ -211,6 +211,9 @@ impl SyncState {
     pub fn cancel(&self) {
         if let Some(handle) = self.handle.replace(None) {
             handle.abort();
+        }
+        if let Some(first_sync_task) = self.first_sync_task.replace(None) {
+            first_sync_task.abort();
         }
     }
 }
@@ -481,7 +484,7 @@ static SYNC_TOKEN_KEY: &str = "sync_token";
 
 // external API
 impl Client {
-    pub fn start_sync(&mut self) -> SyncState {
+    pub async fn start_sync(&mut self) -> Result<SyncState> {
         info!("starting sync");
         let state = self.state.clone();
         let me = self.clone();
@@ -499,215 +502,223 @@ impl Client {
 
         let mut device_controller = self.device_controller.clone();
 
-        let (first_synced_tx, first_synced_rx) = channel(1);
-        let first_synced_arc = Arc::new(first_synced_tx);
+        RUNTIME
+            .spawn(async move {
+                let (first_synced_tx, first_synced_rx) = channel(1);
+                let first_synced_arc = Arc::new(first_synced_tx);
 
-        let (sync_error_tx, sync_error_rx) = channel(1);
-        let sync_error_arc = Arc::new(sync_error_tx);
+                let (sync_error_tx, sync_error_rx) = channel(1);
+                let sync_error_arc = Arc::new(sync_error_tx);
 
-        let initial = Arc::new(AtomicBool::from(true));
-        let sync_state = SyncState::new(first_synced_rx, sync_error_rx);
-        let history_loading = sync_state.history_loading.clone();
-        let first_sync_task = sync_state.first_sync_task.clone();
+                let initial = Arc::new(AtomicBool::from(true));
+                let sync_state = SyncState::new(first_synced_rx, sync_error_rx);
+                let history_loading = sync_state.history_loading.clone();
+                let first_sync_task = sync_state.first_sync_task.clone();
 
-        let handle = RUNTIME.spawn(async move {
-            info!("spawning sync callback");
+                let me_cl = me.clone();
+                let handle = tokio::spawn(async move {
+                    info!("spawning sync callback");
 
-            let mut sync_settings = SyncSettings::new().timeout(Duration::from_secs(25));
+                    let mut sync_settings = SyncSettings::new().timeout(Duration::from_secs(25));
 
-            match me.store().get_raw::<Option<String>>(SYNC_TOKEN_KEY).await {
-                Ok(Some(token)) => {
-                    trace!(?token, "sync found token!");
-                    sync_settings = sync_settings.token(token);
-                }
-                Err(acter_matrix::Error::ModelNotFound(_)) => {
-                    trace!("First start, no sync token");
-                }
-                Err(error) => {
-                    error!(?error, "Problem loading sync token");
-                }
-                _ => {}
-            }
-
-            // keep the sync timeout below the actual connection timeout to ensure we receive it
-            // back before the server timeout occurred
-
-            let mut sync_stream = Box::pin(client.sync_stream(sync_settings).await);
-
-            // fetch the events that received when offline
-            while let Some(result) = sync_stream.next().await {
-                info!("received sync callback");
-
-                let response = match result {
-                    Ok(response) => response,
-                    Err(err) => {
-                        if let Some(RumaApiError::ClientApi(e)) = err.as_ruma_api_error() {
-                            error!(?e, "Client error");
-                            sync_error_arc.send(e.into());
-                            return;
+                    match me_cl.store().get_raw::<Option<String>>(SYNC_TOKEN_KEY).await {
+                        Ok(Some(token)) => {
+                            trace!(?token, "sync found token!");
+                            sync_settings = sync_settings.token(token);
                         }
-                        error!(?err, "Other error, continuing");
-                        continue;
+                        Err(acter_matrix::Error::ModelNotFound(_)) => {
+                            trace!("First start, no sync token");
+                        }
+                        Err(error) => {
+                            error!(?error, "Problem loading sync token");
+                        }
+                        _ => {}
                     }
-                };
 
-                trace!(target: "acter::sync_response::full", "sync response: {:#?}", response);
+                    // keep the sync timeout below the actual connection timeout to ensure we receive it
+                    // back before the server timeout occurred
 
-                if initial.compare_exchange(true, false, Ordering::Relaxed, Ordering::Relaxed)
-                    == Ok(true)
-                {
-                    info!("received first sync");
-                    trace!(user_id=?client.user_id(), "initial synced");
+                    let mut sync_stream = Box::pin(client.sync_stream(sync_settings).await);
 
-                    initial.store(false, Ordering::SeqCst);
+                    // fetch the events that received when offline
+                    while let Some(result) = sync_stream.next().await {
+                        info!("received sync callback");
 
-                    info!("issuing first sync update");
-                    first_synced_arc.send(true);
-                    if let Ok(mut w) = state.try_write() {
-                        w.has_first_synced = true;
-                    };
-                    let sync_keys = response.rooms.joined.keys().cloned().collect();
-                    // background and keep the handle around.
-                    me.refresh_history_on_start(
-                        sync_keys,
-                        first_sync_task.clone(),
-                        history_loading.clone(),
-                    );
-                } else {
-                    // see if we have new spaces to catch up upon
-                    let mut new_spaces = Vec::new();
-                    for (room_id, joined_state) in response.rooms.joined.iter() {
-                        if history_loading.lock_mut().knows_room(room_id) {
-                            continue;
-                        }
-                        let Some(full_room) = me.get_room(room_id) else {
-                            error!("room not found. how can that be?");
-                            continue;
+                        let response = match result {
+                            Ok(response) => response,
+                            Err(err) => {
+                                if let Some(RumaApiError::ClientApi(e)) = err.as_ruma_api_error() {
+                                    error!(?e, "Client error");
+                                    sync_error_arc.send(e.into());
+                                    return;
+                                }
+                                error!(?err, "Other error, continuing");
+                                continue;
+                            }
                         };
-                        if is_acter_space(&full_room).await {
-                            new_spaces.push(full_room);
-                        }
-                    }
 
-                    if !new_spaces.is_empty() {
-                        me.refresh_history_on_way(history_loading.clone(), new_spaces)
-                            .await;
-                    }
-                }
+                        trace!(target: "acter::sync_response::full", "sync response: {:#?}", response);
 
-                let changed_rooms = response
-                    .rooms
-                    .joined
-                    .keys()
-                    .chain(response.rooms.left.keys())
-                    .chain(response.rooms.invited.keys())
-                    .collect::<Vec<&OwnedRoomId>>();
+                        if initial.compare_exchange(true, false, Ordering::Relaxed, Ordering::Relaxed)
+                            == Ok(true)
+                        {
+                            info!("received first sync");
+                            trace!(user_id=?client.user_id(), "initial synced");
 
-                if !changed_rooms.is_empty() {
-                    // changes observed, calculate which keys need to be updated
-                    trace!(?changed_rooms, "changed rooms");
-                    // by first refreshing rooms where necessary
-                    let mut updated_room_ids = me.refresh_rooms(changed_rooms).await;
+                            initial.store(false, Ordering::SeqCst);
 
-                    let mut keys = Vec::new();
-
-                    // and then checking if any updates in the joined rooms warrant us notifying
-                    for (room_id, updates) in response.rooms.joined.iter() {
-                        if let Some(idx) = updated_room_ids.iter().position(|id| id == room_id) {
-                            // we generally notify about this room as it was found above
-                            updated_room_ids.remove(idx); // remove the instance to not inform about them twice
-                            keys.push(ExecuteReference::Room(room_id.clone()));
+                            info!("issuing first sync update");
+                            first_synced_arc.send(true);
+                            if let Ok(mut w) = state.try_write() {
+                                w.has_first_synced = true;
+                            };
+                            let sync_keys = response.rooms.joined.keys().cloned().collect();
+                            // background and keep the handle around.
+                            me_cl.refresh_history_on_start(
+                                sync_keys,
+                                first_sync_task.clone(),
+                                history_loading.clone(),
+                            );
                         } else {
-                            // only notifiy if any update warrant us notifying
-                            if !updates.state.is_empty()
-                                || updates.timeline.events.iter().any(|t| {
-                                    let TimelineEventKind::PlainText { event } = &t.kind else {
-                                        return false;
-                                    };
-                                    // check if any event received is a state event
-                                    matches!(
-                                        event.get_field::<String>("state_key"),
-                                        Ok(Some(state_event))
-                                    )
-                                })
-                            {
-                                // state or at least one item in  the timeline is a state event, we need to notify
-                                trace!(?room_id, "room state changed");
-                                keys.push(ExecuteReference::Room(room_id.clone()));
+                            // see if we have new spaces to catch up upon
+                            let mut new_spaces = Vec::new();
+                            for (room_id, joined_state) in response.rooms.joined.iter() {
+                                if history_loading.lock_mut().knows_room(room_id) {
+                                    continue;
+                                }
+                                let Some(full_room) = me_cl.get_room(room_id) else {
+                                    error!("room not found. how can that be?");
+                                    continue;
+                                };
+                                if is_acter_space(&full_room).await {
+                                    new_spaces.push(full_room);
+                                }
+                            }
+
+                            if !new_spaces.is_empty() {
+                                me_cl.refresh_history_on_way(history_loading.clone(), new_spaces)
+                                    .await;
                             }
                         }
-                        // finally, let's see if there is any room account data to inform about
-                        keys.extend(updates.account_data.iter().filter_map(|raw| {
-                            raw.get_field::<String>("type").ok().flatten().map(|s| {
-                                ExecuteReference::RoomAccountData(room_id.clone(), Cow::Owned(s))
-                            })
-                        }));
+
+                        let changed_rooms = response
+                            .rooms
+                            .joined
+                            .keys()
+                            .chain(response.rooms.left.keys())
+                            .chain(response.rooms.invited.keys())
+                            .collect::<Vec<&OwnedRoomId>>();
+
+                        if !changed_rooms.is_empty() {
+                            // changes observed, calculate which keys need to be updated
+                            trace!(?changed_rooms, "changed rooms");
+                            // by first refreshing rooms where necessary
+                            let mut updated_room_ids = me_cl.refresh_rooms(changed_rooms).await;
+
+                            let mut keys = Vec::new();
+
+                            // and then checking if any updates in the joined rooms warrant us notifying
+                            for (room_id, updates) in response.rooms.joined.iter() {
+                                if let Some(idx) = updated_room_ids.iter().position(|id| id == room_id) {
+                                    // we generally notify about this room as it was found above
+                                    updated_room_ids.remove(idx); // remove the instance to not inform about them twice
+                                    keys.push(ExecuteReference::Room(room_id.clone()));
+                                } else {
+                                    // only notifiy if any update warrant us notifying
+                                    if !updates.state.is_empty()
+                                        || updates.timeline.events.iter().any(|t| {
+                                            let TimelineEventKind::PlainText { event } = &t.kind else {
+                                                return false;
+                                            };
+                                            // check if any event received is a state event
+                                            matches!(
+                                                event.get_field::<String>("state_key"),
+                                                Ok(Some(state_event))
+                                            )
+                                        })
+                                    {
+                                        // state or at least one item in  the timeline is a state event, we need to notify
+                                        trace!(?room_id, "room state changed");
+                                        keys.push(ExecuteReference::Room(room_id.clone()));
+                                    }
+                                }
+                                // finally, let's see if there is any room account data to inform about
+                                keys.extend(updates.account_data.iter().filter_map(|raw| {
+                                    raw.get_field::<String>("type").ok().flatten().map(|s| {
+                                        ExecuteReference::RoomAccountData(room_id.clone(), Cow::Owned(s))
+                                    })
+                                }));
+                            }
+
+                            // if there are other room_ids left after clearing the joined, we also want to notify about them
+                            keys.extend(
+                                updated_room_ids
+                                    .iter()
+                                    .map(|id| ExecuteReference::Room(id.clone())),
+                            );
+
+                            if !keys.is_empty() {
+                                info!(?keys, "update notify keys");
+                                me_cl.executor().notify(keys);
+                            }
+                        }
+
+                        if !response.account_data.is_empty() {
+                            info!("account data found!");
+                            // account data has been updated, inform the listeners
+                            let keys: Vec<ExecuteReference> = response
+                                .account_data
+                                .iter()
+                                .filter_map(|raw| {
+                                    raw.get_field::<String>("type")
+                                        .ok()
+                                        .flatten()
+                                        .map(|s| ExecuteReference::AccountData(Cow::Owned(s)))
+                                })
+                                .collect();
+                            if !keys.is_empty() {
+                                info!(?keys, "general account data keys");
+                                me_cl.executor().notify(keys);
+                            }
+                        }
+
+                        if let Ok(mut w) = state.try_write() {
+                            if w.should_stop_syncing {
+                                w.is_syncing = false;
+                                trace!("Stopping syncing upon user request");
+                                return;
+                            }
+                        }
+                        if let Ok(mut w) = state.try_write() {
+                            if !w.is_syncing {
+                                w.is_syncing = true;
+                            }
+                        }
+
+                        trace!(token = response.next_batch, "storing sync token");
+                        if let Err(error) = me_cl
+                            .store()
+                            .set_raw(SYNC_TOKEN_KEY, &response.next_batch)
+                            .await
+                        {
+                            error!(?error, "Error writing sync_token");
+                        }
+
+                        trace!("ready for the next round");
                     }
+                    trace!("sync stopped");
 
-                    // if there are other room_ids left after clearing the joined, we also want to notify about them
-                    keys.extend(
-                        updated_room_ids
-                            .iter()
-                            .map(|id| ExecuteReference::Room(id.clone())),
-                    );
-
-                    if !keys.is_empty() {
-                        info!(?keys, "update notify keys");
-                        me.executor().notify(keys);
-                    }
-                }
-
-                if !response.account_data.is_empty() {
-                    info!("account data found!");
-                    // account data has been updated, inform the listeners
-                    let keys: Vec<ExecuteReference> = response
-                        .account_data
-                        .iter()
-                        .filter_map(|raw| {
-                            raw.get_field::<String>("type")
-                                .ok()
-                                .flatten()
-                                .map(|s| ExecuteReference::AccountData(Cow::Owned(s)))
-                        })
-                        .collect();
-                    if !keys.is_empty() {
-                        info!(?keys, "general account data keys");
-                        me.executor().notify(keys);
-                    }
-                }
-
-                if let Ok(mut w) = state.try_write() {
-                    if w.should_stop_syncing {
+                    if let Ok(mut w) = state.try_write() {
                         w.is_syncing = false;
-                        trace!("Stopping syncing upon user request");
-                        return;
-                    }
-                }
-                if let Ok(mut w) = state.try_write() {
-                    if !w.is_syncing {
-                        w.is_syncing = true;
-                    }
-                }
+                    };
+                });
 
-                trace!(token = response.next_batch, "storing sync token");
-                if let Err(error) = me
-                    .store()
-                    .set_raw(SYNC_TOKEN_KEY, &response.next_batch)
-                    .await
-                {
-                    error!(?error, "Error writing sync_token");
-                }
+                me.start_sliding_sync().await?;
 
-                trace!("ready for the next round");
-            }
-            trace!("sync stopped");
-
-            if let Ok(mut w) = state.try_write() {
-                w.is_syncing = false;
-            };
-        });
-        sync_state.handle.set(Some(handle));
-        sync_state
+                sync_state.handle.set(Some(handle));
+                Ok(sync_state)
+            })
+            .await?
     }
 
     /// Indication whether we’ve received a first sync response since

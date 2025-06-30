@@ -16,7 +16,7 @@ async fn test_space_parent() -> Result<()> {
     let _ = env_logger::try_init();
 
     let (mut user, room_id) = random_user_with_random_convo("space_parent").await?;
-    let state_sync = user.start_sync();
+    let state_sync = user.start_sync().await?;
     state_sync.await_has_synced_history().await?;
 
     let settings = CreateConvoSettingsBuilder::default().build()?;

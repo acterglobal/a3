@@ -17,7 +17,7 @@ async fn test_room_power_levels_ban() -> Result<()> {
     let _ = env_logger::try_init();
 
     let (mut user, room_id) = random_user_with_random_convo("room_power_levels_ban").await?;
-    let state_sync = user.start_sync();
+    let state_sync = user.start_sync().await?;
     state_sync.await_has_synced_history().await?;
 
     // wait for sync to catch up
@@ -99,7 +99,7 @@ async fn test_room_power_levels_events() -> Result<()> {
     let _ = env_logger::try_init();
 
     let (mut user, room_id) = random_user_with_random_convo("room_power_levels_events").await?;
-    let state_sync = user.start_sync();
+    let state_sync = user.start_sync().await?;
     state_sync.await_has_synced_history().await?;
 
     // wait for sync to catch up
@@ -185,7 +185,7 @@ async fn test_room_power_levels_events_default() -> Result<()> {
 
     let (mut user, room_id) =
         random_user_with_random_convo("room_power_levels_events_default").await?;
-    let state_sync = user.start_sync();
+    let state_sync = user.start_sync().await?;
     state_sync.await_has_synced_history().await?;
 
     // wait for sync to catch up
@@ -269,7 +269,7 @@ async fn test_room_power_levels_invite() -> Result<()> {
     let _ = env_logger::try_init();
 
     let (mut user, room_id) = random_user_with_random_convo("room_power_levels_invite").await?;
-    let state_sync = user.start_sync();
+    let state_sync = user.start_sync().await?;
     state_sync.await_has_synced_history().await?;
 
     // wait for sync to catch up
@@ -351,7 +351,7 @@ async fn test_room_power_levels_kick() -> Result<()> {
     let _ = env_logger::try_init();
 
     let (mut user, room_id) = random_user_with_random_convo("room_power_levels_kick").await?;
-    let state_sync = user.start_sync();
+    let state_sync = user.start_sync().await?;
     state_sync.await_has_synced_history().await?;
 
     // wait for sync to catch up
@@ -433,7 +433,7 @@ async fn test_room_power_levels_redact() -> Result<()> {
     let _ = env_logger::try_init();
 
     let (mut user, room_id) = random_user_with_random_convo("room_power_levels_redact").await?;
-    let state_sync = user.start_sync();
+    let state_sync = user.start_sync().await?;
     state_sync.await_has_synced_history().await?;
 
     // wait for sync to catch up
@@ -516,7 +516,7 @@ async fn test_room_power_levels_state_default() -> Result<()> {
 
     let (mut user, room_id) =
         random_user_with_random_convo("room_power_levels_state_default").await?;
-    let state_sync = user.start_sync();
+    let state_sync = user.start_sync().await?;
     state_sync.await_has_synced_history().await?;
 
     // wait for sync to catch up
@@ -601,7 +601,7 @@ async fn test_room_power_levels_users_default() -> Result<()> {
 
     let (mut user, room_id) =
         random_user_with_random_convo("room_power_levels_users_default").await?;
-    let state_sync = user.start_sync();
+    let state_sync = user.start_sync().await?;
     state_sync.await_has_synced_history().await?;
 
     // wait for sync to catch up
@@ -686,7 +686,7 @@ async fn test_room_power_levels_notifications() -> Result<()> {
 
     let (mut user, room_id) =
         random_user_with_random_convo("room_power_levels_notifications").await?;
-    let state_sync = user.start_sync();
+    let state_sync = user.start_sync().await?;
     state_sync.await_has_synced_history().await?;
 
     // wait for sync to catch up

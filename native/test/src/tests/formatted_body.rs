@@ -16,7 +16,7 @@ async fn sisko_sends_rich_text_to_kyra() -> Result<()> {
     let mut sisko = users[0].clone();
     let mut kyra = users[1].clone();
 
-    let sisko_sync = sisko.start_sync();
+    let sisko_sync = sisko.start_sync().await?;
     sisko_sync.await_has_synced_history().await?;
 
     // wait for sync to catch up
@@ -29,7 +29,7 @@ async fn sisko_sends_rich_text_to_kyra() -> Result<()> {
     let sisko_convo = sisko.convo(room_id.to_string()).await?;
     let sisko_timeline = sisko_convo.timeline_stream().await?;
 
-    let kyra_sync = kyra.start_sync();
+    let kyra_sync = kyra.start_sync().await?;
     kyra_sync.await_has_synced_history().await?;
 
     for invited in kyra.invited_rooms().iter() {

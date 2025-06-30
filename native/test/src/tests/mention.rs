@@ -18,7 +18,7 @@ async fn sisko_mentions_room() -> Result<()> {
     let mut worf = users[2].clone();
 
     // wait for sisko sync to catch up
-    let sisko_sync = sisko.start_sync();
+    let sisko_sync = sisko.start_sync().await?;
     sisko_sync.await_has_synced_history().await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
@@ -31,7 +31,7 @@ async fn sisko_mentions_room() -> Result<()> {
     let sisko_timeline = sisko_convo.timeline_stream().await?;
 
     // wait for kyra sync to catch up
-    let kyra_sync = kyra.start_sync();
+    let kyra_sync = kyra.start_sync().await?;
     kyra_sync.await_has_synced_history().await?;
 
     for invited in kyra.invited_rooms().iter() {
@@ -47,7 +47,7 @@ async fn sisko_mentions_room() -> Result<()> {
     let kyra_convo = kyra.convo(room_id.to_string()).await?;
 
     // wait for worf sync to catch up
-    let worf_sync = worf.start_sync();
+    let worf_sync = worf.start_sync().await?;
     worf_sync.await_has_synced_history().await?;
 
     for invited in worf.invited_rooms().iter() {
@@ -110,7 +110,7 @@ async fn sisko_mentions_kyra_worf() -> Result<()> {
     let mut worf = users[2].clone();
 
     // wait for sisko sync to catch up
-    let sisko_sync = sisko.start_sync();
+    let sisko_sync = sisko.start_sync().await?;
     sisko_sync.await_has_synced_history().await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
@@ -123,7 +123,7 @@ async fn sisko_mentions_kyra_worf() -> Result<()> {
     let sisko_timeline = sisko_convo.timeline_stream().await?;
 
     // wait for kyra sync to catch up
-    let kyra_sync = kyra.start_sync();
+    let kyra_sync = kyra.start_sync().await?;
     kyra_sync.await_has_synced_history().await?;
 
     for invited in kyra.invited_rooms().iter() {
@@ -139,7 +139,7 @@ async fn sisko_mentions_kyra_worf() -> Result<()> {
     let kyra_convo = kyra.convo(room_id.to_string()).await?;
 
     // wait for worf sync to catch up
-    let worf_sync = worf.start_sync();
+    let worf_sync = worf.start_sync().await?;
     worf_sync.await_has_synced_history().await?;
 
     for invited in worf.invited_rooms().iter() {
