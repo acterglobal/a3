@@ -114,8 +114,8 @@ final hasMoreActivitiesProvider = Provider<bool>((ref) {
   return notifier.hasMoreData;
 });
 
-final loadingStateProvider = StateNotifierProvider<LoadingStateNotifier, bool>((ref) {
-  return LoadingStateNotifier();
+final loadingStateProvider = StateNotifierProvider<LoadingActivitiesStateNotifier, bool>((ref) {
+  return LoadingActivitiesStateNotifier();
 });
 
 // Provider to check if currently loading more activities

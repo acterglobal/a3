@@ -169,8 +169,8 @@ class AllActivitiesNotifier extends AsyncNotifier<List<String>> {
 }
 
 // Create a separate StateNotifier for loading state management
-class LoadingStateNotifier extends StateNotifier<bool> {
-  LoadingStateNotifier() : super(false);
+class LoadingActivitiesStateNotifier extends StateNotifier<bool> {
+  LoadingActivitiesStateNotifier() : super(false);
 
   void setLoading(bool loading) {
     state = loading;
