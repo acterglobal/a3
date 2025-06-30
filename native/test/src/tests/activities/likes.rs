@@ -5,7 +5,10 @@ use tokio_retry::{
 };
 
 use super::get_latest_activity;
-use crate::utils::random_users_with_random_space_under_template;
+use crate::{
+    tests::activities::{all_activities_observer, assert_triggered_with_latest_activity},
+    utils::random_users_with_random_space_under_template,
+};
 
 const TMPL: &str = r#"
 version = "0.1"
@@ -35,39 +38,37 @@ url = "mxc://acter.global/tVLtaQaErMyoXmcCroPZdfNG"
 #[tokio::test]
 async fn like_activity_on_news() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("likeOnboost", 2, TMPL).await?;
+        random_users_with_random_space_under_template("likeOnboost", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = second_user.clone();
-    let news_entry = Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        async move {
-            let news_entries = client.latest_news_entries(1).await?;
-            if news_entries.len() != 1 {
-                bail!("news entries not found found");
-            }
-            Ok(news_entries[0].clone())
+    let news_entry = Retry::spawn(retry_strategy.clone(), || async {
+        let news_entries = second_user.latest_news_entries(1).await?;
+        if news_entries.len() != 1 {
+            bail!("news entries not found found");
         }
+        Ok(news_entries[0].clone())
     })
     .await?;
+
+    let mut act_obs = all_activities_observer(first).await?;
 
     let reactions = news_entry.reactions().await?;
     reactions.send_like().await?;
 
-    let activity = Retry::spawn(retry_strategy.clone(), move || {
-        let first = first.clone();
-        let space_id = space_id.clone();
-        async move { get_latest_activity(&first, space_id.to_string(), "reaction").await }
+    let activity = Retry::spawn(retry_strategy, || async {
+        get_latest_activity(first, space_id.to_string(), "reaction").await
     })
     .await?;
     assert_eq!(activity.type_str(), "reaction");
     let object = activity.object().expect("we have an object");
     assert_eq!(object.type_str(), "news");
-    assert_eq!(object.object_id_str(), news_entry.event_id().to_string());
+    assert_eq!(object.object_id_str(), news_entry.event_id());
+
+    assert_triggered_with_latest_activity(&mut act_obs, activity.event_id_str()).await?;
 
     Ok(())
 }
@@ -75,39 +76,37 @@ async fn like_activity_on_news() -> Result<()> {
 #[tokio::test]
 async fn like_activity_on_story() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("likeOnboost", 2, TMPL).await?;
+        random_users_with_random_space_under_template("likeOnboost", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = second_user.clone();
-    let story = Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        async move {
-            let news_entries = client.latest_stories(1).await?;
-            if news_entries.len() != 1 {
-                bail!("story entries not found found");
-            }
-            Ok(news_entries[0].clone())
+    let story = Retry::spawn(retry_strategy.clone(), || async {
+        let news_entries = second_user.latest_stories(1).await?;
+        if news_entries.len() != 1 {
+            bail!("story entries not found found");
         }
+        Ok(news_entries[0].clone())
     })
     .await?;
+
+    let mut act_obs = all_activities_observer(first).await?;
 
     let reactions = story.reactions().await?;
     reactions.send_like().await?;
 
-    let activity = Retry::spawn(retry_strategy.clone(), move || {
-        let first = first.clone();
-        let space_id = space_id.clone();
-        async move { get_latest_activity(&first, space_id.to_string(), "reaction").await }
+    let activity = Retry::spawn(retry_strategy, || async {
+        get_latest_activity(first, space_id.to_string(), "reaction").await
     })
     .await?;
     assert_eq!(activity.type_str(), "reaction");
     let object = activity.object().expect("we have an object");
     assert_eq!(object.type_str(), "story");
-    assert_eq!(object.object_id_str(), story.event_id().to_string());
+    assert_eq!(object.object_id_str(), story.event_id());
+
+    assert_triggered_with_latest_activity(&mut act_obs, activity.event_id_str()).await?;
 
     Ok(())
 }

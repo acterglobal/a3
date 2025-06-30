@@ -28,8 +28,8 @@ Future<void> updateTaskListIcon(
   displayBuilder.color(color.toInt());
   displayBuilder.icon('acter-icon', acterIcon.name);
 
-  final updateBuilder = taskList.updateBuilder();
-  updateBuilder.display(displayBuilder.build());
+  final updateBuilder =
+      taskList.updateBuilder()..display(displayBuilder.build());
 
   try {
     await updateBuilder.send();
@@ -59,8 +59,7 @@ Future<void> updateTaskListTitle(
 ) async {
   final lang = L10n.of(context);
   EasyLoading.show(status: lang.updatingTask);
-  final updater = taskList.updateBuilder();
-  updater.name(newName);
+  final updater = taskList.updateBuilder()..name(newName);
   try {
     await updater.send();
     await autosubscribe(ref: ref, objectId: taskList.eventIdStr(), lang: lang);

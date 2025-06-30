@@ -1,4 +1,4 @@
-use acter_core::events::{
+use acter_matrix::events::{
     attachments::{AttachmentContent, FallbackAttachmentContent},
     news::{FallbackNewsContent, NewsContent},
 };
@@ -31,17 +31,20 @@ pub enum MsgContent {
         body: String,
         source: SdkMediaSource,
         info: Option<ImageInfo>,
+        filename: Option<String>,
     },
     Audio {
         body: String,
         source: SdkMediaSource,
         info: Option<AudioInfo>,
         audio: Option<UnstableAudioDetailsContentBlock>,
+        filename: Option<String>,
     },
     Video {
         body: String,
         source: SdkMediaSource,
         info: Option<VideoInfo>,
+        filename: Option<String>,
     },
     File {
         body: String,
@@ -118,6 +121,7 @@ impl From<&ImageMessageEventContent> for MsgContent {
             body: value.body.clone(),
             source: value.source.clone(),
             info: value.info.clone().map(Box::into_inner),
+            filename: value.filename.clone(),
         }
     }
 }
@@ -129,6 +133,7 @@ impl From<&AudioMessageEventContent> for MsgContent {
             source: value.source.clone(),
             info: value.info.clone().map(Box::into_inner),
             audio: value.audio.clone(),
+            filename: value.filename.clone(),
         }
     }
 }
@@ -139,6 +144,7 @@ impl From<&VideoMessageEventContent> for MsgContent {
             body: value.body.clone(),
             source: value.source.clone(),
             info: value.info.clone().map(Box::into_inner),
+            filename: value.filename.clone(),
         }
     }
 }
@@ -196,56 +202,60 @@ impl From<&ServerNoticeMessageEventContent> for MsgContent {
 
 impl TryFrom<&AttachmentContent> for MsgContent {
     type Error = ();
+
     fn try_from(value: &AttachmentContent) -> Result<Self, Self::Error> {
-        Ok(match value {
+        match value {
             AttachmentContent::Image(content)
             | AttachmentContent::Fallback(FallbackAttachmentContent::Image(content)) => {
-                MsgContent::Image {
-                    body: content.body.clone(),
-                    source: content.source.clone(),
-                    info: content.info.clone().map(Box::into_inner),
-                }
-            }
-            AttachmentContent::Audio(content)
-            | AttachmentContent::Fallback(FallbackAttachmentContent::Audio(content)) => {
-                MsgContent::Audio {
-                    body: content.body.clone(),
-                    source: content.source.clone(),
-                    info: content.info.clone().map(Box::into_inner),
-                    audio: content.audio.clone(),
-                }
-            }
-            AttachmentContent::Video(content)
-            | AttachmentContent::Fallback(FallbackAttachmentContent::Video(content)) => {
-                MsgContent::Video {
-                    body: content.body.clone(),
-                    source: content.source.clone(),
-                    info: content.info.clone().map(Box::into_inner),
-                }
-            }
-            AttachmentContent::File(content)
-            | AttachmentContent::Fallback(FallbackAttachmentContent::File(content)) => {
-                MsgContent::File {
+                Ok(MsgContent::Image {
                     body: content.body.clone(),
                     source: content.source.clone(),
                     info: content.info.clone().map(Box::into_inner),
                     filename: content.filename.clone(),
-                }
+                })
+            }
+            AttachmentContent::Audio(content)
+            | AttachmentContent::Fallback(FallbackAttachmentContent::Audio(content)) => {
+                Ok(MsgContent::Audio {
+                    body: content.body.clone(),
+                    source: content.source.clone(),
+                    info: content.info.clone().map(Box::into_inner),
+                    audio: content.audio.clone(),
+                    filename: content.filename.clone(),
+                })
+            }
+            AttachmentContent::Video(content)
+            | AttachmentContent::Fallback(FallbackAttachmentContent::Video(content)) => {
+                Ok(MsgContent::Video {
+                    body: content.body.clone(),
+                    source: content.source.clone(),
+                    info: content.info.clone().map(Box::into_inner),
+                    filename: content.filename.clone(),
+                })
+            }
+            AttachmentContent::File(content)
+            | AttachmentContent::Fallback(FallbackAttachmentContent::File(content)) => {
+                Ok(MsgContent::File {
+                    body: content.body.clone(),
+                    source: content.source.clone(),
+                    info: content.info.clone().map(Box::into_inner),
+                    filename: content.filename.clone(),
+                })
             }
             AttachmentContent::Location(content)
             | AttachmentContent::Fallback(FallbackAttachmentContent::Location(content)) => {
-                MsgContent::Location {
+                Ok(MsgContent::Location {
                     body: content.body.clone(),
                     geo_uri: content.geo_uri.clone(),
                     info: content.info.clone().map(Box::into_inner),
-                }
+                })
             }
-            AttachmentContent::Link(content) => MsgContent::Link {
+            AttachmentContent::Link(content) => Ok(MsgContent::Link {
                 name: content.name.clone(),
                 link: content.link.clone(),
-            },
-            AttachmentContent::Reference(_) => return Err(()),
-        })
+            }),
+            AttachmentContent::Reference(_) => Err(()),
+        }
     }
 }
 
@@ -255,14 +265,6 @@ impl MsgContent {
             body,
             formatted_body: None,
             url_previews: Default::default(),
-        }
-    }
-
-    pub(crate) fn from_image(body: String, source: OwnedMxcUri) -> Self {
-        MsgContent::Image {
-            body,
-            source: SdkMediaSource::Plain(source),
-            info: Some(ImageInfo::new()),
         }
     }
 
@@ -399,6 +401,9 @@ impl MsgContent {
 
     pub fn filename(&self) -> Option<String> {
         match self {
+            MsgContent::Image { filename, .. } => filename.clone(),
+            MsgContent::Audio { filename, .. } => filename.clone(),
+            MsgContent::Video { filename, .. } => filename.clone(),
             MsgContent::File { filename, .. } => filename.clone(),
             _ => None,
         }

@@ -1,4 +1,4 @@
-import 'package:acter/common/widgets/render_html.dart';
+import 'package:acter/common/toolkit/html/render_html.dart';
 import 'package:acter/features/news/model/keys.dart';
 import 'package:acter/features/news/model/type/update_slide.dart';
 import 'package:acter/features/news/news_utils/news_utils.dart';
@@ -6,8 +6,9 @@ import 'package:flutter/material.dart';
 
 class TextSlide extends StatelessWidget {
   final UpdateSlide slide;
+  final String roomId;
 
-  const TextSlide({super.key, required this.slide});
+  const TextSlide({super.key, required this.slide, required this.roomId});
 
   @override
   Widget build(BuildContext context) {
@@ -53,6 +54,7 @@ class TextSlide extends StatelessWidget {
         text: formattedText,
         defaultTextStyle: defaultTextStyle,
         linkTextStyle: linkTextStyle,
+        roomId: roomId,
       ),
     );
   }

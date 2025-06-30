@@ -1,6 +1,6 @@
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
-import 'package:acter/common/widgets/html_editor/html_editor.dart';
+import 'package:acter/common/toolkit/html_editor/html_editor.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/l10n/generated/l10n.dart';
@@ -51,18 +51,15 @@ class EditHtmlDescriptionSheet extends ConsumerStatefulWidget {
 
 class _EditHtmlDescriptionSheetState
     extends ConsumerState<EditHtmlDescriptionSheet> {
-  EditorState textEditorState = EditorState.blank();
+  late EditorState textEditorState;
 
   @override
   void initState() {
     super.initState();
-    final document = ActerDocumentHelpers.parse(
+    textEditorState = ActerEditorStateHelpers.fromContent(
       widget.descriptionMarkdownValue ?? '',
-      htmlContent: widget.descriptionHtmlValue,
+      widget.descriptionHtmlValue,
     );
-    if (!document.isEmpty) {
-      textEditorState = EditorState(document: document);
-    }
   }
 
   @override

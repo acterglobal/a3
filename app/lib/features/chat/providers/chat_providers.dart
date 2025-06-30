@@ -17,7 +17,9 @@ import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/labs/model/labs_features.dart';
 import 'package:acter/features/labs/providers/labs_providers.dart';
 import 'package:acter/features/settings/providers/app_settings_provider.dart';
+import 'package:acter/features/space/providers/suggested_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:riverpod/riverpod.dart';
@@ -130,6 +132,16 @@ final mediaChatStateProvider = StateNotifierProvider.family<
   ChatMessageInfo
 >((ref, messageInfo) => MediaChatNotifier(ref: ref, messageInfo: messageInfo));
 
+final audioPlayerStateProvider = StateProvider.autoDispose<AudioPlayerInfo>((
+  ref,
+) {
+  final AudioPlayerInfo messageInfo = (
+    state: PlayerState.stopped,
+    messageId: null,
+  );
+  return messageInfo;
+});
+
 final timelineStreamProvider = FutureProvider.family<TimelineStream, String>((
   ref,
   roomId,
@@ -173,6 +185,7 @@ final isRoomEncryptedProvider = FutureProvider.family<bool, String>((
 
 final chatTypingEventProvider = StreamProvider.autoDispose
     .family<List<types.User>, String>((ref, roomId) async* {
+      // otherwise, get the typing users from the client
       final client = await ref.watch(alwaysClientProvider.future);
       final userId = ref.watch(myUserIdStrProvider);
       yield [];
@@ -210,6 +223,7 @@ final hasUnreadMessages = FutureProvider.family<bool, String>((
   ref,
   roomId,
 ) async {
+  if (!ref.watch(isActiveProvider(LabsFeature.chatUnread))) return false;
   final unreadCounters = ref.watch(unreadCountersProvider(roomId)).valueOrNull;
 
   if (unreadCounters == null) return false;

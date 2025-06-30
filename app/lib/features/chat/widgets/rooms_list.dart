@@ -1,10 +1,11 @@
 import 'package:acter/common/themes/colors/color_scheme.dart';
-import 'package:acter/common/utils/routes.dart';
+import 'package:acter/router/routes.dart';
 import 'package:acter/common/widgets/acter_search_widget.dart';
 import 'package:acter/common/widgets/plus_icon_widget.dart';
 import 'package:acter/features/chat/models/room_list_filter_state/room_list_filter_state.dart';
 import 'package:acter/features/chat/providers/room_list_filter_provider.dart';
 import 'package:acter/features/chat/widgets/chats_list.dart';
+import 'package:acter/features/chat_ng/rooms_list/widgets/rooms_list.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/l10n/generated/l10n.dart';
@@ -13,8 +14,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 final bucketGlobal = PageStorageBucket();
-
-typedef RoomSelectAction = Function(String);
 
 class RoomsListWidget extends ConsumerStatefulWidget {
   static const roomListMenuKey = Key('chat-room-list');

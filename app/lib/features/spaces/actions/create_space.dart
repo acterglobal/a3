@@ -7,6 +7,7 @@ import 'package:acter/features/chat/actions/create_chat.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/room/model/room_join_rule.dart';
 import 'package:acter/features/space/actions/set_acter_feature.dart';
+import 'package:acter/features/space/providers/suggested_provider.dart';
 import 'package:acter/features/spaces/model/space_feature_state.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -142,25 +143,25 @@ void applyPermissions(
         final permissionLevel = permission.permissionLevel.value;
 
         final _ = switch (permissionKey) {
-          PermissionType.boostPost => builder.newsPermisisons(permissionLevel),
-          PermissionType.storyPost => builder.storiesPermisisons(
+          PermissionType.boostPost => builder.newsPermissions(permissionLevel),
+          PermissionType.storyPost => builder.storiesPermissions(
             permissionLevel,
           ),
-          PermissionType.pinPost => builder.pinsPermisisons(permissionLevel),
-          PermissionType.eventPost => builder.calendarEventsPermisisons(
+          PermissionType.pinPost => builder.pinsPermissions(permissionLevel),
+          PermissionType.eventPost => builder.calendarEventsPermissions(
             permissionLevel,
           ),
-          PermissionType.taskListPost => builder.taskListsPermisisons(
+          PermissionType.taskListPost => builder.taskListsPermissions(
             permissionLevel,
           ),
-          PermissionType.taskItemPost => builder.tasksPermisisons(
+          PermissionType.taskItemPost => builder.tasksPermissions(
             permissionLevel,
           ),
-          PermissionType.eventRsvp => builder.rsvpPermisisons(permissionLevel),
-          PermissionType.commentPost => builder.commentsPermisisons(
+          PermissionType.eventRsvp => builder.rsvpPermissions(permissionLevel),
+          PermissionType.commentPost => builder.commentsPermissions(
             permissionLevel,
           ),
-          PermissionType.attachmentPost => builder.attachmentsPermisisons(
+          PermissionType.attachmentPost => builder.attachmentsPermissions(
             permissionLevel,
           ),
         };

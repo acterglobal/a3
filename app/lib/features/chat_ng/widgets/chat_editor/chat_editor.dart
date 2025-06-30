@@ -1,10 +1,9 @@
 import 'dart:async';
 
 import 'package:acter/common/providers/chat_providers.dart';
-import 'package:acter/common/providers/keyboard_visbility_provider.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/common/widgets/html_editor/html_editor.dart';
+import 'package:acter/common/toolkit/html_editor/html_editor.dart';
 import 'package:acter/features/attachments/actions/select_attachment.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat_ng/actions/attachment_upload_action.dart';
@@ -38,29 +37,43 @@ class ChatEditor extends ConsumerStatefulWidget {
 }
 
 class _ChatEditorState extends ConsumerState<ChatEditor> {
-  EditorState textEditorState = EditorState.blank();
-  late EditorScrollController scrollController;
-  StreamSubscription<(TransactionTime, Transaction)>? _updateListener;
+  late EditorState textEditorState;
+  StreamSubscription<EditorTransactionValue>? _updateListener;
   final ValueNotifier<bool> _isInputEmptyNotifier = ValueNotifier(true);
-  double _cHeight = 0.10;
   Timer? _debounceTimer;
 
   @override
   void initState() {
     super.initState();
-    scrollController = EditorScrollController(
-      editorState: textEditorState,
-      shrinkWrap: true,
-    );
+    _init();
+  }
+
+  @override
+  void dispose() {
+    textEditorState.dispose();
+    _updateListener?.cancel();
+    _debounceTimer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(covariant ChatEditor oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.roomId != widget.roomId) {
+      // room id changes, dispose the old editor state
+      textEditorState.dispose();
+      _init();
+    }
+  }
+
+  void _init() {
+    textEditorState = EditorState.blank();
     _updateListener?.cancel();
     // listener for editor input state
     _updateListener = textEditorState.transactionStream.listen((data) {
       _editorUpdate(data.$2);
-      // expand when user types more than one line upto exceed limit
-      _updateHeight();
     });
-    // have it call the first time to adjust height
-    _updateHeight();
+
     WidgetsBinding.instance.addPostFrameCallback((_) => _loadDraft());
 
     ref.listenManual(chatEditorStateProvider, (prev, next) async {
@@ -74,51 +87,29 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
       if (next.isReplying &&
           (next.actionType != prev?.actionType ||
               next.selectedMsgItem != prev?.selectedMsgItem)) {
-        textEditorState.updateSelectionWithReason(
-          Selection.single(
-            path: [0],
-            startOffset: textEditorState.intoMarkdown().length - 1,
-          ),
-          reason: SelectionUpdateReason.uiEvent,
+        // set selection of editor for composing
+        final t = textEditorState.transaction;
+        t.afterSelection = Selection.single(
+          path: textEditorState.document.root.children.last.path,
+          startOffset:
+              textEditorState.document.root.children.last.delta?.length ?? 0,
         );
+        textEditorState.apply(t);
         saveMsgDraft(body, bodyHtml, widget.roomId, ref);
       }
     });
   }
 
-  @override
-  void dispose() {
-    _updateListener?.cancel();
-    _debounceTimer?.cancel();
-    super.dispose();
-  }
-
-  @override
-  void didUpdateWidget(covariant ChatEditor oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.roomId != widget.roomId) {
-      WidgetsBinding.instance.addPostFrameCallback((_) => _loadDraft());
-    }
-  }
-
   void _handleEditing(TimelineEventItem? item) {
-    try {
-      if (item == null) return;
-      final msgContent = item.msgContent();
-      if (msgContent == null) return;
-      final body = msgContent.body();
-      // insert editing text
-      final transaction = textEditorState.transaction;
-      final docNode = textEditorState.getNodeAtPath([0]);
-      if (docNode == null) return;
+    if (item == null) return;
 
-      transaction.replaceText(docNode, 0, docNode.delta?.length ?? 0, body);
-      final pos = Position(path: [0], offset: body.length);
-      transaction.afterSelection = Selection.collapsed(pos);
-      textEditorState.apply(transaction);
-    } catch (e) {
-      _log.severe('Error handling edit state change: $e');
-    }
+    final msgContent = item.msgContent();
+    if (msgContent == null) return;
+
+    final body = msgContent.body();
+    if (body.isEmpty) return;
+
+    textEditorState.replaceContent(body, msgContent.formattedBody());
   }
 
   void _editorUpdate(Transaction data) {
@@ -139,18 +130,6 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
     });
   }
 
-  // handler for expanding editor field height
-  void _updateHeight() {
-    final text = textEditorState.intoMarkdown();
-    final lineCount = '\n'.allMatches(text).length;
-
-    // Calculate new height based on line count
-    // Start with 5% and increase by 4% per line up to 15%
-    setState(() {
-      _cHeight = (0.05 + (lineCount - 1) * 0.04).clamp(0.05, 0.15);
-    });
-  }
-
   // composer draft load state handler
   Future<void> _loadDraft() async {
     final draft = await ref.read(
@@ -161,7 +140,6 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
       final chatEditorState = ref.read(chatEditorStateProvider.notifier);
       chatEditorState.unsetActions();
       textEditorState.clear();
-      final body = draft.plainText();
       draft.eventId().map((eventId) {
         final draftType = draft.draftType();
         final msgsList =
@@ -181,23 +159,30 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
         }
       });
 
-      if (body.trim().isEmpty) return;
+      final htmlBody = draft.htmlText();
+      final fallbackPlain = draft.plainText();
+      if (fallbackPlain.trim().isNotEmpty) {
+        textEditorState.replaceContent(fallbackPlain, htmlBody);
+      } else {
+        // FOR DESKTOP/SIDE VIEW:
+        // it means the draft is empty, but still valid document (e.g. empty paragraph) for editor to get auto focused
+        // set selection to null to avoid the editor from being focused
+        if (mounted) {
+          bool isLargeScreen = MediaQuery.sizeOf(context).width > 600;
+          if (isLargeScreen) {
+            final t = textEditorState.transaction;
+            t.afterSelection = null;
+            textEditorState.apply(t);
+          }
+        }
+      }
 
-      final transaction = textEditorState.transaction;
-      final docNode = textEditorState.getNodeAtPath([0]);
-      if (docNode == null) return;
-      transaction.replaceText(docNode, 0, docNode.delta?.length ?? 0, body);
-      final pos = Position(path: [0], offset: body.length);
-      transaction.afterSelection = Selection.collapsed(pos);
-      textEditorState.apply(transaction);
-      _log.info('compose draft loaded for room: ${widget.roomId}');
+      _log.info('compose text draft loaded for room: ${widget.roomId}');
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final viewInsets = MediaQuery.viewInsetsOf(context).bottom;
-    final isKeyboardVisible = ref.watch(keyboardVisibleProvider).valueOrNull;
     final emojiPickerVisible = ref.watch(
       chatInputProvider.select((value) => value.emojiPickerVisible),
     );
@@ -223,11 +208,9 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
       children: <Widget>[
         if (previewWidget != null) previewWidget,
         renderEditorUI(emojiPickerVisible, isEncrypted),
+
         // Emoji Picker UI
         if (emojiPickerVisible) ChatEmojiPicker(editorState: textEditorState),
-        // adjust bottom viewport so toolbar doesn't obscure field when visible
-        if (isKeyboardVisible != null && isKeyboardVisible)
-          SizedBox(height: viewInsets + 50),
       ],
     );
   }
@@ -239,7 +222,7 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
         chatEditorState.isReplying || chatEditorState.isEditing;
     final radiusVal = isPreviewOpen ? 2.0 : 15.0;
 
-    return DecoratedBox(
+    return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.primaryContainer,
         borderRadius: BorderRadius.only(
@@ -248,22 +231,15 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
         ),
         border: BorderDirectional(top: BorderSide(color: greyColor)),
       ),
+      clipBehavior: Clip.hardEdge,
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           leadingBtn(emojiPickerVisible),
-          editorField(isEncrypted),
+          Expanded(child: editorField(isEncrypted)),
           trailingBtn(),
         ],
       ),
-    );
-  }
-
-  // emoji button
-  Widget leadingBtn(bool emojiPickerVisible) {
-    return IconButton(
-      padding: const EdgeInsets.only(left: 8),
-      onPressed: () => _toggleEmojiPicker(emojiPickerVisible),
-      icon: const Icon(Icons.emoji_emotions, size: 20),
     );
   }
 
@@ -273,61 +249,61 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
   }
 
   Widget editorField(bool isEncrypted) {
-    final widgetSize = MediaQuery.sizeOf(context);
-    final hintText = isEncrypted.map(
-      (v) =>
-          v == true
-              ? L10n.of(context).newEncryptedMessage
-              : L10n.of(context).newMessage,
-      orElse: () => L10n.of(context).newMessage,
+    final hintText =
+        isEncrypted == true
+            ? L10n.of(context).newEncryptedMessage
+            : L10n.of(context).newMessage;
+
+    return CallbackShortcuts(
+      bindings: <ShortcutActivator, VoidCallback>{
+        if (isDesktop(context))
+          const SingleActivator(LogicalKeyboardKey.enter):
+              () => sendMessageAction(
+                roomId: widget.roomId,
+                textEditorState: textEditorState,
+                onTyping: widget.onTyping,
+                context: context,
+                ref: ref,
+                log: _log,
+              ),
+        if (isDesktop(context))
+          LogicalKeySet(LogicalKeyboardKey.enter, LogicalKeyboardKey.shift):
+              () => textEditorState.insertNewLine(),
+      },
+      child: _renderEditor(context, hintText),
     );
-    return Expanded(
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 100),
-        height: widgetSize.height * _cHeight,
-        margin: const EdgeInsets.only(top: 16),
-        child: SingleChildScrollView(
-          child: IntrinsicHeight(
-            // keyboard shortcuts (desktop)
-            child: CallbackShortcuts(
-              bindings: <ShortcutActivator, VoidCallback>{
-                const SingleActivator(LogicalKeyboardKey.enter):
-                    () => sendMessageAction(
-                      roomId: widget.roomId,
-                      textEditorState: textEditorState,
-                      onTyping: widget.onTyping,
-                      context: context,
-                      ref: ref,
-                      log: _log,
-                    ),
-                LogicalKeySet(
-                      LogicalKeyboardKey.enter,
-                      LogicalKeyboardKey.shift,
-                    ):
-                    () => textEditorState.insertNewLine(),
-              },
-              child: _renderEditor(hintText),
-            ),
-          ),
-        ),
+  }
+
+  Widget _renderEditor(BuildContext context, String hintText) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 15),
+      child: HtmlEditor(
+        footer: null,
+        // if provided, will activate mentions
+        roomId: widget.roomId,
+        hintText: hintText,
+        editable: true,
+        shrinkWrap: false,
+        disableAutoScroll: false,
+        editorState: textEditorState,
+        maxHeight: MediaQuery.sizeOf(context).height * 0.2,
+        minHeight: 24,
+        onChanged: (body, html) {
+          final isTyping = html != null ? html.isNotEmpty : body.isNotEmpty;
+          widget.onTyping?.call(isTyping);
+        },
+        onSave: null,
       ),
     );
   }
 
-  Widget _renderEditor(String? hintText) => HtmlEditor(
-    footer: null,
-    // if provided, will activate mentions
-    roomId: widget.roomId,
-    hintText: hintText,
-    editable: true,
-    shrinkWrap: true,
-    editorState: textEditorState,
-    scrollController: scrollController,
-    editorPadding: const EdgeInsets.symmetric(horizontal: 10),
-    onChanged: (body, html) {
-      final isTyping = html != null ? html.isNotEmpty : body.isNotEmpty;
-      widget.onTyping?.call(isTyping);
-    },
+  // emoji button
+  Widget leadingBtn(bool emojiPickerVisible) => Padding(
+    padding: const EdgeInsets.only(top: 4, left: 4),
+    child: IconButton(
+      onPressed: () => _toggleEmojiPicker(emojiPickerVisible),
+      icon: const Icon(Icons.emoji_emotions, size: 20),
+    ),
   );
 
   // attachment/send button
@@ -345,7 +321,7 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
   }
 
   Widget _renderSendBtn() => Padding(
-    padding: const EdgeInsets.only(right: 8),
+    padding: const EdgeInsets.only(top: 4, left: 4, right: 4),
     child: IconButton.filled(
       alignment: Alignment.center,
       key: ChatEditor.sendBtnKey,
@@ -364,7 +340,7 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
   );
 
   Widget _renderAttachmentBtn() => Padding(
-    padding: const EdgeInsets.only(right: 8),
+    padding: const EdgeInsets.only(top: 2, left: 4, right: 4),
     child: IconButton(
       onPressed:
           () => selectAttachment(

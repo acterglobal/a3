@@ -1,16 +1,16 @@
-import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/backups/providers/backup_manager_provider.dart';
+import 'package:acter/features/encryption_backup_feature/widgets/encryption_backup_widget.dart';
+import 'package:acter/features/onboarding/types.dart';
+import 'package:acter/features/onboarding/widgets/remindme_key_dialog.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-import 'package:share_plus/share_plus.dart';
 
 class EncryptionBackupPage extends ConsumerStatefulWidget {
-  const EncryptionBackupPage({super.key});
+  final CallNextPage? callNextPage;
+
+  const EncryptionBackupPage({super.key, required this.callNextPage});
 
   @override
   ConsumerState<EncryptionBackupPage> createState() =>
@@ -24,25 +24,29 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
   Widget build(BuildContext context) {
     final lang = L10n.of(context);
     final primaryColor = Theme.of(context).colorScheme.primary;
-
     return Scaffold(
       appBar: AppBar(),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 32),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const Spacer(),
-            Icon(PhosphorIcons.lockKey(), size: 80, color: primaryColor),
-            const SizedBox(height: 24),
-            _buildHeader(context, lang),
-            const SizedBox(height: 16),
-            _buildDescription(context, lang),
-            const SizedBox(height: 32),
-            _buildEncryptionKey(context),
-            const Spacer(),
-            _buildNavigationButtons(context, lang),
-          ],
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 32),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const SizedBox(height: 24),
+                Icon(PhosphorIcons.lockKey(), size: 80, color: primaryColor),
+                const SizedBox(height: 24),
+                _buildHeader(context, lang),
+                const SizedBox(height: 16),
+                _buildDescription(context, lang),
+                const SizedBox(height: 32),
+                _buildEncryptionKey(context),
+                const SizedBox(height: 32),
+                _buildNavigationButtons(context, lang),
+                const SizedBox(height: 30),
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -66,14 +70,16 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
 
   Widget _buildEncryptionKey(BuildContext context) {
     final encKey = ref.watch(enableEncrptionBackUpProvider);
-
     return encKey.when(
       data: (data) {
         return Column(
           children: [
             _buildEncryptionKeyContent(context, data),
             const SizedBox(height: 32),
-            _buildActionButtons(context, data),
+            PasswordManagerBackupWidget(
+              encryptionKey: data,
+              onButtonPressed: () => isEnableNextButton.value = true,
+            ),
           ],
         );
       },
@@ -121,84 +127,46 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
     );
   }
 
-  Widget _buildActionButtons(BuildContext context, String encryptionKey) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        _buildActionButton(
-          icon: Icons.copy,
-          onTap: () async {
-            await Clipboard.setData(ClipboardData(text: encryptionKey));
-            isEnableNextButton.value = true;
-            if (context.mounted) {
-              EasyLoading.showToast(
-                L10n.of(context).encryptionBackupRecoveryCopiedToClipboard,
-              );
-            }
-          },
-          context: context,
-        ),
-        const SizedBox(width: 24),
-        _buildActionButton(
-          icon: PhosphorIcons.share(),
-          onTap: () async {
-            await Share.share(encryptionKey);
-            isEnableNextButton.value = true;
-          },
-          context: context,
-        ),
-      ],
-    );
-  }
-
   Widget _buildNavigationButtons(BuildContext context, L10n lang) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _buildNextButton(context, lang),
+        _buildSaveKeySecurelyButton(context, lang),
         const SizedBox(height: 16),
-        _buidSkipButton(context, lang),
+        _buildRemindMeButton(context, lang),
         const SizedBox(height: 16),
       ],
     );
   }
 
-  Widget _buildNextButton(BuildContext context, L10n lang) {
+  Widget _buildSaveKeySecurelyButton(BuildContext context, L10n lang) {
     return ValueListenableBuilder<bool>(
       valueListenable: isEnableNextButton,
       builder: (context, isEnabled, _) {
         return ElevatedButton(
           onPressed:
-              isEnabled ? () => context.goNamed(Routes.linkEmail.name) : null,
-          child: Text(lang.next, style: const TextStyle(fontSize: 16)),
+              isEnabled
+                  ? () => showDialog(
+                    context: context,
+                    builder:
+                        (BuildContext context) => RemindMeAboutKeyDialog(
+                          callNextPage: widget.callNextPage,
+                        ),
+                  )
+                  : null,
+          child: Text(
+            lang.savedKeySecurely,
+            style: const TextStyle(fontSize: 16),
+          ),
         );
       },
     );
   }
 
-  Widget _buidSkipButton(BuildContext context, L10n lang) {
+  Widget _buildRemindMeButton(BuildContext context, L10n lang) {
     return OutlinedButton(
-      onPressed: () => context.goNamed(Routes.linkEmail.name),
-      child: Text(L10n.of(context).skip),
-    );
-  }
-
-  Widget _buildActionButton({
-    required IconData icon,
-    required VoidCallback onTap,
-    required BuildContext context,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        width: 48,
-        height: 48,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: Theme.of(context).colorScheme.surfaceContainerLow,
-        ),
-        child: Icon(icon),
-      ),
+      onPressed: () => widget.callNextPage?.call(),
+      child: Text(L10n.of(context).remindMeLater),
     );
   }
 }

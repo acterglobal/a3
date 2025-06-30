@@ -7,7 +7,7 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/models/chat_room_state/chat_room_state.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
-import 'package:acter/features/chat/utils.dart';
+import 'package:acter/features/chat/utils.dart' as chat_utils;
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
@@ -270,10 +270,12 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     types.Message msg,
   ) async {
     // reply is allowed for only EventItem not VirtualItem
-    // user should be able to get original event as RoomMessage
-    TimelineEventItem orgEventItem = originalRoomMsg.eventItem().expect(
-      'room msg should have event item',
-    );
+    // user should be able to get original event as TimelineItem
+    TimelineEventItem? orgEventItem = originalRoomMsg.eventItem();
+    if (orgEventItem == null) {
+      _log.severe('room msg should have event item');
+      return;
+    }
     EventSendState? eventState = orgEventItem.sendState();
     String eventType = orgEventItem.eventType();
     Map<String, dynamic> repliedToContent = {'eventState': eventState};
@@ -287,9 +289,9 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       case 'm.room.canonical_alias':
       case 'm.room.create':
       case 'm.room.encryption':
-      case 'm.room.guest.access':
+      case 'm.room.guest_access':
       case 'm.room.history_visibility':
-      case 'm.room.join.rules':
+      case 'm.room.join_rules':
       case 'm.room.name':
       case 'm.room.pinned_events':
       case 'm.room.power_levels':
@@ -425,10 +427,10 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               );
             }
             break;
-          case 'm.sticker':
-            // user can’t do any action about sticker message
-            break;
         }
+      case 'm.sticker':
+        // user can’t do any action about sticker message
+        break;
     }
 
     final messages = state.messages;
@@ -466,10 +468,20 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     }
 
     // If not virtual item, it should be event item
-    TimelineEventItem eventItem = message.eventItem().expect(
-      'room msg should have event item',
-    );
-    EventSendState? eventState = eventItem.sendState();
+    TimelineEventItem? eventItem = message.eventItem();
+    if (eventItem == null) {
+      _log.severe('room msg should have event item');
+      return types.UnsupportedMessage(
+        author: const types.User(id: 'virtual'),
+        remoteId: UniqueKey().toString(),
+        id: UniqueKey().toString(),
+        metadata: const {'itemType': 'virtual'},
+      );
+    }
+    EventSendState? eventState;
+    if (eventItem.sendState() != null) {
+      eventState = eventItem.sendState();
+    }
 
     String eventType = eventItem.eventType();
     String sender = eventItem.sender();
@@ -480,7 +492,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     String uniqueId = message.uniqueId();
     String? eventId = eventItem.eventId();
 
-    String? inReplyTo = eventItem.inReplyTo();
+    String? inReplyTo = eventItem.inReplyToId();
     String? repliedToSender = eventItem.repliedToSender();
     String? repliedToBody = eventItem.repliedToBody();
     String? repliedToMsgtype = eventItem.repliedToMsgtype();
@@ -503,9 +515,9 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       case 'm.room.canonical_alias':
       case 'm.room.create':
       case 'm.room.encryption':
-      case 'm.room.guest.access':
+      case 'm.room.guest_access':
       case 'm.room.history_visibility':
-      case 'm.room.join.rules':
+      case 'm.room.join_rules':
       case 'm.room.name':
       case 'm.room.pinned_events':
       case 'm.room.power_levels':
@@ -863,7 +875,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           case 'm.notice':
           case 'm.server_notice':
           case 'm.text':
-            final body = prepareMsg(eventItem.msgContent());
+            final body = chat_utils.prepareMsg(eventItem.msgContent());
             Map<String, dynamic> metadata = {
               'eventState': eventState,
               'receipts': receipts,

@@ -1,13 +1,13 @@
+import 'package:acter/common/actions/open_link.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/features/activities/widgets/activity_section_item_widget.dart';
 import 'package:acter/features/backups/dialogs/provide_recovery_key_dialog.dart';
-import 'package:acter/features/backups/dialogs/show_confirm_disabling.dart';
+import 'package:acter/features/backups/dialogs/show_confirm_reset_identity.dart';
+import 'package:acter/features/backups/dialogs/show_confirm_rotate.dart';
 import 'package:acter/features/backups/dialogs/show_recovery_key.dart';
 import 'package:acter/features/backups/providers/backup_manager_provider.dart';
 import 'package:acter/features/backups/providers/backup_state_providers.dart';
 import 'package:acter/features/backups/types.dart';
-import 'package:acter/features/labs/model/labs_features.dart';
-import 'package:acter/features/labs/providers/labs_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -25,18 +25,18 @@ class BackupStateWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isBackupFeatureEnabled = ref.watch(
-      isActiveProvider(LabsFeature.encryptionBackup),
-    );
-
-    if (!isBackupFeatureEnabled) return SizedBox.shrink();
-
     return switch (ref.watch(backupStateProvider)) {
       RecoveryState.enabled =>
         allowDisabling
             ? renderCanResetAction(context, ref)
             : const SizedBox.shrink(), // nothing to see here. all good.
-      RecoveryState.incomplete => renderRecoverAction(context, ref),
+      RecoveryState.incomplete =>
+        (ref.watch(hasProvidedKeyProvider).valueOrNull == true)
+            ? renderRecoverActionFailed(
+              context,
+              ref,
+            ) // we tried and now have to alert the user about this failing
+            : renderRecoverActionSimple(context, ref),
       RecoveryState.disabled => renderStartAction(context, ref),
       _ => renderUnknown(context, ref),
     };
@@ -63,34 +63,49 @@ class BackupStateWidget extends ConsumerWidget {
       title: lang.encryptionBackupEnabled,
       subtitle: lang.encryptionBackupEnabledExplainer,
       actions: [
-        OutlinedButton(
-          onPressed: () => showConfirmResetDialog(context, ref),
-          child: Text(lang.reset),
-        ),
+        rotateKeyAction(context, ref),
+        const SizedBox(width: 8),
+        resetIdentityAction(context, ref),
       ],
     );
   }
 
-  Widget renderRecoverAction(BuildContext context, WidgetRef ref) {
+  Widget renderRecoverActionFailed(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
-    // Since ActivitySectionItemWidget only supports one action button,
-    // we'll use the primary action (provide key) and handle reset differently if needed
+    return ActivitySectionItemWidget(
+      icon: Icons.warning_amber_rounded,
+      iconColor: warningColor,
+      title: lang.encryptionBackupProvideKeyFailed,
+      subtitle: lang.encryptionBackupProvideKeyFailedExplainer,
+      trailing: InkWell(
+        onTap:
+            () => openLink(
+              ref: ref,
+              target: 'https://acter.global/guide/understanding-key-backups-2/',
+              lang: L10n.of(context),
+            ),
+        child: const Icon(Icons.info),
+      ),
+      actions: [
+        provideKeyAction(context, ref),
+        const SizedBox(width: 8),
+        resetIdentityAction(context, ref),
+      ],
+    );
+  }
+
+  Widget renderRecoverActionSimple(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     return ActivitySectionItemWidget(
       icon: Icons.warning_amber_rounded,
       iconColor: warningColor,
       title: lang.encryptionBackupProvideKey,
       subtitle: lang.encryptionBackupProvideKeyExplainer,
       actions: [
-        OutlinedButton(
-          onPressed: () => showProviderRecoveryKeyDialog(context, ref),
-          child: Text(lang.encryptionBackupProvideKeyAction),
-        ),
+        provideKeyAction(context, ref),
         if (allowDisabling) ...[
           const SizedBox(width: 8),
-          OutlinedButton(
-            onPressed: () => showConfirmResetDialog(context, ref),
-            child: Text(lang.reset),
-          ),
+          resetIdentityAction(context, ref),
         ],
       ],
     );
@@ -151,4 +166,23 @@ class BackupStateWidget extends ConsumerWidget {
       ),
     );
   }
+
+  // Action Buttons
+
+  Widget rotateKeyAction(BuildContext context, WidgetRef ref) => OutlinedButton(
+    onPressed: () => showConfirmRotateDialog(context, ref),
+    child: Text(L10n.of(context).encryptionBackupRotateKey),
+  );
+
+  Widget resetIdentityAction(BuildContext context, WidgetRef ref) =>
+      OutlinedButton(
+        onPressed: () => showConfirmResetIdentityDialog(context, ref),
+        child: Text(L10n.of(context).encryptionBackupResetIdentity),
+      );
+
+  Widget provideKeyAction(BuildContext context, WidgetRef ref) =>
+      OutlinedButton(
+        onPressed: () => showProviderRecoveryKeyDialog(context, ref),
+        child: Text(L10n.of(context).encryptionBackupProvideKeyAction),
+      );
 }

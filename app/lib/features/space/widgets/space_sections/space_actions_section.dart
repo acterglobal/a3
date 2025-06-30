@@ -1,5 +1,6 @@
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/utils/routes.dart';
+import 'package:acter/config/constants.dart';
+import 'package:acter/router/routes.dart';
 import 'package:acter/features/space/actions/activate_feature.dart';
 import 'package:acter/features/space/actions/set_acter_feature.dart';
 import 'package:acter/features/space/settings/pages/apps_settings_page.dart';
@@ -11,6 +12,8 @@ import 'package:flutter/material.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SpaceActionsSection extends ConsumerWidget {
   static const createChatAction = Key('space-action-create-chat');
@@ -58,8 +61,22 @@ class SpaceActionsSection extends ConsumerWidget {
           settings,
         ),
         if (canLinkSpaces) ...addLinkSpaceActions(context),
+        if (canChangeSetting) ...addPartnershipsActions(context),
       ],
     );
+  }
+
+  List<Widget> addPartnershipsActions(BuildContext context) {
+    final hostPartnershipUrl = hostPartnerShipUrl;
+    return [
+      if (hostPartnershipUrl != null)
+        simpleActionButton(
+          context: context,
+          iconData: PhosphorIcons.lifebuoy(),
+          title: L10n.of(context).hostSupport,
+          onPressed: () => launchUrl(hostPartnershipUrl),
+        ),
+    ];
   }
 
   Widget addEventButton(

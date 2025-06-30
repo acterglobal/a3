@@ -78,7 +78,7 @@ jobs:
   #       with:
   #         python-version: 3.8
 
-  #     - uses: michaelkaye/setup-matrix-synapse@main
+  #     - uses: acterglobal/setup-matrix-synapse@main
   #       with:
   #         installer: poetry
   #         uploadLogs: true
@@ -191,7 +191,7 @@ jobs:
   #       with:
   #         python-version: 3.8
 
-  #     - uses: michaelkaye/setup-matrix-synapse@main
+  #     - uses: acterglobal/setup-matrix-synapse@main
   #       with:
   #         uploadLogs: true
   #         httpPort: 8118
@@ -273,7 +273,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         name: Set up flutter
         with:
-          flutter-version: '3.29'
+          flutter-version: '3.32'
           channel: 'stable'
       - uses: actions/setup-java@v4
         with:
@@ -357,14 +357,12 @@ jobs:
       - uses: subosito/flutter-action@v2
         name: Set up flutter
         with:
-          flutter-version: '3.29'
+          flutter-version: '3.32'
           channel: 'stable'
 
       - uses: actions/setup-python@v4
-        with:
-          python-version: 3.8
 
-      - uses: michaelkaye/setup-matrix-synapse@main
+      - uses: acterglobal/setup-matrix-synapse@main
         with:
           uploadLogs: true
           httpPort: 8118
@@ -515,7 +513,7 @@ jobs:
   #       with:
   #         python-version: 3.8
 
-  #     - uses: michaelkaye/setup-matrix-synapse@main
+  #     - uses: acterglobal/setup-matrix-synapse@main
   #       with:
   #         uploadLogs: true
   #         httpPort: 8118

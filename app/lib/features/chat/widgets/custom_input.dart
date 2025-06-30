@@ -6,6 +6,7 @@ import 'package:acter/common/models/types.dart';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/toolkit/html/render_html.dart';
 import 'package:acter/common/widgets/emoji_picker_widget.dart';
 import 'package:acter/common/widgets/frost_effect.dart';
 import 'package:acter/features/attachments/actions/select_attachment.dart';
@@ -15,7 +16,6 @@ import 'package:acter/features/chat/utils.dart';
 import 'package:acter/features/chat/widgets/custom_message_builder.dart';
 import 'package:acter/features/chat/widgets/image_message_builder.dart';
 import 'package:acter/features/chat/widgets/mention_profile_builder.dart';
-import 'package:acter/features/chat/widgets/pill_builder.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show MsgDraft;
@@ -28,8 +28,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:acter/l10n/generated/l10n.dart';
-import 'package:flutter_matrix_html/flutter_html.dart';
-import 'package:flutter_matrix_html/text_parser.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
 import 'package:logging/logging.dart';
@@ -512,11 +510,11 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
             attachmentType == AttachmentType.image) {
           final bytes = file.readAsBytesSync();
           final image = await decodeImageFromList(bytes);
-          final imageDraft = client
-              .imageDraft(file.path, mimeType)
-              .size(fileLen)
-              .width(image.width)
-              .height(image.height);
+          final imageDraft =
+              client.imageDraft(file.path, mimeType)
+                ..size(fileLen)
+                ..width(image.width)
+                ..height(image.height);
           if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
             final remoteId = inputState.selectedMessage?.remoteId;
             if (remoteId == null) throw 'remote id of sel msg not available';
@@ -526,9 +524,8 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
           }
         } else if (mimeType.startsWith('audio/') &&
             attachmentType == AttachmentType.audio) {
-          final audioDraft = client
-              .audioDraft(file.path, mimeType)
-              .size(file.lengthSync());
+          final audioDraft = client.audioDraft(file.path, mimeType)
+            ..size(file.lengthSync());
           if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
             final remoteId = inputState.selectedMessage?.remoteId;
             if (remoteId == null) throw 'remote id of sel msg not available';
@@ -538,9 +535,8 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
           }
         } else if (mimeType.startsWith('video/') &&
             attachmentType == AttachmentType.video) {
-          final videoDraft = client
-              .videoDraft(file.path, mimeType)
-              .size(file.lengthSync());
+          final videoDraft = client.videoDraft(file.path, mimeType)
+            ..size(file.lengthSync());
           if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
             final remoteId = inputState.selectedMessage?.remoteId;
             if (remoteId == null) throw 'remote id of sel msg not available';
@@ -549,9 +545,8 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
             await stream.sendMessage(videoDraft);
           }
         } else {
-          final fileDraft = client
-              .fileDraft(file.path, mimeType)
-              .size(file.lengthSync());
+          final fileDraft = client.fileDraft(file.path, mimeType)
+            ..size(file.lengthSync());
           if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
             final remoteId = inputState.selectedMessage?.remoteId;
             if (remoteId == null) throw 'remote id of sel msg not available';
@@ -650,7 +645,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
       MsgDraft draft = client.textMarkdownDraft(markdownText);
 
       for (final userId in userMentions) {
-        draft = draft.addMention(userId);
+        draft.addMention(userId);
       }
 
       // actually send it out
@@ -908,19 +903,9 @@ class _ReplyContentWidget extends StatelessWidget {
       return Container(
         constraints: BoxConstraints(maxHeight: screenSize.height * 0.2),
         padding: const EdgeInsets.all(12),
-        child: Html(
-          data: textMsg.text,
-          pillBuilder: ({
-            required String identifier,
-            required String url,
-            OnPillTap? onTap,
-          }) {
-            return ActerPillBuilder(
-              identifier: identifier,
-              uri: url,
-              roomId: roomId,
-            );
-          },
+        child: RenderHtml(
+          text: textMsg.text,
+          roomId: roomId,
           defaultTextStyle: textTheme.bodySmall?.copyWith(
             overflow: TextOverflow.ellipsis,
           ),

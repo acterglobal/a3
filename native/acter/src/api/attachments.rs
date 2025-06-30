@@ -1,4 +1,4 @@
-use acter_core::{
+use acter_matrix::{
     events::{
         attachments::{
             AttachmentBuilder, AttachmentContent, FallbackAttachmentContent, LinkAttachmentContent,
@@ -103,7 +103,7 @@ impl Attachment {
     }
 
     pub async fn can_redact(&self) -> Result<bool> {
-        let sender = self.inner.meta.sender.to_owned();
+        let sender = self.inner.meta.sender.clone();
         let room = self.room.clone();
 
         RUNTIME
@@ -307,10 +307,10 @@ impl Attachment {
                     .to_str()
                     .context("Path was generated from strings. Must be string")?;
                 client
-                    .store()
+                    .state_store()
                     .set_custom_value_no_read(&key, path_text.as_bytes().to_vec())
                     .await?;
-                Ok(OptionString::new(Some(path_text.to_string())))
+                Ok(OptionString::new(Some(path_text.to_owned())))
             })
             .await?
     }
@@ -359,17 +359,17 @@ impl Attachment {
                 } else {
                     [room.room_id().as_str().as_bytes(), evt_id.as_bytes()].concat()
                 };
-                let Some(path_vec) = client.store().get_custom_value(&key).await? else {
+                let Some(path_vec) = client.state_store().get_custom_value(&key).await? else {
                     return Ok(OptionString::new(None));
                 };
-                let path_str = std::str::from_utf8(&path_vec)?.to_string();
+                let path_str = std::str::from_utf8(&path_vec)?.to_owned();
                 if matches!(exists(&path_str), Ok(true)) {
                     return Ok(OptionString::new(Some(path_str)));
                 }
 
                 // file wasn’t existing, clear cache.
 
-                client.store().remove_custom_value(&key).await?;
+                client.state_store().remove_custom_value(&key).await?;
                 Ok(OptionString::new(None))
             })
             .await?

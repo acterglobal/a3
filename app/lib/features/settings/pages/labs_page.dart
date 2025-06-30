@@ -31,17 +31,15 @@ class SettingsLabsPage extends ConsumerWidget {
               title: Text(lang.labsAppFeatures),
               tiles: [
                 SettingsTile.switchTile(
-                  title: Text(lang.encryptionBackupKeyBackup),
-                  description: Text(lang.sharedCalendarAndEvents),
+                  title: Text(lang.htmlNext),
+                  description: Text(lang.htmlNextExplainer),
+                  enabled: true,
                   initialValue: ref.watch(
-                    isActiveProvider(LabsFeature.encryptionBackup),
+                    isActiveProvider(LabsFeature.htmlNext),
                   ),
                   onToggle:
-                      (newVal) async => await updateFeatureState(
-                        ref,
-                        LabsFeature.encryptionBackup,
-                        newVal,
-                      ),
+                      (newVal) =>
+                          updateFeatureState(ref, LabsFeature.htmlNext, newVal),
                 ),
               ],
             ),

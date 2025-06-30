@@ -1,3 +1,4 @@
+import 'package:acter/common/dialogs/bottom_sheet_container_widget.dart';
 import 'package:acter/features/attachments/types.dart';
 import 'package:acter/features/attachments/widgets/attachment_selection_options.dart';
 import 'package:flutter/material.dart';
@@ -9,12 +10,15 @@ Future<void> selectAttachment({
 }) async {
   await showModalBottomSheet(
     isDismissible: true,
-    showDragHandle: true,
+    showDragHandle: false,
+    backgroundColor: Colors.transparent,
     context: context,
     builder:
-        (context) => AttachmentSelectionOptions(
-          onSelected: onSelected,
-          onLinkSelected: onLinkSelected,
+        (context) => BottomSheetContainerWidget(
+          child: AttachmentSelectionOptions(
+            onSelected: onSelected,
+            onLinkSelected: onLinkSelected,
+          ),
         ),
   );
 }

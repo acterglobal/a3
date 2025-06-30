@@ -41,7 +41,7 @@ class RoomHierarchyJoinButton extends ConsumerWidget {
         child: OutlinedButton(
           onPressed: () async {
             final newRoomId = await joinRoom(
-              context: context,
+              lang: lang,
               ref: ref,
               roomIdOrAlias: roomId,
               serverNames: viaServerName,
@@ -59,7 +59,7 @@ class RoomHierarchyJoinButton extends ConsumerWidget {
         child: OutlinedButton(
           onPressed: () async {
             final newRoomId = await joinRoom(
-              context: context,
+              lang: lang,
               ref: ref,
               roomIdOrAlias: roomId,
               serverNames: viaServerName,

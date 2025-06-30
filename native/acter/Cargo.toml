@@ -9,8 +9,8 @@ repository = "https://github.com/acterglobal/a3"
 license-file = "../../LICENSE.txt"
 
 [features]
-default = ["dart"]
-testing = ["acter-core/testing"]
+default = ["dart", "uniffi"]
+testing = ["acter-matrix/testing"]
 cbindgen = []
 tracing = ["dep:tracing-subscriber", "dep:tracing-appender", "dep:tracing-log"]
 tracing-console = ["tracing", "dep:console-subscriber", "tokio/tracing"]
@@ -19,19 +19,16 @@ uniffi = ["dep:uniffi", "dep:thiserror"]
 proxyman = ["dep:reqwest", "dep:openssl"]
 
 [build-dependencies]
-ffi-gen = { git = "https://github.com/acterglobal/ffi-gen", branch = "main" }
-# ffi-gen = { path = "../../../ffi-gen" }
+ffi-gen = { workspace = true }
 cbindgen = "0.28.0"
-uniffi = { version = "0.29.0", features = [ "build" ] }
+uniffi = { workspace = true, features = [ "build" ] }
 
 [dependencies]
 anyhow = "1.0.79"
 async-stream = "0.3.5"
 base64ct = { workspace = true, features = ["alloc"] }
 chrono = "0.4"
-derive-getters = { workspace = true }
 derive_builder = { workspace = true }
-eyeball-im = { workspace = true }
 fern = { git = "https://github.com/acterglobal/fern", branch = "rotate", features = ["manual"] }
 ffi-gen-macro = { git = "https://github.com/acterglobal/ffi-gen", branch = "main" }
 # ffi-gen-macro = { path = "../../../ffi-gen/macro" }
@@ -48,7 +45,6 @@ mime = "0.3.17"
 mime2ext = "0.1.52"
 mime_guess = "2.0.4"
 parse-env-filter = "0.1.0"
-
 sanitize-filename-reader-friendly = "2.2.1"
 scc = { workspace = true }
 serde = { version = "1", features = ["derive"] }
@@ -63,7 +59,8 @@ urlencoding = { workspace = true }
 uuid = { version = "1.6.1", features = ["v4"] }
 
 # for uniffi support
-uniffi = { version = "0.26.1", features = ["cli"], optional = true }
+uniffi = { workspace = true, features = ["cli"], optional = true }
+# matrix-sdk-ffi = { workspace = true, optional = true }
 thiserror = { version = "2.0.11", optional = true }
 
 # for proxyman support
@@ -80,11 +77,9 @@ console-subscriber = { version = "0.4.1", optional = true }
 ruma = { workspace = true, features = ["api", "html", "rand", "unstable-msc2448", "unstable-msc2965", "unstable-msc3930", "unstable-msc3245-v1-compat", "unstable-msc3575", "unstable-msc4186"] }
 ruma-common = { workspace = true, features = ["client"] }
 
-[dev-dependencies]
-tempfile = "3.9.0"
 
-[dependencies.acter-core]
-path = "../core"
+[dependencies.acter-matrix]
+path = "../matrix"
 features = ["templates", "client"]
 
 [dependencies.matrix-sdk]
@@ -103,11 +98,6 @@ workspace = true
 
 [dependencies.matrix-sdk-store-file-event-cache]
 path = "../file-event-cache"
-
-#   ----   WASM
-[target.'cfg(target_arch = "wasm32")'.dependencies]
-tracing-wasm = "0.2.1"
-wasm-bindgen-futures = "0.4.40"
 
 #   ----   non-WASM
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
@@ -144,3 +134,8 @@ path = "src/uniffi-bindgen.rs"
 
 [lints.rust]
 unexpected_cfgs = { level = "warn", check-cfg = ['cfg(ruma_unstable_exhaustive_types)'] }
+
+
+[package.metadata.cargo-machete]
+# we have these do to configuration without actually using them directly
+ignored = ["ruma-common", "cbindgen", "ffi-gen", "openssl", "tracing-android"]

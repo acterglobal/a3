@@ -411,6 +411,9 @@ object NewsEntry {
     /// get timestamp of this event
     fn origin_server_ts() -> u64;
 
+    /// make a builder for updating the news entry
+    fn update_builder() -> Result<NewsEntryUpdateBuilder>;
+
     /// whether or not this user can redact this item
     fn can_redact() -> Future<Result<bool>>;
 
@@ -429,10 +432,10 @@ object NewsEntry {
 
 object NewsEntryDraft {
     /// create news slide draft
-    fn add_slide(base_draft: NewsSlideDraft) -> Future<Result<bool>>;
+    fn add_slide(base_draft: NewsSlideDraft);
 
     /// change position of slides draft of this news entry
-    fn swap_slides(from: u8, to:u8);
+    fn swap_slides(from: u8, to:u8) -> Result<()>;
 
     /// get a copy of the news slide set for this news entry draft
     fn slides() -> Vec<NewsSlideDraft>;
@@ -446,14 +449,14 @@ object NewsEntryDraft {
 
 object NewsEntryUpdateBuilder {
     /// set the slides for this news entry
-    fn add_slide(draft: NewsSlideDraft) -> Future<Result<bool>>;
+    fn add_slide(draft: NewsSlideDraft);
 
     /// reset slides for this news entry
     fn unset_slides();
     fn unset_slides_update();
 
     /// set position of slides for this news entry
-    fn swap_slides(from: u8, to: u8);
+    fn swap_slides(from: u8, to: u8) -> Result<()>;
 
     /// update this news entry
     fn send() -> Future<Result<EventId>>;
@@ -525,6 +528,9 @@ object Story {
     /// get timestamp of this event
     fn origin_server_ts() -> u64;
 
+    /// make a builder for updating the story
+    fn update_builder() -> Result<StoryUpdateBuilder>;
+
     /// whether or not this user can redact this item
     fn can_redact() -> Future<Result<bool>>;
 
@@ -540,10 +546,10 @@ object Story {
 
 object StoryDraft {
     /// create news slide draft
-    fn add_slide(base_draft: StorySlideDraft) -> Future<Result<bool>>;
+    fn add_slide(base_draft: StorySlideDraft);
 
     /// change position of slides draft of this news entry
-    fn swap_slides(from: u8, to:u8);
+    fn swap_slides(from: u8, to:u8) -> Result<()>;
 
     /// get a copy of the news slide set for this news entry draft
     fn slides() -> Vec<StorySlideDraft>;
@@ -557,14 +563,14 @@ object StoryDraft {
 
 object StoryUpdateBuilder {
     /// set the slides for this news entry
-    fn add_slide(draft: StorySlideDraft) -> Future<Result<bool>>;
+    fn add_slide(draft: StorySlideDraft);
 
     /// reset slides for this news entry
     fn unset_slides();
     fn unset_slides_update();
 
     /// set position of slides for this news entry
-    fn swap_slides(from: u8, to: u8);
+    fn swap_slides(from: u8, to: u8) -> Result<()>;
 
     /// update this news entry
     fn send() -> Future<Result<EventId>>;
@@ -744,10 +750,8 @@ object CalendarEvent {
     /// get all location details
     fn locations() -> Vec<EventLocationInfo>;
 
-
     /// get the internal reference object
     fn ref_details() -> Future<Result<RefDetails>>;
-
 }
 
 object CalendarEventUpdateBuilder {
@@ -773,6 +777,15 @@ object CalendarEventUpdateBuilder {
     fn utc_end_from_rfc2822(utc_end: string) -> Result<()>;
     /// set utc end in custom format
     fn utc_end_from_format(utc_end: string, format: string) -> Result<()>;
+
+    /// set the physical location details for this calendar event
+    /// description_html means by markdown
+    /// coordinates follows RFC 5870, for example `geo:51.5074,-0.1278`
+    fn add_physical_location(name: Option<string>, description: Option<string>, description_html: Option<string>, coordinates: Option<string>, uri: Option<string>, address: Option<string>, notes: Option<string>);
+    /// set the virtual location details for this calendar event
+    /// description_html means by markdown
+    fn add_virtual_location(name: Option<string>, description: Option<string>, description_html: Option<string>, uri: string, notes: Option<string>);
+    /// clear all locations of this cal event
     fn unset_locations();
 
     /// send builder update
@@ -804,11 +817,14 @@ object CalendarEventDraft {
     fn utc_end_from_rfc2822(utc_end: string) -> Result<()>;
     /// set the utc_end for this calendar event in custom format
     fn utc_end_from_format(utc_end: string, format: string) -> Result<()>;
-    /// set the physical location details for this calendar event
-    fn physical_location(name: Option<string>, description: Option<string>, description_html: Option<string>, coordinates: Option<string>, uri: Option<string>) -> Result<()>;
-    /// set the virtual location details for this calendar event
-    fn virtual_location(name: Option<string>, description: Option<string>, description_html: Option<string>, uri: string) -> Result<()>;
 
+    /// set the physical location details for this calendar event
+    /// description_html means by markdown
+    /// coordinates follows RFC 5870, for example `geo:51.5074,-0.1278`
+    fn add_physical_location(name: Option<string>, description: Option<string>, description_html: Option<string>, coordinates: Option<string>, uri: Option<string>, address: Option<string>, notes: Option<string>);
+    /// set the virtual location details for this calendar event
+    /// description_html means by markdown
+    fn add_virtual_location(name: Option<string>, description: Option<string>, description_html: Option<string>, uri: string, notes: Option<string>);
 
     /// create this calendar event
     fn send() -> Future<Result<EventId>>;
@@ -817,14 +833,21 @@ object CalendarEventDraft {
 object EventLocationInfo {
     /// either of `Physical` or `Virtual`
     fn location_type() -> string;
+
     /// get the name of location
     fn name() -> Option<string>;
     /// get the location description
     fn description() -> Option<TextMessageContent>;
+
     /// geo uri for the location
     fn coordinates() -> Option<string>;
     /// an online link for the location
     fn uri() -> Option<string>;
+
+    /// available for physical event only
+    fn address() -> Option<string>;
+    /// available for both physical and virtual
+    fn notes() -> Option<string>;
 }
 
 
@@ -1027,11 +1050,78 @@ object TimelineEventItem {
     /// the type of massage, like text, image, audio, video, file etc
     fn msg_type() -> Option<string>;
 
-    /// covers text/image/audio/video/file/location/emote/sticker
+    /// covers text/image/audio/video/file/location/emote
     fn msg_content() -> Option<MsgContent>;
 
+    /// covers some of m.room.member
+    fn membership_content() -> Option<MembershipContent>;
+
+    /// covers some of m.room.member
+    fn profile_content() -> Option<ProfileContent>;
+
+    /// covers m.policy.rule.room
+    fn policy_rule_room_content() -> Option<PolicyRuleRoomContent>;
+
+    /// covers m.policy.rule.server
+    fn policy_rule_server_content() -> Option<PolicyRuleServerContent>;
+
+    /// covers m.policy.rule.user
+    fn policy_rule_user_content() -> Option<PolicyRuleUserContent>;
+
+    /// covers m.room.avatar
+    fn room_avatar_content() -> Option<RoomAvatarContent>;
+
+    /// covers m.room.create
+    fn room_create_content() -> Option<RoomCreateContent>;
+
+    /// covers m.room.encryption
+    fn room_encryption_content() -> Option<RoomEncryptionContent>;
+
+    /// covers m.room.guest_access
+    fn room_guest_access_content() -> Option<RoomGuestAccessContent>;
+
+    /// covers m.room.history_visibility
+    fn room_history_visibility_content() -> Option<RoomHistoryVisibilityContent>;
+
+    /// covers m.room.join_rules
+    fn room_join_rules_content() -> Option<RoomJoinRulesContent>;
+
+    /// covers m.room.name
+    fn room_name_content() -> Option<RoomNameContent>;
+
+    /// covers m.room.pinned_events
+    fn room_pinned_events_content() -> Option<RoomPinnedEventsContent>;
+
+    /// covers m.room.power_levels
+    fn room_power_levels_content() -> Option<RoomPowerLevelsContent>;
+
+    /// covers m.room.server_acl
+    fn room_server_acl_content() -> Option<RoomServerAclContent>;
+
+    /// covers m.room.tombstone
+    fn room_tombstone_content() -> Option<RoomTombstoneContent>;
+
+    /// covers m.room.topic
+    fn room_topic_content() -> Option<RoomTopicContent>;
+
+    /// covers m.space.child
+    fn space_child_content() -> Option<SpaceChildContent>;
+
+    /// covers m.space.parent
+    fn space_parent_content() -> Option<SpaceParentContent>;
+
+    /// Whether the whole room is mentioned.
+    fn room_mentioned() -> bool;
+
+    /// The list of mentioned users.
+    /// Available only when sender didn’t mention the whole room
+    fn mentioned_users() -> Vec<string>;
+
     /// original event id, if this msg is reply to another msg
-    fn in_reply_to() -> Option<string>;
+    fn in_reply_to_id() -> Option<string>;
+
+    /// original event, if this msg is reply to another msg and the event was loaded
+    fn in_reply_to_event() -> Option<TimelineEventItem>;
 
     /// original sender id, if this msg is reply to another msg
     fn replied_to_sender() -> Option<string>;
@@ -1125,6 +1215,7 @@ object MsgContent {
     fn filename() -> Option<string>;
 
     /// available for location msg
+    /// geo_uri follows RFC 5870, for example `geo:51.5074,-0.1278`
     fn geo_uri() -> Option<string>;
 
     /// whether or not this has url previews attached
@@ -1132,6 +1223,37 @@ object MsgContent {
 
     /// the list of url previews
     fn url_previews() -> Vec<UrlPreview>;
+}
+
+object MembershipContent {
+    /// The ID of the user whose profile changed.
+    fn user_id() -> UserId;
+
+    /// The membership change induced by this event.
+    fn change() -> string;
+}
+
+object ProfileContent {
+    /// The ID of the user whose profile changed
+    fn user_id() -> UserId;
+
+    /// The display name change induced by this event
+    fn display_name_change() -> Option<string>;
+
+    /// The old value of display name change
+    fn display_name_old_val() -> Option<string>;
+
+    /// The new value of display name change
+    fn display_name_new_val() -> Option<string>;
+
+    /// The avatar url change induced by this event
+    fn avatar_url_change() -> Option<string>;
+
+    /// The old value of avatar url change
+    fn avatar_url_old_val() -> Option<MxcUri>;
+
+    /// The new value of avatar url change
+    fn avatar_url_new_val() -> Option<MxcUri>;
 }
 
 object ReactionRecord {
@@ -1172,6 +1294,201 @@ object JoinRuleBuilder {
     fn join_rule(input: string);
     fn add_room(room: string);
 }
+
+
+//  ########   #######   #######  ##     ##     ######  ########    ###    ######## ########     ######  ##     ##    ###    ##    ##  ######   ######## 
+//  ##     ## ##     ## ##     ## ###   ###    ##    ##    ##      ## ##      ##    ##          ##    ## ##     ##   ## ##   ###   ## ##    ##  ##       
+//  ##     ## ##     ## ##     ## #### ####    ##          ##     ##   ##     ##    ##          ##       ##     ##  ##   ##  ####  ## ##        ##       
+//  ########  ##     ## ##     ## ## ### ##     ######     ##    ##     ##    ##    ######      ##       ######### ##     ## ## ## ## ##   #### ######   
+//  ##   ##   ##     ## ##     ## ##     ##          ##    ##    #########    ##    ##          ##       ##     ## ######### ##  #### ##    ##  ##       
+//  ##    ##  ##     ## ##     ## ##     ##    ##    ##    ##    ##     ##    ##    ##          ##    ## ##     ## ##     ## ##   ### ##    ##  ##       
+//  ##     ##  #######   #######  ##     ##     ######     ##    ##     ##    ##    ########     ######  ##     ## ##     ## ##    ##  ######   ######## 
+
+
+object PolicyRuleRoomContent {
+    fn entity_change() -> Option<string>;
+    fn entity_new_val() -> string;
+    fn entity_old_val() -> Option<string>;
+
+    fn reason_change() -> Option<string>;
+    fn reason_new_val() -> string;
+    fn reason_old_val() -> Option<string>;
+
+    fn recommendation_change() -> Option<string>;
+    fn recommendation_new_val() -> string;
+    fn recommendation_old_val() -> Option<string>;
+}
+
+object PolicyRuleServerContent {
+    fn entity_change() -> Option<string>;
+    fn entity_new_val() -> string;
+    fn entity_old_val() -> Option<string>;
+
+    fn reason_change() -> Option<string>;
+    fn reason_new_val() -> string;
+    fn reason_old_val() -> Option<string>;
+
+    fn recommendation_change() -> Option<string>;
+    fn recommendation_new_val() -> string;
+    fn recommendation_old_val() -> Option<string>;
+}
+
+object PolicyRuleUserContent {
+    fn entity_change() -> Option<string>;
+    fn entity_new_val() -> string;
+    fn entity_old_val() -> Option<string>;
+
+    fn reason_change() -> Option<string>;
+    fn reason_new_val() -> string;
+    fn reason_old_val() -> Option<string>;
+
+    fn recommendation_change() -> Option<string>;
+    fn recommendation_new_val() -> string;
+    fn recommendation_old_val() -> Option<string>;
+}
+
+object RoomAvatarContent {
+    fn url_change() -> Option<string>;
+    fn url_new_val() -> Option<string>;
+    fn url_old_val() -> Option<string>;
+}
+
+object RoomCreateContent {}
+
+object RoomEncryptionContent {
+    fn algorithm_change() -> Option<string>;
+    fn algorithm_new_val() -> string;
+    fn algorithm_old_val() -> Option<string>;
+}
+
+object RoomGuestAccessContent {
+    fn change() -> Option<string>;
+    fn new_val() -> string;
+    fn old_val() -> Option<string>;
+}
+
+object RoomHistoryVisibilityContent {
+    fn change() -> Option<string>;
+    fn new_val() -> string;
+    fn old_val() -> Option<string>;
+}
+
+object RoomJoinRulesContent {
+    fn change() -> Option<string>;
+    fn new_val() -> string;
+    fn old_val() -> Option<string>;
+}
+
+object RoomNameContent {
+    fn change() -> Option<string>;
+    fn new_val() -> string;
+    fn old_val() -> Option<string>;
+}
+
+object RoomPinnedEventsContent {
+    fn change() -> Option<string>;
+    fn new_val() -> Vec<string>;
+    fn old_val() -> Option<Vec<string>>;
+}
+
+object RoomPowerLevelsContent {
+    fn ban_change() -> Option<string>;
+    fn ban_new_val() -> i64;
+    fn ban_old_val() -> Option<i64>;
+
+    fn events_change(event_type: string) -> Option<string>;
+    fn events_new_val(event_type: string) -> Option<i64>;
+    fn events_old_val(event_type: string) -> Option<i64>;
+
+    fn events_default_change() -> Option<string>;
+    fn events_default_new_val() -> i64;
+    fn events_default_old_val() -> Option<i64>;
+
+    fn invite_change() -> Option<string>;
+    fn invite_new_val() -> i64;
+    fn invite_old_val() -> Option<i64>;
+
+    fn kick_change() -> Option<string>;
+    fn kick_new_val() -> i64;
+    fn kick_old_val() -> Option<i64>;
+
+    fn notifications_change() -> Option<string>;
+    fn notifications_new_val() -> i64;
+    fn notifications_old_val() -> Option<i64>;
+
+    fn redact_change() -> Option<string>;
+    fn redact_new_val() -> i64;
+    fn redact_old_val() -> Option<i64>;
+
+    fn state_default_change() -> Option<string>;
+    fn state_default_new_val() -> i64;
+    fn state_default_old_val() -> Option<i64>;
+
+    fn users_change() -> Option<string>;
+
+    fn users_default_change() -> Option<string>;
+    fn users_default_new_val() -> i64;
+    fn users_default_old_val() -> Option<i64>;
+}
+
+object RoomServerAclContent {
+    fn allow_ip_literals_change() -> Option<string>;
+    fn allow_ip_literals_new_val() -> bool;
+    fn allow_ip_literals_old_val() -> Option<bool>;
+
+    fn allow_change() -> Option<string>;
+    fn allow_new_val() -> Vec<string>;
+    fn allow_old_val() -> Option<Vec<string>>;
+
+    fn deny_change() -> Option<string>;
+    fn deny_new_val() -> Vec<string>;
+    fn deny_old_val() -> Option<Vec<string>>;
+}
+
+object RoomTombstoneContent {
+    fn body_change() -> Option<string>;
+    fn body_new_val() -> string;
+    fn body_old_val() -> Option<string>;
+
+    fn replacement_room_change() -> Option<string>;
+    fn replacement_room_new_val() -> string;
+    fn replacement_room_old_val() -> Option<string>;
+}
+
+object RoomTopicContent {
+    fn change() -> Option<string>;
+    fn new_val() -> string;
+    fn old_val() -> Option<string>;
+}
+
+object SpaceChildContent {
+    fn room_id() -> Result<RoomId>;
+
+    fn via_change() -> Option<string>;
+    fn via_new_val() -> Vec<string>;
+    fn via_old_val() -> Option<Vec<string>>;
+
+    fn order_change() -> Option<string>;
+    fn order_new_val() -> Option<string>;
+    fn order_old_val() -> Option<string>;
+
+    fn suggested_change() -> Option<string>;
+    fn suggested_new_val() -> bool;
+    fn suggested_old_val() -> Option<bool>;
+}
+
+object SpaceParentContent {
+    fn room_id() -> Result<RoomId>;
+
+    fn via_change() -> Option<string>;
+    fn via_new_val() -> Vec<string>;
+    fn via_old_val() -> Option<Vec<string>>;
+
+    fn canonical_change() -> Option<string>;
+    fn canonical_new_val() -> bool;
+    fn canonical_old_val() -> Option<bool>;
+}
+
 
 //  ########   #######   #######  ##     ##
 //  ##     ## ##     ## ##     ## ###   ###
@@ -1228,6 +1545,13 @@ object Room {
 
     /// remove a parent room
     fn remove_parent_room(room_id: string, reason: Option<string>) -> Future<Result<bool>>;
+
+    /// add the child room and return event id of that event
+    /// order: Must consist of ASCII characters within the range \x20 (space) and \x7E (~), inclusive.
+    fn add_child_room(room_id: string, order: Option<string>, suggested: bool) -> Future<Result<string>>;
+
+    /// remove the child room
+    fn remove_child_room(room_id: string, reason: Option<string>) -> Future<Result<bool>>;
 
     /// the Membership of myself
     fn get_my_membership() -> Future<Result<Member>>;
@@ -1336,49 +1660,43 @@ object SpaceDiff {
 object MsgDraft {
 
     /// add a user mention
-    fn add_mention(user_id: string) -> Result<MsgDraft>;
+    fn add_mention(user_id: string) -> Result<()>;
 
     /// add a ref details
-    fn add_ref_details(details: RefDetails) -> Result<MsgDraft>;
+    fn add_ref_details(details: RefDetails) -> Result<()>;
 
     /// add a url preview
-    fn add_url_preview(details: LocalUrlPreview) -> Result<MsgDraft>;
+    fn add_url_preview(details: LocalUrlPreview) -> Result<()>;
 
     /// whether to mention the entire room
-    fn add_room_mention(mention: bool) -> Result<MsgDraft>;
+    fn add_room_mention(mention: bool) -> Result<()>;
 
     /// available for only image/audio/video/file
-    fn mimetype(value: string) -> MsgDraft;
-
-    /// available for only image/audio/video/file
-    fn size(value: u64) -> MsgDraft;
+    fn size(value: u64);
 
     /// available for only image/video
-    fn width(value: u64) -> MsgDraft;
+    fn width(value: u64);
 
     /// available for only image/video
-    fn height(value: u64) -> MsgDraft;
+    fn height(value: u64);
 
     /// available for only audio/video
-    fn duration(value: u64) -> MsgDraft;
+    fn duration(value: u64);
 
     /// available for only image/video
-    fn blurhash(value: string) -> MsgDraft;
+    fn blurhash(value: string);
 
     /// Provide the file system path to a static thumbnail
     /// for this media to be read and shared upon sending
     ///
     /// available for only image/video/file/location
-    fn thumbnail_file_path(value: string) -> MsgDraft;
+    fn thumbnail_image(source: string, mimetype: string);
 
     /// available for only image/video/file/location
-    fn thumbnail_info(width: Option<u64>, height: Option<u64>, mimetype: Option<string>, size: Option<u64>) -> MsgDraft;
+    fn thumbnail_info(width: Option<u64>, height: Option<u64>, size: Option<u64>);
 
     /// available for only file
-    fn filename(value: string) -> MsgDraft;
-
-    /// available for only location
-    fn geo_uri(value: string) -> MsgDraft;
+    fn filename(value: string);
 
     /// convert this into a NewsSlideDraft;
     fn into_news_slide_draft() -> NewsSlideDraft;
@@ -1394,6 +1712,9 @@ object TimelineStream {
 
     /// get the specific message identified by the event_id
     fn get_message(event_id: string) -> Future<Result<TimelineItem>>;
+
+    /// given a message, load its reply details if any
+    fn fetch_details_for_event(event_id: string) -> Future<Result<bool>>;
 
     /// Get the next count messages backwards, and return whether it reached the end
     fn paginate_backwards(count: u16) -> Future<Result<bool>>;
@@ -1500,9 +1821,6 @@ object Convo {
     /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
     fn media_binary(event_id: string, thumb_size: Option<ThumbnailSize>) -> Future<Result<buffer<u8>>>;
 
-    /// get the user status on this room
-    fn room_type() -> string;
-
     /// is this a direct message
     fn is_dm() -> bool;
 
@@ -1575,6 +1893,78 @@ object Convo {
 
     /// get the internal reference object, defined in Room
     fn ref_details() -> Future<Result<RefDetails>>;
+
+    /// set a moderation policy rule which affects room IDs and room aliases.
+    /// entity: #*:example.org
+    /// reason: undesirable content
+    fn set_policy_rule_room(entity: string, reason: string) -> Future<Result<EventId>>;
+
+    /// set a moderation policy rule which affects servers.
+    /// entity: *.example.org
+    /// reason: undesirable engagement
+    fn set_policy_rule_server(entity: string, reason: string) -> Future<Result<EventId>>;
+
+    /// set a moderation policy rule which affects users.
+    /// entity: @alice*:example.org
+    /// reason: undesirable behaviour
+    fn set_policy_rule_user(entity: string, reason: string) -> Future<Result<EventId>>;
+
+    /// set room encryption
+    /// m.olm.v1.curve25519-aes-sha2 or m.megolm.v1.aes-sha2
+    fn set_encryption(algorithm: string) -> Future<Result<EventId>>;
+
+    /// set room guest access
+    /// can_join or forbidden
+    fn set_guest_access(guest_access: string) -> Future<Result<EventId>>;
+
+    /// set room history visibility
+    /// invited, joined, shared, or world_readable
+    fn set_history_visibility(history_visibility: string) -> Future<Result<EventId>>;
+
+    /// set room join rules
+    /// invite, knock, private, or public
+    fn set_join_rules(join_rule: string) -> Future<Result<EventId>>;
+
+    /// set room pinned events
+    /// event id array
+    fn set_pinned_events(event_ids: string) -> Future<Result<EventId>>;
+
+    /// set ban of power levels
+    fn set_power_levels_ban(level: i32) -> Future<Result<EventId>>;
+
+    /// set events of power levels
+    /// event type is one of "m.room.avatar", "m.room.canonical_alias", "m.room.encryption", "m.room.history_visibility", "m.room.name", "m.room.power_levels", "m.room.server_acl", "m.room.tombstone"
+    fn set_power_levels_events(event_type: string, level: i32) -> Future<Result<EventId>>;
+
+    /// set events_default of power levels
+    fn set_power_levels_events_default(level: i32) -> Future<Result<EventId>>;
+
+    /// set invite of power levels
+    fn set_power_levels_invite(level: i32) -> Future<Result<EventId>>;
+
+    /// set kick of power levels
+    fn set_power_levels_kick(level: i32) -> Future<Result<EventId>>;
+
+    /// set redact of power levels
+    fn set_power_levels_redact(level: i32) -> Future<Result<EventId>>;
+
+    /// set state_default of power levels
+    fn set_power_levels_state_default(level: i32) -> Future<Result<EventId>>;
+
+    /// set users_default of power levels
+    fn set_power_levels_users_default(level: i32) -> Future<Result<EventId>>;
+
+    /// set notifications of power levels
+    fn set_power_levels_notifications(level: i32) -> Future<Result<EventId>>;
+
+    /// set room server acl
+    /// allow_ip_literals: true
+    /// allow: ["*"]
+    /// deny: ["1.1.1.1"]
+    fn set_server_acl(allow_ip_literals: bool, allow: string, deny: string) -> Future<Result<EventId>>;
+
+    /// set room tombstone
+    fn set_tombstone(body: string, replacement_room_id: string) -> Future<Result<EventId>>;
 }
 
 
@@ -2284,20 +2674,6 @@ object ActerAppSettingsBuilder {
 //  ##     ## ##    ##    ##     ##    ## ##    ##     ##     ##  ##       ##    ##
 //  ##     ##  ######     ##    ####    ###    ####    ##    #### ########  ######
 
-object MembershipChange {
-    /// user_id of the member that has changed
-    fn user_id_str() -> string;
-
-    /// avatar_url of the member that has changed
-    fn avatar_url() -> Option<string>;
-
-    /// display_name of the member that has changed
-    fn display_name() -> Option<string>;
-
-    /// reason if any was provided
-    fn reason() -> Option<string>;
-}
-
 object ActivityObject {
     fn type_str() -> string;
     fn object_id_str() -> string;
@@ -2330,9 +2706,6 @@ object Activity {
     /// e.g. image, video, audio, file, link, location, etc.
     fn sub_type_str() -> Option<string>;
 
-    /// the details of this membership change activity
-    fn membership_change() -> Option<MembershipChange>;
-
     /// if the added information is a reference
     fn ref_details() -> Option<RefDetails>;
 
@@ -2345,6 +2718,15 @@ object Activity {
     /// the object this activity happened on, if any
     fn object() -> Option<ActivityObject>;
 
+    /// get avatar uri when space avatar changed
+    fn room_avatar() -> Option<string>;
+
+    /// get name when space name changed
+    fn room_name() -> Option<string>;
+
+    /// get topic when space topic changed
+    fn room_topic() -> Option<string>;
+
     /// see title
     fn name() -> Option<string>;
 
@@ -2354,11 +2736,77 @@ object Activity {
     /// content of this activity (e.g. comment), if any
     fn msg_content() -> Option<MsgContent>;
 
+    /// the details of this membership change activity
+    fn membership_content() -> Option<MembershipContent>;
+
+    /// the details of this profile change activity
+    fn profile_content() -> Option<ProfileContent>;
+
+    /// covers m.policy.rule.room
+    fn policy_rule_room_content() -> Option<PolicyRuleRoomContent>;
+
+    /// covers m.policy.rule.server
+    fn policy_rule_server_content() -> Option<PolicyRuleServerContent>;
+
+    /// covers m.policy.rule.user
+    fn policy_rule_user_content() -> Option<PolicyRuleUserContent>;
+
+    /// covers m.room.avatar
+    fn room_avatar_content() -> Option<RoomAvatarContent>;
+
+    /// covers m.room.create
+    fn room_create_content() -> Option<RoomCreateContent>;
+
+    /// covers m.room.encryption
+    fn room_encryption_content() -> Option<RoomEncryptionContent>;
+
+    /// covers m.room.guest_access
+    fn room_guest_access_content() -> Option<RoomGuestAccessContent>;
+
+    /// covers m.room.history_visibility
+    fn room_history_visibility_content() -> Option<RoomHistoryVisibilityContent>;
+
+    /// covers m.room.join_rules
+    fn room_join_rules_content() -> Option<RoomJoinRulesContent>;
+
+    /// covers m.room.name
+    fn room_name_content() -> Option<RoomNameContent>;
+
+    /// covers m.room.pinned_events
+    fn room_pinned_events_content() -> Option<RoomPinnedEventsContent>;
+
+    /// covers m.room.power_levels
+    fn room_power_levels_content() -> Option<RoomPowerLevelsContent>;
+
+    /// covers m.room.server_acl
+    fn room_server_acl_content() -> Option<RoomServerAclContent>;
+
+    /// covers m.room.tombstone
+    fn room_tombstone_content() -> Option<RoomTombstoneContent>;
+
+    /// covers m.room.topic
+    fn room_topic_content() -> Option<RoomTopicContent>;
+
+    /// covers m.space.child
+    fn space_child_content() -> Option<SpaceChildContent>;
+
+    /// covers m.space.parent
+    fn space_parent_content() -> Option<SpaceParentContent>;
+
     /// reaction specific: the reaction key used
     fn reaction_key() -> Option<string>;
 
-    /// the date on eventDateChange (started or ended) or taskDueDateChane
-    fn new_date() -> Option<UtcDateTime>;
+    /// titleChange
+    fn title_content() -> Option<TitleContent>;
+
+    /// descriptionChange
+    fn description_content() -> Option<DescriptionContent>;
+
+    /// taskDueDateChange
+    fn date_content() -> Option<DateContent>;
+
+    /// eventDateChangethe
+    fn date_time_range_content() -> Option<DateTimeRangeContent>;
 
     /// whom, if this involved additional users, e.g. when someone is invited
     /// to an object
@@ -2375,6 +2823,26 @@ object Activities {
 
     /// Receive an update when a the activities stream has changed
     fn subscribe_stream() -> Stream<bool>;
+}
+
+object TitleContent {
+    fn change() -> string;
+    fn new_val() -> string;
+}
+
+object DescriptionContent {
+    fn change() -> string;
+    fn new_val() -> Option<string>;
+}
+
+object DateContent {
+    fn change() -> string;
+    fn new_val() -> Option<string>;
+}
+
+object DateTimeRangeContent {
+    fn start_new_val() -> Option<UtcDateTime>;
+    fn end_new_val() -> Option<UtcDateTime>;
 }
 
 
@@ -2478,6 +2946,7 @@ object DisplayBuilder {
 
 
 object Space {
+    fn create_onboarding_data() -> Future<Result<bool>>;
 
     /// get the room profile that contains avatar and display name
     fn space_relations() -> Future<Result<SpaceRelations>>;
@@ -2628,6 +3097,78 @@ object Space {
 
     /// get the internal reference object, defined in Room
     fn ref_details() -> Future<Result<RefDetails>>;
+
+    /// set a moderation policy rule which affects room IDs and room aliases.
+    /// entity: #*:example.org
+    /// reason: undesirable content
+    fn set_policy_rule_room(entity: string, reason: string) -> Future<Result<EventId>>;
+
+    /// set a moderation policy rule which affects servers.
+    /// entity: *.example.org
+    /// reason: undesirable engagement
+    fn set_policy_rule_server(entity: string, reason: string) -> Future<Result<EventId>>;
+
+    /// set a moderation policy rule which affects users.
+    /// entity: @alice*:example.org
+    /// reason: undesirable behaviour
+    fn set_policy_rule_user(entity: string, reason: string) -> Future<Result<EventId>>;
+
+    /// set room encryption
+    /// m.olm.v1.curve25519-aes-sha2 or m.megolm.v1.aes-sha2
+    fn set_encryption(algorithm: string) -> Future<Result<EventId>>;
+
+    /// set room guest access
+    /// can_join or forbidden
+    fn set_guest_access(guest_access: string) -> Future<Result<EventId>>;
+
+    /// set room history visibility
+    /// invited, joined, shared, or world_readable
+    fn set_history_visibility(history_visibility: string) -> Future<Result<EventId>>;
+
+    /// set room join rules
+    /// invite, knock, private, or public
+    fn set_join_rules(join_rule: string) -> Future<Result<EventId>>;
+
+    /// set room pinned events
+    /// event id array
+    fn set_pinned_events(event_ids: string) -> Future<Result<EventId>>;
+
+    /// set ban of power levels
+    fn set_power_levels_ban(level: i32) -> Future<Result<EventId>>;
+
+    /// set events of power levels
+    /// event type is one of "m.room.avatar", "m.room.canonical_alias", "m.room.encryption", "m.room.history_visibility", "m.room.name", "m.room.power_levels", "m.room.server_acl", "m.room.tombstone"
+    fn set_power_levels_events(event_type: string, level: i32) -> Future<Result<EventId>>;
+
+    /// set events_default of power levels
+    fn set_power_levels_events_default(level: i32) -> Future<Result<EventId>>;
+
+    /// set invite of power levels
+    fn set_power_levels_invite(level: i32) -> Future<Result<EventId>>;
+
+    /// set kick of power levels
+    fn set_power_levels_kick(level: i32) -> Future<Result<EventId>>;
+
+    /// set redact of power levels
+    fn set_power_levels_redact(level: i32) -> Future<Result<EventId>>;
+
+    /// set state_default of power levels
+    fn set_power_levels_state_default(level: i32) -> Future<Result<EventId>>;
+
+    /// set users_default of power levels
+    fn set_power_levels_users_default(level: i32) -> Future<Result<EventId>>;
+
+    /// set notifications of power levels
+    fn set_power_levels_notifications(level: i32) -> Future<Result<EventId>>;
+
+    /// set room server acl
+    /// allow_ip_literals: true
+    /// allow: ["*"]
+    /// deny: ["1.1.1.1"]
+    fn set_server_acl(allow_ip_literals: bool, allow: string, deny: string) -> Future<Result<EventId>>;
+
+    /// set room tombstone
+    fn set_tombstone(body: string, replacement_room_id: string) -> Future<Result<EventId>>;
 }
 
 enum MembershipStatus {
@@ -2773,23 +3314,23 @@ object AppPermissionsBuilder {
     fn tasks(value: bool);
 
     /// specific permissions levels needed to post boosts
-    fn news_permisisons(value: u32);
+    fn news_permissions(value: u32);
     /// specific permissions levels needed to post stories
-    fn stories_permisisons(value: u32);
+    fn stories_permissions(value: u32);
     /// specific permissions levels needed to post calender events
-    fn calendar_events_permisisons(value: u32);
+    fn calendar_events_permissions(value: u32);
     /// specific permissions levels needed for task lists
-    fn task_lists_permisisons(value: u32);
+    fn task_lists_permissions(value: u32);
     /// specific permissions levels needed for tasks
-    fn tasks_permisisons(value: u32);
+    fn tasks_permissions(value: u32);
     /// specific permissions levels needed for pins
-    fn pins_permisisons(value: u32);
+    fn pins_permissions(value: u32);
     /// specific permissions levels needed for comments
-    fn comments_permisisons(value: u32);
+    fn comments_permissions(value: u32);
     /// specific permissions levels needed for attachments
-    fn attachments_permisisons(value: u32);
+    fn attachments_permissions(value: u32);
     /// specific permissions levels needed to rsvp
-    fn rsvp_permisisons(value: u32);
+    fn rsvp_permissions(value: u32);
 
     /// set level to kick a user
     fn kick(value: u32);
@@ -3041,8 +3582,14 @@ object NotificationItem {
     /// reaction specific: the reaction key used
     fn reaction_key() -> Option<string>;
 
-    /// the date on eventDateChange (started or ended) or taskDueDateChane
-    fn new_date() -> Option<UtcDateTime>;
+    /// the start datetime on eventDateChange
+    fn utc_start() -> Option<UtcDateTime>;
+
+    /// the end datetime on eventDateChange
+    fn utc_end() -> Option<UtcDateTime>;
+
+    /// the date on taskDueDateChange
+    fn due_date() -> Option<string>;
 
     /// does this mention the user
     fn mentions_you() -> bool;
@@ -3096,9 +3643,9 @@ object CreateConvoSettingsBuilder {
     fn set_avatar_uri(value: string);
 
     /// set the parent of convo
-    fn set_parent(value: string);
+    fn set_parent(value: string) -> Result<()>;
 
-    fn build() -> CreateConvoSettings;
+    fn build() -> Result<CreateConvoSettings>;
 }
 
 object CreateConvoSettings {}
@@ -3133,12 +3680,12 @@ object CreateSpaceSettingsBuilder {
     /// set the parent of space
     /// if the join rule is restricted or knockrestricted AND a parent is set
     /// the space will be a subspace of the parent space
-    fn set_parent(value: string);
+    fn set_parent(value: string) -> Result<()>;
 
     /// set the permissions for apps and events for the space creation
     fn set_permissions(value: AppPermissionsBuilder);
 
-    fn build() -> CreateSpaceSettings;
+    fn build() -> Result<CreateSpaceSettings>;
 }
 
 object CreateSpaceSettings {}
@@ -3168,7 +3715,7 @@ object InvitationsManager {
 /// Main entry point for `acter`.
 object Client {
     /// start the sync
-    fn start_sync() -> Future<Result<SyncState>>;
+    fn start_sync() -> SyncState;
 
     /// Get the restore token for this session
     fn restore_token() -> Future<Result<string>>;
@@ -3181,9 +3728,6 @@ object Client {
 
     /// Whether the client is syncing
     fn is_syncing() -> bool;
-
-    /// Whether the client is logged in
-    fn logged_in() -> bool;
 
     /// return the account of the logged in user, if given
     fn account() -> Result<Account>;
@@ -3418,7 +3962,8 @@ object Client {
     fn file_draft(source: string, mimetype: string) -> MsgDraft;
 
     /// make draft to send location msg
-    fn location_draft(body: string, source: string) -> MsgDraft;
+    /// geo_uri follows RFC 5870, for example `geo:51.5074,-0.1278`
+    fn location_draft(body: string, geo_uri: string) -> MsgDraft;
 
     /// get access to the backup manager
     fn backup_manager() -> BackupManager;
@@ -3435,6 +3980,10 @@ object Client {
 
     /// get the activities listener for a room
     fn activities_for_room(key: string) -> Result<Activities>;
+
+
+    /// get the activities listener for a all historic events
+    fn all_activities() -> Result<Activities>;
 
     /// get the activities listener for a specific object
     fn activities_for_obj(key: string) -> Result<Activities>;
@@ -3733,11 +4282,14 @@ object DeviceRecord {
 /// Manage Encryption Backups
 object BackupManager {
 
-    /// Create a new backup version, encrypted with a new backup recovery key.
+    /// Create a new backup, encrypted with a new backup recovery key.
     fn enable() -> Future<Result<string>>;
 
-    /// Reset the existing backup version, encrypted with a new backup recovery key.
-    fn reset() -> Future<Result<string>>;
+    /// Reset the existing backup, encrypted with a new backup recovery key.
+    fn reset_key() -> Future<Result<string>>;
+
+    /// Reset the existing backup and identity, encrypted with a new key.
+    fn reset_identity(password: string) -> Future<Result<string>>;
 
     /// Disable and delete the currently active backup.
     fn disable() -> Future<Result<bool>>;
@@ -3751,7 +4303,7 @@ object BackupManager {
     /// Open the existing secret store using the given key and import the keys
     fn recover(secret: string) -> Future<Result<bool>>;
 
-    /// the backup key as it was stored last, might be empty if there isn't any stored
+    /// the backup key as it was stored last, might be empty if there isn’t any stored
     fn stored_enc_key() -> Future<Result<OptionString>>;
 
     /// When was the key stored as unix timestamp. 0 if nothing was found

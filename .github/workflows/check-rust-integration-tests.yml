@@ -29,8 +29,6 @@ jobs:
           large-packages: false # keep clang around
 
       - uses: actions/setup-python@v4
-        with:
-          python-version: 3.8
 
       - name: Install & Run MailHog
         run: |
@@ -38,9 +36,8 @@ jobs:
           sudo chmod +x MailHog_linux_amd64
           ./MailHog_linux_amd64 &
 
-      - uses: michaelkaye/setup-matrix-synapse@main
+      - uses: acterglobal/setup-matrix-synapse@main
         with:
-          installer: poetry
           uploadLogs: false
           httpPort: 8118
           disableRateLimiting: true
@@ -67,8 +64,9 @@ jobs:
       - uses: rui314/setup-mold@v1
         name: "Setup mold linker"
 
-      - uses: taiki-e/install-action@cargo-llvm-cov
-      - uses: taiki-e/install-action@nextest
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-llvm-cov,nextest@0.9.98
 
       - name: run cargo integration tests
         env:

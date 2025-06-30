@@ -1,5 +1,5 @@
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/utils/routes.dart';
+import 'package:acter/router/routes.dart';
 import 'package:acter/common/widgets/spaces/space_selector_drawer.dart';
 import 'package:acter/features/news/actions/make_image_slide.dart';
 import 'package:acter/features/news/actions/make_text_slide.dart';
@@ -51,7 +51,7 @@ Future<void> sendNews(BuildContext context, WidgetRef ref) async {
         UpdateSlideType.image => makeImageSlideForNews(ref, slidePost, lang),
         UpdateSlideType.video => makeVideoSlideForNews(ref, slidePost, lang),
       };
-      await draft.addSlide(slide);
+      draft.addSlide(slide);
     } catch (err, s) {
       _log.severe('Failed to process ${slidePost.type} at $slideIdx ', err, s);
       EasyLoading.showError(

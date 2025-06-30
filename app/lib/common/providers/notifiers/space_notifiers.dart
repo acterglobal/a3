@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show Client, Space, SpaceDiff;
@@ -23,7 +24,7 @@ class AsyncMaybeSpaceNotifier extends FamilyAsyncNotifier<Space?, String> {
     _poller = _listener.listen(
       (data) async {
         _log.info('seen update $arg');
-        state = await AsyncValue.guard(() async => await _getSpace(client));
+        state = AsyncValue.data(await _getSpace(client));
       },
       onError: (e, s) {
         _log.severe('space stream errored', e, s);
@@ -183,5 +184,25 @@ class SpaceListNotifier extends Notifier<List<Space>> {
       default:
         break;
     }
+  }
+}
+
+class SpaceBookmarkNotifier extends Notifier<Map<String, bool>> {
+  @override
+  Map<String, bool> build() {
+    final spaces = ref.watch(spacesProvider);
+    return Map.fromEntries(
+      spaces.map((space) => MapEntry(
+        space.getRoomIdStr(),
+        space.isBookmarked(),
+      )),
+    );
+  }
+
+  Future<void> setBookmark(String spaceId) async {
+    final space = await ref.read(spaceProvider(spaceId).future);
+    final newValue = !(state[spaceId] ?? false);
+    await space.setBookmarked(newValue);
+    state = {...state, spaceId: newValue};
   }
 }

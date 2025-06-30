@@ -5,10 +5,15 @@ import 'package:acter/common/actions/report_content.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/errors/error_page.dart';
-import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/toolkit/html/render_html.dart';
+import 'package:acter/features/events/actions/show_event_location_list.dart';
+import 'package:acter/features/events/model/event_location_model.dart';
+import 'package:acter/features/events/providers/event_location_provider.dart';
+import 'package:acter/features/events/widgets/view_physical_location_widget.dart';
+import 'package:acter/features/events/widgets/view_virtual_location_widget.dart';
+import 'package:acter/router/routes.dart';
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
-import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/features/attachments/types.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
 import 'package:acter/features/bookmarks/types.dart';
@@ -60,6 +65,9 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
   @override
   Widget build(BuildContext context) {
     final calEventLoader = ref.watch(calendarEventProvider(widget.calendarId));
+    final locations =
+        ref.watch(asyncEventLocationsProvider(widget.calendarId)).valueOrNull ??
+        [];
     final errored = calEventLoader.asError;
     if (errored != null) {
       _log.severe(
@@ -81,12 +89,18 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
     final calEvent = calEventLoader.valueOrNull;
     return Scaffold(
       body: CustomScrollView(
-        slivers: [_buildEventAppBar(calEvent), _buildEventBody(calEvent)],
+        slivers: [
+          _buildEventAppBar(calEvent, locations),
+          _buildEventBody(calEvent, locations),
+        ],
       ),
     );
   }
 
-  Widget _buildEventAppBar(CalendarEvent? calendarEvent) {
+  Widget _buildEventAppBar(
+    CalendarEvent? calendarEvent,
+    List<EventLocationInfo> locations,
+  ) {
     return SliverAppBar(
       expandedHeight: 200.0,
       pinned: true,
@@ -101,7 +115,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
                   bookmarker: BookmarkType.forEvent(widget.calendarId),
                 ),
                 ObjectNotificationStatus(objectId: widget.calendarId),
-                _buildActionMenu(calendarEvent),
+                _buildActionMenu(calendarEvent, locations),
               ]
               : [],
       flexibleSpace: Container(
@@ -113,7 +127,10 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
     );
   }
 
-  Widget _buildActionMenu(CalendarEvent event) {
+  Widget _buildActionMenu(
+    CalendarEvent event,
+    List<EventLocationInfo> locations,
+  ) {
     final lang = L10n.of(context);
     final colorScheme = Theme.of(context).colorScheme;
     //Get membership details
@@ -155,6 +172,25 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
                 const Icon(Atlas.pencil_edit_thin),
                 const SizedBox(width: 10),
                 Text(lang.editDescription),
+              ],
+            ),
+          ),
+        );
+
+        // Add/Edit Location
+        actions.add(
+          PopupMenuItem(
+            key: EventsKeys.eventEditBtn,
+            onTap: () => showEventLocationList(context, eventId: widget.calendarId),
+            child: Row(
+              children: <Widget>[
+                Icon(
+                  locations.isEmpty
+                      ? Icons.add_location_alt_outlined
+                      : Icons.edit_location_alt_outlined,
+                ),
+                const SizedBox(width: 10),
+                Text(locations.isEmpty ? lang.addLocation : lang.updateLocation),
               ],
             ),
           ),
@@ -252,7 +288,10 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
     );
   }
 
-  Widget _buildEventBody(CalendarEvent? calendarEvent) {
+  Widget _buildEventBody(
+    CalendarEvent? calendarEvent,
+    List<EventLocationInfo> locations,
+  ) {
     return SliverToBoxAdapter(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -265,6 +304,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
             _buildEventRsvpActions(calendarEvent),
             const SizedBox(height: 10),
             _buildEventDataSet(calendarEvent),
+            _buildEventLocationList(calendarEvent, locations),
             const SizedBox(height: 10),
             _buildEventDescription(calendarEvent),
             const SizedBox(height: 40),
@@ -359,13 +399,12 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
         calendarEventProvider(widget.calendarId).future,
       );
       final rsvpManager = await event.rsvps();
-      final draft = rsvpManager.rsvpDraft();
       final statusStr = switch (status) {
         RsvpStatusTag.Yes => 'yes',
         RsvpStatusTag.No => 'no',
         RsvpStatusTag.Maybe => 'maybe',
       };
-      draft.status(statusStr);
+      final draft = rsvpManager.rsvpDraft()..status(statusStr);
       final rsvpId = await draft.send();
       _log.info('new rsvp id: $rsvpId');
 
@@ -650,6 +689,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
                       ? RenderHtml(
                         text: formattedText,
                         defaultTextStyle: textTheme.labelMedium,
+                        roomId: ev.roomIdStr(),
                       )
                       : Text(bodyText, style: textTheme.labelMedium),
             ),
@@ -674,6 +714,93 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
           plainDescription: plainDescription,
         );
       },
+    );
+  }
+
+  Widget _buildEventLocationList(
+    CalendarEvent ev,
+    List<EventLocationInfo> locations,
+  ) {
+    if (locations.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return ListView.builder(
+      shrinkWrap: true,
+      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: locations.length,
+      itemBuilder: (context, index) {
+        final location = locations[index];
+        return _buildEventLocationItem(location);
+      },
+    );
+  }
+
+  Widget _buildEventLocationItem(EventLocationInfo location) {
+    final locationType = location.locationType().toLowerCase();
+    return ListTile(
+      onTap: () => locationType == LocationType.physical.name
+          ? showPhysicalLocation(location)
+          : showVirtualLocation(location),
+      leading: locationType == LocationType.physical.name
+          ? const Icon(Icons.map_outlined)
+          : const Icon(Icons.language),
+      visualDensity: const VisualDensity(vertical: -4, horizontal: -4),
+      minVerticalPadding: 0,
+      title: Text(location.name() ?? ''),
+      subtitle: locationType == LocationType.physical.name
+          ? _buildLocationSubtitleText(
+              location.address(),
+              Theme.of(context).textTheme.titleSmall?.copyWith(
+                    color: Theme.of(context).colorScheme.surfaceTint,
+                  ),
+            )
+          : _buildLocationSubtitleText(
+              location.uri(),
+              Theme.of(context).textTheme.titleSmall?.copyWith(
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+            ),
+    );
+  }
+
+  Widget _buildLocationSubtitleText(String? text, TextStyle? style) {
+    return Text(
+      text ?? '',
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      style: style,
+    );
+  }
+
+  void showPhysicalLocation(EventLocationInfo location) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      isDismissible: true,
+      enableDrag: true,
+      showDragHandle: true,
+      useSafeArea: true,
+      constraints: const BoxConstraints(maxHeight: 300),
+      builder:
+          (context) =>
+              ViewPhysicalLocationWidget(context: context, location: location),
+    );
+  }
+
+  void showVirtualLocation(EventLocationInfo location) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      isDismissible: true,
+      enableDrag: true,
+      showDragHandle: true,
+      useSafeArea: true,
+      constraints: const BoxConstraints(maxHeight: 280),
+      builder:
+          (context) =>
+              ViewVirtualLocationWidget(context: context, location: location),
     );
   }
 }

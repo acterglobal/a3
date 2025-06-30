@@ -19,30 +19,49 @@ class MockRoomAvatarInfoNotifier extends FamilyNotifier<AvatarInfo, String>
 class RetryMockAsyncSpaceNotifier extends FamilyAsyncNotifier<Space?, String>
     with Mock
     implements AsyncMaybeSpaceNotifier {
-  bool shouldFail = true;
+  bool shouldFail;
+
+  RetryMockAsyncSpaceNotifier({this.mockSpace, this.shouldFail = true});
+
+  final Space? mockSpace;
 
   @override
-  Future<MockSpace> build(String arg) async {
+  Future<Space> build(String arg) async {
     if (shouldFail) {
       // toggle failure so the retry works
       shouldFail = !shouldFail;
       throw 'Expected fail: Space not loaded';
     }
-    return MockSpace();
+    return mockSpace ?? MockSpace();
   }
+}
+
+class MaybeMockAsyncSpaceNotifier extends FamilyAsyncNotifier<Space?, String>
+    with Mock
+    implements AsyncMaybeSpaceNotifier {
+  final Space? mockSpace;
+  MaybeMockAsyncSpaceNotifier({this.mockSpace});
+
+  @override
+  Future<Space?> build(String arg) async => mockSpace;
 }
 
 class MockSpace extends Mock implements Space {
   final String id;
   final bool bookmarked;
+  final bool _isJoined;
 
-  MockSpace({this.id = 'id', this.bookmarked = false});
+  MockSpace({this.id = 'id', this.bookmarked = false, isJoined = true})
+    : _isJoined = isJoined;
 
   @override
   String getRoomIdStr() => id;
 
   @override
   bool isBookmarked() => bookmarked;
+
+  @override
+  bool isJoined() => _isJoined;
 }
 
 class MockFfiListString extends Fake implements FfiListFfiString {

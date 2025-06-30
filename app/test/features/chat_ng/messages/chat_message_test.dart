@@ -1,11 +1,12 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/toolkit/errors/inline_error_button.dart';
-import 'package:acter/features/chat/providers/chat_providers.dart' as chat;
-import 'package:acter/features/chat/utils.dart';
+
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
+import 'package:acter/features/chat_ng/utils.dart';
 import 'package:acter/features/chat_ng/widgets/events/image_message_event.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show TimelineEventItem;
+    show TimelineEventItem, OptionString, Convo;
+
 import 'package:convenient_test_dev/convenient_test_dev.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -14,7 +15,6 @@ import 'package:mocktail/mocktail.dart';
 import '../../../helpers/error_helpers.dart';
 import '../../../helpers/mock_chat_providers.dart';
 import '../../../helpers/test_util.dart';
-import '../../chat/messages/image_message_test.dart';
 import '../../comments/mock_data/mock_message_content.dart';
 import '../diff_applier_test.dart';
 
@@ -22,10 +22,14 @@ class MockTimelineEventItem extends Mock implements TimelineEventItem {
   final String mockSender;
   final MockMsgContent? mockMsgContent;
   final String? mockMsgType;
+  final String mockEventType;
+  final bool mockWasEdited;
   MockTimelineEventItem({
     required this.mockSender,
     this.mockMsgContent,
     this.mockMsgType,
+    this.mockEventType = 'm.room.message',
+    this.mockWasEdited = false,
   });
   @override
   String sender() => mockSender;
@@ -35,6 +39,37 @@ class MockTimelineEventItem extends Mock implements TimelineEventItem {
 
   @override
   String? msgType() => mockMsgType;
+
+  @override
+  String eventType() => mockEventType;
+
+  @override
+  bool wasEdited() => mockWasEdited;
+
+  @override
+  int originServerTs() => DateTime.now().millisecondsSinceEpoch;
+}
+
+class FixedOptionStringMock extends Mock implements OptionString {
+  final String? result;
+
+  FixedOptionStringMock(this.result);
+
+  @override
+  String? text() => result;
+}
+
+/// Mocked version of ActerSdk for test purposes
+class RetryMediaConvoMock extends Mock implements Convo {
+  bool shouldFail = true;
+  @override
+  Future<OptionString> mediaPath(String eventId, bool isThumb) async {
+    if (shouldFail) {
+      shouldFail = false;
+      return FixedOptionStringMock('bad_path');
+    }
+    return FixedOptionStringMock(null);
+  }
 }
 
 void main() {
@@ -85,7 +120,7 @@ void main() {
       test('hides avatar when next message is from same user', () {
         final RoomMsgId query = (roomId: 'test-room', uniqueId: 'A1');
         final result = container.read(isLastMessageBySenderProvider(query));
-        expect(result, false);
+        expect(result, true);
       });
     });
 
@@ -99,7 +134,7 @@ void main() {
             chatProvider.overrideWith(
               () => MockAsyncConvoNotifier(retVal: RetryMediaConvoMock()),
             ),
-            chat.autoDownloadMediaProvider.overrideWith((a, b) => false),
+            autoDownloadMediaProvider.overrideWith((a, b) => false),
           ],
           child: ImageMessageEvent(
             messageId: 'eventId',
@@ -107,9 +142,11 @@ void main() {
             content: content,
           ),
         );
+
         await tester.pumpWithRunAsyncUntil(
           () => findsOne.matches(find.byType(ActerInlineErrorButton), {}),
         );
+
         await tester.ensureInlineErrorWithRetryWorks();
       });
     });

@@ -1,4 +1,4 @@
-use acter_core::{events::explicit_invites::ExplicitInviteEventContent, models};
+use acter_matrix::{events::explicit_invites::ExplicitInviteEventContent, models};
 use futures::{Stream, StreamExt};
 use matrix_sdk::ruma::{OwnedEventId, OwnedUserId};
 use ruma::UserId;
@@ -101,24 +101,28 @@ impl ObjectInvitationsManager {
     }
 
     pub async fn reload(&self) -> Result<Self> {
-        let client = self.client.clone();
-        let room = self.room.clone();
-        let event_id = self.inner.event_id().to_owned();
-        RUNTIME
-            .spawn(async move { ObjectInvitationsManager::new(client, room, event_id).await })
-            .await?
+        ObjectInvitationsManager::new(
+            self.client.clone(),
+            self.room.clone(),
+            self.inner.event_id(),
+        )
+        .await
     }
 }
 
 impl ObjectInvitationsManager {
-    pub async fn new(client: Client, room: Room, event_id: OwnedEventId) -> Result<Self> {
-        let inner =
-            models::InvitationsManager::from_store_and_event_id(client.store(), event_id.as_ref())
-                .await;
-        Ok(ObjectInvitationsManager {
-            client,
-            room,
-            inner,
-        })
+    pub(crate) async fn new(client: Client, room: Room, event_id: OwnedEventId) -> Result<Self> {
+        RUNTIME
+            .spawn(async move {
+                let inner =
+                    models::InvitationsManager::from_store_and_event_id(client.store(), &event_id)
+                        .await;
+                Ok(ObjectInvitationsManager {
+                    client,
+                    room,
+                    inner,
+                })
+            })
+            .await?
     }
 }

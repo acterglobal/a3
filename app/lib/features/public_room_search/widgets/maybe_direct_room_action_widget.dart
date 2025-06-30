@@ -1,6 +1,6 @@
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/utils/routes.dart';
+import 'package:acter/router/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/room/room_card.dart';
 import 'package:acter/features/room/actions/join_room.dart';
@@ -196,7 +196,7 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
     final roomIdOrAlias = alias ?? roomId;
     if (roomIdOrAlias == null) throw 'neither room id nor alias available';
     final newRoomId = await joinRoom(
-      context: context,
+      lang: L10n.of(context),
       ref: ref,
       roomIdOrAlias: roomIdOrAlias,
       serverNames: serverNames,

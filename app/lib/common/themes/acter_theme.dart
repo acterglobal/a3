@@ -13,7 +13,7 @@ import 'package:acter/common/themes/components/text_theme.dart';
 import 'package:flutter/material.dart';
 
 extension ActerChatThemeExtension on ThemeData {
-  ActerChatTheme get chatTheme => const ActerChatTheme();
+  ActerChatTheme get chatTheme => ActerChatTheme();
 
   ElevatedButtonThemeData get dangerButtonTheme => dangerButtonThemeMaker();
 
@@ -51,7 +51,6 @@ class ActerTheme {
     useMaterial3: true,
     colorScheme: colorScheme,
     primaryColor: brandColor,
-    indicatorColor: brandColor,
     appBarTheme: AppBarTheme(
       color: backgroundColor,
       surfaceTintColor: backgroundColor,
@@ -61,7 +60,7 @@ class ActerTheme {
     hoverColor: Colors.transparent,
     unselectedWidgetColor: greyColor,
     progressIndicatorTheme: progressIndicatorTheme,
-    tabBarTheme: const TabBarTheme(
+    tabBarTheme: const TabBarThemeData(
       indicatorColor: Colors.white,
       labelColor: Colors.white,
     ),

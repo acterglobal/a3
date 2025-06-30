@@ -1,10 +1,12 @@
 import 'package:acter/common/actions/close_room.dart';
 import 'package:acter/common/extensions/acter_build_context.dart';
 import 'package:acter/common/providers/chat_providers.dart';
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
-import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/widgets/acter_search_widget.dart';
+import 'package:acter/features/space/providers/suggested_provider.dart';
+import 'package:acter/router/routes.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/edit_plain_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
@@ -434,6 +436,18 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
             error: (e, s) {
               _log.severe('Failed to load room members', e, s);
               return Text(lang.errorLoadingMembersCount(e));
+            },
+          ),
+          ActerSearchWidget(
+            padding: EdgeInsets.symmetric(horizontal: 10),
+            backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+            onChanged: (value) {
+              final notifier = ref.read(searchValueProvider.notifier);
+              notifier.state = value;
+            },
+            onClear: () {
+              final notifier = ref.read(searchValueProvider.notifier);
+              notifier.state = '';
             },
           ),
           MemberList(roomId: widget.roomId),

@@ -1,4 +1,4 @@
-use acter_core::events::{
+use acter_matrix::events::{
     rsvp::RsvpStatus, ColorizeBuilder, DisplayBuilder, ObjRefBuilder, Position,
 };
 use anyhow::{Context, Result};
@@ -246,9 +246,9 @@ impl ComposeDraft {
 
     pub fn draft_type(&self) -> String {
         match &(self.inner.draft_type) {
-            ComposerDraftType::NewMessage => "new".to_string(),
-            ComposerDraftType::Edit { event_id } => "edit".to_string(),
-            ComposerDraftType::Reply { event_id } => "reply".to_string(),
+            ComposerDraftType::NewMessage => "new".to_owned(),
+            ComposerDraftType::Edit { event_id } => "edit".to_owned(),
+            ComposerDraftType::Reply { event_id } => "reply".to_owned(),
         }
     }
 }
@@ -417,29 +417,33 @@ pub fn new_obj_ref_builder(
 }
 
 pub fn clearify_error(err: matrix_sdk::Error) -> anyhow::Error {
-    if let matrix_sdk::Error::Http(HttpError::Api(api_error)) = &err {
-        match api_error {
-            FromHttpResponseError::Deserialization(des) => {
-                return anyhow::anyhow!("Deserialization failed: {des}");
-            }
-            FromHttpResponseError::Server(inner) => match inner {
-                RumaApiError::ClientApi(error) => {
+    if let matrix_sdk::Error::Http(boxed) = &err {
+        match boxed.as_ref() {
+            HttpError::Api(a) => match a.deref() {
+                FromHttpResponseError::Deserialization(des) => {
+                    return anyhow::anyhow!("Deserialization failed: {des}");
+                }
+                FromHttpResponseError::Server(RumaApiError::ClientApi(error)) => {
                     if let ErrorBody::Standard { kind, message } = &error.body {
                         return anyhow::anyhow!("{message:?} [{kind:?}]");
                     }
                     return anyhow::anyhow!("{0:?} [{1}]", error.body, error.status_code);
                 }
-                RumaApiError::Uiaa(uiaa_error) => {
+                FromHttpResponseError::Server(RumaApiError::Uiaa(uiaa_error)) => {
                     if let Some(err) = &uiaa_error.auth_error {
                         return anyhow::anyhow!("{:?} [{:?}]", err.message, err.kind);
                     }
                     error!(?uiaa_error, "Other UIAA response");
                     return anyhow::anyhow!("Unsupported User Interaction needed.");
                 }
-                RumaApiError::Other(err) => {
+                FromHttpResponseError::Server(RumaApiError::Other(err)) => {
                     return anyhow::anyhow!("{:?} [{:?}]", err.body, err.status_code);
                 }
+                _ => {}
             },
+            HttpError::Reqwest(reqwest_error) => {
+                return anyhow::anyhow!("Transport error {:?}", reqwest_error);
+            }
             _ => {}
         }
     }

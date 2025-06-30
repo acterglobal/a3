@@ -1,4 +1,4 @@
-use acter_core::spaces::CreateSpaceSettingsBuilder;
+use acter_matrix::spaces::CreateSpaceSettingsBuilder;
 use anyhow::Result;
 use clap::{Parser, Subcommand};
 use futures::stream::StreamExt;
@@ -36,7 +36,7 @@ impl Manage {
     async fn run_marking_space(&self, room_id: &RoomId) -> Result<()> {
         let mut client = self.login.client().await?;
         info!(" - Syncing -");
-        let sync_state = client.start_sync().await?;
+        let sync_state = client.start_sync();
 
         let mut is_synced = sync_state.first_synced_rx();
         while is_synced.next().await != Some(true) {} // let’s wait for it to have synced
@@ -69,7 +69,7 @@ impl Manage {
         let room_id = client.create_acter_space(Box::new(settings)).await?;
 
         info!(" - Syncing -");
-        let sync_state = client.start_sync().await?;
+        let sync_state = client.start_sync();
 
         let mut is_synced = sync_state.first_synced_rx();
         while is_synced.next().await != Some(true) {} // let’s wait for it to have synced

@@ -27,23 +27,19 @@ slides = [
 #[tokio::test]
 async fn like_on_news() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("likeOnboost", 2, TMPL).await?;
+        random_users_with_random_space_under_template("likeOnboost", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
-    let fetcher_client = second_user.clone();
-    let news_entry = Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        async move {
-            let news_entries = client.latest_news_entries(1).await?;
-            if news_entries.len() != 1 {
-                bail!("news entries not found found");
-            }
-            Ok(news_entries[0].clone())
+    let news_entry = Retry::spawn(retry_strategy.clone(), || async {
+        let news_entries = second_user.latest_news_entries(1).await?;
+        if news_entries.len() != 1 {
+            bail!("news entries not found found");
         }
+        Ok(news_entries[0].clone())
     })
     .await?;
 
@@ -56,18 +52,14 @@ async fn like_on_news() -> Result<()> {
         .await
         .expect("setting notifications subscription works");
     // ensure this has been locally synced
-    let fetcher_client = notif_settings.clone();
-    Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        let obj_id = obj_id.clone();
-        async move {
-            if client.object_push_subscription_status(obj_id, None).await?
-                != SubscriptionStatus::Subscribed
-            {
-                bail!("not yet subscribed");
-            }
-            Ok(())
+    Retry::spawn(retry_strategy, || async {
+        let status = notif_settings
+            .object_push_subscription_status(obj_id.clone(), None)
+            .await?;
+        if status != SubscriptionStatus::Subscribed {
+            bail!("not yet subscribed");
         }
+        Ok(())
     })
     .await?;
 
@@ -82,14 +74,14 @@ async fn like_on_news() -> Result<()> {
         notification_item
             .parent_id_str()
             .expect("parent is in like"),
-        news_entry.event_id().to_string()
+        news_entry.event_id()
     );
     assert!(notification_item.body().is_none());
-    assert_eq!(notification_item.reaction_key(), Some("❤️".to_owned()));
+    assert_eq!(notification_item.reaction_key().as_deref(), Some("❤️"));
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(parent.title(), None);
     assert_eq!(parent.emoji(), "🚀"); // rocket
-    assert_eq!(parent.object_id_str(), news_entry.event_id().to_string());
+    assert_eq!(parent.object_id_str(), news_entry.event_id());
 
     Ok(())
 }

@@ -1,5 +1,8 @@
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/toolkit/menu_item_widget.dart';
-import 'package:acter/common/utils/routes.dart';
+import 'package:acter/features/invite_members/pages/invite_individual_users.dart';
+import 'package:acter/features/onboarding/types.dart';
+import 'package:acter/router/routes.dart';
 import 'package:acter/common/widgets/room/room_profile_header.dart';
 import 'package:acter/features/invite_members/widgets/invite_code_ui.dart';
 import 'package:acter/features/super_invites/providers/super_invites_providers.dart';
@@ -11,13 +14,20 @@ import 'package:go_router/go_router.dart';
 class InvitePage extends ConsumerWidget {
   static const invitePageKey = Key('room-invite-page-key');
   final String roomId;
+  final CallNextPage? callNextPage;
+  final bool showInviteSpaceMembers;
 
-  const InvitePage({required this.roomId, super.key = invitePageKey});
+  const InvitePage({
+    required this.roomId,
+    this.callNextPage,
+    this.showInviteSpaceMembers = true,
+    super.key = invitePageKey,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      appBar: _buildAppBar(context),
+      appBar: showInviteSpaceMembers ? _buildAppBar(context) : null,
       body: _buildBody(context, ref),
     );
   }
@@ -36,10 +46,13 @@ class InvitePage extends ConsumerWidget {
           queryParameters: {'roomId': roomId.toString()},
         );
       },
-      style: OutlinedButton.styleFrom(padding: const EdgeInsets.all(8.0)),
       child: Row(
         children: [
-          const Icon(Icons.person_outline_outlined, size: 18),
+          Icon(
+            Icons.person_outline_outlined,
+            size: 18,
+            color: Theme.of(context).colorScheme.outline,
+          ),
           const SizedBox(width: 5),
           Text(
             L10n.of(context).pending,
@@ -51,21 +64,28 @@ class InvitePage extends ConsumerWidget {
   }
 
   Widget _buildBody(BuildContext context, WidgetRef ref) {
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          const SizedBox(height: 10),
-          _buildInviteHeader(context, ref),
-          const SizedBox(height: 20),
-          _buildInviteMethods(context),
-          const SizedBox(height: 20),
-          const Divider(indent: 70, endIndent: 70),
-          const SizedBox(height: 30),
-          if (ref.watch(hasSuperTokensAccess).valueOrNull == true)
-            _buildInviteFromCode(context, ref),
-        ],
-      ),
+    return Column(
+      children: [
+        Expanded(
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const SizedBox(height: 10),
+                _buildInviteHeader(context, ref),
+                const SizedBox(height: 20),
+                _buildInviteMethods(context),
+                const SizedBox(height: 20),
+                const Divider(indent: 70, endIndent: 70),
+                const SizedBox(height: 30),
+                if (ref.watch(hasSuperTokensAccess).valueOrNull == true)
+                  _buildInviteFromCode(context, ref),
+              ],
+            ),
+          ),
+        ),
+        if (!showInviteSpaceMembers) _buildActionButtons(context),
+      ],
     );
   }
 
@@ -92,25 +112,43 @@ class InvitePage extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            MenuItemWidget(
-              iconData: Icons.people_alt_outlined,
-              title: lang.inviteSpaceMembersTitle,
-              subTitle: lang.inviteSpaceMembersSubtitle,
-              onTap:
-                  () => context.pushNamed(
-                    Routes.inviteSpaceMembers.name,
-                    queryParameters: {'roomId': roomId.toString()},
-                  ),
-            ),
+            if (showInviteSpaceMembers)
+              MenuItemWidget(
+                iconData: Icons.people_alt_outlined,
+                title: lang.inviteSpaceMembersTitle,
+                subTitle: lang.inviteSpaceMembersSubtitle,
+                onTap:
+                    () => context.pushNamed(
+                      Routes.inviteSpaceMembers.name,
+                      queryParameters: {'roomId': roomId.toString()},
+                    ),
+              ),
             MenuItemWidget(
               iconData: Icons.person_add_alt_1,
               title: lang.inviteIndividualUsersTitle,
               subTitle: lang.inviteIndividualUsersSubtitle,
-              onTap:
-                  () => context.pushNamed(
+              onTap: () {
+                if (!showInviteSpaceMembers) {
+                  showModalBottomSheet(
+                    showDragHandle: true,
+                    context: context,
+                    useSafeArea: true,
+                    isScrollControlled: true,
+                    backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                    builder: (context) {
+                      return InviteIndividualUsers(
+                        roomId: roomId,
+                        isFullPageMode: false,
+                      );
+                    },
+                  );
+                } else {
+                  context.pushNamed(
                     Routes.inviteIndividual.name,
                     queryParameters: {'roomId': roomId.toString()},
-                  ),
+                  );
+                }
+              },
             ),
           ],
         ),
@@ -148,9 +186,36 @@ class InvitePage extends ConsumerWidget {
               style: textTheme.bodySmall,
             ),
             const SizedBox(height: 20),
-            InviteCodeUI(roomId: roomId),
+            InviteCodeUI(roomId: roomId, isManageInviteCode: false),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildActionButtons(BuildContext context) {
+    final lang = L10n.of(context);
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          ActerPrimaryActionButton(
+            onPressed: () {
+              Navigator.pop(context);
+              callNextPage?.call();
+            },
+            child: Text(lang.wizzardContinue),
+          ),
+          const SizedBox(height: 10),
+          OutlinedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              callNextPage?.call();
+            },
+            child: Text(lang.skip),
+          ),
+        ],
       ),
     );
   }

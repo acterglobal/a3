@@ -1,25 +1,24 @@
 use anyhow::{bail, Context, Result};
 use futures::stream::{Stream, StreamExt};
-use matrix_sdk::room::{edit::EditedContent, Receipts};
+use matrix_sdk::room::{
+    edit::EditedContent,
+    reply::{EnforceThread, Reply},
+};
 use matrix_sdk_base::{
     ruma::{
         api::client::receipt::create_receipt,
         assign,
-        events::{
-            receipt::ReceiptThread,
-            room::{
-                message::{AudioInfo, FileInfo, ForwardThread, VideoInfo},
-                ImageInfo,
-            },
-            MessageLikeEventType,
-        },
+        events::{room::message::ForwardThread, MessageLikeEventType},
         EventId, OwnedEventId, OwnedTransactionId,
     },
     RoomState,
 };
 use matrix_sdk_ui::{
     eyeball_im::VectorDiff,
-    timeline::{Timeline, TimelineEventItemId, TimelineItem as SdkTimelineItem},
+    timeline::{
+        MsgLikeContent, MsgLikeKind, Timeline, TimelineEventItemId,
+        TimelineItem as SdkTimelineItem, TimelineItemContent,
+    },
 };
 use std::{ops::Deref, sync::Arc};
 use tracing::{error, info};
@@ -217,6 +216,20 @@ impl TimelineStream {
             .await?
     }
 
+    pub async fn fetch_details_for_event(&self, event_id: String) -> Result<bool> {
+        let event_id = OwnedEventId::try_from(event_id)?;
+
+        let timeline = self.timeline.clone();
+        let user_id = self.room.user_id()?;
+
+        RUNTIME
+            .spawn(async move {
+                timeline.fetch_details_for_event(&event_id).await?;
+                Ok(true)
+            })
+            .await?
+    }
+
     fn is_joined(&self) -> bool {
         matches!(self.room.state(), RoomState::Joined)
     }
@@ -301,16 +314,14 @@ impl TimelineStream {
                 if !permitted {
                     bail!("No permissions to send message in this room");
                 }
-                let reply_item = timeline
-                    .replied_to_info_from_event_id(&event_id)
-                    .await
-                    .context("Not found which item would be replied to")?;
                 let content = draft.into_room_msg(&room).await?;
                 timeline
                     .send_reply(
                         content.with_relation(None).into(),
-                        reply_item,
-                        ForwardThread::Yes,
+                        Reply {
+                            event_id,
+                            enforce_thread: EnforceThread::MaybeThreaded,
+                        },
                     )
                     .await?;
                 Ok(true)
@@ -386,53 +397,53 @@ impl Client {
     }
 
     pub fn image_draft(&self, source: String, mimetype: String) -> MsgDraft {
-        let info = assign!(ImageInfo::new(), {
-            mimetype: Some(mimetype),
-        });
         MsgDraft::new(MsgContentDraft::Image {
             source,
-            info: Some(info),
+            thumbnail_source: None,
+            info: None,
             filename: None,
         })
+        .mimetype(mimetype)
+        .clone()
     }
 
     pub fn audio_draft(&self, source: String, mimetype: String) -> MsgDraft {
-        let info = assign!(AudioInfo::new(), {
-            mimetype: Some(mimetype),
-        });
         MsgDraft::new(MsgContentDraft::Audio {
             source,
-            info: Some(info),
+            info: None,
             filename: None,
         })
+        .mimetype(mimetype)
+        .clone()
     }
 
     pub fn video_draft(&self, source: String, mimetype: String) -> MsgDraft {
-        let info = assign!(VideoInfo::new(), {
-            mimetype: Some(mimetype),
-        });
         MsgDraft::new(MsgContentDraft::Video {
             source,
-            info: Some(info),
+            thumbnail_source: None,
+            info: None,
             filename: None,
         })
+        .mimetype(mimetype)
+        .clone()
     }
 
     pub fn file_draft(&self, source: String, mimetype: String) -> MsgDraft {
-        let info = assign!(FileInfo::new(), {
-            mimetype: Some(mimetype),
-        });
         MsgDraft::new(MsgContentDraft::File {
             source,
-            info: Some(info),
+            thumbnail_source: None,
+            info: None,
             filename: None,
         })
+        .mimetype(mimetype)
+        .clone()
     }
 
     pub fn location_draft(&self, body: String, geo_uri: String) -> MsgDraft {
         MsgDraft::new(MsgContentDraft::Location {
             body,
             geo_uri,
+            thumbnail_source: None,
             info: None,
         })
     }
@@ -445,12 +456,18 @@ async fn fetch_details_for_event(
     RUNTIME
         .spawn(async move {
             if let Some(event) = item.as_event() {
-                if let Ok(info) = event.replied_to_info() {
-                    let replied_to = info.event_id();
-                    info!("fetching replied_to: {}", replied_to);
-                    if let Err(err) = timeline.fetch_details_for_event(replied_to).await {
-                        error!("error when fetching replied_to_info via timeline: {err}");
-                        return Ok(false);
+                if let TimelineItemContent::MsgLike(MsgLikeContent {
+                    kind: MsgLikeKind::Message(msg),
+                    in_reply_to,
+                    ..
+                }) = event.content()
+                {
+                    if let Some(info) = in_reply_to {
+                        info!("fetching replied_to: {}", info.event_id);
+                        if let Err(err) = timeline.fetch_details_for_event(&info.event_id).await {
+                            error!("error when fetching replied_to_info via timeline: {err}");
+                            return Ok(false);
+                        }
                     }
                 }
             }

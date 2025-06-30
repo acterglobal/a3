@@ -1,11 +1,21 @@
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
+import 'package:acter/features/onboarding/types.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class CalendarSyncPermissionWidget extends ConsumerWidget {
-  const CalendarSyncPermissionWidget({super.key});
+  final void Function(BuildContext context) _callNextPage;
+  // if this doesn't have any next step passed, adopt the design
+  final bool _isStandalone;
+
+  CalendarSyncPermissionWidget({super.key, CallNextPage? callNextPage})
+    : _isStandalone = callNextPage == null,
+      _callNextPage =
+          callNextPage != null
+              ? ((ctx) => callNextPage())
+              : ((BuildContext context) => Navigator.pop(context, false));
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -18,14 +28,15 @@ class CalendarSyncPermissionWidget extends ConsumerWidget {
         child: Stack(
           children: [
             // Close button at the top right
-            Positioned(
-              top: 0,
-              right: 0,
-              child: IconButton(
-                onPressed: () => Navigator.pop(context),
-                icon: const Icon(Icons.close),
+            if (_isStandalone)
+              Positioned(
+                top: 20,
+                right: 0,
+                child: IconButton(
+                  onPressed: () => Navigator.pop(context, false),
+                  icon: const Icon(Icons.close),
+                ),
               ),
-            ),
             // Main content centered
             Center(
               child: Padding(
@@ -41,7 +52,7 @@ class CalendarSyncPermissionWidget extends ConsumerWidget {
                       const SizedBox(height: 20),
                       _buildDescriptionText(lang, textTheme),
                       const SizedBox(height: 20),
-                      _buildActionButton(context, lang, textTheme, ref),
+                      _buildActionButton(context, lang, textTheme),
                       const SizedBox(height: 20),
                     ],
                   ),
@@ -88,7 +99,6 @@ class CalendarSyncPermissionWidget extends ConsumerWidget {
     BuildContext context,
     L10n lang,
     TextTheme textTheme,
-    WidgetRef ref,
   ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -102,22 +112,18 @@ class CalendarSyncPermissionWidget extends ConsumerWidget {
               textStyle: textTheme.bodyMedium,
             );
           },
-          child: Text(lang.allowPermission),
+          child: Text(lang.continueLabel),
         ),
         const SizedBox(height: 20),
         OutlinedButton(
-          onPressed: () {
-            if (context.mounted) {
-              Navigator.pop(context);
-            }
-          },
-          child: Text(lang.askAgain),
+          onPressed: () => _callNextPage(context),
+          child: Text(_isStandalone ? lang.close : lang.skip),
         ),
       ],
     );
   }
 
-   // Request calendar sync permission
+  // Request calendar sync permission
   Future<void> _requestCalendarSyncPermission(
     BuildContext context, {
     required L10n lang,
@@ -127,14 +133,14 @@ class CalendarSyncPermissionWidget extends ConsumerWidget {
 
     if (status.isGranted) {
       if (context.mounted) {
-        Navigator.pop(context);
+        _callNextPage(context);
       }
     } else if (status.isDenied) {
       // Permission denied, show a snack bar
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(lang.calendarPermissionDenied)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(lang.calendarPermissionDenied)));
       }
     } else if (status.isPermanentlyDenied) {
       // Permission permanently denied, show option to go to settings
@@ -145,10 +151,7 @@ class CalendarSyncPermissionWidget extends ConsumerWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  lang.permissionPermantlyDenied,
-                  style: textStyle,
-                ),
+                Text(lang.permissionPermantlyDenied, style: textStyle),
                 const SizedBox(height: 8),
                 TextButton(
                   onPressed: () => openAppSettings(),

@@ -10,4 +10,5 @@ linter:
 analyzer:
   exclude:
     - lib/acter_flutter_sdk_ffi.dart
+    - lib/acter.dart
 

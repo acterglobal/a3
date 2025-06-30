@@ -1,6 +1,6 @@
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/toolkit/errors/error_page.dart';
-import 'package:acter/common/utils/routes.dart';
+import 'package:acter/router/routes.dart';
 import 'package:acter/common/widgets/add_button_with_can_permission.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/features/news/model/type/update_entry.dart';
@@ -40,7 +40,7 @@ class _NewsListPageState extends ConsumerState<NewsListPage> {
   final ValueNotifier<bool> useGridMode = ValueNotifier(true);
   final ValueNotifier<bool> stillLoadingForSelectedItem = ValueNotifier(false);
   final ValueNotifier<int> currentIndex = ValueNotifier(0);
-  late ProviderSubscription<AsyncValue<List<UpdateEntry>>>? listener;
+  ProviderSubscription<AsyncValue<List<UpdateEntry>>>? listener;
 
   @override
   void initState() {

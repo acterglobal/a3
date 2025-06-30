@@ -1,10 +1,11 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/features/chat_ng/widgets/events/chat_event.dart';
-import 'package:acter/features/chat_ng/widgets/events/chat_event_item.dart';
 import 'package:acter/features/chat_ng/widgets/events/message_event_item.dart';
 import 'package:acter/features/chat_ng/widgets/sending_state_widget.dart';
 import 'package:acter/features/chat_ng/widgets/reactions/reaction_chips_widget.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
+import 'package:acter/features/labs/model/labs_features.dart';
+import 'package:acter/features/labs/providers/labs_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show
         EventSendState,
@@ -43,6 +44,7 @@ class MockTimelineEventItem extends Mock implements TimelineEventItem {
   final String _sender;
   final MockMsgContent? _msgContent;
   final EventSendState? _sendState;
+  final int? _originServerTs;
 
   MockTimelineEventItem({
     required String eventType,
@@ -50,11 +52,13 @@ class MockTimelineEventItem extends Mock implements TimelineEventItem {
     required String sender,
     MockMsgContent? msgContent,
     EventSendState? sendState,
+    int? originServerTs,
   }) : _eventType = eventType,
        _msgType = msgType,
        _sender = sender,
        _msgContent = msgContent,
-       _sendState = sendState;
+       _sendState = sendState,
+       _originServerTs = originServerTs;
 
   @override
   String eventType() => _eventType;
@@ -73,6 +77,10 @@ class MockTimelineEventItem extends Mock implements TimelineEventItem {
 
   @override
   bool wasEdited() => false;
+
+  @override
+  int originServerTs() =>
+      _originServerTs ?? DateTime.now().millisecondsSinceEpoch;
 }
 
 class MockTimelineItem extends Mock implements TimelineItem {
@@ -120,6 +128,9 @@ void main() {
 
     final testOverrides = [
       messageReactionsProvider.overrideWith((ref, item) => []),
+      messageReadReceiptsProvider.overrideWith(
+        (ref, item) => {'@acter1:m-1.acter.global': 1716230400},
+      ),
       renderableChatMessagesProvider.overrideWith(
         (ref, roomId) => ['test-message'],
       ),
@@ -129,6 +140,7 @@ void main() {
         }
         return null;
       }),
+      isActiveProvider(LabsFeature.htmlNext).overrideWith((a) => false),
     ];
 
     testWidgets('renders MessageEventItem for m.room.message', (tester) async {
@@ -141,20 +153,6 @@ void main() {
       expect(find.text('Test message'), findsOneWidget);
     });
 
-    testWidgets('passes correct properties to ChatEventItem', (tester) async {
-      await tester.pumpProviderWidget(
-        overrides: testOverrides,
-        child: const ChatEvent(roomId: 'test-room', eventId: 'test-message'),
-      );
-
-      final chatEventItem = tester.widget<ChatEventItem>(
-        find.byType(ChatEventItem),
-      );
-
-      expect(chatEventItem.roomId, equals('test-room'));
-      expect(chatEventItem.messageId, equals('test-message'));
-      expect(chatEventItem.item, equals(mockEventItem));
-    });
     testWidgets('renders unsupported message for unknown event type', (
       tester,
     ) async {
@@ -179,6 +177,9 @@ void main() {
             }
             return null;
           }),
+          messageReadReceiptsProvider.overrideWith(
+            (ref, item) => {'@acter1:m-1.acter.global': 1716230400},
+          ),
         ],
         child: const ChatEvent(roomId: 'test-room', eventId: 'test-message'),
       );
@@ -215,6 +216,9 @@ void main() {
               }
               return null;
             }),
+            messageReadReceiptsProvider.overrideWith(
+              (ref, item) => {'@acter1:m-1.acter.global': 1716230400},
+            ),
           ],
           child: const ChatEvent(roomId: 'test-room', eventId: 'test-message'),
         );
@@ -247,6 +251,9 @@ void main() {
               }
               return null;
             }),
+            messageReadReceiptsProvider.overrideWith(
+              (ref, item) => {'@acter1:m-1.acter.global': 1716230400},
+            ),
           ],
           child: const ChatEvent(roomId: 'test-room', eventId: 'test-message'),
         );
@@ -281,6 +288,9 @@ void main() {
               }
               return null;
             }),
+            messageReadReceiptsProvider.overrideWith(
+              (ref, item) => {'@acter1:m-1.acter.global': 1716230400},
+            ),
             myUserIdStrProvider.overrideWith((ref) => 'test-user'),
           ],
           child: const ChatEvent(roomId: 'test-room', eventId: 'test-message'),
@@ -316,6 +326,9 @@ void main() {
               return null;
             }),
             myUserIdStrProvider.overrideWith((ref) => 'other-user'),
+            messageReadReceiptsProvider.overrideWith(
+              (ref, item) => {'@acter1:m-1.acter.global': 1716230400},
+            ),
           ],
           child: const ChatEvent(roomId: 'test-room', eventId: 'test-message'),
         );
@@ -349,6 +362,9 @@ void main() {
               }
               return null;
             }),
+            messageReadReceiptsProvider.overrideWith(
+              (ref, item) => {'@acter1:m-1.acter.global': 1716230400},
+            ),
           ],
           child: const ChatEvent(roomId: 'test-room', eventId: 'test-message'),
         );
@@ -379,6 +395,9 @@ void main() {
               }
               return null;
             }),
+            messageReadReceiptsProvider.overrideWith(
+              (ref, item) => {'@acter1:m-1.acter.global': 1716230400},
+            ),
           ],
           child: const ChatEvent(roomId: 'test-room', eventId: 'test-message'),
         );
@@ -409,6 +428,9 @@ void main() {
               }
               return null;
             }),
+            messageReadReceiptsProvider.overrideWith(
+              (ref, item) => {'@acter1:m-1.acter.global': 1716230400},
+            ),
           ],
           child: const ChatEvent(roomId: 'test-room', eventId: 'test-message'),
         );

@@ -20,7 +20,7 @@ fn main() {
 
     // whether the target is 32bits or 64bits
     let is32bit = std::env::var("CARGO_CFG_TARGET_POINTER_WIDTH")
-        .unwrap_or("64".to_string())
+        .unwrap_or("64".to_owned())
         .as_str()
         == "32";
 
@@ -46,9 +46,9 @@ fn main() {
             .expect("Failure generating dart side of ffigen");
     }
 
-    if std::env::var("CARGO_FEATURE_UNIFFI").is_ok() {
-        uniffi::generate_scaffolding("src/acter.udl").unwrap();
-    }
+    // if std::env::var("CARGO_FEATURE_UNIFFI").is_ok() {
+    uniffi::generate_scaffolding("src/acter.udl").unwrap();
+    // }
 
     if std::env::var("SKIP_CBINDGEN").is_err() {
         // once the setup is ready, let’s create the c-headers

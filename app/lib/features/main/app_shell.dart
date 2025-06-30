@@ -3,11 +3,12 @@ import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/tutorial_dialogs/bottom_navigation_tutorials/bottom_navigation_tutorials.dart';
-import 'package:acter/common/utils/constants.dart';
+import 'package:acter/config/constants.dart';
 import 'package:acter/common/utils/device.dart';
-import 'package:acter/common/utils/routes.dart';
+import 'package:acter/router/routes.dart';
 import 'package:acter/config/notifications/init.dart';
 import 'package:acter/features/activities/providers/activities_providers.dart';
+import 'package:acter/features/analytics/providers/analytics_preferences_provider.dart';
 import 'package:acter/features/auth/pages/logged_out_screen.dart';
 import 'package:acter/features/bug_report/actions/open_bug_report.dart';
 import 'package:acter/features/bug_report/providers/bug_report_providers.dart';
@@ -20,6 +21,7 @@ import 'package:acter/features/main/providers/main_providers.dart';
 import 'package:acter/features/main/widgets/bottom_navigation_widget.dart';
 import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:acter/features/notifications/providers/notification_settings_providers.dart';
+import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -29,12 +31,35 @@ import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
+import 'package:matomo_tracker/matomo_tracker.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:shake_detector/shake_detector.dart';
 
 final _log = Logger('a3::config::home_shell');
 
 final ScreenshotController screenshotController = ScreenshotController();
+
+class _TopLevelShell extends ConsumerWidget {
+  const _TopLevelShell();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    // these we want to preload for faster rendering
+    ref.watch(spacesProvider);
+    ref.watch(chatsProvider);
+    ref.watch(updateListProvider(null));
+    ref.watch(hasActivitiesProvider);
+    ref.watch(openSystemLinkSettingsProvider);
+    ref.watch(allActivitiesProvider);
+
+    if (ref.watch(hasFirstSyncedProvider)) {
+      return const SizedBox.shrink();
+    }
+    return LinearProgressIndicator(
+      semanticsLabel: L10n.of(context).loadingFirstSync,
+    );
+  }
+}
 
 class AppShell extends ConsumerStatefulWidget {
   final StatefulNavigationShell navigationShell;
@@ -65,6 +90,7 @@ class AppShellState extends ConsumerState<AppShell> {
       () => bottomNavigationTutorials(context: context),
     );
     _initShake();
+    _initTracking();
     _initDeepLinking();
     // initalize main providers
     _initProviders();
@@ -75,13 +101,24 @@ class AppShellState extends ConsumerState<AppShell> {
     await _initCalendarSync();
   }
 
+  Future<void> _initTracking() async {
+    // listen to matomo analytics provider for opt in or out
+    ref.listenManual(matomoAnalyticsProvider, (previous, next) {
+      if (next.hasValue) {
+        final isEnabled = next.value ?? false;
+        MatomoTracker.instance.setOptOut(optOut: !isEnabled);
+      }
+    }, fireImmediately: true);
+    // observer for userID changes
+    ref.listenManual(maybeMyUserIdStrProvider, (previous, next) {
+      MatomoTracker.instance.setVisitorUserId(next);
+    }, fireImmediately: true);
+  }
+
   Future<void> _initProviders() async {
     // we read a few providers immediately at start up to ensure
-    // the content is being fetched and cached
-    ref.read(spacesProvider);
-    ref.read(chatsProvider);
-    ref.read(updateListProvider(null));
-    ref.read(hasActivitiesProvider);
+    // the content is being fetched and available when entering
+    // the specific pages
   }
 
   Future<void> _initShake() async {
@@ -182,21 +219,12 @@ class AppShellState extends ConsumerState<AppShell> {
     );
   }
 
-  Widget topNavigationWidget(BuildContext context) {
-    if (ref.watch(hasFirstSyncedProvider)) {
-      return const SizedBox.shrink();
-    }
-    return LinearProgressIndicator(
-      semanticsLabel: L10n.of(context).loadingFirstSync,
-    );
-  }
-
   SlotLayout topNavigationLayout() {
     return SlotLayout(
       config: <Breakpoint, SlotLayoutConfig?>{
         Breakpoints.smallAndUp: SlotLayout.from(
           key: const Key('LoadingIndicator'),
-          builder: topNavigationWidget,
+          builder: (BuildContext context) => const _TopLevelShell(),
         ),
       },
     );

@@ -2,11 +2,11 @@ mod account_data;
 mod preview;
 mod subscription;
 
-pub use acter_core::spaces::{
+pub use acter_matrix::spaces::{
     CreateSpaceSettings, CreateSpaceSettingsBuilder, RelationTargetType, SpaceRelation,
     SpaceRelations as CoreSpaceRelations,
 };
-use acter_core::{
+use acter_matrix::{
     client::CoreClient,
     error::Error,
     events::{
@@ -37,26 +37,42 @@ use matrix_sdk_base::{
         },
         assign,
         events::{
+            policy::rule::{
+                room::PolicyRuleRoomEventContent, server::PolicyRuleServerEventContent,
+                user::PolicyRuleUserEventContent, PolicyRuleEventContent, Recommendation,
+            },
             room::{
-                avatar::ImageInfo as AvatarImageInfo,
+                avatar::ImageInfo,
+                encryption::RoomEncryptionEventContent,
+                guest_access::{GuestAccess, RoomGuestAccessEventContent},
+                history_visibility::{HistoryVisibility, RoomHistoryVisibilityEventContent},
                 join_rules::{
                     AllowRule, JoinRule, Restricted, RoomJoinRulesEventContent, RoomMembership,
                 },
                 message::{MessageType, RoomMessageEvent},
+                pinned_events::RoomPinnedEventsEventContent,
+                power_levels::RoomPowerLevelsEventContent,
+                server_acl::RoomServerAclEventContent,
+                tombstone::RoomTombstoneEventContent,
                 MediaSource,
             },
-            space::{child::HierarchySpaceChildEvent, parent::SpaceParentEventContent},
+            space::{
+                child::{HierarchySpaceChildEvent, SpaceChildEventContent},
+                parent::SpaceParentEventContent,
+            },
             MessageLikeEventType, StateEvent, StateEventType, StaticEventContent,
+            TimelineEventType,
         },
+        power_levels::NotificationPowerLevels,
         room::RoomType,
         serde::Raw,
         space::SpaceRoomJoinRule,
-        EventId, IdParseError, Int, OwnedEventId, OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId,
-        OwnedTransactionId, OwnedUserId, RoomId, ServerName, UserId,
+        EventEncryptionAlgorithm, EventId, IdParseError, Int, OwnedEventId, OwnedMxcUri,
+        OwnedRoomAliasId, OwnedRoomId, OwnedTransactionId, OwnedUserId, RoomId, ServerName, UserId,
     },
     RoomDisplayName, RoomMemberships, RoomState,
 };
-use std::{fs::exists, io::Write, ops::Deref, path::PathBuf};
+use std::{collections::BTreeMap, fs::exists, io::Write, ops::Deref, path::PathBuf};
 use tokio::fs;
 use tokio_stream::{wrappers::BroadcastStream, StreamExt};
 use tracing::{info, warn};
@@ -788,6 +804,95 @@ impl Room {
             .await?
     }
 
+    // order: Must consist of ASCII characters within the range \x20 (space) and \x7E (~), inclusive.
+    pub async fn add_child_room(
+        &self,
+        room_id: String,
+        order: Option<String>,
+        suggested: bool,
+    ) -> Result<String> {
+        if !self.is_joined() {
+            bail!("Unable to update a room you aren’t part of");
+        }
+        let room_id = RoomId::parse(room_id)?;
+        if !self
+            .get_my_membership()
+            .await?
+            .can(crate::MemberPermission::CanLinkSpaces)
+        {
+            bail!("No permissions to add child to room");
+        }
+        let client = self.core.client().clone();
+        let room = self.room.clone();
+        let my_id = self.user_id()?;
+
+        RUNTIME
+            .spawn(async move {
+                let Some(Ok(homeserver)) = client.homeserver().host_str().map(ServerName::parse)
+                else {
+                    return Err(Error::HomeserverMissesHostname)?;
+                };
+                let content = assign!(SpaceChildEventContent::new(vec![homeserver]), {
+                    order, suggested,
+                });
+                let permitted = room
+                    .can_user_send_state(&my_id, StateEventType::SpaceChild)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to change space child of this room");
+                }
+                let response = room.send_state_event_for_key(&room_id, content).await?;
+                Ok(response.event_id.to_string())
+            })
+            .await?
+    }
+
+    pub async fn remove_child_room(&self, room_id: String, reason: Option<String>) -> Result<bool> {
+        if !self.is_joined() {
+            bail!("Unable to update a room you aren’t part of");
+        }
+        let room_id = RoomId::parse(room_id)?;
+        if !self
+            .get_my_membership()
+            .await?
+            .can(crate::MemberPermission::CanLinkSpaces)
+        {
+            bail!("No permissions to remove child from room");
+        }
+        let room = self.room.clone();
+        let my_id = self.user_id()?;
+
+        RUNTIME
+            .spawn(async move {
+                let response = room
+                    .get_state_event_static_for_key::<SpaceChildEventContent, OwnedRoomId>(&room_id)
+                    .await?;
+                let Some(raw_state) = response else {
+                    warn!("Room {} is not a child", room_id);
+                    return Ok(true);
+                };
+                let event_id = match raw_state.deserialize()? {
+                    SyncOrStrippedState::Stripped(ev) => {
+                        bail!("Unable to get event id about stripped event")
+                    }
+                    SyncOrStrippedState::Sync(ev) => {
+                        let permitted = if ev.sender() == my_id {
+                            room.can_user_redact_own(&my_id).await?
+                        } else {
+                            room.can_user_redact_other(&my_id).await?
+                        };
+                        if !permitted {
+                            bail!("No permissions to redact this message");
+                        }
+                        ev.event_id().to_owned()
+                    }
+                };
+                room.redact(&event_id, reason.as_deref(), None).await?;
+                Ok(true)
+            })
+            .await?
+    }
+
     pub async fn get_my_membership(&self) -> Result<Member> {
         if !self.is_joined() {
             bail!("Not a room we have joined");
@@ -797,7 +902,7 @@ impl Room {
         let my_id = self.user_id()?;
         let is_acter_space = self.is_acter_space().await?;
         let acter_app_settings = if is_acter_space {
-            self.app_settings_content().await?
+            Some(self.app_settings_content().await?.unwrap_or_default())
         } else {
             None
         };
@@ -842,7 +947,7 @@ impl Room {
                 let response = client.media().upload(&content_type, buf, None).await?;
 
                 let content_uri = response.content_uri;
-                let info = assign!(AvatarImageInfo::new(), {
+                let info = assign!(ImageInfo::new(), {
                     blurhash: response.blurhash,
                     mimetype: Some(content_type.to_string()),
                 });
@@ -1048,14 +1153,14 @@ impl Room {
 
     pub async fn notification_mode(&self) -> Result<String> {
         let room = self.room.clone();
-        RUNTIME
+        Ok(RUNTIME
             .spawn(async move {
                 room.user_defined_notification_mode()
                     .await
                     .map(|x| room_notification_mode_name(&x))
+                    .unwrap_or("none".to_owned())
             })
-            .await?
-            .context("Mode not set")
+            .await?)
     }
 
     pub async fn default_notification_mode(&self) -> Result<String> {
@@ -1244,16 +1349,6 @@ impl Room {
             .await?
     }
 
-    pub fn room_type(&self) -> String {
-        match self.room.state() {
-            RoomState::Joined => "joined".to_string(),
-            RoomState::Left => "left".to_string(),
-            RoomState::Invited => "invited".to_string(),
-            RoomState::Knocked => "knocked".to_string(),
-            RoomState::Banned => "banned".to_string(),
-        }
-    }
-
     fn is_invited(&self) -> bool {
         matches!(self.room.state(), RoomState::Invited)
     }
@@ -1342,7 +1437,7 @@ impl Room {
         RUNTIME
             .spawn(async move {
                 let invited = client
-                    .store()
+                    .state_store()
                     .get_user_ids(me.room.room_id(), RoomMemberships::INVITE)
                     .await?;
                 let mut members = vec![];
@@ -1560,10 +1655,10 @@ impl Room {
                     .to_str()
                     .context("Path was generated from strings. Must be string")?;
                 client
-                    .store()
+                    .state_store()
                     .set_custom_value_no_read(&key, path_text.as_bytes().to_vec())
                     .await?;
-                Ok(OptionString::new(Some(path_text.to_string())))
+                Ok(OptionString::new(Some(path_text.to_owned())))
             })
             .await?
     }
@@ -1616,17 +1711,17 @@ impl Room {
                 } else {
                     [room.room_id().as_str().as_bytes(), event_id.as_bytes()].concat()
                 };
-                let Some(path_vec) = client.store().get_custom_value(&key).await? else {
+                let Some(path_vec) = client.state_store().get_custom_value(&key).await? else {
                     return Ok(OptionString::new(None));
                 };
-                let path_str = std::str::from_utf8(&path_vec)?.to_string();
+                let path_str = std::str::from_utf8(&path_vec)?.to_owned();
                 if matches!(exists(&path_str), Ok(true)) {
                     return Ok(OptionString::new(Some(path_str)));
                 }
 
                 // file wasn’t existing, clear cache.
 
-                client.store().remove_custom_value(&key).await?;
+                client.state_store().remove_custom_value(&key).await?;
                 Ok(OptionString::new(None))
             })
             .await?
@@ -1725,6 +1820,7 @@ impl Room {
             .await?
     }
 
+    // initial level of room creator is 100
     pub async fn update_power_level(&self, user_id: String, level: i32) -> Result<OwnedEventId> {
         if !self.is_joined() {
             bail!("Unable to update power level in a room we are not in");
@@ -1814,6 +1910,511 @@ impl Room {
                         preview: RefPreview::new(None, room_display_name),
                     },
                 ))
+            })
+            .await?
+    }
+
+    // entity: #*:example.org
+    // reason: undesirable content
+    // state key: rule:#*:example.org
+    pub async fn set_policy_rule_room(
+        &self,
+        entity: String,
+        reason: String,
+    ) -> Result<OwnedEventId> {
+        if !self.is_joined() {
+            bail!("Unable to change policy rule room in a room we are not in");
+        }
+        let room = self.room.clone();
+        let my_id = self.user_id()?;
+        let state_key = format!("rule:{}", &entity);
+        RUNTIME
+            .spawn(async move {
+                let permitted = room
+                    .can_user_send_state(&my_id, StateEventType::PolicyRuleRoom)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to change policy rule room in this room");
+                }
+                let content = PolicyRuleEventContent::new(entity, Recommendation::Ban, reason);
+                let response = room
+                    .send_state_event_for_key(&state_key, PolicyRuleRoomEventContent(content))
+                    .await?;
+                Ok(response.event_id)
+            })
+            .await?
+    }
+
+    // entity: *.example.org
+    // reason: undesirable engagement
+    // state key: rule:*.example.org
+    pub async fn set_policy_rule_server(
+        &self,
+        entity: String,
+        reason: String,
+    ) -> Result<OwnedEventId> {
+        if !self.is_joined() {
+            bail!("Unable to change policy rule server in a room we are not in");
+        }
+        let room = self.room.clone();
+        let my_id = self.user_id()?;
+        let state_key = format!("rule:{}", &entity);
+        RUNTIME
+            .spawn(async move {
+                let permitted = room
+                    .can_user_send_state(&my_id, StateEventType::PolicyRuleServer)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to change policy rule server in this room");
+                }
+                let content = PolicyRuleEventContent::new(entity, Recommendation::Ban, reason);
+                let response = room
+                    .send_state_event_for_key(&state_key, PolicyRuleServerEventContent(content))
+                    .await?;
+                Ok(response.event_id)
+            })
+            .await?
+    }
+
+    // entity: @alice*:example.org
+    // reason: undesirable behaviour
+    // state key: rule:@alice*:example.org
+    pub async fn set_policy_rule_user(
+        &self,
+        entity: String,
+        reason: String,
+    ) -> Result<OwnedEventId> {
+        if !self.is_joined() {
+            bail!("Unable to change policy rule user in a room we are not in");
+        }
+        let room = self.room.clone();
+        let my_id = self.user_id()?;
+        let state_key = format!("rule:{}", &entity);
+        RUNTIME
+            .spawn(async move {
+                let permitted = room
+                    .can_user_send_state(&my_id, StateEventType::PolicyRuleUser)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to change policy rule user in this room");
+                }
+                let content = PolicyRuleEventContent::new(entity, Recommendation::Ban, reason);
+                let response = room
+                    .send_state_event_for_key(&state_key, PolicyRuleUserEventContent(content))
+                    .await?;
+                Ok(response.event_id)
+            })
+            .await?
+    }
+
+    // m.olm.v1.curve25519-aes-sha2 or m.megolm.v1.aes-sha2
+    // initial algorithm is m.megolm.v1.aes-sha2
+    pub async fn set_encryption(&self, algorithm: String) -> Result<OwnedEventId> {
+        if !self.is_joined() {
+            bail!("Unable to change room encryption in a room we are not in");
+        }
+        let room = self.room.clone();
+        let my_id = self.user_id()?;
+        let algorithm = EventEncryptionAlgorithm::from(algorithm.as_str());
+        RUNTIME
+            .spawn(async move {
+                let permitted = room
+                    .can_user_send_state(&my_id, StateEventType::RoomEncryption)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to change room encryption in this room");
+                }
+                let content = RoomEncryptionEventContent::new(algorithm);
+                let response = room.send_state_event(content).await?;
+                Ok(response.event_id)
+            })
+            .await?
+    }
+
+    // can_join or forbidden
+    pub async fn set_guest_access(&self, guest_access: String) -> Result<OwnedEventId> {
+        if !self.is_joined() {
+            bail!("Unable to change room guest access in a room we are not in");
+        }
+        let room = self.room.clone();
+        let my_id = self.user_id()?;
+        let guest_access = GuestAccess::from(guest_access.as_str());
+        RUNTIME
+            .spawn(async move {
+                let permitted = room
+                    .can_user_send_state(&my_id, StateEventType::RoomGuestAccess)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to change room guest access in this room");
+                }
+                let content = RoomGuestAccessEventContent::new(guest_access);
+                let response = room.send_state_event(content).await?;
+                Ok(response.event_id)
+            })
+            .await?
+    }
+
+    // invited, joined, shared, or world_readable
+    pub async fn set_history_visibility(&self, history_visibility: String) -> Result<OwnedEventId> {
+        if !self.is_joined() {
+            bail!("Unable to change room history visiblity in a room we are not in");
+        }
+        let room = self.room.clone();
+        let my_id = self.user_id()?;
+        let history_visibility = HistoryVisibility::from(history_visibility.as_str());
+        RUNTIME
+            .spawn(async move {
+                let permitted = room
+                    .can_user_send_state(&my_id, StateEventType::RoomHistoryVisibility)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to change room history visibility in this room");
+                }
+                let content = RoomHistoryVisibilityEventContent::new(history_visibility);
+                let response = room.send_state_event(content).await?;
+                Ok(response.event_id)
+            })
+            .await?
+    }
+
+    // initial rule is Invite
+    pub async fn set_join_rules(&self, join_rule: String) -> Result<OwnedEventId> {
+        if !self.is_joined() {
+            bail!("Unable to change room join rules in a room we are not in");
+        }
+        let room = self.room.clone();
+        let my_id = self.user_id()?;
+        let join_rule = match (join_rule.as_str()) {
+            "invite" => JoinRule::Invite,
+            "knock" => JoinRule::Knock,
+            "private" => JoinRule::Private,
+            "public" => JoinRule::Public,
+            _ => bail!("invalid join rule"),
+        };
+        RUNTIME
+            .spawn(async move {
+                let permitted = room
+                    .can_user_send_state(&my_id, StateEventType::RoomJoinRules)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to change room join rules in this room");
+                }
+                let content = RoomJoinRulesEventContent::new(join_rule);
+                let response = room.send_state_event(content).await?;
+                Ok(response.event_id)
+            })
+            .await?
+    }
+
+    pub async fn set_pinned_events(&self, event_ids: String) -> Result<OwnedEventId> {
+        if !self.is_joined() {
+            bail!("Unable to change room pinned events in a room we are not in");
+        }
+        let room = self.room.clone();
+        let my_id = self.user_id()?;
+        let pinned = serde_json::from_str::<Vec<OwnedEventId>>(&event_ids)?;
+        RUNTIME
+            .spawn(async move {
+                let permitted = room
+                    .can_user_send_state(&my_id, StateEventType::RoomPinnedEvents)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to change room pinned events in this room");
+                }
+                let content = RoomPinnedEventsEventContent::new(pinned);
+                let response = room.send_state_event(content).await?;
+                Ok(response.event_id)
+            })
+            .await?
+    }
+
+    // initial level is 50
+    pub async fn set_power_levels_ban(&self, level: i32) -> Result<OwnedEventId> {
+        if !self.is_joined() {
+            bail!("Unable to change ban of power level in a room we are not in");
+        }
+        let room = self.room.clone();
+        let my_id = self.user_id()?;
+        RUNTIME
+            .spawn(async move {
+                let permitted = room
+                    .can_user_send_state(&my_id, StateEventType::RoomPowerLevels)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to change ban of power levels in this room");
+                }
+                let content = assign!(RoomPowerLevelsEventContent::new(), {
+                    ban: Int::from(level),
+                });
+                let response = room.send_state_event(content).await?;
+                Ok(response.event_id)
+            })
+            .await?
+    }
+
+    // initial value of "m.room.avatar": 50
+    // initial value of "m.room.canonical_alias": 50
+    // initial value of "m.room.encryption": 100
+    // initial value of "m.room.history_visibility": 100
+    // initial value of "m.room.name": 50
+    // initial value of "m.room.power_levels": 100
+    // initial value of "m.room.server_acl": 100
+    // initial value of "m.room.tombstone": 100
+    pub async fn set_power_levels_events(
+        &self,
+        event_type: String,
+        level: i32,
+    ) -> Result<OwnedEventId> {
+        if !self.is_joined() {
+            bail!("Unable to change events of power levels in a room we are not in");
+        }
+        let room = self.room.clone();
+        let my_id = self.user_id()?;
+        let key = TimelineEventType::from(event_type);
+        let value = Int::from(level);
+        RUNTIME
+            .spawn(async move {
+                let permitted = room
+                    .can_user_send_state(&my_id, StateEventType::RoomPowerLevels)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to change events of power levels in this room");
+                }
+                let mut events = BTreeMap::new();
+                events.insert(key, value);
+                let content = assign!(RoomPowerLevelsEventContent::new(), {
+                    events,
+                });
+                let response = room.send_state_event(content).await?;
+                Ok(response.event_id)
+            })
+            .await?
+    }
+
+    // initial level is 0
+    pub async fn set_power_levels_events_default(&self, level: i32) -> Result<OwnedEventId> {
+        if !self.is_joined() {
+            bail!("Unable to change events_default of power levels in a room we are not in");
+        }
+        let room = self.room.clone();
+        let my_id = self.user_id()?;
+        RUNTIME
+            .spawn(async move {
+                let permitted = room
+                    .can_user_send_state(&my_id, StateEventType::RoomPowerLevels)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to change events_default of power levels in this room");
+                }
+                let content = assign!(RoomPowerLevelsEventContent::new(), {
+                    events_default: Int::from(level),
+                });
+                let response = room.send_state_event(content).await?;
+                Ok(response.event_id)
+            })
+            .await?
+    }
+
+    // initial level is 0
+    pub async fn set_power_levels_invite(&self, level: i32) -> Result<OwnedEventId> {
+        if !self.is_joined() {
+            bail!("Unable to change invite of power levels in a room we are not in");
+        }
+        let room = self.room.clone();
+        let my_id = self.user_id()?;
+        RUNTIME
+            .spawn(async move {
+                let permitted = room
+                    .can_user_send_state(&my_id, StateEventType::RoomPowerLevels)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to change invite of power levels in this room");
+                }
+                let content = assign!(RoomPowerLevelsEventContent::new(), {
+                    invite: Int::from(level),
+                });
+                let response = room.send_state_event(content).await?;
+                Ok(response.event_id)
+            })
+            .await?
+    }
+
+    // initial level is 50
+    pub async fn set_power_levels_kick(&self, level: i32) -> Result<OwnedEventId> {
+        if !self.is_joined() {
+            bail!("Unable to change kick of power levels in a room we are not in");
+        }
+        let room = self.room.clone();
+        let my_id = self.user_id()?;
+        RUNTIME
+            .spawn(async move {
+                let permitted = room
+                    .can_user_send_state(&my_id, StateEventType::RoomPowerLevels)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to change kick of power levels in this room");
+                }
+                let content = assign!(RoomPowerLevelsEventContent::new(), {
+                    kick: Int::from(level),
+                });
+                let response = room.send_state_event(content).await?;
+                Ok(response.event_id)
+            })
+            .await?
+    }
+
+    // initial level is 50
+    pub async fn set_power_levels_redact(&self, level: i32) -> Result<OwnedEventId> {
+        if !self.is_joined() {
+            bail!("Unable to change redact of power levels in a room we are not in");
+        }
+        let room = self.room.clone();
+        let my_id = self.user_id()?;
+        RUNTIME
+            .spawn(async move {
+                let permitted = room
+                    .can_user_send_state(&my_id, StateEventType::RoomPowerLevels)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to change redact of power levels in this room");
+                }
+                let content = assign!(RoomPowerLevelsEventContent::new(), {
+                    redact: Int::from(level),
+                });
+                let response = room.send_state_event(content).await?;
+                Ok(response.event_id)
+            })
+            .await?
+    }
+
+    // initial level is 50
+    pub async fn set_power_levels_state_default(&self, level: i32) -> Result<OwnedEventId> {
+        if !self.is_joined() {
+            bail!("Unable to change state_default of power levels in a room we are not in");
+        }
+        let room = self.room.clone();
+        let my_id = self.user_id()?;
+        RUNTIME
+            .spawn(async move {
+                let permitted = room
+                    .can_user_send_state(&my_id, StateEventType::RoomPowerLevels)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to change state_default of power levels in this room");
+                }
+                let content = assign!(RoomPowerLevelsEventContent::new(), {
+                    state_default: Int::from(level),
+                });
+                let response = room.send_state_event(content).await?;
+                Ok(response.event_id)
+            })
+            .await?
+    }
+
+    // initial level is 0
+    pub async fn set_power_levels_users_default(&self, level: i32) -> Result<OwnedEventId> {
+        if !self.is_joined() {
+            bail!("Unable to change users_default of power levels in a room we are not in");
+        }
+        let room = self.room.clone();
+        let my_id = self.user_id()?;
+        RUNTIME
+            .spawn(async move {
+                let permitted = room
+                    .can_user_send_state(&my_id, StateEventType::RoomPowerLevels)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to change users_default of power levels in this room");
+                }
+                let content = assign!(RoomPowerLevelsEventContent::new(), {
+                    users_default: Int::from(level),
+                });
+                let response = room.send_state_event(content).await?;
+                Ok(response.event_id)
+            })
+            .await?
+    }
+
+    // initial level is 50
+    pub async fn set_power_levels_notifications(&self, level: i32) -> Result<OwnedEventId> {
+        if !self.is_joined() {
+            bail!("Unable to change notifications of power levels in a room we are not in");
+        }
+        let room = self.room.clone();
+        let my_id = self.user_id()?;
+        RUNTIME
+            .spawn(async move {
+                let permitted = room
+                    .can_user_send_state(&my_id, StateEventType::RoomPowerLevels)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to change notifications of power levels in this room");
+                }
+                let notifications = assign!(NotificationPowerLevels::new(), {
+                    room: Int::from(level),
+                });
+                let content = assign!(RoomPowerLevelsEventContent::new(), {
+                    notifications,
+                });
+                let response = room.send_state_event(content).await?;
+                Ok(response.event_id)
+            })
+            .await?
+    }
+
+    // allow_ip_literals: true
+    // allow: ["*"]
+    // deny: ["1.1.1.1"]
+    pub async fn set_server_acl(
+        &self,
+        allow_ip_literals: bool,
+        allow: String,
+        deny: String,
+    ) -> Result<OwnedEventId> {
+        if !self.is_joined() {
+            bail!("Unable to change room server acl in a room we are not in");
+        }
+        let room = self.room.clone();
+        let my_id = self.user_id()?;
+        let allow = serde_json::from_str::<Vec<String>>(&allow)?;
+        let deny = serde_json::from_str::<Vec<String>>(&deny)?;
+        RUNTIME
+            .spawn(async move {
+                let permitted = room
+                    .can_user_send_state(&my_id, StateEventType::RoomServerAcl)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to change room server acl in this room");
+                }
+                let content = RoomServerAclEventContent::new(allow_ip_literals, allow, deny);
+                let response = room.send_state_event(content).await?;
+                Ok(response.event_id)
+            })
+            .await?
+    }
+
+    pub async fn set_tombstone(
+        &self,
+        body: String,
+        replacement_room_id: String,
+    ) -> Result<OwnedEventId> {
+        if !self.is_joined() {
+            bail!("Unable to change room tombstone in a room we are not in");
+        }
+        let room = self.room.clone();
+        let my_id = self.user_id()?;
+        let replacement_room = RoomId::parse(replacement_room_id)?;
+        RUNTIME
+            .spawn(async move {
+                let permitted = room
+                    .can_user_send_state(&my_id, StateEventType::RoomTombstone)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to change room tombstone in this room");
+                }
+                let content = RoomTombstoneEventContent::new(body, replacement_room);
+                let response = room.send_state_event(content).await?;
+                Ok(response.event_id)
             })
             .await?
     }

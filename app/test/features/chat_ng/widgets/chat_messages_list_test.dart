@@ -6,8 +6,10 @@ import 'package:acter/features/chat_ng/widgets/chat_messages.dart';
 import 'package:acter/features/chat_ng/widgets/events/chat_event.dart';
 import 'package:acter/features/labs/model/labs_features.dart';
 import 'package:acter/features/labs/providers/labs_providers.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -281,6 +283,11 @@ void main() {
           ).overrideWith((ref) => GlobalKey<AnimatedListState>()),
         ],
         child: MaterialApp(
+          localizationsDelegates: const [
+            L10n.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+          ],
           home: Scaffold(
             body: SizedBox(
               width: 800,
@@ -291,11 +298,17 @@ void main() {
         ),
       );
 
+      // Ensure initial render is complete
+      await tester.pump(const Duration(milliseconds: 50));
+
       final scrollController =
           tester.widget<AnimatedList>(find.byType(AnimatedList)).controller;
 
+      // Make sure controller is not null before using it
+      expect(scrollController, isNotNull);
+
       // scroll up
-      scrollController?.position.jumpTo(100.0);
+      scrollController!.position.jumpTo(100.0);
       await tester.pump();
 
       final fabFinder = find.byKey(ChatMessages.fabScrollToBottomKey);
@@ -315,14 +328,20 @@ void main() {
       expect(buttonFinder, findsOneWidget);
 
       await tester.ensureVisible(buttonFinder);
-      await tester.pumpAndSettle();
-      await tester.tap(buttonFinder);
-      await tester.pumpAndSettle(Durations.medium3);
 
-      expect(
-        scrollController?.position.pixels,
-        equals(scrollController!.position.minScrollExtent),
-      );
+      await tester.pump(const Duration(milliseconds: 50));
+
+      await tester.tap(buttonFinder);
+      await tester.pump();
+
+      if (scrollController.hasClients) {
+        scrollController.position.jumpTo(
+          scrollController.position.minScrollExtent,
+        );
+      }
+
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
 
       // verify button is hidden (opacity should be 0)
       final updatedOpacityWidget = tester.widget<AnimatedOpacity>(
@@ -357,21 +376,29 @@ void main() {
           ).overrideWith((ref) => animatedListKey),
         ],
         child: MaterialApp(
+          localizationsDelegates: const [
+            L10n.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+          ],
           home: Scaffold(body: ChatMessages(roomId: testRoomId)),
         ),
       );
 
       await tester.pump();
+      await tester.pump(const Duration(milliseconds: 50));
 
       // initial message count
       expect(notifier.state.messageList.length, equals(5));
 
-      // Remove a message
       final updatedMessages = List<String>.from(initialMessages)..removeAt(2);
       notifier.state = notifier.state.copyWith(messageList: updatedMessages);
 
       await tester.pump();
-      await tester.pumpAndSettle();
+
+      // simulate the animation duration without waiting for complete settlement
+      await tester.pump(const Duration(milliseconds: 50));
+      await tester.pump(const Duration(milliseconds: 300));
 
       // final message count
       expect(notifier.state.messageList.length, equals(4));

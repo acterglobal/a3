@@ -1,0 +1,1 @@
+- [New] : Member list in chat profile now have search feature.

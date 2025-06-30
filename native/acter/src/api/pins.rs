@@ -1,4 +1,4 @@
-use acter_core::{
+use acter_matrix::{
     events::{
         pins::{self, PinBuilder},
         Display, RefDetails as CoreRefDetails, RefPreview,

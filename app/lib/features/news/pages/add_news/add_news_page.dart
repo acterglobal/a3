@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
 import 'package:acter/common/widgets/acter_video_player.dart';
-import 'package:acter/common/widgets/html_editor/html_editor.dart';
+import 'package:acter/common/toolkit/html_editor/html_editor.dart';
 import 'package:acter/features/news/model/keys.dart';
 import 'package:acter/features/news/model/news_slide_model.dart';
 import 'package:acter/features/news/news_utils/news_utils.dart';
@@ -58,23 +58,18 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
           nextSlide != null && nextSlide.type == UpdateSlideType.text;
       final changed = prevState?.currentUpdateSlide != nextSlide;
       if (isText && changed) {
-        final document = ActerDocumentHelpers.parse(
-          nextSlide.text ?? '',
-          htmlContent: nextSlide.html,
-        );
-
         final autoFocus =
             nextSlide.html?.isEmpty != false &&
             nextSlide.text?.isEmpty != false;
 
         setState(() {
           selectedNewsPost = nextSlide;
-          if (!document.isEmpty) {
-            // If the slide has content, update the editor state with it
-            textEditorState = EditorState(document: document);
-          } else {
-            // If no content, create a blank editor state
-            textEditorState = EditorState.blank();
+
+          if (isText && changed) {
+            textEditorState.replaceContent(
+              nextSlide.text ?? '',
+              nextSlide.html,
+            );
           }
         });
 

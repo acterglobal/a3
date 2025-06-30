@@ -41,12 +41,12 @@ async fn interactive_verification_started_from_request() -> Result<()> {
 
     // sync both up to ensure they’ve seen the other device
     let mut alice_device_rx = alice.device_event_rx();
-    let syncer = alice.start_sync().await?;
+    let syncer = alice.start_sync();
     let mut first_synced = syncer.first_synced_rx();
     while first_synced.next().await != Some(true) {} // let’s wait for it to have synced
     let mut alice_rx = alice.verification_event_rx();
 
-    let syncer = bob.start_sync().await?;
+    let syncer = bob.start_sync();
     let mut first_synced = syncer.first_synced_rx();
     while first_synced.next().await != Some(true) {} // let’s wait for it to have synced
     let mut bob_rx = bob.verification_event_rx();
@@ -70,7 +70,7 @@ async fn interactive_verification_started_from_request() -> Result<()> {
                 alice
                     .request_verification_with_method(
                         bob_device_id.to_string(),
-                        "m.sas.v1".to_string(),
+                        "m.sas.v1".to_owned(),
                     )
                     .await?;
                 break;
@@ -86,7 +86,7 @@ async fn interactive_verification_started_from_request() -> Result<()> {
 
     // Bob accepts the request, sending a Ready request
     event
-        .accept_verification_request_with_method("m.sas.v1".to_string())
+        .accept_verification_request_with_method("m.sas.v1".to_owned())
         .await?;
     // And also immediately sends a start request
     let started = event.start_sas_verification().await?;

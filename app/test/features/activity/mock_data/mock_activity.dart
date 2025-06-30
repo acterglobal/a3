@@ -6,10 +6,17 @@ class MockActivity extends Mock implements Activity {
   final String? mockName;
   final String? mockSubType;
   final String? mockSenderId;
-  final UtcDateTime? newDateTime;
+  final TitleContent? mockTitleContent;
+  final DescriptionContent? mockDescriptionContent;
+  final DateContent? mockDateContent;
+  final DateTimeRangeContent? mockDateTimeRangeContent;
   final String? mockRoomId;
   final ActivityObject? mockObject;
   final MsgContent? mockMsgContent;
+  final MembershipContent? mockMembershipContent;
+  final RoomAvatarContent? mockRoomAvatarContent;
+  final RoomNameContent? mockRoomNameContent;
+  final RoomTopicContent? mockRoomTopicContent;
   final int? mockOriginServerTs;
   final RefDetails? mockRefDetails;
 
@@ -18,10 +25,17 @@ class MockActivity extends Mock implements Activity {
     this.mockName,
     this.mockSubType,
     this.mockSenderId,
-    this.newDateTime,
+    this.mockTitleContent,
+    this.mockDescriptionContent,
+    this.mockDateContent,
+    this.mockDateTimeRangeContent,
     this.mockRoomId,
     this.mockObject,
     this.mockMsgContent,
+    this.mockMembershipContent,
+    this.mockRoomAvatarContent,
+    this.mockRoomNameContent,
+    this.mockRoomTopicContent,
     this.mockOriginServerTs,
     this.mockRefDetails,
   });
@@ -42,7 +56,16 @@ class MockActivity extends Mock implements Activity {
   String roomIdStr() => mockRoomId ?? 'room-id';
 
   @override
-  UtcDateTime? newDate() => newDateTime;
+  TitleContent? titleContent() => mockTitleContent;
+
+  @override
+  DescriptionContent? descriptionContent() => mockDescriptionContent;
+
+  @override
+  DateContent? dateContent() => mockDateContent;
+
+  @override
+  DateTimeRangeContent? dateTimeRangeContent() => mockDateTimeRangeContent;
 
   @override
   ActivityObject? object() => mockObject;
@@ -55,4 +78,16 @@ class MockActivity extends Mock implements Activity {
 
   @override
   RefDetails? refDetails() => mockRefDetails;
+
+  @override
+  MembershipContent? membershipContent() => mockMembershipContent;
+
+  @override
+  RoomAvatarContent? roomAvatarContent() => mockRoomAvatarContent;
+
+  @override
+  RoomNameContent? roomNameContent() => mockRoomNameContent;
+
+  @override
+  RoomTopicContent? roomTopicContent() => mockRoomTopicContent;
 }

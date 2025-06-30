@@ -47,6 +47,7 @@ jobs:
       APP_STORE_CONNECT_KEY_IDENTIFIER: ${{ secrets.APPLE_API_KEY_ID }}
       APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APPLE_ISSUER_ID }}
       BUNDLE_ID: 'global.acter.a3'
+      IOS_XCODE_TARGET: '16.1'
 
     strategy:
       matrix:
@@ -204,7 +205,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         name: Set up flutter
         with:
-          flutter-version: '3.29'
+          flutter-version: '3.32'
           channel: 'stable'
 
       - name: Flutter info
@@ -238,6 +239,13 @@ jobs:
           keychain add-certificates
 
           xcode-project use-profiles
+      - name: 'Select XCode $IOS_XCODE_TARGET'
+        if: matrix.target == 'ios'
+        run: |
+            # just delete them
+            sudo xcode-select --switch /Applications/Xcode_${{ env.IOS_XCODE_TARGET }}.app
+            # confirm
+            xcodebuild -showsdks
 
       - name: Setup MacOS keychain
         if: matrix.target == 'macos'
@@ -293,6 +301,8 @@ jobs:
           RAGESHAKE_APP_VERSION=${{inputs.release_env}}/${{inputs.version}}/${{ matrix.name }}
           DEFAULT_HOMESERVER_URL=${{vars.DEFAULT_HOMESERVER_URL}}
           DEFAULT_HOMESERVER_NAME=${{vars.DEFAULT_HOMESERVER_NAME}}
+          MATOMO_URL=${{ secrets.MATOMO_URL }}
+          MATOMO_SITE_ID=${{ secrets.MATOMO_SITE_ID }}
           ${{ matrix.env_extra }}
           ${{ inputs.env_extra  }}
           EOF
@@ -422,21 +432,6 @@ jobs:
           name: ${{ matrix.name }}
           path: ${{ matrix.artifact_prefix }}-${{ inputs.version }}.*
 
-      - uses: actions/upload-artifact@v4
-        name: "Upload debug artifacts"
-        if: ${{ matrix.with_debug_symbols }}
-        with:
-          name: ${{ matrix.name }}-debug-symbols
-          path: app/debug_symbols/*
-
-      - name: "Upload debug artifacts to sentry"
-        if: ${{matrix.with_debug_symbols && inputs.release_tag }}
-        working-directory: app
-        env:
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          SENTRY_RELEASE: ${{ inputs.version }}
-        run: flutter packages pub run sentry_dart_plugin
-
       - name: Upload specific files to Release
         if: ${{! matrix.exclude_from_release && inputs.release_tag && matrix.specific_upload_artifacts}}
         env:
@@ -464,3 +459,20 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run:
           gh release upload ${{inputs.release_tag}} ${{ matrix.artifact_prefix }}-${{ inputs.version }}.zip
+
+      - uses: actions/upload-artifact@v4
+        name: "Upload debug artifacts"
+        if: ${{ matrix.with_debug_symbols }}
+        with:
+          name: ${{ matrix.name }}-debug-symbols
+          path: app/debug_symbols/*
+
+      - name: "Upload debug artifacts to sentry"
+        if: ${{matrix.with_debug_symbols && inputs.release_tag }}
+        working-directory: app
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_URL: ${{ secrets.SENTRY_URL }}
+          SENTRY_RELEASE: ${{ inputs.version }}
+          SENTRY_ENVIRONMENT: ${{ inputs.release_env }}
+        run: flutter packages pub run sentry_dart_plugin

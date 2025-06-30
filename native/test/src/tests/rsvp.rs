@@ -1,4 +1,4 @@
-use acter_core::events::rsvp::RsvpStatus;
+use acter_matrix::events::rsvp::RsvpStatus;
 use anyhow::{bail, Result};
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
@@ -15,7 +15,7 @@ name = "Smoketest Template"
 main = { type = "user", is-default = true, required = true, description = "The starting user" }
 
 [objects]
-main_space = { type = "space", is-default = true, name = "{{ main.display_name }}’s pins test space"}
+main_space = { type = "space", is-default = true, name = "{{ main.display_name }}’s RSVP test space" }
 
 [objects.acter-event-1]
 type = "calendar-event"
@@ -44,15 +44,11 @@ async fn rsvp_last_status() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = user.clone();
-    Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        async move {
-            if client.calendar_events().await?.len() != 3 {
-                bail!("not all calendar_events found");
-            }
-            Ok(())
+    Retry::spawn(retry_strategy, || async {
+        if user.calendar_events().await?.len() != 3 {
+            bail!("not all calendar_events found");
         }
+        Ok(())
     })
     .await?;
 
@@ -66,7 +62,7 @@ async fn rsvp_last_status() -> Result<()> {
     let rsvp_listener = rsvp_manager.subscribe(); // call subscribe to get rsvp entries properly
     let _rsvp_1_id = rsvp_manager
         .rsvp_draft()?
-        .status("yes".to_string())
+        .status("yes".to_owned())
         .send()
         .await?;
 
@@ -86,11 +82,11 @@ async fn rsvp_last_status() -> Result<()> {
     let rsvp_listener = rsvp_manager.subscribe(); // call subscribe to get rsvp entries properly
     let _rsvp_2_id = rsvp_manager
         .rsvp_draft()?
-        .status("no".to_string())
+        .status("no".to_owned())
         .send()
         .await?;
 
-    Retry::spawn(retry_strategy.clone(), || async {
+    Retry::spawn(retry_strategy, || async {
         if rsvp_listener.is_empty() {
             bail!("all still empty");
         }
@@ -116,15 +112,11 @@ async fn rsvp_my_status() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = user.clone();
-    Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        async move {
-            if client.calendar_events().await?.len() != 3 {
-                bail!("not all calendar_events found");
-            }
-            Ok(())
+    Retry::spawn(retry_strategy, || async {
+        if user.calendar_events().await?.len() != 3 {
+            bail!("not all calendar_events found");
         }
+        Ok(())
     })
     .await?;
 
@@ -138,7 +130,7 @@ async fn rsvp_my_status() -> Result<()> {
     let rsvp_listener = rsvp_manager.subscribe(); // call subscribe to get rsvp entries properly
     let _rsvp_1_id = rsvp_manager
         .rsvp_draft()?
-        .status("yes".to_string())
+        .status("yes".to_owned())
         .send()
         .await?;
 
@@ -158,11 +150,11 @@ async fn rsvp_my_status() -> Result<()> {
     let rsvp_listener = rsvp_manager.subscribe(); // call subscribe to get rsvp entries properly
     let _rsvp_2_id = rsvp_manager
         .rsvp_draft()?
-        .status("no".to_string())
+        .status("no".to_owned())
         .send()
         .await?;
 
-    Retry::spawn(retry_strategy.clone(), || async {
+    Retry::spawn(retry_strategy, || async {
         if rsvp_listener.is_empty() {
             bail!("all still empty");
         }
@@ -193,15 +185,11 @@ async fn rsvp_count_at_status() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = user.clone();
-    Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        async move {
-            if client.calendar_events().await?.len() != 3 {
-                bail!("not all calendar_events found");
-            }
-            Ok(())
+    Retry::spawn(retry_strategy, || async {
+        if user.calendar_events().await?.len() != 3 {
+            bail!("not all calendar_events found");
         }
+        Ok(())
     })
     .await?;
 
@@ -215,7 +203,7 @@ async fn rsvp_count_at_status() -> Result<()> {
     let rsvp_listener = rsvp_manager.subscribe(); // call subscribe to get rsvp entries properly
     let _rsvp_1_id = rsvp_manager
         .rsvp_draft()?
-        .status("yes".to_string())
+        .status("yes".to_owned())
         .send()
         .await?;
 
@@ -235,11 +223,11 @@ async fn rsvp_count_at_status() -> Result<()> {
     let rsvp_listener = rsvp_manager.subscribe(); // call subscribe to get rsvp entries properly
     let _rsvp_2_id = rsvp_manager
         .rsvp_draft()?
-        .status("no".to_string())
+        .status("no".to_owned())
         .send()
         .await?;
 
-    Retry::spawn(retry_strategy.clone(), || async {
+    Retry::spawn(retry_strategy, || async {
         if rsvp_listener.is_empty() {
             bail!("all still empty");
         }
@@ -255,7 +243,7 @@ async fn rsvp_count_at_status() -> Result<()> {
     assert_eq!(entries[0].status(), "no");
 
     // older rsvp would be ignored
-    let count = rsvp_manager.count_at_status("yes".to_string()).await?;
+    let count = rsvp_manager.count_at_status("yes".to_owned()).await?;
     assert_eq!(count, 0);
 
     Ok(())
@@ -270,15 +258,11 @@ async fn rsvp_users_at_status() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = user.clone();
-    Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        async move {
-            if client.calendar_events().await?.len() != 3 {
-                bail!("not all calendar_events found");
-            }
-            Ok(())
+    Retry::spawn(retry_strategy, || async {
+        if user.calendar_events().await?.len() != 3 {
+            bail!("not all calendar_events found");
         }
+        Ok(())
     })
     .await?;
 
@@ -292,7 +276,7 @@ async fn rsvp_users_at_status() -> Result<()> {
     let rsvp_listener = rsvp_manager.subscribe(); // call subscribe to get rsvp entries properly
     let _rsvp_1_id = rsvp_manager
         .rsvp_draft()?
-        .status("yes".to_string())
+        .status("yes".to_owned())
         .send()
         .await?;
 
@@ -312,11 +296,11 @@ async fn rsvp_users_at_status() -> Result<()> {
     let rsvp_listener = rsvp_manager.subscribe(); // call subscribe to get rsvp entries properly
     let _rsvp_2_id = rsvp_manager
         .rsvp_draft()?
-        .status("no".to_string())
+        .status("no".to_owned())
         .send()
         .await?;
 
-    Retry::spawn(retry_strategy.clone(), || async {
+    Retry::spawn(retry_strategy, || async {
         if rsvp_listener.is_empty() {
             bail!("all still empty");
         }
@@ -332,7 +316,7 @@ async fn rsvp_users_at_status() -> Result<()> {
     assert_eq!(entries[0].status(), "no");
 
     // get users at status
-    let users = rsvp_manager.users_at_status("maybe".to_string()).await?;
+    let users = rsvp_manager.users_at_status("maybe".to_owned()).await?;
     assert_eq!(users.len(), 0);
 
     Ok(())

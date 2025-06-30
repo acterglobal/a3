@@ -17,7 +17,7 @@ name = "Smoketest Template"
 main = { type = "user", is-default = true, required = true, description = "The starting user" }
 
 [objects]
-main_space = { type = "space", is-default = true, name = "{{ main.display_name }}’s pins test space"}
+main_space = { type = "space", is-default = true, name = "{{ main.display_name }}’s pins test space" }
 
 [objects.acter-website-pin]
 type = "pin"
@@ -43,24 +43,25 @@ async fn pins_smoketest() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = user.clone();
-    Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        async move {
-            if client.pins().await?.len() != 3 {
-                bail!("not all pins found");
-            }
-            Ok(())
+    Retry::spawn(retry_strategy, || async {
+        if user.pins().await?.len() != 3 {
+            bail!("not all pins found");
         }
+        Ok(())
     })
     .await?;
 
-    assert_eq!(user.pins().await?.len(), 3);
+    let pins = user.pins().await?;
+    assert_eq!(pins.len(), 3);
+
+    let first_pin = pins.first().unwrap();
+    let user_id = user.user_id()?;
+    assert_eq!(first_pin.sender(), user_id);
 
     let spaces = user.spaces().await?;
     assert_eq!(spaces.len(), 1);
 
-    let main_space = spaces.first().unwrap();
+    let main_space = spaces.first().expect("main space should be available");
     assert_eq!(main_space.pins().await?.len(), 3);
     Ok(())
 }
@@ -72,15 +73,11 @@ async fn pin_comments() -> Result<()> {
     sync_state.await_has_synced_history().await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = user.clone();
-    Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        async move {
-            if client.pins().await?.len() != 3 {
-                bail!("not all pins found");
-            }
-            Ok(())
+    Retry::spawn(retry_strategy, || async {
+        if user.pins().await?.len() != 3 {
+            bail!("not all pins found");
         }
+        Ok(())
     })
     .await?;
 
@@ -99,14 +96,15 @@ async fn pin_comments() -> Result<()> {
     // ---- let’s make a comment
 
     let comments_listener = comments_manager.subscribe();
-    let comment_1_id = comments_manager
+    let body = "I updated the pin";
+    let comment_id = comments_manager
         .comment_draft()?
-        .content_text("I updated the pin".to_owned())
+        .content_text(body.to_owned())
         .send()
         .await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
-    Retry::spawn(retry_strategy.clone(), || async {
+    Retry::spawn(retry_strategy, || async {
         if comments_listener.is_empty() {
             bail!("all still empty");
         }
@@ -116,8 +114,8 @@ async fn pin_comments() -> Result<()> {
 
     let comments = comments_manager.comments().await?;
     assert_eq!(comments.len(), 1);
-    assert_eq!(comments[0].event_id(), comment_1_id);
-    assert_eq!(comments[0].content().body, "I updated the pin".to_owned());
+    assert_eq!(comments[0].event_id(), comment_id);
+    assert_eq!(comments[0].content().body, body);
 
     Ok(())
 }
@@ -129,15 +127,11 @@ async fn pin_attachments() -> Result<()> {
     sync_state.await_has_synced_history().await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = user.clone();
-    Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        async move {
-            if client.pins().await?.len() != 3 {
-                bail!("not all pins found");
-            }
-            Ok(())
+    Retry::spawn(retry_strategy, || async {
+        if user.pins().await?.len() != 3 {
+            bail!("not all pins found");
         }
+        Ok(())
     })
     .await?;
 
@@ -160,11 +154,12 @@ async fn pin_attachments() -> Result<()> {
     jpg_file.as_file_mut().write_all(bytes)?;
 
     let attachments_listener = attachments_manager.subscribe();
+    let mimetype = "image/jpeg";
     let base_draft = user.image_draft(
         jpg_file.path().to_string_lossy().to_string(),
-        "image/jpeg".to_string(),
+        mimetype.to_owned(),
     );
-    let attachment_1_id = attachments_manager
+    let jpg_attach_id = attachments_manager
         .content_draft(Box::new(base_draft))
         .await?
         .send()
@@ -181,9 +176,18 @@ async fn pin_attachments() -> Result<()> {
 
     let attachments = attachments_manager.attachments().await?;
     assert_eq!(attachments.len(), 1);
-    let attachment = attachments.first().unwrap();
-    assert_eq!(attachment.event_id(), attachment_1_id);
+    let attachment = attachments
+        .first()
+        .expect("first attachment should be available");
+    assert_eq!(attachment.event_id(), jpg_attach_id);
     assert_eq!(attachment.type_str(), "image");
+    assert_eq!(
+        attachment
+            .msg_content()
+            .and_then(|c| c.mimetype())
+            .as_deref(),
+        Some(mimetype)
+    );
 
     // go for the second
 
@@ -192,17 +196,18 @@ async fn pin_attachments() -> Result<()> {
     png_file.as_file_mut().write_all(bytes)?;
 
     let attachments_listener = attachments_manager.subscribe();
+    let mimetype = "image/png";
     let base_draft = user.file_draft(
         png_file.path().to_string_lossy().to_string(),
-        "image/png".to_string(),
+        mimetype.to_owned(),
     );
-    let attachment_2_id = attachments_manager
+    let png_attach_id = attachments_manager
         .content_draft(Box::new(base_draft))
         .await?
         .send()
         .await?;
 
-    Retry::spawn(retry_strategy.clone(), || async {
+    Retry::spawn(retry_strategy, || async {
         if attachments_listener.is_empty() {
             bail!("all still empty");
         }
@@ -212,20 +217,146 @@ async fn pin_attachments() -> Result<()> {
 
     let attachments = attachments_manager.attachments().await?;
     assert_eq!(attachments.len(), 2);
-    let _attachment = attachments
-        .iter()
-        .find(|a| a.event_id() == attachment_2_id)
+    let attachment = attachments
+        .into_iter()
+        .find(|a| a.event_id() == png_attach_id)
         .expect("File not found");
-    // FIXME: for some reason this comes back as 'image'` rather than `file`
+    assert_eq!(
+        attachment
+            .msg_content()
+            .and_then(|c| c.mimetype())
+            .as_deref(),
+        Some(mimetype)
+    );
+
+    // FIXME: for some reason this comes back as `image` rather than `file`
     // assert_eq!(attachment.type_str(), "file");
     // assert_eq!(
-    //     attachment.file_desc().unwrap().name(),
+    //     attachment.file_desc().expect("file description should be available").name(),
     //     "effektio whitepaper"
     // );
     // assert_eq!(
-    //     attachment.file_desc().unwrap().source().url(),
+    //     attachment.file_desc().expect("file description should be available").source().url(),
     //     "mxc://acter.global/tVLtaQaErMyoXmcCroPZdfNG"
     // );
+
+    // go for the third
+
+    let bytes = include_bytes!("./fixtures/sample-3s.mp3");
+    let mut mp3_file = NamedTempFile::new()?;
+    mp3_file.as_file_mut().write_all(bytes)?;
+
+    let attachments_listener = attachments_manager.subscribe();
+    let mimetype = "audio/mp3";
+    let base_draft = user.audio_draft(
+        mp3_file.path().to_string_lossy().to_string(),
+        mimetype.to_owned(),
+    );
+    let mp3_attach_id = attachments_manager
+        .content_draft(Box::new(base_draft))
+        .await?
+        .send()
+        .await?;
+
+    let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
+    Retry::spawn(retry_strategy.clone(), || async {
+        if attachments_listener.is_empty() {
+            bail!("all still empty");
+        }
+        Ok(())
+    })
+    .await?;
+
+    let attachments = attachments_manager.attachments().await?;
+    assert_eq!(attachments.len(), 3);
+    let attachment = attachments
+        .into_iter()
+        .find(|a| a.event_id() == mp3_attach_id)
+        .expect("File not found");
+    assert_eq!(attachment.event_id(), mp3_attach_id);
+    assert_eq!(attachment.type_str(), "audio");
+    assert_eq!(
+        attachment
+            .msg_content()
+            .and_then(|c| c.mimetype())
+            .as_deref(),
+        Some(mimetype)
+    );
+
+    // go for the fourth
+
+    let bytes = include_bytes!("./fixtures/big_buck_bunny.mp4");
+    let mut mp4_file = NamedTempFile::new()?;
+    mp4_file.as_file_mut().write_all(bytes)?;
+
+    let attachments_listener = attachments_manager.subscribe();
+    let mimetype = "video/mpeg4";
+    let base_draft = user.video_draft(
+        mp4_file.path().to_string_lossy().to_string(),
+        mimetype.to_owned(),
+    );
+    let mp4_attach_id = attachments_manager
+        .content_draft(Box::new(base_draft))
+        .await?
+        .send()
+        .await?;
+
+    let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
+    Retry::spawn(retry_strategy.clone(), || async {
+        if attachments_listener.is_empty() {
+            bail!("all still empty");
+        }
+        Ok(())
+    })
+    .await?;
+
+    let attachments = attachments_manager.attachments().await?;
+    assert_eq!(attachments.len(), 4);
+    let attachment = attachments
+        .into_iter()
+        .find(|a| a.event_id() == mp4_attach_id)
+        .expect("File not found");
+    assert_eq!(attachment.event_id(), mp4_attach_id);
+    assert_eq!(attachment.type_str(), "video");
+    assert_eq!(
+        attachment
+            .msg_content()
+            .and_then(|c| c.mimetype())
+            .as_deref(),
+        Some(mimetype)
+    );
+
+    // go for the fifth
+
+    let attachments_listener = attachments_manager.subscribe();
+    let url = "https://acter.global";
+    let link_attach_id = attachments_manager
+        .link_draft(url.to_owned(), Some("Acter Website".to_owned()))
+        .await?
+        .send()
+        .await?;
+
+    let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
+    Retry::spawn(retry_strategy.clone(), || async {
+        if attachments_listener.is_empty() {
+            bail!("all still empty");
+        }
+        Ok(())
+    })
+    .await?;
+
+    let attachments = attachments_manager.attachments().await?;
+    assert_eq!(attachments.len(), 5);
+    let attachment = attachments
+        .into_iter()
+        .find(|a| a.event_id() == link_attach_id)
+        .expect("Link not found");
+    assert_eq!(attachment.event_id(), link_attach_id);
+    assert_eq!(attachment.type_str(), "link");
+    assert_eq!(
+        attachment.msg_content().map(|c| c.body()).as_deref(),
+        Some(url)
+    );
 
     Ok(())
 }
@@ -237,15 +368,11 @@ async fn pin_external_link() -> Result<()> {
     sync_state.await_has_synced_history().await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = user.clone();
-    Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        async move {
-            if client.pins().await?.len() != 3 {
-                bail!("not all pins found");
-            }
-            Ok(())
+    Retry::spawn(retry_strategy, || async {
+        if user.pins().await?.len() != 3 {
+            bail!("not all pins found");
         }
+        Ok(())
     })
     .await?;
 
@@ -282,15 +409,11 @@ async fn pin_self_ref_attachments() -> Result<()> {
     sync_state.await_has_synced_history().await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = user.clone();
-    Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        async move {
-            if client.pins().await?.len() != 3 {
-                bail!("not all pins found");
-            }
-            Ok(())
+    Retry::spawn(retry_strategy, || async {
+        if user.pins().await?.len() != 3 {
+            bail!("not all pins found");
         }
+        Ok(())
     })
     .await?;
 
@@ -310,14 +433,14 @@ async fn pin_self_ref_attachments() -> Result<()> {
 
     // ---- let’s make an attachment by referencing the same pin -- cheeky
     let ref_details = pin.ref_details().await?;
-    let attachment_1_id = attachments_manager
+    let ref_attach_id = attachments_manager
         .reference_draft(Box::new(ref_details))
         .await?
         .send()
         .await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
-    Retry::spawn(retry_strategy.clone(), || async {
+    Retry::spawn(retry_strategy, || async {
         if attachments_listener.is_empty() {
             bail!("all still empty");
         }
@@ -327,8 +450,10 @@ async fn pin_self_ref_attachments() -> Result<()> {
 
     let attachments = attachments_manager.attachments().await?;
     assert_eq!(attachments.len(), 1);
-    let attachment = attachments.first().unwrap();
-    assert_eq!(attachment.event_id(), attachment_1_id);
+    let attachment = attachments
+        .first()
+        .expect("first attachment should be available");
+    assert_eq!(attachment.event_id(), ref_attach_id);
     assert_eq!(attachment.type_str(), "ref");
 
     Ok(())

@@ -1,4 +1,4 @@
-use acter_core::{
+use acter_matrix::{
     events::{
         news::{FallbackNewsContent, NewsContent},
         AnyActerEvent,
@@ -85,7 +85,7 @@ fn make_push_rule(parent_id: &str, sub_type: Option<&String>) -> NewConditionalP
     if let Some(event_type) = sub_type {
         conditions.push(PushCondition::EventPropertyIs {
             key: "type".to_owned(),
-            value: event_type.to_owned().into(),
+            value: event_type.clone().into(),
         })
     }
     NewConditionalPushRule::new(push_key, conditions, vec![Action::Notify])

@@ -2,9 +2,11 @@ import 'package:acter/common/actions/select_space.dart';
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
-import 'package:acter/common/utils/routes.dart';
+import 'package:acter/features/events/model/event_location_model.dart';
+import 'package:acter/features/events/widgets/event_location_list_widget.dart';
+import 'package:acter/router/routes.dart';
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/common/widgets/html_editor/html_editor.dart';
+import 'package:acter/common/toolkit/html_editor/html_editor.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
 import 'package:acter/features/events/model/keys.dart';
 import 'package:acter/features/events/utils/events_utils.dart';
@@ -20,6 +22,7 @@ import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
+import 'package:acter/features/events/providers/event_location_provider.dart';
 
 final _log = Logger('a3::cal_event::create');
 
@@ -53,20 +56,18 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
   TimeOfDay _selectedEndTime = TimeOfDay.now();
   EditorState textEditorState = EditorState.blank();
 
+  bool _isJitsiEnabled = false;
+
   void _setFromTemplate(CalendarEvent event) {
     // title
     _eventNameController.text = event.title();
     // description
     final desc = event.description();
     if (desc != null) {
-      textEditorState = EditorState(
-        document: ActerDocumentHelpers.parse(
-          desc.body(),
-          htmlContent: desc.formatted(),
-        ),
+      textEditorState = ActerEditorStateHelpers.fromContent(
+        desc.body(),
+        desc.formatted(),
       );
-    } else {
-      textEditorState = EditorState.blank();
     }
 
     // Getting start and end date time
@@ -84,6 +85,22 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
     _selectedEndTime = TimeOfDay.fromDateTime(_selectedEndDate);
     _endDateController.text = eventDateFormat(_selectedEndDate);
     _endTimeController.text = _selectedEndTime.format(context);
+
+    // Set template locations if available
+    final locations = ref.watch(asyncEventLocationsProvider(event.eventId().toString())).valueOrNull ?? [];
+    for (final location in locations) {
+      final draftLocation = EventLocationDraft(
+        name: location.name() ?? '',
+        type: location.locationType().toLowerCase() == LocationType.virtual.name
+            ? LocationType.virtual
+            : LocationType.physical,
+        url: location.uri(),
+        address: location.address(),
+        note: location.notes(),
+      );
+      ref.read(eventDraftLocationsProvider.notifier).addLocation(draftLocation);
+    }
+    
     _setSpaceId(event.roomIdStr());
     setState(() {});
   }
@@ -92,9 +109,18 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
     ref.read(selectedSpaceIdProvider.notifier).state = spaceId;
   }
 
+  void clearEventDraftLocations() {
+    ref.read(eventDraftLocationsProvider.notifier).clearLocations();
+  }
+
   @override
   void initState() {
     super.initState();
+    // Clear locations when widget is initialized
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      clearEventDraftLocations();
+    });
+    // Set data from template event if available
     widget.templateEvent.map(
       (p0) => WidgetsBinding.instance.addPostFrameCallback((Duration dur) {
         _setFromTemplate(p0);
@@ -139,6 +165,9 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
               const SizedBox(height: 10),
               _eventDateAndTime(),
               const SizedBox(height: 10),
+              _buildEventLocationListWidget(),
+              _buildJitsiCallLinkWidget(),
+              const SizedBox(height: 10),
               _eventDescriptionField(),
               const SizedBox(height: 10),
               SelectSpaceFormField(
@@ -177,6 +206,53 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
         ),
       ],
     );
+  }
+
+  // Event location list widget
+  Widget _buildEventLocationListWidget() {
+    return Card(
+      margin: EdgeInsets.only(bottom: 10),
+      child: Padding(padding: const EdgeInsets.all(8.0), child: EventLocationListWidget(),),
+    );
+  }
+
+  // Jitsi call link field
+  Widget _buildJitsiCallLinkWidget() {
+    return Card(
+      margin: EdgeInsets.only(bottom: 10),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Transform.scale(
+              scale: 0.6,
+              child: Switch(
+                value: _isJitsiEnabled,
+                onChanged: (value) {
+                  setState(() {
+                    _isJitsiEnabled = value;
+                  });
+                },
+              ),
+            ),
+            Text(L10n.of(context).createJitsiCallLink, style: Theme.of(context).textTheme.bodyMedium,),
+            const SizedBox(width: 10),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Create Jitsi call link
+  String createJitsiCallLink(String title) {
+    // Generate a random 10-digit number
+    final random = DateTime.now().millisecondsSinceEpoch % 10000000000;
+    // Format the number to ensure it's 10 digits by padding with zeros if needed
+    final formattedNumber = random.toString().padLeft(10, '0');
+    // Clean the title by removing spaces and special characters
+    final cleanTitle = title.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '');
+    return 'https://meet.jit.si/$cleanTitle$formattedNumber';
   }
 
   // Event date and time field
@@ -388,11 +464,6 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
             key: EventsKeys.eventDescriptionTextField,
             editorState: textEditorState,
             editable: true,
-            onChanged: (body, html) {
-              textEditorState = EditorState(
-                document: ActerDocumentHelpers.parse(body, htmlContent: html),
-              );
-            },
           ),
         ),
       ],
@@ -451,21 +522,50 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
         _selectedEndTime,
       );
 
-      // Convert utc time zone
-      final utcStartDateTime = startDateTime.toUtc().toIso8601String();
-      final utcEndDateTime = endDateTime.toUtc().toIso8601String();
-
       // Creating calendar event
-      final space = await ref.read(spaceProvider(spaceId).future);
-      final draft = space.calendarEventDraft();
       final title = _eventNameController.text;
-      // Description text
-      final plainDescription = textEditorState.intoMarkdown();
-      final htmlBodyDescription = textEditorState.intoHtml();
-      draft.title(title);
-      draft.utcStartFromRfc3339(utcStartDateTime);
-      draft.utcEndFromRfc3339(utcEndDateTime);
-      draft.descriptionHtml(plainDescription, htmlBodyDescription);
+      final space = await ref.read(spaceProvider(spaceId).future);
+      final draft =
+          space.calendarEventDraft()
+            ..title(title)
+            ..utcStartFromRfc3339(startDateTime.toUtc().toIso8601String())
+            ..utcEndFromRfc3339(endDateTime.toUtc().toIso8601String())
+            ..descriptionHtml(
+              textEditorState.intoMarkdown(),
+              textEditorState.intoHtml(),
+            );
+
+      // Add locations to the event
+      final locations = ref.read(eventDraftLocationsProvider);
+      for (final location in locations) {
+        if (location.type == LocationType.physical) {
+          draft.addPhysicalLocation(
+            location.name,
+            '',
+            '',
+            '',
+            '',
+            location.address,
+            location.note,
+          );
+        }
+        if (location.type == LocationType.virtual) {
+          draft.addVirtualLocation(
+            location.name,
+            '',
+            '',
+            location.url ?? '',
+            location.note,
+          );
+        }
+      }
+
+      // Add Jitsi link if enabled
+      if (_isJitsiEnabled) {
+        final jitsiLink = createJitsiCallLink(title);
+        draft.addVirtualLocation(lang.jitsiMeeting, '', '', jitsiLink, '');
+      }
+
       final eventId = (await draft.send()).toString();
       final client = await ref.read(alwaysClientProvider.future);
       final calendarEvent = await client.waitForCalendarEvent(eventId, null);
@@ -473,10 +573,12 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
 
       /// Event is created, set RSVP status to `Yes` by default for host.
       final rsvpManager = await calendarEvent.rsvps();
-      final rsvpDraft = rsvpManager.rsvpDraft();
-      rsvpDraft.status('yes');
+      final rsvpDraft = rsvpManager.rsvpDraft()..status('yes');
       await rsvpDraft.send();
       _log.info('Created Calendar Event: $eventId');
+
+      // Clear event locations after successful creation
+      clearEventDraftLocations();
 
       EasyLoading.dismiss();
 

@@ -5,7 +5,7 @@ import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/acter_icon_picker/acter_icon_widget.dart';
 import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
-import 'package:acter/common/widgets/html_editor/html_editor.dart';
+import 'package:acter/common/toolkit/html_editor/html_editor.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
 import 'package:acter/features/notifications/actions/autosubscribe.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
@@ -161,18 +161,7 @@ class _CreateUpdateTaskListConsumerState
                 border: Border.all(color: Colors.white70),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: HtmlEditor(
-                editorState: textEditorState,
-                editable: true,
-                onChanged: (body, html) {
-                  textEditorState = EditorState(
-                    document: ActerDocumentHelpers.parse(
-                      body,
-                      htmlContent: html,
-                    ),
-                  );
-                },
-              ),
+              child: HtmlEditor(editorState: textEditorState, editable: true),
             ),
           ],
         );
@@ -213,7 +202,13 @@ class _CreateUpdateTaskListConsumerState
           .read(selectedSpaceIdProvider)
           .expect('space not selected');
       final space = await ref.read(spaceProvider(spaceId).future);
-      final taskListDraft = space.taskListDraft();
+      final taskListDraft =
+          space.taskListDraft()
+            ..name(_titleController.text)
+            ..descriptionHtml(
+              textEditorState.intoMarkdown(),
+              textEditorState.intoHtml(),
+            );
 
       // TaskList IconData
 
@@ -227,11 +222,6 @@ class _CreateUpdateTaskListConsumerState
         taskListDraft.display(displayBuilder.build());
       }
 
-      taskListDraft.name(_titleController.text);
-      // Description text
-      final plainDescription = textEditorState.intoMarkdown();
-      final htmlBodyDescription = textEditorState.intoHtml();
-      taskListDraft.descriptionHtml(plainDescription, htmlBodyDescription);
       final objectId = await taskListDraft.send();
       await autosubscribe(ref: ref, objectId: objectId.toString(), lang: lang);
 

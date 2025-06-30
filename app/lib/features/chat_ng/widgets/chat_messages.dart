@@ -1,8 +1,7 @@
 import 'dart:async';
 
-import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart' as chat;
-import 'package:acter/features/chat/widgets/rooms_list.dart';
+import 'package:acter/features/chat_ng/globals.dart';
 import 'package:acter/features/chat_ng/models/chat_room_state/chat_room_state.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
 import 'package:acter/features/chat_ng/widgets/events/chat_event.dart';
@@ -125,7 +124,7 @@ class ChatMessagesConsumerState extends ConsumerState<ChatMessages> {
     );
 
     return PageStorage(
-      bucket: bucketGlobal,
+      bucket: chatBucket,
       child: Column(
         children: [
           Expanded(
@@ -194,23 +193,9 @@ class ChatMessagesConsumerState extends ConsumerState<ChatMessages> {
   );
 }
 
-Widget _buildTypingIndicator(WidgetRef ref, String roomId) {
-  final typingUsers =
-      (ref.watch(chatTypingEventProvider(roomId)).valueOrNull ?? [])
-          .map(
-            (userId) => ref.watch(
-              memberAvatarInfoProvider((userId: userId, roomId: roomId)),
-            ),
-          )
-          .toList();
-
-  if (typingUsers.isEmpty) return const SizedBox.shrink();
-  return Positioned(
-    bottom: 16,
-    left: 16,
-    right: 0,
-    child: TypingIndicator(
-      options: TypingIndicatorOptions(typingUsers: typingUsers),
-    ),
-  );
-}
+Widget _buildTypingIndicator(WidgetRef ref, String roomId) => Positioned(
+  bottom: 16,
+  left: 16,
+  right: 0,
+  child: TypingIndicator(roomId: roomId),
+);

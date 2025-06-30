@@ -1,12 +1,12 @@
 import 'package:acter/common/models/types.dart';
 import 'package:acter/common/providers/common_providers.dart';
-import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/activities/providers/notifiers/activities_notifiers.dart';
 import 'package:acter/features/invitations/providers/invitations_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:acter_notifify/model/push_styles.dart';
 import 'package:riverpod/riverpod.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final supportedActivityTypes = [
   PushStyles.comment,
@@ -23,6 +23,27 @@ final supportedActivityTypes = [
   PushStyles.taskAccept,
   PushStyles.taskDecline,
   PushStyles.taskDueDateChange,
+  PushStyles.roomName,
+  PushStyles.roomTopic,
+  PushStyles.roomAvatar,
+  PushStyles.creation,
+  PushStyles.titleChange,
+  PushStyles.descriptionChange,
+  PushStyles.otherChanges,
+  PushStyles.invitationAccepted,
+  PushStyles.invitationRejected,
+  PushStyles.invited,
+  PushStyles.joined,
+  PushStyles.invitationRevoked,
+  PushStyles.knockAccepted,
+  PushStyles.knockRetracted,
+  PushStyles.knockDenied,
+  PushStyles.left,
+  PushStyles.kicked,
+  PushStyles.kickedAndBanned,
+  PushStyles.knocked,
+  PushStyles.banned,
+  PushStyles.unbanned,
 ];
 
 final hasActivitiesProvider = StateProvider((ref) {
@@ -46,124 +67,85 @@ final hasUnconfirmedEmailAddresses = StateProvider(
       true,
 );
 
-final _spaceActivitiesProvider = AsyncNotifierProviderFamily<
-  AsyncSpaceActivitiesNotifier,
-  List<String>,
-  String
->(() => AsyncSpaceActivitiesNotifier());
-
 final activityProvider =
     AsyncNotifierProviderFamily<AsyncActivityNotifier, Activity?, String>(
-      () => AsyncActivityNotifier(),
+      AsyncActivityNotifier.new,
     );
 
-final spaceActivitiesProvider = FutureProvider.family<List<Activity>, String>((
-  ref,
-  spaceId,
-) async {
-  final spaceActivities = await ref.watch(
-    _spaceActivitiesProvider(spaceId).future,
-  );
-  final activities = await Future.wait(
-    spaceActivities.map(
-      (activityId) async =>
-          await ref.watch(activityProvider(activityId).future),
-    ),
-  );
-  //Remove null activities
-  final acitivitiesList = activities.whereType<Activity>().toList();
+final allActivitiesProvider =
+    AsyncNotifierProvider<AllActivitiesNotifier, List<String>>(
+  AllActivitiesNotifier.new,
+);
 
-  // Filter by supported activity types
-  acitivitiesList.removeWhere((activity) {
-    final activityType = PushStyles.values.asNameMap()[activity.typeStr()];
-    return !supportedActivityTypes.contains(activityType);
-  });
+// Helper function to check if activity type is supported
+bool isActivityTypeSupported(String activityType) {
+  final pushStyle = PushStyles.values.asNameMap()[activityType];
+  return pushStyle != null && supportedActivityTypes.contains(pushStyle);
+}
 
-  //Sort by originServerTs
-  acitivitiesList.sort(
-    (a, b) => b.originServerTs().compareTo(a.originServerTs()),
-  );
-  return acitivitiesList;
-});
+// Helper function to get date-only DateTime from activity timestamp
+DateTime getActivityDate(int timestamp) {
+  final activityDate = DateTime.fromMillisecondsSinceEpoch(timestamp).toLocal();
+  return DateTime(activityDate.year, activityDate.month, activityDate.day);
+}
 
-final allActivitiesProvider = FutureProvider<List<Activity>>((ref) async {
-  final allSpacesList = ref.watch(spacesProvider);
-  final activities = await Future.wait(
-    allSpacesList.map(
-      (space) async =>
-          await ref.watch(spaceActivitiesProvider(space.getRoomIdStr()).future),
-    ),
-  );
-  return activities.expand((x) => x).toList();
-});
+// Provider to get activities by id with filtering for supported types
+final allActivitiesByIdProvider = FutureProvider<List<Activity>>((ref) async {
 
-final activityDatesProvider = FutureProvider<List<DateTime>>((ref) async {
-  final activities = await ref.watch(allActivitiesProvider.future);
+  final activityIds = await ref.watch(allActivitiesProvider.future);
 
-  final uniqueDates = <DateTime>{};
+  if (activityIds.isEmpty) return [];
 
-  for (final activity in activities) {
-    final activityDate =
-        DateTime.fromMillisecondsSinceEpoch(
-          activity.originServerTs(),
-        ).toLocal();
-    // Set time to midnight for consistent date comparison
-    uniqueDates.add(
-      DateTime(activityDate.year, activityDate.month, activityDate.day),
-    );
+  final activities = <Activity>[];
+  for (final id in activityIds) {
+    final activity = ref.watch(activityProvider(id)).valueOrNull;
+    if (activity != null && isActivityTypeSupported(activity.typeStr())) {
+      activities.add(activity);
+    }
   }
+  return activities;
+});
 
+final activityDatesProvider = Provider<List<DateTime>>((ref) {
+  final activities = ref.watch(allActivitiesByIdProvider).valueOrNull ?? [];
+
+  if (activities.isEmpty) return [];
+
+  final uniqueDates = activities.map((activity) => getActivityDate(activity.originServerTs())).toSet();
   return uniqueDates.toList()..sort((a, b) => b.compareTo(a));
 });
 
-final roomIdsByDateProvider = FutureProvider.family<List<String>, DateTime>((
-  ref,
-  date,
-) async {
-  final activities = await ref.watch(allActivitiesProvider.future);
-
-  final roomIds = <String>{};
-
-  for (final activity in activities) {
-    final activityDate =
-        DateTime.fromMillisecondsSinceEpoch(
-          activity.originServerTs(),
-        ).toLocal();
-    final activityDateOnly = DateTime(
-      activityDate.year,
-      activityDate.month,
-      activityDate.day,
-    );
-
-    if (activityDateOnly.isAtSameMomentAs(date)) {
-      roomIds.add(activity.roomIdStr());
-    }
-  }
-
-  return roomIds.toList();
+// Base provider for activities filtered by date
+final activitiesByDateProvider = Provider.family<List<Activity>, DateTime>((ref, date) {
+  final activities = ref.watch(allActivitiesByIdProvider).valueOrNull ?? [];
+  return activities.where((activity) => getActivityDate(activity.originServerTs()).isAtSameMomentAs(date)).toList();
 });
 
-final spaceActivitiesProviderByDate =
-    FutureProvider.family<List<Activity>, ({String roomId, DateTime date})>((
-      ref,
-      params,
-    ) async {
-      final activities = await ref.watch(
-        spaceActivitiesProvider(params.roomId).future,
-      );
+// Provider for consecutive grouped activities using records 
+typedef RoomActivitiesInfo = ({String roomId, List<Activity> activities});
 
-      return activities.where((activity) {
-        // First check if activity matches the date
-        final activityDate =
-            DateTime.fromMillisecondsSinceEpoch(
-              activity.originServerTs(),
-            ).toLocal();
-        final activityDateOnly = DateTime(
-          activityDate.year,
-          activityDate.month,
-          activityDate.day,
-        );
+final consecutiveGroupedActivitiesProvider = Provider.family<List<RoomActivitiesInfo>, DateTime>((ref, date) {
+  final activitiesForDate = ref.watch(activitiesByDateProvider(date));
+  
+  // Sort by time descending
+  final sortedActivities = activitiesForDate.toList()..sort((a, b) => b.originServerTs().compareTo(a.originServerTs()));
 
-        return activityDateOnly.isAtSameMomentAs(params.date);
-      }).toList();
-    });
+  // Group consecutive activities by roomId
+  final groups = <RoomActivitiesInfo>[];
+  
+  for (final activity in sortedActivities) {
+    final roomId = activity.roomIdStr();
+    
+    if (groups.isNotEmpty && groups.last.roomId == roomId) {
+      // Add to existing group
+      final lastGroup = groups.last;
+      groups[groups.length - 1] = (roomId: roomId, activities: [...lastGroup.activities, activity]);
+    } else {
+      // Create new group
+      groups.add((roomId: roomId, activities: [activity]));
+    }
+  }
+  
+  return groups;
+});
+

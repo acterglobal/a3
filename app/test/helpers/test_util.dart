@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mockingjay/mockingjay.dart';
+import 'package:test_screenshot/test_screenshot.dart';
 
 import 'mock_go_router.dart';
 import 'test_wrapper_widget.dart';
@@ -49,6 +50,7 @@ extension ActerProviderTesting on WidgetTester {
     List<Override>? overrides,
     MockNavigator? navigatorOverride,
     GoRouter? goRouter,
+    String? screenshotPath,
     required Widget child,
   }) async {
     if (goRouter != null) {
@@ -57,11 +59,43 @@ extension ActerProviderTesting on WidgetTester {
     if (navigatorOverride != null) {
       child = MockNavigatorProvider(navigator: navigatorOverride, child: child);
     }
+    if (screenshotPath != null) {
+      await loadFonts();
+    }
     await pumpWidget(
       ProviderScope(
         overrides: overrides ?? [],
         child: InActerContextTestWrapper(child: child),
       ),
     );
+    if (screenshotPath != null) {
+      await screenshot(path: screenshotPath);
+    }
   }
+}
+
+extension SizeSetting on WidgetTester {
+  Future<void> configureTesterForSize(
+    Size canvasSize, [
+    double devicePixelRatio = 2.75,
+  ]) async {
+    final convertedSize = Size(
+      canvasSize.width / devicePixelRatio,
+      canvasSize.height / devicePixelRatio,
+    );
+    await binding.setSurfaceSize(convertedSize);
+    view.physicalSize = convertedSize;
+    view.devicePixelRatio = 1.0;
+  }
+}
+
+/// Custom finder to search for text within RichText widgets
+Finder findRichTextContaining(String text) {
+  return find.byWidgetPredicate((widget) {
+    if (widget is RichText) {
+      final plainText = widget.text.toPlainText();
+      return plainText.contains(text);
+    }
+    return false;
+  });
 }

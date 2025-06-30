@@ -5,15 +5,15 @@ import 'package:acter/common/actions/report_content.dart';
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/toolkit/buttons/user_chip.dart';
 import 'package:acter/common/toolkit/errors/error_page.dart';
+import 'package:acter/common/toolkit/html/render_html.dart';
 import 'package:acter/common/toolkit/menu_item_widget.dart';
-import 'package:acter/common/utils/routes.dart';
+import 'package:acter/router/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/acter_icon_picker/acter_icon_widget.dart';
 import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
 import 'package:acter/common/widgets/acter_icon_picker/model/color_data.dart';
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
-import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/features/attachments/types.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
 import 'package:acter/features/comments/types.dart';
@@ -21,6 +21,7 @@ import 'package:acter/features/comments/widgets/comments_section_widget.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/notifications/actions/autosubscribe.dart';
 import 'package:acter/features/notifications/widgets/object_notification_status.dart';
+import 'package:acter/features/home/providers/task_providers.dart';
 import 'package:acter/features/tasks/providers/task_items_providers.dart';
 import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:acter/features/tasks/widgets/due_picker.dart';
@@ -183,7 +184,12 @@ class _TaskItemBody extends ConsumerWidget {
     await openRedactContentDialog(
       context,
       title: L10n.of(context).deleteTaskItem,
-      onSuccess: () => Navigator.pop(context),
+      onSuccess: () async {
+        ref.invalidate(
+          taskItemProvider((taskListId: taskListId, taskId: task.eventIdStr())),
+        );
+        Navigator.pop(context);
+      },
       eventId: task.eventIdStr(),
       roomId: task.roomIdStr(),
       isSpace: true,
@@ -279,6 +285,7 @@ class _TaskItemBody extends ConsumerWidget {
                     ? RenderHtml(
                       text: formattedBody,
                       defaultTextStyle: textTheme.labelLarge,
+                      roomId: task.roomIdStr(),
                     )
                     : Text(description.body(), style: textTheme.labelLarge),
           ),
@@ -314,8 +321,9 @@ class _TaskItemBody extends ConsumerWidget {
     final lang = L10n.of(context);
     EasyLoading.show(status: lang.updatingDescription);
     try {
-      final updater = task.updateBuilder();
-      updater.descriptionHtml(plainDescription, htmlBodyDescription);
+      final updater =
+          task.updateBuilder()
+            ..descriptionHtml(plainDescription, htmlBodyDescription);
       await updater.send();
       await autosubscribe(ref: ref, objectId: task.eventIdStr(), lang: lang);
       EasyLoading.dismiss();
@@ -365,8 +373,9 @@ class _TaskItemBody extends ConsumerWidget {
     if (newDue == null) return;
     EasyLoading.show(status: lang.updatingDue);
     try {
-      final updater = task.updateBuilder();
-      updater.dueDate(newDue.due.year, newDue.due.month, newDue.due.day);
+      final updater =
+          task.updateBuilder()
+            ..dueDate(newDue.due.year, newDue.due.month, newDue.due.day);
       if (newDue.includeTime) {
         final seconds =
             newDue.due.hour * 60 * 60 +
@@ -379,6 +388,9 @@ class _TaskItemBody extends ConsumerWidget {
         updater.unsetUtcDueTimeOfDay();
       }
       await updater.send();
+
+      // Invalidate both providers to ensure proper task reordering
+      ref.invalidate(myOpenTasksProvider);
 
       await autosubscribe(ref: ref, objectId: task.eventIdStr(), lang: lang);
       if (!context.mounted) {
@@ -586,8 +598,7 @@ class _TaskItemBody extends ConsumerWidget {
   ) async {
     final lang = L10n.of(context);
     EasyLoading.show(status: lang.updatingTask);
-    final updater = task.updateBuilder();
-    updater.title(newName);
+    final updater = task.updateBuilder()..title(newName);
     try {
       await updater.send();
 

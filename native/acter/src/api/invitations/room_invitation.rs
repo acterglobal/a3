@@ -1,4 +1,4 @@
-use acter_core::client::CoreClient;
+use acter_matrix::client::CoreClient;
 use anyhow::{bail, Context, Result};
 use futures_signals::signal::{Mutable, MutableSignalCloned, SignalExt, SignalStream};
 use matrix_sdk::{

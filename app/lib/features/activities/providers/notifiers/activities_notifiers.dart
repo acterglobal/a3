@@ -1,79 +1,101 @@
 import 'dart:async';
-
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/config/constants.dart';
+import 'package:acter/features/activity_ui_showcase/mocks/providers/mock_activities_provider.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show Activities, Activity, Client;
 import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
 
-final _log = Logger('a3::common::activity_notifiers');
+final _log = Logger('a3::activities::notifiers');
 
-class AsyncSpaceActivitiesNotifier
-    extends FamilyAsyncNotifier<List<String>, String> {
+// Single Activity Notifier 
+class AsyncActivityNotifier extends FamilyAsyncNotifier<Activity?, String> {
   late Stream<bool> _listener;
   late StreamSubscription<bool> _poller;
-  Activities? _activities;
-
-  Future<List<String>> _getSpaceActivities(Client client) async {
-    // Clean up previous activities if they exist
-    _activities?.drop();
-
-    // Get new activities for the space
-    _activities = client.activitiesForRoom(arg);
-    final activitiesIds = await _activities?.getIds(0, 100);
-    if (activitiesIds == null) return [];
-    return asDartStringList(activitiesIds);
-  }
 
   @override
-  Future<List<String>> build(String arg) async {
+  FutureOr<Activity?> build(String arg) async {
+    final activityId = arg;
+
+    // if we are in showcase mode, return mock activity
+    if (includeShowCases) {
+      final mockActivity = ref.watch(mockActivityProvider(activityId));
+      if (mockActivity != null) {
+        return mockActivity;
+      }
+    }
+
+    // otherwise, get the activity from the client
     final client = await ref.watch(alwaysClientProvider.future);
-    _listener = client.subscribeRoomStream(arg);
+    _listener = client.subscribeModelStream(
+      activityId,
+    ); // keep it resident in memory
     _poller = _listener.listen(
       (data) async {
-        _log.info('space $arg : activities');
-        state = await AsyncValue.guard(
-          () async => await _getSpaceActivities(client),
-        );
+        try {
+          state = AsyncValue.data(await client.activity(activityId));
+        } catch (e, s) {
+          _log.severe('activity stream update failed', e, s);
+          state = AsyncValue.error(e, s);
+        }
       },
       onError: (e, s) {
-        _log.severe('space activities stream errored', e, s);
+        _log.severe('activity stream errored', e, s);
+        state = AsyncValue.error(e, s);
       },
       onDone: () {
-        _log.info('space activities stream ended');
+        _log.info('activity stream ended');
       },
     );
-
-    ref.onDispose(() {
-      _poller.cancel();
-      _activities?.drop();
-    });
-
-    return await _getSpaceActivities(client);
+    ref.onDispose(() => _poller.cancel());
+    return await client.activity(activityId);
   }
 }
 
-class AsyncActivityNotifier extends FamilyAsyncNotifier<Activity?, String> {
-  Activity? _activity;
+class AllActivitiesNotifier extends AsyncNotifier<List<String>> {
+  final List<StreamSubscription> _subscriptions = [];
+  Activities? _activities;
 
-  Future<Activity?> _getActivity(Client client) async {
-    // Clean up previous activity if it exists
-    _activity?.drop();
-
-    _activity = await client.activity(arg);
-    // Get activity based on id
-    return _activity;
+  Future<List<String>> _fetchAllActivities(Client client) async {
+    _activities?.drop();
+    _activities = null; // Prevent double free
+    _activities = client.allActivities();
+    final activityIds = await _activities?.getIds(0, 500); // adjust as needed
+    if (activityIds == null) return [];
+    
+    return asDartStringList(activityIds);
   }
 
   @override
-  Future<Activity?> build(String arg) async {
+  Future<List<String>> build() async {
     final client = await ref.watch(alwaysClientProvider.future);
+    final spaces = ref.watch(spacesProvider);
+
+    // Subscribe to each room's stream
+    for (final space in spaces) {
+      final roomId = space.getRoomIdStr();
+      final stream = client.subscribeRoomStream(roomId);
+      final sub = stream.listen(
+        (data) async {
+          state = AsyncValue.data(await _fetchAllActivities(client));
+        },
+        onError: (e, s) {},
+        onDone: () {},
+      );
+      _subscriptions.add(sub);
+    }
 
     ref.onDispose(() {
-      _activity?.drop();
+      for (final sub in _subscriptions) {
+        sub.cancel();
+      }
+      _activities?.drop();
+      _activities = null; // Prevent double free
     });
 
-    return await _getActivity(client);
+    return await _fetchAllActivities(client);
   }
 }

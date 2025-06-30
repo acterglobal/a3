@@ -44,36 +44,28 @@ utc_due = "{{ now().as_rfc3339 }}"
 #[tokio::test]
 async fn ref_event_on_pin() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("aOnpin", 2, TMPL).await?;
+        random_users_with_random_space_under_template("aOnpin", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
-    let fetcher_client = second_user.clone();
-    let obj_entry = Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        async move {
-            let entries = client.pins().await?;
-            if entries.is_empty() {
-                bail!("entries not found");
-            }
-            Ok(entries[0].clone())
+    let obj_entry = Retry::spawn(retry_strategy.clone(), || async {
+        let entries = second_user.pins().await?;
+        if entries.is_empty() {
+            bail!("entries not found");
         }
+        Ok(entries[0].clone())
     })
     .await?;
 
-    let fetcher_client = second_user.clone();
-    let ref_entry = Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        async move {
-            let entries = client.calendar_events().await?;
-            if entries.is_empty() {
-                bail!("entries not found");
-            }
-            Ok(entries[0].clone())
+    let ref_entry = Retry::spawn(retry_strategy.clone(), || async {
+        let entries = second_user.calendar_events().await?;
+        if entries.is_empty() {
+            bail!("entries not found");
         }
+        Ok(entries[0].clone())
     })
     .await?;
     let ref_details = ref_entry.ref_details().await?;
@@ -87,18 +79,14 @@ async fn ref_event_on_pin() -> Result<()> {
         .await
         .expect("setting notifications subscription works");
     // ensure this has been locally synced
-    let fetcher_client = notif_settings.clone();
-    Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        let obj_id = obj_id.clone();
-        async move {
-            if client.object_push_subscription_status(obj_id, None).await?
-                != SubscriptionStatus::Subscribed
-            {
-                bail!("not yet subscribed");
-            }
-            Ok(())
+    Retry::spawn(retry_strategy, || async {
+        let status = notif_settings
+            .object_push_subscription_status(obj_id.clone(), None)
+            .await?;
+        if status != SubscriptionStatus::Subscribed {
+            bail!("not yet subscribed");
         }
+        Ok(())
     })
     .await?;
 
@@ -117,10 +105,8 @@ async fn ref_event_on_pin() -> Result<()> {
         notification_item
             .parent_id_str()
             .expect("parent is in references"),
-        obj_entry.event_id().to_string()
+        *obj_entry.event_id()
     );
-
-    let obj_id = obj_entry.event_id().to_string();
 
     assert_eq!(notification_item.title(), "🗓️ First meeting");
     let parent = notification_item.parent().expect("parent was found");
@@ -128,14 +114,14 @@ async fn ref_event_on_pin() -> Result<()> {
         notification_item.target_url(),
         format!(
             "/pins/{}?section=references&referenceId={}",
-            obj_id,
+            obj_entry.event_id(),
             encode(notification_id.as_str())
         )
     );
-    assert_eq!(parent.type_str(), "pin".to_owned());
-    assert_eq!(parent.title().unwrap(), "Acter Website".to_owned());
+    assert_eq!(parent.type_str(), "pin");
+    assert_eq!(parent.title().as_deref(), Some("Acter Website"));
     assert_eq!(parent.emoji(), "📌"); // pin
-    assert_eq!(parent.object_id_str(), obj_id);
+    assert_eq!(parent.object_id_str(), *obj_entry.event_id());
 
     Ok(())
 }
@@ -143,61 +129,49 @@ async fn ref_event_on_pin() -> Result<()> {
 #[tokio::test]
 async fn reference_pin_on_event() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("aOevent", 2, TMPL).await?;
+        random_users_with_random_space_under_template("aOevent", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
-    let fetcher_client = second_user.clone();
-    let obj_entry = Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        async move {
-            let entries = client.calendar_events().await?;
-            if entries.is_empty() {
-                bail!("entries not found");
-            }
-            Ok(entries[0].clone())
+    let obj_entry = Retry::spawn(retry_strategy.clone(), || async {
+        let entries = second_user.calendar_events().await?;
+        if entries.is_empty() {
+            bail!("entries not found");
         }
+        Ok(entries[0].clone())
     })
     .await?;
 
-    let fetcher_client = second_user.clone();
-    let ref_entry = Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        async move {
-            let entries = client.pins().await?;
-            if entries.is_empty() {
-                bail!("entries not found");
-            }
-            Ok(entries[0].clone())
+    let ref_entry = Retry::spawn(retry_strategy.clone(), || async {
+        let entries = second_user.pins().await?;
+        if entries.is_empty() {
+            bail!("entries not found");
         }
+        Ok(entries[0].clone())
     })
     .await?;
     let ref_details = ref_entry.ref_details().await?;
 
     // ensure we are expected to see these notifications
     let notif_settings = first.notification_settings().await?;
-    let obj_id = obj_entry.event_id().to_string();
+    let obj_id = obj_entry.event_id();
 
     notif_settings
-        .subscribe_object_push(obj_id.clone(), None)
+        .subscribe_object_push(obj_id.to_string(), None)
         .await
         .expect("setting notifications subscription works");
     // ensure this has been locally synced
-    let fetcher_client = notif_settings.clone();
-    Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        let obj_id = obj_id.clone();
-        async move {
-            if client.object_push_subscription_status(obj_id, None).await?
-                != SubscriptionStatus::Subscribed
-            {
-                bail!("not yet subscribed");
-            }
-            Ok(())
+    Retry::spawn(retry_strategy, || async {
+        let status = notif_settings
+            .object_push_subscription_status(obj_id.to_string(), None)
+            .await?;
+        if status != SubscriptionStatus::Subscribed {
+            bail!("not yet subscribed");
         }
+        Ok(())
     })
     .await?;
 
@@ -216,10 +190,8 @@ async fn reference_pin_on_event() -> Result<()> {
         notification_item
             .parent_id_str()
             .expect("parent is in references"),
-        obj_entry.event_id().to_string()
+        obj_entry.event_id()
     );
-
-    let obj_id = obj_entry.event_id().to_string();
 
     assert_eq!(notification_item.title(), "📌 Acter Website");
     let parent = notification_item.parent().expect("parent was found");
@@ -227,14 +199,14 @@ async fn reference_pin_on_event() -> Result<()> {
         notification_item.target_url(),
         format!(
             "/events/{}?section=references&referenceId={}",
-            obj_id,
+            obj_entry.event_id(),
             encode(notification_id.as_str())
         )
     );
-    assert_eq!(parent.type_str().as_str(), "event");
-    assert_eq!(parent.title().unwrap().as_str(), "First meeting");
+    assert_eq!(parent.type_str(), "event");
+    assert_eq!(parent.title().as_deref(), Some("First meeting"));
     assert_eq!(parent.emoji(), "🗓️");
-    assert_eq!(parent.object_id_str(), obj_id);
+    assert_eq!(parent.object_id_str(), *obj_entry.event_id());
 
     Ok(())
 }
@@ -242,61 +214,49 @@ async fn reference_pin_on_event() -> Result<()> {
 #[tokio::test]
 async fn reference_pin_on_tasklist() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("aOevent", 2, TMPL).await?;
+        random_users_with_random_space_under_template("aOevent", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
-    let fetcher_client = second_user.clone();
-    let obj_entry = Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        async move {
-            let entries = client.task_lists().await?;
-            if entries.is_empty() {
-                bail!("entries not found");
-            }
-            Ok(entries[0].clone())
+    let obj_entry = Retry::spawn(retry_strategy.clone(), || async {
+        let entries = second_user.task_lists().await?;
+        if entries.is_empty() {
+            bail!("entries not found");
         }
+        Ok(entries[0].clone())
     })
     .await?;
 
-    let fetcher_client = second_user.clone();
-    let ref_entry = Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        async move {
-            let entries = client.pins().await?;
-            if entries.is_empty() {
-                bail!("entries not found");
-            }
-            Ok(entries[0].clone())
+    let ref_entry = Retry::spawn(retry_strategy.clone(), || async {
+        let entries = second_user.pins().await?;
+        if entries.is_empty() {
+            bail!("entries not found");
         }
+        Ok(entries[0].clone())
     })
     .await?;
     let ref_details = ref_entry.ref_details().await?;
 
     // ensure we are expected to see these notifications
     let notif_settings = first.notification_settings().await?;
-    let obj_id = obj_entry.event_id().to_string();
+    let obj_id = obj_entry.event_id();
 
     notif_settings
-        .subscribe_object_push(obj_id.clone(), None)
+        .subscribe_object_push(obj_id.to_string(), None)
         .await
         .expect("setting notifications subscription works");
     // ensure this has been locally synced
-    let fetcher_client = notif_settings.clone();
-    Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        let obj_id = obj_id.clone();
-        async move {
-            if client.object_push_subscription_status(obj_id, None).await?
-                != SubscriptionStatus::Subscribed
-            {
-                bail!("not yet subscribed");
-            }
-            Ok(())
+    Retry::spawn(retry_strategy, || async {
+        let status = notif_settings
+            .object_push_subscription_status(obj_id.to_string(), None)
+            .await?;
+        if status != SubscriptionStatus::Subscribed {
+            bail!("not yet subscribed");
         }
+        Ok(())
     })
     .await?;
 
@@ -315,10 +275,8 @@ async fn reference_pin_on_tasklist() -> Result<()> {
         notification_item
             .parent_id_str()
             .expect("parent is in references"),
-        obj_entry.event_id().to_string()
+        *obj_entry.event_id()
     );
-
-    let obj_id = obj_entry.event_id().to_string();
 
     assert_eq!(notification_item.title(), "📌 Acter Website");
     let parent = notification_item.parent().expect("parent was found");
@@ -326,14 +284,14 @@ async fn reference_pin_on_tasklist() -> Result<()> {
         notification_item.target_url(),
         format!(
             "/tasks/{}?section=references&referenceId={}",
-            obj_id,
+            obj_entry.event_id(),
             encode(notification_id.as_str())
         )
     );
-    assert_eq!(parent.type_str().as_str(), "task-list");
-    assert_eq!(parent.title().unwrap().as_str(), "Onboarding list");
+    assert_eq!(parent.type_str(), "task-list");
+    assert_eq!(parent.title().as_deref(), Some("Onboarding list"));
     assert_eq!(parent.emoji(), "📋"); // task list
-    assert_eq!(parent.object_id_str(), obj_id);
+    assert_eq!(parent.object_id_str(), *obj_entry.event_id());
 
     Ok(())
 }
@@ -341,66 +299,55 @@ async fn reference_pin_on_tasklist() -> Result<()> {
 #[tokio::test]
 async fn link_attachment_on_task() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("aOevent", 2, TMPL).await?;
+        random_users_with_random_space_under_template("aOevent", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
-    let fetcher_client = second_user.clone();
-    let obj_entry = Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        async move {
-            let entries = client.task_lists().await?;
-            if entries.is_empty() {
-                bail!("entries not found");
-            }
-            let tl = entries[0].clone();
-            let tasks = tl.tasks().await?;
-            if tasks.is_empty() {
-                bail!("task not found");
-            }
-            Ok(tasks.first().unwrap().clone())
+    let obj_entry = Retry::spawn(retry_strategy.clone(), || async {
+        let entries = second_user.task_lists().await?;
+        if entries.is_empty() {
+            bail!("entries not found");
         }
+        let tl = entries[0].clone();
+        let tasks = tl.tasks().await?;
+        if tasks.is_empty() {
+            bail!("task not found");
+        }
+        let task = tasks.first().expect("first task should be available");
+        Ok(task.clone())
     })
     .await?;
 
-    let fetcher_client = second_user.clone();
-    let ref_entry = Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        async move {
-            let entries = client.pins().await?;
-            if entries.is_empty() {
-                bail!("entries not found");
-            }
-            Ok(entries[0].clone())
+    let ref_entry = Retry::spawn(retry_strategy.clone(), || async {
+        let entries = second_user.pins().await?;
+        if entries.is_empty() {
+            bail!("entries not found");
         }
+        Ok(entries[0].clone())
     })
     .await?;
     let ref_details = ref_entry.ref_details().await?;
 
     // ensure we are expected to see these notifications
     let notif_settings = first.notification_settings().await?;
-    let obj_id = obj_entry.event_id().to_string();
+    let obj_id = obj_entry.event_id();
 
     notif_settings
-        .subscribe_object_push(obj_id.clone(), None)
+        .subscribe_object_push(obj_id.to_string(), None)
         .await
         .expect("setting notifications subscription works");
     // ensure this has been locally synced
-    let fetcher_client = notif_settings.clone();
-    Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        let obj_id = obj_id.clone();
-        async move {
-            if client.object_push_subscription_status(obj_id, None).await?
-                != SubscriptionStatus::Subscribed
-            {
-                bail!("not yet subscribed");
-            }
-            Ok(())
+    Retry::spawn(retry_strategy, || async {
+        let status = notif_settings
+            .object_push_subscription_status(obj_id.to_string(), None)
+            .await?;
+        if status != SubscriptionStatus::Subscribed {
+            bail!("not yet subscribed");
         }
+        Ok(())
     })
     .await?;
 
@@ -419,10 +366,8 @@ async fn link_attachment_on_task() -> Result<()> {
         notification_item
             .parent_id_str()
             .expect("parent is in references"),
-        obj_entry.event_id().to_string()
+        *obj_entry.event_id()
     );
-
-    let obj_id = obj_entry.event_id().to_string();
 
     assert_eq!(notification_item.title(), "📌 Acter Website");
     let parent = notification_item.parent().expect("parent was found");
@@ -431,12 +376,12 @@ async fn link_attachment_on_task() -> Result<()> {
         format!(
             "/tasks/{}/{}?section=references&referenceId={}",
             obj_entry.task_list_id_str(),
-            obj_id,
+            obj_entry.event_id(),
             encode(notification_id.as_str())
         )
     );
-    assert_eq!(parent.type_str().as_str(), "task");
-    assert_eq!(parent.title().unwrap().as_str(), "Scroll news");
+    assert_eq!(parent.type_str(), "task");
+    assert_eq!(parent.title().as_deref(), Some("Scroll news"));
     assert_eq!(parent.emoji(), "☑️"); // task
 
     Ok(())

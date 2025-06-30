@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:acter/config/constants.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -32,22 +33,36 @@ bool isValidUrl(String url) {
   return urlPattern.hasMatch(url);
 }
 
-String jiffyTime(BuildContext context, int timeInterval) {
+bool isOnlyEmojis(String text) {
+  final emojiRegex = RegExp(
+    r'^(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff]|\s)+$',
+  );
+
+  return emojiRegex.hasMatch(text.trim());
+}
+
+bool isDesktop(BuildContext context) =>
+    desktopPlatforms.contains(Theme.of(context).platform);
+
+String jiffyTime(BuildContext context, int timeInterval, {DateTime? toWhen}) {
   final jiffyTime = Jiffy.parseFromMillisecondsSinceEpoch(timeInterval);
-  final now = Jiffy.now().startOf(Unit.day);
+  final now = Jiffy.parseFromDateTime(
+    toWhen ?? DateTime.now().toUtc(),
+  ).startOf(Unit.day);
   if (now.isSame(jiffyTime, unit: Unit.day)) {
     return jiffyTime.jm;
-  } else {
-    final yesterday = now.subtract(days: 1);
-    final week = now.subtract(weeks: 1);
-    if (jiffyTime.isBetween(yesterday, now)) {
-      return 'Yesterday';
-    } else if (jiffyTime.isBetween(week, now)) {
-      return jiffyTime.EEEE;
-    } else {
-      return jiffyTime.yMd;
-    }
   }
+
+  final yesterday = now.subtract(days: 1);
+  if (jiffyTime.isBetween(yesterday, now)) {
+    return L10n.of(context).yesterday;
+  }
+
+  final week = now.subtract(weeks: 1);
+  if (jiffyTime.isBetween(week, now)) {
+    return jiffyTime.EEEE;
+  }
+  return jiffyTime.yMd;
 }
 
 String jiffyDateForActvity(BuildContext context, int timeInterval) {
@@ -64,6 +79,36 @@ String jiffyDateForActvity(BuildContext context, int timeInterval) {
   return activityDate.yMd;
 }
 
+String jiffyDateTimestamp(
+  BuildContext context,
+  int timeInterval, {
+  bool showDay = false,
+}) {
+  final jiffyTime = Jiffy.parseFromMillisecondsSinceEpoch(timeInterval);
+  final now = Jiffy.parseFromDateTime(DateTime.now().toUtc());
+  final use24HourFormat = MediaQuery.of(context).alwaysUse24HourFormat;
+  final formattedTime = use24HourFormat ? jiffyTime.Hm : jiffyTime.jm;
+
+  if (!showDay) return formattedTime;
+
+  if (now.isSame(jiffyTime, unit: Unit.day)) {
+    return formattedTime;
+  }
+
+  final week = now.subtract(weeks: 1);
+  final year = now.subtract(years: 1);
+
+  if (jiffyTime.isBetween(week, now)) {
+    return '${jiffyTime.E} $formattedTime';
+  }
+
+  if (jiffyTime.isBefore(week) && jiffyTime.isAfter(year)) {
+    return '${jiffyTime.MMMEd} $formattedTime';
+  }
+
+  return '${jiffyTime.yMMMEd} $formattedTime';
+}
+
 extension TimeOfDayExtension on TimeOfDay {
   /// note: 'hour' is in 24-hour format
   double toDouble() => hour + (minute / 60.0);
@@ -71,6 +116,15 @@ extension TimeOfDayExtension on TimeOfDay {
 
 String taskDueDateFormat(DateTime dateTime) {
   return DateFormat('dd/MM/yyyy').format(dateTime);
+}
+
+String formatTimeFromTimestamp(int originServerTs) {
+  final originServerDateTime =
+      DateTime.fromMillisecondsSinceEpoch(
+        originServerTs,
+        isUtc: true,
+      ).toLocal();
+  return DateFormat('hh:mm a').format(originServerDateTime);
 }
 
 String getHumanReadableFileSize(int bytes) {
@@ -190,4 +244,33 @@ bool hasValidEditorContent({required String plainText, required String html}) {
           .isEmpty;
 
   return !hasOnlyStructure;
+}
+
+String formatChatDayDividerDateString(BuildContext context, String dateString) {
+  try {
+    final lang = L10n.of(context);
+
+    // Parse the date string using Jiffy
+    final messageDate = Jiffy.parse(dateString).startOf(Unit.day);
+    final today = Jiffy.now().startOf(Unit.day);
+    final yesterday = today.subtract(days: 1);
+
+    if (messageDate.isSame(today, unit: Unit.day)) {
+      return lang.today;
+    } else if (messageDate.isSame(yesterday, unit: Unit.day)) {
+      return lang.yesterday;
+    } else {
+      // Check if it's the same year
+      if (messageDate.isSame(today, unit: Unit.year)) {
+        // Same year: show day name, date and month (e.g., "Fri, May 17")
+        return messageDate.format(pattern: 'EEE, d MMM');
+      } else {
+        // Different year: show month, date and year (e.g., "May 17, 2025")
+        return messageDate.format(pattern: 'd MMM, y');
+      }
+    }
+  } catch (e) {
+    // If parsing fails, return the original string
+    return dateString;
+  }
 }

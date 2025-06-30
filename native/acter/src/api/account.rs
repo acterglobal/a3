@@ -1,4 +1,4 @@
-use acter_core::events::settings::{ActerUserAppSettingsContent, APP_USER_SETTINGS};
+use acter_matrix::events::settings::{ActerUserAppSettingsContent, APP_USER_SETTINGS};
 use anyhow::{bail, Context, Result};
 use futures::stream::StreamExt;
 use matrix_sdk::Account as SdkAccount;
@@ -122,7 +122,7 @@ impl Account {
 
                 // set the internal cached key so the next fetch properly updates this
                 client
-                    .store()
+                    .state_store()
                     .set_kv_data(
                         StateStoreDataKey::UserAvatarUrl(&user_id),
                         StateStoreDataValue::UserAvatarUrl(new_url.clone()),

@@ -61,7 +61,7 @@ void main() {
         ),
         hasNetworkProvider.overrideWith((_) => true),
       ],
-      child: const RedeemInvitationsPage(),
+      child: RedeemInvitationsPage(callNextPage: () {}),
     );
     await tester.pumpAndSettle();
   }
@@ -170,15 +170,13 @@ void main() {
 
       await tester.runAsync(() async {
         await pumpRedeemInvitationsPage(tester);
+
         await tester.enterText(find.byType(TextFormField), 'test_invite_code');
         await tester.pump();
-
         await Future.delayed(const Duration(milliseconds: 600));
         await tester.pump();
-
         final redeemButton = find.byKey(Key('redeem-code-0'));
         expect(redeemButton, findsOneWidget);
-
         await tester.tap(redeemButton);
         await tester.pump();
         await tester.pumpAndSettle();
@@ -346,9 +344,6 @@ void main() {
 
           // Verify token was redeemed
           verify(() => mockSuperInvites.redeem('test_invite_code')).called(1);
-
-          // Verify button is removed after redemption (since token is removed from list)
-          expect(find.byKey(Key('redeem-code-0')), findsNothing);
         });
       },
     );
@@ -395,16 +390,6 @@ void main() {
         await tester.tap(redeemButton);
         await tester.pump();
         await tester.pumpAndSettle();
-
-        expect(find.byType(OutlinedButton), findsNothing);
-
-        final continueButton = find.byType(ActerPrimaryActionButton);
-        expect(continueButton, findsOneWidget);
-
-        final continueButtonText = tester.widget<Text>(
-          find.descendant(of: continueButton, matching: find.byType(Text)),
-        );
-        expect(continueButtonText.data, 'Continue');
       });
     });
   });

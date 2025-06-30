@@ -7,10 +7,12 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:acter/features/home/providers/task_providers.dart';
 
 final _log = Logger('a3::tasks::widgets::due_clip');
 
-class DueChip extends StatefulWidget {
+class DueChip extends ConsumerStatefulWidget {
   final Task task;
   final Widget? noneChild;
   final bool canChange;
@@ -27,10 +29,10 @@ class DueChip extends StatefulWidget {
   });
 
   @override
-  State<DueChip> createState() => _DueChipState();
+  ConsumerState<DueChip> createState() => _DueChipState();
 }
 
-class _DueChipState extends State<DueChip> {
+class _DueChipState extends ConsumerState<DueChip> {
   DateTime? dueDate;
 
   @override
@@ -103,8 +105,9 @@ class _DueChipState extends State<DueChip> {
     if (newDue == null) return;
     EasyLoading.show(status: lang.updatingDue);
     try {
-      final updater = widget.task.updateBuilder();
-      updater.dueDate(newDue.due.year, newDue.due.month, newDue.due.day);
+      final updater =
+          widget.task.updateBuilder()
+            ..dueDate(newDue.due.year, newDue.due.month, newDue.due.day);
       if (newDue.includeTime) {
         final seconds =
             newDue.due.hour * 60 * 60 +
@@ -117,6 +120,10 @@ class _DueChipState extends State<DueChip> {
         updater.unsetUtcDueTimeOfDay();
       }
       await updater.send();
+
+      // Invalidate both providers to ensure proper task reordering
+      ref.invalidate(myOpenTasksProvider);
+
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;

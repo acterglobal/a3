@@ -30,7 +30,7 @@ impl ExecuteOpts {
             .collect::<HashMap<&str, &str>>();
         let mut user = self.login.client().await?;
 
-        let sync_state = user.start_sync().await?;
+        let sync_state = user.start_sync();
 
         if !self.ignore_sync {
             let mut is_synced = sync_state.first_synced_rx();
@@ -49,11 +49,11 @@ impl ExecuteOpts {
                     .collect::<Vec<_>>()
             };
             for (key, (is_required, is_space)) in input_values {
-                if let Some(res) = mapped_inputs.get(key.as_str()) {
+                if let Some(res) = mapped_inputs.get(key.as_str()).cloned() {
                     if !is_space {
                         bail!("{key} : non-space input values not yet supported");
                     }
-                    tmpl_engine.add_ref(key.to_string(), "space".to_owned(), res.to_string())?;
+                    tmpl_engine.add_ref(key.clone(), "space".to_owned(), res.to_owned())?;
                 } else if is_required {
                     if key != "main" {
                         bail!("Missing required input value {key} for {tmpl_path:?}");

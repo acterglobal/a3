@@ -1,4 +1,4 @@
-use acter_core::RestoreToken;
+use acter_matrix::RestoreToken;
 use anyhow::{bail, Context, Result};
 use lazy_static::lazy_static;
 use matrix_sdk::{
@@ -21,7 +21,7 @@ use matrix_sdk_base::{
     SessionMeta,
 };
 use std::sync::RwLock;
-use tracing::info;
+use tracing::{info, warn};
 use url::Url;
 use uuid::Uuid;
 
@@ -341,7 +341,7 @@ pub async fn register_under_config(
                 "Successfully registered user {user_id}, device {:?}",
                 client.device_id(),
             );
-            if client.logged_in() {
+            if client.is_active() {
                 let state = ClientStateBuilder::default()
                     .is_guest(false)
                     .db_passphrase(db_passphrase)
@@ -434,7 +434,7 @@ pub async fn register_with_token_under_config(
                 "Successfully registered user {user_id}, device {:?}",
                 client.device_id(),
             );
-            if client.logged_in() {
+            if client.is_active() {
                 let state = ClientStateBuilder::default()
                     .is_guest(false)
                     .db_passphrase(db_passphrase)

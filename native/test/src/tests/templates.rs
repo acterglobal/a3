@@ -14,7 +14,7 @@ name = "Smoketest Template"
 main = { type = "user", is-default = true, required = true, description = "The starting user" }
 
 [objects]
-main_space = { type = "space", is-default = true, name = "{{ main.display_name }}’s test space"}
+main_space = { type = "space", is-default = true, name = "{{ main.display_name }}’s template test space" }
 start_list = { type = "task-list", name = "{{ main.display_name }}’s Acter onboarding list" }
 
 [objects.task_1]
@@ -45,15 +45,11 @@ async fn template_creates_space() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = user.clone();
-    Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        async move {
-            if client.pins().await?.len() != 2 || client.task_lists().await?.len() != 1 {
-                bail!("not all pins and task lists found");
-            }
-            Ok(())
+    Retry::spawn(retry_strategy, || async {
+        if user.pins().await?.len() != 2 || user.task_lists().await?.len() != 1 {
+            bail!("not all pins and task lists found");
         }
+        Ok(())
     })
     .await?;
 
@@ -63,7 +59,7 @@ async fn template_creates_space() -> Result<()> {
     let spaces = user.spaces().await?;
     assert_eq!(spaces.len(), 1);
 
-    let main_space = spaces.first().unwrap();
+    let main_space = spaces.first().expect("main space should be available");
     assert_eq!(main_space.pins().await?.len(), 2);
     assert_eq!(main_space.task_lists().await?.len(), 1);
     Ok(())

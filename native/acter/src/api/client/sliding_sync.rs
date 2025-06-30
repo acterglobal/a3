@@ -1,4 +1,4 @@
-use acter_core::referencing::{ExecuteReference, RoomParam};
+use acter_matrix::referencing::{ExecuteReference, RoomParam};
 use anyhow::Result;
 use futures::{
     future::join_all,
@@ -7,6 +7,7 @@ use futures::{
 };
 use futures_signals::signal::Mutable;
 use imbl::vector::Vector;
+use matrix_sdk::room::Room as SdkRoom;
 use matrix_sdk_base::{
     ruma::{api::client::sync::sync_events, assign, OwnedRoomId, RoomId},
     RoomState,
@@ -14,9 +15,9 @@ use matrix_sdk_base::{
 use matrix_sdk_ui::{
     encryption_sync_service::EncryptionSyncService,
     eyeball_im::{ObservableVector, VectorDiff},
-    room_list_service,
+    room_list_service::filters,
     sync_service::{State, SyncService},
-    timeline::{Timeline as SdkTimeline, TimelineItem as SdkTimelineItem},
+    timeline::{RoomExt, Timeline as SdkTimeline, TimelineItem as SdkTimelineItem},
 };
 use std::{
     cmp::Ordering,
@@ -81,10 +82,10 @@ pub struct SyncController {
     /// The sync service used for synchronizing events.
     sync_service: Arc<Mutable<Option<SyncService>>>,
 
-    pub(crate) rooms: Arc<RwLock<ObservableVector<room_list_service::Room>>>,
+    pub(crate) rooms: Arc<RwLock<ObservableVector<SdkRoom>>>,
 
     /// Room list service rooms known to the app.
-    pub(crate) ui_rooms: Arc<RwLock<HashMap<OwnedRoomId, room_list_service::Room>>>,
+    pub(crate) ui_rooms: Arc<RwLock<HashMap<OwnedRoomId, SdkRoom>>>,
 
     /// Timelines data structures for each room.
     pub(crate) timelines: Arc<RwLock<HashMap<OwnedRoomId, Timeline>>>,
@@ -163,8 +164,7 @@ impl Client {
 
         let main_listener = tokio::spawn(async move {
             let (room_stream, entries_controller) = room_list.entries_with_dynamic_adapters(50_000);
-            entries_controller
-                .set_filter(Box::new(room_list_service::filters::new_filter_non_left()));
+            entries_controller.set_filter(Box::new(filters::new_filter_non_left()));
             pin_mut!(room_stream);
 
             while let Some(diffs) = room_stream.next().await {
@@ -238,7 +238,7 @@ impl Client {
                 // Update all the room info for all rooms.
                 for room in all_rooms.iter() {
                     let raw_name = room.name();
-                    let display_name = room.cached_display_name();
+                    let display_name = room.cached_display_name().map(|d| d.to_string());
                     let is_dm = room
                         .is_direct()
                         .await
@@ -264,21 +264,13 @@ impl Client {
                 {
                     let mut found_latest_msg = me.load_latest_message(ui_room.room_id()).await;
 
-                    // Initialize the timeline.
-                    let Ok(builder) = ui_room.default_room_timeline_builder().await else {
-                        error!("Failed to get default timeline builder");
-                        continue;
-                    };
-
-                    if let Err(err) = ui_room.init_timeline_with_builder(builder).await {
-                        error!("error when creating default timeline: {err}");
-                        continue;
-                    }
-
                     // Save the timeline in the cache.
-                    let Some(sdk_timeline) = ui_room.timeline() else {
-                        error!("Empty timeline of room");
-                        continue;
+                    let sdk_timeline = match ui_room.timeline_builder().build().await {
+                        Ok(tl) => tl,
+                        Err(err) => {
+                            error!("error when building timeline: {err}");
+                            continue;
+                        }
                     };
                     let (items, stream) = sdk_timeline.subscribe().await;
                     // Update the latest message if there is new msg in the first page
@@ -354,7 +346,7 @@ impl Client {
                     new_timelines.push((
                         ui_room.room_id().to_owned(),
                         Timeline {
-                            inner: sdk_timeline,
+                            inner: Arc::new(sdk_timeline),
                             task: Arc::new(timeline_task),
                         },
                     ));
@@ -367,7 +359,7 @@ impl Client {
                 ui_rooms.write().await.extend(new_ui_rooms);
                 timelines.write().await.extend(new_timelines);
 
-                me.update_rooms(&all_rooms).await;
+                me.update_rooms(&all_rooms.iter().cloned().collect()).await;
 
                 trace!("ready for the next round");
             }
@@ -386,7 +378,7 @@ impl Client {
         Ok(())
     }
 
-    async fn update_rooms(&self, changed_rooms: &Vector<room_list_service::Room>) {
+    async fn update_rooms(&self, changed_rooms: &Vector<SdkRoom>) {
         let update_keys = {
             let client = self.core.client();
             let mut updated: Vec<OwnedRoomId> = vec![];
@@ -410,7 +402,7 @@ impl Client {
 
                 let inner = Room::new(
                     self.core.clone(),
-                    room.inner_room().clone(),
+                    room.clone(),
                     self.sync_controller.clone(),
                 );
 
@@ -543,7 +535,10 @@ impl Client {
                 }
                 a_ts.unwrap().cmp(&b_ts.unwrap())
             });
-            self.spaces.write().await.append(spaces);
+            self.spaces
+                .write()
+                .await
+                .append(spaces.iter().cloned().collect());
         }
 
         let mut convos = c
@@ -570,7 +565,10 @@ impl Client {
                 }
                 a_ts.unwrap().cmp(&b_ts.unwrap())
             });
-            self.convos.write().await.append(convos);
+            self.convos
+                .write()
+                .await
+                .append(convos.iter().cloned().collect());
         }
     }
 }

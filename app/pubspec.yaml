@@ -33,13 +33,13 @@ dependencies:
   # UI
   flutter_adaptive_scaffold: ^0.3.1
   atlas_icons: ^0.0.12
-  skeletonizer: ^1.1.1
+  skeletonizer: ^2.0.1
   flutter_chat_ui: ^1.6.9
   flutter_chat_types: ^3.3.2
   scroll_to_index: ^3.0.1
   flutter_staggered_grid_view: ^0.7.0
   flutter_svg: ">=1.0.0"
-  sentry_flutter: ^8.4.0
+  sentry_flutter: ^8.14.2
   flutter_link_previewer: ^3.0.1
   bubble: ^1.2.1
   swipe_to: ^1.0.5
@@ -55,13 +55,17 @@ dependencies:
   flutter_slidable: ^4.0.0
   quds_popup_menu: ^0.0.1+1
   acter_avatar:
-#    path: "../../acter-avatar"
+    # path: "../../acter-avatar"
     git:
       url: https://github.com/acterglobal/acter-avatar
       ref: main
 
   flutter_easyloading: ^3.0.5
-  appflowy_editor: ^4.0.0
+  appflowy_editor: #^5.2.0
+    # path: ../../appflowy-editor
+    git:
+      url: https://github.com/acterglobal/appflowy-editor
+      ref: ben-mobile-expandable-editor
   acter_trigger_auto_complete:
     path: ../packages/acter_trigger_auto_complete
   acter_notifify:
@@ -70,7 +74,7 @@ dependencies:
   # Code Generation
   flutter_localizations:
     sdk: flutter
-  intl: ^0.19.0
+  intl: ^0.20.2
   freezed: ^2.5.7
   acter_flutter_sdk:
     path: ../packages/rust_sdk
@@ -82,16 +86,17 @@ dependencies:
   go_router: ^14.1.4
 
   # widgets
-  settings_ui: '2.0.2'
+  settings_ui: "2.0.2"
 
   # Utilities
-  html: ^0.15.4
+  audioplayers: ^6.4.0
+  html: ^0.15.5
   markdown: ^7.3.0
   path_provider: ^2.0.8
   dart_date: ^1.3.2
   path: ^1.8.3
   url_launcher: ^6.1.10
-  file_picker: ^8.1.2
+  file_picker: ^10.1.9
   emoji_picker_flutter: ^4.3.0
   connectivity_plus: ^6.0.3
   mime: ^2.0.0
@@ -104,14 +109,14 @@ dependencies:
   shared_preferences: ^2.2.0
   image_picker_for_web: ^3.0.1
   riverpod_infinite_scroll:
-    git: 
+    git:
       url: https://github.com/acterglobal/riverpod_infinite_scroll.git
   infinite_scroll_pagination: ^4.0.0
   logging: ^1.2.0
   args: ^2.4.2
   breadcrumbs: ^0.1.0
-  device_info_plus: ^10.1.0
-  app_settings: #^5.1.1
+  device_info_plus: ^11.3.3
+  app_settings: # ^5.1.1
     git:
       url: https://github.com/spencerccf/app_settings
       ref: bc0d4ae
@@ -134,22 +139,17 @@ dependencies:
   scrollable_positioned_list: ^0.3.8
   diffutil_dart: ^4.0.1
   tray_manager: ^0.3.0
-  window_manager:  #^0.4.0
+  window_manager: # ^0.4.0
     # path: ../../window_manager
     git:
       url: https://github.com/acterglobal/window_manager
       ref: main
 
-
   shake_detector:
     path: ../packages/shake_detector
-#  open_filex: ^4.6.0
-  open_filex:
-    git:
-     url: https://github.com/mufassalhussain/open_filex
-     ref: 7ec56421afc37bb2cc3cb751b9775999cd2d9a61
+  open_filex: ^4.7.0
   phosphor_flutter: ^2.1.0
-  device_calendar: #^4.3.3-20240801
+  device_calendar: # ^4.3.3-20240801
     git:
       url: https://github.com/acterglobal/device_calendar
       ref: 2e0c2050d48c9bd2eb3cfc47650fbd63b1490ea5
@@ -168,6 +168,14 @@ dependencies:
   android_intent_plus: ^5.2.2
   collection: ^1.18.0
   preload_page_view: ^0.2.0
+  mocktail: ^1.0.4
+  launch_at_startup: ^0.5.1
+  package_info_plus: ^8.3.0
+  matomo_tracker: ^6.0.0
+  flutter_widget_from_html_core: ^0.16.0
+  sentry_logging: ^8.14.2
+  highlight: ^0.7.0
+  flutter_highlight: ^0.7.0
 
 dev_dependencies:
   flutter_test:
@@ -177,26 +185,20 @@ dev_dependencies:
   icons_launcher: ^3.0.0
   flutter_lints: ^5.0.0
   build_runner: ^2.4.12
-  convenient_test: ^1.3.7
   convenient_test_dev: ^1.3.7
-  convenient_test_manager_dart:
-    git:
-      url: https://github.com/gnunicorn/flutter_convenient_test/
-      ref: ben-cli-limit-tests
-      path: packages/convenient_test_manager_dart
   msix: ^3.7.0
   uuid: ^4.0.0
-  enough_mail: ^2.1.6
   sentry_dart_plugin: ^2.0.0
   translations_cleaner: ^0.0.5
   enven: ^1.0.1
-  mockingjay: ^1.0.0
-  mocktail: ^1.0.4
+  mockingjay: ^2.0.0
   test_screenshot: ^0.0.7
+  hrk_flutter_test_batteries: ^1.2.0
 
 dependency_overrides:
-
-  # msix: #^3.7.0
+  csslib: ">=0.17.1 <2.0.0"
+  html: ">=0.15.4 <0.16.0"
+  # msix: # ^3.7.0
   #   # FIXME mainline `msix` comes with outdated VS redistribution libs
   #   # that make our app crash. We already copy over the proper ones in the
   #   # CI job, it we need a msix-version that doesn't copy over its own bad ones
@@ -208,7 +210,7 @@ sentry:
   upload_debug_symbols: true
   upload_source_maps: false
   upload_sources: false
-  project: acter-app
+  project: a3-app
   org: acter
 
 icons_launcher:
@@ -265,6 +267,12 @@ flutter:
     - family: Inter
       fonts:
         - asset: assets/fonts/Inter.ttf
+    - family: Roboto
+      fonts:
+        - asset: assets/fonts/Roboto-Regular.ttf
+    - family: RobotoMono
+      fonts:
+        - asset: assets/fonts/RobotoMono-Regular.ttf
     - family: NotoEmoji
       fonts:
         - asset: assets/fonts/Noto-COLRv1.ttf
@@ -285,7 +293,7 @@ flutter:
 msix_config:
   display_name: Acter
   publisher_display_name: Acter
-  identity_name: 	47338Acter.Acter3
+  identity_name: 47338Acter.Acter3
   publisher: CN=EBDFB2F4-DCCB-4267-8EBA-6FADD88EAC81
   msix_version: 0.0.0.1
   logo_path: .\macos\Runner\Assets.xcassets\AppIcon.appiconset\app_icon_512.png
@@ -294,6 +302,6 @@ msix_config:
   tile_icon_path: .\macos\Runner\Assets.xcassets\AppIcon.appiconset\app_icon_512.png
   icons_background_color: transparent
   architecture: x64
-  capabilities: "internetClient,removableStorage"
-  protocol_activation: https, matrix, acter
+  capabilities: internetClient,removableStorage
+  protocol_activation: https,matrix,acter
   app_uri_handler_hosts: app.global.acter,matrix.to

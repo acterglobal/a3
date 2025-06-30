@@ -1,7 +1,7 @@
-use acter_core::{
+use acter_matrix::{
     events::{
         tasks::{self, Priority, TaskBuilder, TaskListBuilder},
-        Display, RefDetails as CoreRefDetails, RefPreview,
+        Display, RefDetails as CoreRefDetails, RefPreview, UtcDateTime,
     },
     models::{self, can_redact, ActerModel, AnyActerModel, TaskStats},
     referencing::{IndexKey, SectionIndex, SpecialListsIndex},
@@ -124,7 +124,7 @@ impl Space {
         let room_id = self.room_id().to_owned();
         let (content, room) = self
             .client
-            .model_with_room::<acter_core::models::TaskList>(key)
+            .model_with_room::<acter_matrix::models::TaskList>(key)
             .await?;
 
         if room_id != content.room_id() {
@@ -249,7 +249,7 @@ impl Deref for TaskList {
 /// helpers for content
 impl TaskList {
     pub fn name(&self) -> String {
-        self.content.name.to_owned()
+        self.content.name.clone()
     }
 
     pub fn description(&self) -> Option<MsgContent> {
@@ -285,7 +285,7 @@ impl TaskList {
         // apply this way for only function that string vector is calculated indirectly.
         let mut result = vec![];
         for keyword in &self.content.keywords {
-            result.push(keyword.to_owned());
+            result.push(keyword.clone());
         }
         result
     }
@@ -296,7 +296,7 @@ impl TaskList {
         // apply this way for only function that string vector is calculated indirectly.
         let mut result = vec![];
         for category in &self.content.categories {
-            result.push(category.to_owned());
+            result.push(category.clone());
         }
         result
     }
@@ -430,7 +430,7 @@ impl TaskList {
 
     async fn tasks_with_filter<F>(&self, filter: F) -> Result<Vec<Task>>
     where
-        F: Fn(&acter_core::models::Task) -> bool + Send + Sync + 'static,
+        F: Fn(&acter_matrix::models::Task) -> bool + Send + Sync + 'static,
     {
         let tasks_key = self.content.tasks_key();
         let client = self.client.clone();
@@ -493,7 +493,7 @@ impl Deref for Task {
 /// helpers for content
 impl Task {
     pub fn title(&self) -> String {
-        self.content.title().to_owned()
+        self.content.title().clone()
     }
 
     pub fn event_id_str(&self) -> String {
@@ -509,7 +509,7 @@ impl Task {
     }
 
     pub fn description(&self) -> Option<MsgContent> {
-        self.content.description.as_ref().map(MsgContent::from)
+        self.content.description().map(MsgContent::from)
     }
 
     pub fn sort_order(&self) -> u32 {
@@ -565,7 +565,7 @@ impl Task {
         // apply this way for only function that string vector is calculated indirectly.
         let mut result = vec![];
         for keyword in &self.content.keywords {
-            result.push(keyword.to_owned());
+            result.push(keyword.clone());
         }
         result
     }
@@ -576,7 +576,7 @@ impl Task {
         // apply this way for only function that string vector is calculated indirectly.
         let mut result = vec![];
         for category in &self.content.categories {
-            result.push(category.to_owned());
+            result.push(category.clone());
         }
         result
     }
@@ -763,27 +763,32 @@ impl TaskDraft {
         self.content.utc_due_time_of_day(Some(seconds));
         self
     }
+
     pub fn unset_utc_due_time_of_day(&mut self) -> &mut Self {
         self.content.utc_due_time_of_day(None);
         self
     }
 
-    pub fn utc_start_from_rfc3339(&mut self, utc_start: String) -> Result<()> {
-        let dt = DateTime::parse_from_rfc3339(&utc_start)?.into();
-        self.content.utc_start(Some(dt));
-        Ok(())
+    pub fn utc_start_from_rfc3339(&mut self, utc_start: String) -> Result<&mut Self> {
+        let dt = DateTime::parse_from_rfc3339(&utc_start)?;
+        self.content.utc_start(Some(UtcDateTime::from(dt)));
+        Ok(self)
     }
 
-    pub fn utc_start_from_rfc2822(&mut self, utc_start: String) -> Result<()> {
-        let dt = DateTime::parse_from_rfc2822(&utc_start)?.into();
-        self.content.utc_start(Some(dt));
-        Ok(())
+    pub fn utc_start_from_rfc2822(&mut self, utc_start: String) -> Result<&mut Self> {
+        let dt = DateTime::parse_from_rfc2822(&utc_start)?;
+        self.content.utc_start(Some(UtcDateTime::from(dt)));
+        Ok(self)
     }
 
-    pub fn utc_start_from_format(&mut self, utc_start: String, format: String) -> Result<()> {
-        let dt = DateTime::parse_from_str(&utc_start, &format)?.into();
-        self.content.utc_start(Some(dt));
-        Ok(())
+    pub fn utc_start_from_format(
+        &mut self,
+        utc_start: String,
+        format: String,
+    ) -> Result<&mut Self> {
+        let dt = DateTime::parse_from_str(&utc_start, &format)?;
+        self.content.utc_start(Some(UtcDateTime::from(dt)));
+        Ok(self)
     }
 
     pub fn unset_utc_start(&mut self) -> &mut Self {
@@ -954,6 +959,7 @@ impl TaskUpdateBuilder {
         self.content.categories(None);
         self
     }
+
     pub fn mark_done(&mut self) -> &mut Self {
         self.content.progress_percent(Some(Some(100)));
         self
@@ -993,22 +999,26 @@ impl TaskUpdateBuilder {
         self
     }
 
-    pub fn utc_start_from_rfc3339(&mut self, utc_start: String) -> Result<()> {
-        let dt = DateTime::parse_from_rfc3339(&utc_start)?.into();
-        self.content.utc_start(Some(Some(dt)));
-        Ok(())
+    pub fn utc_start_from_rfc3339(&mut self, utc_start: String) -> Result<&mut Self> {
+        let dt = DateTime::parse_from_rfc3339(&utc_start)?;
+        self.content.utc_start(Some(Some(UtcDateTime::from(dt))));
+        Ok(self)
     }
 
-    pub fn utc_start_from_rfc2822(&mut self, utc_start: String) -> Result<()> {
-        let dt = DateTime::parse_from_rfc2822(&utc_start)?.into();
-        self.content.utc_start(Some(Some(dt)));
-        Ok(())
+    pub fn utc_start_from_rfc2822(&mut self, utc_start: String) -> Result<&mut Self> {
+        let dt = DateTime::parse_from_rfc2822(&utc_start)?;
+        self.content.utc_start(Some(Some(UtcDateTime::from(dt))));
+        Ok(self)
     }
 
-    pub fn utc_start_from_format(&mut self, utc_start: String, format: String) -> Result<()> {
-        let dt = DateTime::parse_from_str(&utc_start, &format)?.into();
-        self.content.utc_start(Some(Some(dt)));
-        Ok(())
+    pub fn utc_start_from_format(
+        &mut self,
+        utc_start: String,
+        format: String,
+    ) -> Result<&mut Self> {
+        let dt = DateTime::parse_from_str(&utc_start, &format)?;
+        self.content.utc_start(Some(Some(UtcDateTime::from(dt))));
+        Ok(self)
     }
 
     pub fn unset_utc_start(&mut self) -> &mut Self {

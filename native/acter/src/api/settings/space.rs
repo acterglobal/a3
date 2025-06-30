@@ -1,9 +1,9 @@
-pub use acter_core::events::settings::{
+pub use acter_matrix::events::settings::{
     ActerAppSettingsContent, EventsSettings, NewsSettings, PinsSettings, SimpleOnOffSetting,
     SimpleOnOffSettingBuilder, SimpleSettingWithTurnOff, SimpleSettingWithTurnOffBuilder,
     StoriesSettings, TasksSettings,
 };
-use acter_core::events::{
+use acter_matrix::events::{
     attachments::AttachmentEventContent,
     calendar::CalendarEventEventContent,
     comments::CommentEventContent,

@@ -1,5 +1,6 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/toolkit/widgets/acter_inline_chip.dart';
 import 'package:acter/features/member/dialogs/show_member_info_drawer.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_avatar/acter_avatar.dart';
@@ -7,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class UserChip extends ConsumerWidget {
-  final String roomId;
+  final String? roomId;
   final String memberId;
   final TextStyle? style;
   final Widget? Function(
@@ -25,7 +26,7 @@ class UserChip extends ConsumerWidget {
 
   const UserChip({
     super.key,
-    required this.roomId,
+    this.roomId,
     required this.memberId,
     this.style,
     this.trailingBuilder,
@@ -33,30 +34,54 @@ class UserChip extends ConsumerWidget {
   });
 
   Future<void> onTapFallback(BuildContext context) async {
+    final rId = roomId;
+    if (rId == null) {
+      // add support for non-member users
+      return;
+    }
     await showMemberInfoDrawer(
       context: context,
-      roomId: roomId,
+      roomId: rId,
       memberId: memberId,
     );
   }
 
+  AvatarInfo getMemberInfo(WidgetRef ref) {
+    final rId = roomId;
+    if (rId == null) {
+      // add support for non-member users
+      return AvatarInfo(uniqueId: memberId, displayName: null, avatar: null);
+    }
+    return ref.watch(memberAvatarInfoProvider((roomId: rId, userId: memberId)));
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final memberInfo = ref.watch(
-      memberAvatarInfoProvider((roomId: roomId, userId: memberId)),
-    );
+    final memberInfo = getMemberInfo(ref);
     final isMe = memberId == ref.watch(myUserIdStrProvider);
     final style = this.style ?? Theme.of(context).textTheme.bodySmall;
     final fontSize = style?.fontSize ?? 12.0;
     final decoration =
         isMe
             ? BoxDecoration(
-              color: Theme.of(context).colorScheme.primary,
-              borderRadius: BorderRadius.circular(fontSize),
+              color: Theme.of(
+                context,
+              ).colorScheme.primary.withValues(alpha: 0.3),
+              border: Border.all(
+                color: Theme.of(
+                  context,
+                ).colorScheme.outline.withValues(alpha: 0.2),
+              ),
+              borderRadius: BorderRadius.circular(8),
             )
             : BoxDecoration(
-              border: Border.all(color: Theme.of(context).colorScheme.outline),
-              borderRadius: BorderRadius.circular(fontSize),
+              color: Colors.black12,
+              border: Border.all(
+                color: Theme.of(
+                  context,
+                ).colorScheme.outline.withValues(alpha: 0.2),
+              ),
+              borderRadius: BorderRadius.circular(8),
             );
     final trailing = trailingBuilder?.call(
       context,
@@ -71,41 +96,22 @@ class UserChip extends ConsumerWidget {
           required VoidCallback defaultOnTap,
         }) => onTapFallback(context);
 
-    return Tooltip(
-      message: memberId,
-      child: InkWell(
-        onTap:
-            () => onTap(
-              context,
-              isMe: isMe,
-              defaultOnTap: () => onTapFallback(context),
-            ),
-        child: Container(
-          decoration: decoration,
-          padding: EdgeInsets.symmetric(
-            horizontal: (fontSize / 2).toDouble(),
-            vertical: 0,
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ActerAvatar(
-                options: AvatarOptions.DM(memberInfo, size: fontSize / 2),
-              ),
-              SizedBox(width: 4),
-              if (isMe)
-                Text(
-                  L10n.of(context).you,
-                  style: style?.copyWith(fontWeight: FontWeight.bold),
-                )
-              else
-                Text(memberInfo.displayName ?? memberId, style: style),
-              if (trailing != null)
-                Padding(padding: EdgeInsets.only(left: 4), child: trailing),
-            ],
-          ),
-        ),
+    return ActerInlineChip(
+      style: style,
+      tooltip: memberId,
+      leading: ActerAvatar(
+        options: AvatarOptions.DM(memberInfo, size: fontSize / 1.75),
       ),
+      trailing: trailing,
+      textStyle: isMe ? style?.copyWith(fontWeight: FontWeight.bold) : style,
+      decoration: decoration,
+      text: isMe ? L10n.of(context).you : memberInfo.displayName ?? memberId,
+      onTap:
+          () => onTap(
+            context,
+            isMe: isMe,
+            defaultOnTap: () => onTapFallback(context),
+          ),
     );
   }
 }

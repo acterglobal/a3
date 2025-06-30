@@ -10,8 +10,8 @@ path = "../acter"
 default-features = false
 features = ["testing"]
 
-[dependencies.acter-core]
-path = "../core"
+[dependencies.acter-matrix]
+path = "../matrix"
 features = ["testing"]
 
 [dependencies]
@@ -23,6 +23,8 @@ env_logger = { workspace = true }
 futures = "0.3.30"
 mail-parser = "0.10.2"
 mailhog-rs = "0.2.0"
+nanoid = "0.4.0"
+rand = "*"
 regex = "1"
 serde_json = "1"
 tempfile = "3.9.0"

@@ -1,4 +1,4 @@
-use acter_core::{
+use acter_matrix::{
     activities::{object::ActivityObject, Activity, ActivityContent},
     events::{
         attachments::{AttachmentContent, FallbackAttachmentContent},
@@ -50,7 +50,7 @@ use matrix_sdk_ui::notification_client::{
 };
 use std::{ops::Deref, sync::Arc};
 use tokio_stream::{wrappers::BroadcastStream, Stream};
-use tracing::warn;
+use tracing::error;
 use urlencoding::encode;
 
 use crate::{Client, Rsvp};
@@ -173,7 +173,7 @@ pub enum NotificationItemInner {
         content: MessageType,
         room_id: OwnedRoomId,
     },
-    Activity(Activity),
+    Activity(Box<Activity>),
 }
 
 impl NotificationItemInner {
@@ -199,7 +199,7 @@ impl NotificationItemInner {
                 encode(device_id.as_str()),
                 encode(room_id.as_str())
             ),
-            NotificationItemInner::Invite { room_id } => "/activities/invites".to_string(),
+            NotificationItemInner::Invite { room_id } => "/activities/invites".to_owned(),
             NotificationItemInner::ChatMessage { room_id, .. } => format!("/chat/{room_id}"),
             NotificationItemInner::Activity(a) => a.target_url(),
         }
@@ -234,11 +234,43 @@ impl NotificationItemInner {
         a.reaction_key()
     }
 
-    pub fn new_date(&self) -> Option<UtcDateTime> {
+    pub fn utc_start(&self) -> Option<UtcDateTime> {
         let NotificationItemInner::Activity(a) = &self else {
             return None;
         };
-        a.new_date()
+        match a.date_time_range_content() {
+            Some(content) => content.start_new_val(),
+            None => {
+                error!("utc start is available on date time range content");
+                None
+            }
+        }
+    }
+
+    pub fn utc_end(&self) -> Option<UtcDateTime> {
+        let NotificationItemInner::Activity(a) = &self else {
+            return None;
+        };
+        match a.date_time_range_content() {
+            Some(content) => content.end_new_val(),
+            None => {
+                error!("utc end is available on date time range content");
+                None
+            }
+        }
+    }
+
+    pub fn due_date(&self) -> Option<String> {
+        let NotificationItemInner::Activity(a) = &self else {
+            return None;
+        };
+        match a.date_content() {
+            Some(content) => content.new_val(),
+            None => {
+                error!("due date is available on date content");
+                None
+            }
+        }
     }
 
     pub fn body(&self) -> Option<MsgContent> {
@@ -260,7 +292,7 @@ impl NotificationItemInner {
             },
             NotificationItemInner::Activity(activity) => match activity.content() {
                 ActivityContent::DescriptionChange { content, .. } => {
-                    content.clone().map(MsgContent::from)
+                    content.new_val.as_ref().map(MsgContent::from)
                 }
                 ActivityContent::Comment { content, .. } => Some(MsgContent::from(content)),
                 ActivityContent::Boost {
@@ -325,7 +357,7 @@ impl NotificationItem {
         self.thread_id.clone()
     }
     pub fn room_invite_str(&self) -> Option<String> {
-        self.inner.room_invite().map(|r| r.to_string())
+        self.inner.room_invite().as_deref().map(ToString::to_string)
     }
     pub fn mentions_you(&self) -> bool {
         self.mentions_you
@@ -430,18 +462,20 @@ impl NotificationItem {
         }
 
         // fallback chat message:
-        if let NotificationEvent::Timeline(AnySyncTimelineEvent::MessageLike(
-            AnySyncMessageLikeEvent::RoomMessage(SyncMessageLikeEvent::Original(event)),
-        )) = inner.event
-        {
-            let content = event.content.msgtype.clone();
-            return Ok(builder
-                .inner(NotificationItemInner::ChatMessage {
-                    is_dm: inner.is_direct_message_room,
-                    content,
-                    room_id,
-                })
-                .build()?);
+        if let NotificationEvent::Timeline(a) = inner.event {
+            if let AnySyncTimelineEvent::MessageLike(AnySyncMessageLikeEvent::RoomMessage(
+                SyncMessageLikeEvent::Original(event),
+            )) = a.as_ref()
+            {
+                let content = event.content.msgtype.clone();
+                return Ok(builder
+                    .inner(NotificationItemInner::ChatMessage {
+                        is_dm: inner.is_direct_message_room,
+                        content,
+                        room_id,
+                    })
+                    .build()?);
+            }
         }
 
         Ok(builder.build()?)
@@ -460,8 +494,8 @@ impl NotificationItemBuilder {
     ) -> Result<NotificationItem> {
         let user_id = client.user_id()?;
         let activity = match convert_acter_model(client, event).await {
-            Err(error) => {
-                warn!(?error, "Could not convert acter activity");
+            Err(e) => {
+                error!(?e, "Could not convert acter activity");
                 return Ok(self.build()?);
             }
             Ok(a) => a,
@@ -537,7 +571,7 @@ impl NotificationItemBuilder {
                     builder.title(match details {
                         RefDetails::CalendarEvent { .. } => format!("🗓️ {title}"),
                         RefDetails::Pin { .. } => format!("📌 {title}"),
-                        RefDetails::News { .. } => "🚀 boost".to_string(),
+                        RefDetails::News { .. } => "🚀 boost".to_owned(),
                         RefDetails::Task { .. } => format!("☑️ {title}"),
                         RefDetails::TaskList { .. } => format!("📋 {title}"),
                         RefDetails::Link { .. } => format!("🔗 {title}"),
@@ -548,22 +582,55 @@ impl NotificationItemBuilder {
                     builder.title("Reference".to_owned())
                 }
             }
-            ActivityContent::TitleChange { new_title, .. } => builder.title(new_title.clone()),
-            ActivityContent::EventDateChange { new_date, .. } => {
-                builder.title(new_date.to_rfc3339())
+            ActivityContent::TitleChange { content, .. } => builder.title(content.new_val()),
+            ActivityContent::EventDateChange { content, .. } => {
+                let mut fields = vec![];
+                if let Some(utc_start) = content.start_new_val() {
+                    fields.push(format!("From: {}", utc_start.to_rfc3339()));
+                }
+                if let Some(utc_end) = content.end_new_val() {
+                    fields.push(format!("To: {}", utc_end.to_rfc3339()));
+                }
+                if fields.is_empty() {
+                    &mut builder
+                } else {
+                    builder.title(fields.join(", "))
+                }
             }
-            ActivityContent::TaskDueDateChange {
-                new_due_date: Some(new_due_date),
-                ..
-            } => builder.title(new_due_date.format("%Y-%m-%d").to_string()),
-            ActivityContent::TaskDueDateChange { new_due_date, .. } => {
-                builder.title("removed due date".to_owned())
+            ActivityContent::TaskDueDateChange { content, .. } => {
+                match content.change().as_str() {
+                    "Changed" | "Set" => {
+                        if let Some(new_val) = content.new_val() {
+                            builder.title(new_val);
+                        } else {
+                            error!("Could not get the new value for the due date change");
+                        }
+                    }
+                    "Unset" => {
+                        builder.title("removed due date".to_owned());
+                    }
+                    _ => {}
+                };
+                &mut builder
             }
-            ActivityContent::TaskAdd { task, .. } => builder.title(task.title().clone()),
-            ActivityContent::DescriptionChange {
-                object,
-                content: Some(content),
-            } => builder.msg_content(MsgContent::from(content)),
+            ActivityContent::TaskAdd { task_title, .. } => builder.title(task_title.clone()),
+            ActivityContent::DescriptionChange { object, content } => {
+                match content.change().as_str() {
+                    "Changed" | "Set" => {
+                        if let Some(new_val) = content.new_val.as_ref() {
+                            builder.msg_content(MsgContent::from(new_val.clone()));
+                        } else {
+                            error!("Could not get the new value for the description change");
+                        }
+                    }
+                    "Unset" => {
+                        let body = "removed description".to_owned();
+                        builder.msg_content(MsgContent::from_text(body));
+                    }
+                    _ => {}
+                };
+                &mut builder
+            }
             ActivityContent::ObjectInvitation { object, invitees } => builder
                 .title(object.title().unwrap_or("Object".to_owned()))
                 .mentions_you(invitees.contains(&user_id)),
@@ -571,7 +638,7 @@ impl NotificationItemBuilder {
         };
 
         Ok(builder
-            .inner(NotificationItemInner::Activity(activity))
+            .inner(NotificationItemInner::Activity(Box::new(activity)))
             .build()?)
     }
 }

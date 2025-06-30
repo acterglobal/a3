@@ -1,11 +1,11 @@
 pub mod categories;
 
-pub use acter_core::spaces::{
+pub use acter_matrix::spaces::{
     new_app_permissions_builder, AppPermissionsBuilder, CreateSpaceSettings,
     CreateSpaceSettingsBuilder, RelationTargetType, SpaceRelation,
     SpaceRelations as CoreSpaceRelations,
 };
-use acter_core::{
+use acter_matrix::{
     error::Error, events::AnyActerEvent, models::AnyActerModel,
     statics::default_acter_space_states, store::Store, templates::Engine,
 };
@@ -177,23 +177,22 @@ impl Space {
             .await?
     }
 
-    pub async fn create_onboarding_data(&self) -> Result<()> {
+    pub async fn create_onboarding_data(&self) -> Result<bool> {
         let mut engine = Engine::with_template(std::include_str!("../templates/onboarding.toml"))?;
-        engine
-            .add_user("main".to_owned(), self.client.core.clone())
-            .await?;
-        engine.add_ref(
-            "space".to_owned(),
-            "space".to_owned(),
-            self.room.room_id().to_string(),
-        )?;
+        let core = self.client.core.clone();
+        let room_id = self.room.room_id().to_string();
+        RUNTIME
+            .spawn(async move {
+                engine.add_user("main".to_owned(), core).await?;
+                engine.add_ref("space".to_owned(), "space".to_owned(), room_id)?;
 
-        let mut executer = engine.execute()?;
-        while let Some(i) = executer.next().await {
-            i?
-        }
-
-        Ok(())
+                let mut executer = engine.execute()?;
+                while let Some(i) = executer.next().await {
+                    i?
+                }
+                Ok(true)
+            })
+            .await?
     }
 
     pub fn subscribe_stream(&self) -> impl Stream<Item = bool> {
@@ -246,7 +245,6 @@ impl Space {
                 let mut requests = Vec::new();
 
                 for state in default_acter_space_states() {
-                    println!("{:?}", state);
                     let event_type = state
                         .get_field::<StateEventType>("type")?
                         .context("Unable to get state event type")?;
@@ -438,7 +436,7 @@ impl Client {
             .map(|room| {
                 Room::new(
                     self.core.clone(),
-                    room.inner_room().clone(),
+                    room.clone(),
                     self.sync_controller.clone(),
                 )
             })
@@ -466,7 +464,7 @@ impl Client {
             .map(|(room_id, room)| {
                 Room::new(
                     self.core.clone(),
-                    room.inner_room().clone(),
+                    room.clone(),
                     self.sync_controller.clone(),
                 )
             })

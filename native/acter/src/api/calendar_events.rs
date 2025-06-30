@@ -1,4 +1,5 @@
-use acter_core::{
+use acter_matrix::{
+    error::Error,
     events::{
         calendar::{
             self as calendar_events, CalendarEventBuilder, EventLocation, EventLocationInfo,
@@ -341,102 +342,97 @@ impl CalendarEventDraft {
         self
     }
 
-    pub fn utc_start_from_rfc3339(&mut self, utc_start: String) -> Result<()> {
-        let dt: UtcDateTime = DateTime::parse_from_rfc3339(&utc_start)?.into();
-        self.inner.utc_start(dt);
-        Ok(())
+    pub fn utc_start_from_rfc3339(&mut self, utc_start: String) -> Result<&mut Self> {
+        let dt = DateTime::parse_from_rfc3339(&utc_start)?;
+        self.inner.utc_start(UtcDateTime::from(dt));
+        Ok(self)
     }
 
-    pub fn utc_start_from_rfc2822(&mut self, utc_start: String) -> Result<()> {
-        let dt: UtcDateTime = DateTime::parse_from_rfc2822(&utc_start)?.into();
-        self.inner.utc_start(dt);
-        Ok(())
+    pub fn utc_start_from_rfc2822(&mut self, utc_start: String) -> Result<&mut Self> {
+        let dt = DateTime::parse_from_rfc2822(&utc_start)?;
+        self.inner.utc_start(UtcDateTime::from(dt));
+        Ok(self)
     }
 
-    pub fn utc_start_from_format(&mut self, utc_start: String, format: String) -> Result<()> {
-        let dt: UtcDateTime = DateTime::parse_from_str(&utc_start, &format)?.into();
-        self.inner.utc_start(dt);
-        Ok(())
+    pub fn utc_start_from_format(
+        &mut self,
+        utc_start: String,
+        format: String,
+    ) -> Result<&mut Self> {
+        let dt = DateTime::parse_from_str(&utc_start, &format)?;
+        self.inner.utc_start(UtcDateTime::from(dt));
+        Ok(self)
     }
 
-    pub fn utc_end_from_rfc3339(&mut self, utc_end: String) -> Result<()> {
-        let dt: UtcDateTime = DateTime::parse_from_rfc3339(&utc_end)?.into();
-        self.inner.utc_end(dt);
-        Ok(())
+    pub fn utc_end_from_rfc3339(&mut self, utc_end: String) -> Result<&mut Self> {
+        let dt = DateTime::parse_from_rfc3339(&utc_end)?;
+        self.inner.utc_end(UtcDateTime::from(dt));
+        Ok(self)
     }
 
-    pub fn utc_end_from_rfc2822(&mut self, utc_end: String) -> Result<()> {
-        let dt: UtcDateTime = DateTime::parse_from_rfc2822(&utc_end)?.into();
-        self.inner.utc_end(dt);
-        Ok(())
+    pub fn utc_end_from_rfc2822(&mut self, utc_end: String) -> Result<&mut Self> {
+        let dt = DateTime::parse_from_rfc2822(&utc_end)?;
+        self.inner.utc_end(UtcDateTime::from(dt));
+        Ok(self)
     }
 
-    pub fn utc_end_from_format(&mut self, utc_end: String, format: String) -> Result<()> {
-        let dt: UtcDateTime = DateTime::parse_from_str(&utc_end, &format)?.into();
-        self.inner.utc_end(dt);
-        Ok(())
+    pub fn utc_end_from_format(&mut self, utc_end: String, format: String) -> Result<&mut Self> {
+        let dt = DateTime::parse_from_str(&utc_end, &format)?;
+        self.inner.utc_end(UtcDateTime::from(dt));
+        Ok(self)
     }
 
-    pub fn physical_location(
+    #[allow(clippy::too_many_arguments)]
+    pub fn add_physical_location(
         &mut self,
         name: Option<String>,
         description: Option<String>,
         description_html: Option<String>,
-        cooridnates: Option<String>,
+        coordinates: Option<String>,
         uri: Option<String>,
-    ) -> Result<()> {
+        address: Option<String>,
+        notes: Option<String>,
+    ) -> &mut Self {
         let mut desc_plain = None;
         let mut desc_html = None;
-        if let Some(ref desc) = description {
+        if let Some(desc) = &description {
             if !desc.is_empty() {
                 desc_plain = Some(TextMessageEventContent::plain(desc.clone()));
                 desc_html =
                     description_html.map(|html| TextMessageEventContent::html(desc.clone(), html));
             }
         }
-        let inner = EventLocation::Physical {
+        self.inner.add_physical_location(
             name,
-            description: desc_html.or(desc_plain),
-            // TODO: add icon support
-            icon: None,
-            coordinates: cooridnates,
-            uri: uri.clone(),
-        };
-        let loc_info = EventLocationInfo { inner };
-        // convert object to enum and push it
-        self.inner.into_event_loc(&loc_info);
-        Ok(())
+            desc_html.or(desc_plain),
+            coordinates,
+            uri,
+            address,
+            notes,
+        );
+        self
     }
 
-    pub fn virtual_location(
+    pub fn add_virtual_location(
         &mut self,
         name: Option<String>,
         description: Option<String>,
         description_html: Option<String>,
         uri: String,
-    ) -> Result<()> {
-        let calendar_event = self.inner.clone();
+        notes: Option<String>,
+    ) -> &mut Self {
         let mut desc_plain = None;
         let mut desc_html = None;
-        if let Some(ref desc) = description {
+        if let Some(desc) = &description {
             if !desc.is_empty() {
                 desc_plain = Some(TextMessageEventContent::plain(desc.clone()));
                 desc_html =
                     description_html.map(|html| TextMessageEventContent::html(desc.clone(), html));
             }
         }
-
-        let inner = EventLocation::Virtual {
-            name,
-            description: desc_html.or(desc_plain),
-            // TODO: add icon support
-            icon: None,
-            uri,
-        };
-        let event_location = EventLocationInfo { inner };
-        // convert object to enum and push it
-        self.inner.into_event_loc(&event_location);
-        Ok(())
+        self.inner
+            .add_virtual_location(name, desc_html.or(desc_plain), uri, notes);
+        self
     }
 
     pub async fn send(&self) -> Result<OwnedEventId> {
@@ -500,22 +496,26 @@ impl CalendarEventUpdateBuilder {
         self
     }
 
-    pub fn utc_start_from_rfc3339(&mut self, utc_start: String) -> Result<()> {
-        let dt = DateTime::parse_from_rfc3339(&utc_start)?.into();
-        self.inner.utc_start(Some(dt));
-        Ok(())
+    pub fn utc_start_from_rfc3339(&mut self, utc_start: String) -> Result<&mut Self> {
+        let dt = DateTime::parse_from_rfc3339(&utc_start)?;
+        self.inner.utc_start(Some(UtcDateTime::from(dt)));
+        Ok(self)
     }
 
-    pub fn utc_start_from_rfc2822(&mut self, utc_start: String) -> Result<()> {
-        let dt = DateTime::parse_from_rfc2822(&utc_start)?.into();
-        self.inner.utc_start(Some(dt));
-        Ok(())
+    pub fn utc_start_from_rfc2822(&mut self, utc_start: String) -> Result<&mut Self> {
+        let dt = DateTime::parse_from_rfc2822(&utc_start)?;
+        self.inner.utc_start(Some(UtcDateTime::from(dt)));
+        Ok(self)
     }
 
-    pub fn utc_start_from_format(&mut self, utc_start: String, format: String) -> Result<()> {
-        let dt = DateTime::parse_from_str(&utc_start, &format)?.into();
-        self.inner.utc_start(Some(dt));
-        Ok(())
+    pub fn utc_start_from_format(
+        &mut self,
+        utc_start: String,
+        format: String,
+    ) -> Result<&mut Self> {
+        let dt = DateTime::parse_from_str(&utc_start, &format)?;
+        self.inner.utc_start(Some(UtcDateTime::from(dt)));
+        Ok(self)
     }
 
     pub fn unset_utc_start_update(&mut self) -> &mut Self {
@@ -523,26 +523,79 @@ impl CalendarEventUpdateBuilder {
         self
     }
 
-    pub fn utc_end_from_rfc3339(&mut self, utc_end: String) -> Result<()> {
-        let dt = DateTime::parse_from_rfc3339(&utc_end)?.into();
-        self.inner.utc_end(Some(dt));
-        Ok(())
+    pub fn utc_end_from_rfc3339(&mut self, utc_end: String) -> Result<&mut Self> {
+        let dt = DateTime::parse_from_rfc3339(&utc_end)?;
+        self.inner.utc_end(Some(UtcDateTime::from(dt)));
+        Ok(self)
     }
 
-    pub fn utc_end_from_rfc2822(&mut self, utc_end: String) -> Result<()> {
-        let dt = DateTime::parse_from_rfc2822(&utc_end)?.into();
-        self.inner.utc_end(Some(dt));
-        Ok(())
+    pub fn utc_end_from_rfc2822(&mut self, utc_end: String) -> Result<&mut Self> {
+        let dt = DateTime::parse_from_rfc2822(&utc_end)?;
+        self.inner.utc_end(Some(UtcDateTime::from(dt)));
+        Ok(self)
     }
 
-    pub fn utc_end_from_format(&mut self, utc_end: String, format: String) -> Result<()> {
-        let dt = DateTime::parse_from_str(&utc_end, &format)?.into();
-        self.inner.utc_end(Some(dt));
-        Ok(())
+    pub fn utc_end_from_format(&mut self, utc_end: String, format: String) -> Result<&mut Self> {
+        let dt = DateTime::parse_from_str(&utc_end, &format)?;
+        self.inner.utc_end(Some(UtcDateTime::from(dt)));
+        Ok(self)
     }
 
     pub fn unset_utc_end_update(&mut self) -> &mut Self {
         self.inner.utc_end(None);
+        self
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    pub fn add_physical_location(
+        &mut self,
+        name: Option<String>,
+        description: Option<String>,
+        description_html: Option<String>,
+        coordinates: Option<String>,
+        uri: Option<String>,
+        address: Option<String>,
+        notes: Option<String>,
+    ) -> &mut Self {
+        let mut desc_plain = None;
+        let mut desc_html = None;
+        if let Some(desc) = &description {
+            if !desc.is_empty() {
+                desc_plain = Some(TextMessageEventContent::plain(desc.clone()));
+                desc_html =
+                    description_html.map(|html| TextMessageEventContent::html(desc.clone(), html));
+            }
+        }
+        self.inner.add_physical_location(
+            name,
+            desc_html.or(desc_plain),
+            coordinates,
+            uri,
+            address,
+            notes,
+        );
+        self
+    }
+
+    pub fn add_virtual_location(
+        &mut self,
+        name: Option<String>,
+        description: Option<String>,
+        description_html: Option<String>,
+        uri: String,
+        notes: Option<String>,
+    ) -> &mut Self {
+        let mut desc_plain = None;
+        let mut desc_html = None;
+        if let Some(desc) = &description {
+            if !desc.is_empty() {
+                desc_plain = Some(TextMessageEventContent::plain(desc.clone()));
+                desc_html =
+                    description_html.map(|html| TextMessageEventContent::html(desc.clone(), html));
+            }
+        }
+        self.inner
+            .add_virtual_location(name, desc_html.or(desc_plain), uri, notes);
         self
     }
 
