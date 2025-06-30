@@ -1,5 +1,6 @@
 import 'package:acter/features/activities/providers/activities_providers.dart';
 import 'package:acter/features/activities/providers/notifiers/activities_notifiers.dart';
+import 'package:acter/common/models/types.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -85,6 +86,121 @@ void main() {
     test('supportedActivityTypes is properly defined', () {
       expect(supportedActivityTypes, isNotEmpty);
       expect(supportedActivityTypes.length, greaterThan(30));
+    });
+
+    test('isActivityTypeSupported helper function', () {
+      // Test supported types
+      expect(isActivityTypeSupported('comment'), true);
+      expect(isActivityTypeSupported('reaction'), true);
+      expect(isActivityTypeSupported('attachment'), true);
+      
+      // Test unsupported/invalid types
+      expect(isActivityTypeSupported('invalid_type'), false);
+      expect(isActivityTypeSupported(''), false);
+      expect(isActivityTypeSupported('random_string'), false);
+    });
+
+    test('hasActivitiesProvider type check', () {
+      // Test that the provider exists and can be referenced
+      expect(hasActivitiesProvider, isA<StateProvider<UrgencyBadge>>());
+    });
+
+    test('hasUnconfirmedEmailAddresses type check', () {
+      // Test that the provider exists and can be referenced
+      expect(hasUnconfirmedEmailAddresses, isA<StateProvider<bool>>());
+    });
+
+    testWidgets('activityProvider tests', (tester) async {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+
+      // Test provider with a test ID
+      final activity = container.read(activityProvider('test_id'));
+      expect(activity, isA<AsyncValue<Activity?>>());
+      expect(activity.isLoading, true);
+      
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('allActivitiesProvider tests', (tester) async {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+
+      // Test provider
+      final activities = container.read(allActivitiesProvider);
+      expect(activities, isA<AsyncValue<List<String>>>());
+      expect(activities.isLoading, true);
+      
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('allActivitiesByIdProvider tests', (tester) async {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+
+      // Test provider
+      final activities = container.read(allActivitiesByIdProvider);
+      expect(activities, isA<AsyncValue<List<Activity>>>());
+      expect(activities.isLoading, true);
+      
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('hasMoreActivitiesProvider tests', (tester) async {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+
+      // Test provider
+      final hasMore = container.read(hasMoreActivitiesProvider);
+      expect(hasMore, isA<bool>());
+      
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('loadingStateProvider tests', (tester) async {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+
+      // Test initial state
+      final initialState = container.read(loadingStateProvider);
+      expect(initialState, false);
+      
+      // Test setting loading state
+      final notifier = container.read(loadingStateProvider.notifier);
+      notifier.setLoading(true);
+      
+      final loadingState = container.read(loadingStateProvider);
+      expect(loadingState, true);
+      
+      // Test unsetting loading state
+      notifier.setLoading(false);
+      final notLoadingState = container.read(loadingStateProvider);
+      expect(notLoadingState, false);
+      
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('isLoadingMoreActivitiesProvider tests', (tester) async {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+
+      // Test initial state
+      final initialState = container.read(isLoadingMoreActivitiesProvider);
+      expect(initialState, false);
+      
+      // Test when loading state changes
+      final loadingNotifier = container.read(loadingStateProvider.notifier);
+      loadingNotifier.setLoading(true);
+      
+      final loadingState = container.read(isLoadingMoreActivitiesProvider);
+      expect(loadingState, true);
+      
+      await tester.pumpAndSettle();
+    });
+
+    test('loadMoreActivitiesProvider type check', () {
+      // Test that the provider exists and returns the correct type
+      expect(loadMoreActivitiesProvider, isA<Provider<Future<void> Function()>>());
     });
 
     testWidgets('Provider integration test for empty activities', (tester) async {

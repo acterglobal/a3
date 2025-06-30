@@ -135,7 +135,7 @@ final loadMoreActivitiesProvider = Provider<Future<void> Function()>((ref) {
     
     // Start timing for minimum loading duration
     final startTime = DateTime.now();
-    const minLoadingDuration = Duration(seconds: 5);
+    const minLoadingDuration = Duration(seconds: 3);
     
     try {
       await activitiesNotifier.loadMore();
