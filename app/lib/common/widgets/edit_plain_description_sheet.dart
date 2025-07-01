@@ -76,7 +76,7 @@ class _EditPlainDescriptionSheetState extends State<EditPlainDescriptionSheet> {
               minLines: 4,
               autofocus: true,
               maxLines: 4,
-              decoration: InputDecoration(hintText: lang.description),
+              decoration: InputDecoration(hintText: lang.addDescription),
             ),
             const SizedBox(height: 20),
             Row(
