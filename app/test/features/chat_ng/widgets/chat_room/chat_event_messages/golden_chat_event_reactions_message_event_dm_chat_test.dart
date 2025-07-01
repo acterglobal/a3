@@ -16,7 +16,7 @@ void main() {
       tester,
     ) async {
       await loadTestFonts();
-      useGoldenFileComparatorWithThreshold(0.1); // 1%
+      useGoldenFileComparatorWithThreshold(0.1); // 10%
 
       await tester.pumpProviderWidget(
         overrides: [
