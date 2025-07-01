@@ -16,10 +16,6 @@ void showEditTitleBottomSheet({
     useSafeArea: true,
     context: context,
     isScrollControlled: true,
-    constraints: BoxConstraints(
-      maxWidth: MediaQuery.of(context).size.width,
-      minWidth: MediaQuery.of(context).size.width,
-    ),
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.only(
         topLeft: Radius.circular(16),
