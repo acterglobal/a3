@@ -287,8 +287,14 @@ void main() {
       await tester.tap(find.text('OK'));
       await tester.pump();
 
+      // Wait for any pending timers to complete
+      await tester.pumpAndSettle(const Duration(seconds: 3));
+
       // Verify end date is not updated
       expect(find.text('14'), findsNothing);
+      
+      // Ensure all EasyLoading operations are dismissed
+      await tester.pump(const Duration(seconds: 1));
     });
 
     testWidgets('handles end time validation correctly', (tester) async {

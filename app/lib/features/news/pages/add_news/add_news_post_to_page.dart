@@ -176,10 +176,7 @@ class _AddNewsPostToPageState extends ConsumerState<AddNewsPostToPage> {
                 return Radio(
                   value: postTypeSelection,
                   groupValue: postType,
-                  onChanged:
-                      isEnable
-                          ? (value) => selectedPostType.value = postType
-                          : null,
+                  onChanged: isEnable ? (value) => selectedPostType.value = postTypeSelection : null,
                   toggleable: isEnable,
                 );
               },
