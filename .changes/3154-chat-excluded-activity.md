@@ -1,0 +1,1 @@
+ - [Fix] : Updated activity screen to show only space-related activity; chat activity is now excluded.

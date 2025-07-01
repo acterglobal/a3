@@ -1,14 +1,17 @@
 PODS:
   - acter_flutter_sdk (0.0.1):
     - Flutter
-  - app_badge_plus (1.2.0):
+  - app_badge_plus (1.2.3):
     - Flutter
   - app_links (0.0.2):
     - Flutter
   - app_settings (5.1.1):
     - Flutter
-  - appcheck (1.0.3):
+  - "appcheck (1.5.4+1)":
     - Flutter
+  - audioplayers_darwin (0.0.1):
+    - Flutter
+    - FlutterMacOS
   - camera_avfoundation (0.0.1):
     - Flutter
   - connectivity_plus (0.0.1):
@@ -56,17 +59,17 @@ PODS:
   - file_picker (0.0.1):
     - DKImagePickerController/PhotoGallery
     - Flutter
-  - Firebase/CoreOnly (11.8.0):
-    - FirebaseCore (~> 11.8.0)
-  - firebase_core (3.12.1):
-    - Firebase/CoreOnly (= 11.8.0)
+  - Firebase/CoreOnly (11.13.0):
+    - FirebaseCore (~> 11.13.0)
+  - firebase_core (3.14.0):
+    - Firebase/CoreOnly (= 11.13.0)
     - Flutter
-  - FirebaseCore (11.8.1):
-    - FirebaseCoreInternal (~> 11.8.0)
-    - GoogleUtilities/Environment (~> 8.0)
-    - GoogleUtilities/Logger (~> 8.0)
-  - FirebaseCoreInternal (11.8.0):
-    - "GoogleUtilities/NSData+zlib (~> 8.0)"
+  - FirebaseCore (11.13.0):
+    - FirebaseCoreInternal (~> 11.13.0)
+    - GoogleUtilities/Environment (~> 8.1)
+    - GoogleUtilities/Logger (~> 8.1)
+  - FirebaseCoreInternal (11.13.0):
+    - "GoogleUtilities/NSData+zlib (~> 8.1)"
   - Flutter (1.0.0)
   - flutter_keyboard_visibility (0.0.1):
     - Flutter
@@ -74,14 +77,14 @@ PODS:
     - Flutter
   - flutter_secure_storage (6.0.0):
     - Flutter
-  - GoogleUtilities/Environment (8.0.2):
+  - GoogleUtilities/Environment (8.1.0):
     - GoogleUtilities/Privacy
-  - GoogleUtilities/Logger (8.0.2):
+  - GoogleUtilities/Logger (8.1.0):
     - GoogleUtilities/Environment
     - GoogleUtilities/Privacy
-  - "GoogleUtilities/NSData+zlib (8.0.2)":
+  - "GoogleUtilities/NSData+zlib (8.1.0)":
     - GoogleUtilities/Privacy
-  - GoogleUtilities/Privacy (8.0.2)
+  - GoogleUtilities/Privacy (8.1.0)
   - image_picker_ios (0.0.1):
     - Flutter
   - integration_test (0.0.1):
@@ -89,8 +92,6 @@ PODS:
   - keyboard_height_plugin (0.0.1):
     - Flutter
   - media_kit_libs_ios_video (1.0.4):
-    - Flutter
-  - media_kit_native_event_loop (1.0.0):
     - Flutter
   - media_kit_video (0.0.1):
     - Flutter
@@ -106,8 +107,6 @@ PODS:
   - pointer_interceptor_ios (0.0.1):
     - Flutter
   - push_ios (0.0.1):
-    - Flutter
-  - screen_brightness_ios (0.1.0):
     - Flutter
   - SDWebImage (5.21.0):
     - SDWebImage/Core (= 5.21.0)
@@ -144,6 +143,7 @@ DEPENDENCIES:
   - app_links (from `.symlinks/plugins/app_links/ios`)
   - app_settings (from `.symlinks/plugins/app_settings/ios`)
   - appcheck (from `.symlinks/plugins/appcheck/ios`)
+  - audioplayers_darwin (from `.symlinks/plugins/audioplayers_darwin/darwin`)
   - camera_avfoundation (from `.symlinks/plugins/camera_avfoundation/ios`)
   - connectivity_plus (from `.symlinks/plugins/connectivity_plus/ios`)
   - device_calendar (from `.symlinks/plugins/device_calendar/ios`)
@@ -160,7 +160,6 @@ DEPENDENCIES:
   - integration_test (from `.symlinks/plugins/integration_test/ios`)
   - keyboard_height_plugin (from `.symlinks/plugins/keyboard_height_plugin/ios`)
   - media_kit_libs_ios_video (from `.symlinks/plugins/media_kit_libs_ios_video/ios`)
-  - media_kit_native_event_loop (from `.symlinks/plugins/media_kit_native_event_loop/ios`)
   - media_kit_video (from `.symlinks/plugins/media_kit_video/ios`)
   - open_filex (from `.symlinks/plugins/open_filex/ios`)
   - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
@@ -168,7 +167,6 @@ DEPENDENCIES:
   - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
   - pointer_interceptor_ios (from `.symlinks/plugins/pointer_interceptor_ios/ios`)
   - push_ios (from `.symlinks/plugins/push_ios/ios`)
-  - screen_brightness_ios (from `.symlinks/plugins/screen_brightness_ios/ios`)
   - sensors_plus (from `.symlinks/plugins/sensors_plus/ios`)
   - sentry_flutter (from `.symlinks/plugins/sentry_flutter/ios`)
   - share_plus (from `.symlinks/plugins/share_plus/ios`)
@@ -202,6 +200,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/app_settings/ios"
   appcheck:
     :path: ".symlinks/plugins/appcheck/ios"
+  audioplayers_darwin:
+    :path: ".symlinks/plugins/audioplayers_darwin/darwin"
   camera_avfoundation:
     :path: ".symlinks/plugins/camera_avfoundation/ios"
   connectivity_plus:
@@ -234,8 +234,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/keyboard_height_plugin/ios"
   media_kit_libs_ios_video:
     :path: ".symlinks/plugins/media_kit_libs_ios_video/ios"
-  media_kit_native_event_loop:
-    :path: ".symlinks/plugins/media_kit_native_event_loop/ios"
   media_kit_video:
     :path: ".symlinks/plugins/media_kit_video/ios"
   open_filex:
@@ -250,8 +248,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/pointer_interceptor_ios/ios"
   push_ios:
     :path: ".symlinks/plugins/push_ios/ios"
-  screen_brightness_ios:
-    :path: ".symlinks/plugins/screen_brightness_ios/ios"
   sensors_plus:
     :path: ".symlinks/plugins/sensors_plus/ios"
   sentry_flutter:
@@ -273,11 +269,12 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   acter_flutter_sdk: b60dabd77979100055ae2e3a1f8eda19ec1dffd7
-  app_badge_plus: 132ae8b39b3d2ca8819feadd647dca9501f310a9
+  app_badge_plus: 0e3470f993dd08094e16463f57a7e0db04c6b587
   app_links: 76b66b60cc809390ca1ad69bfd66b998d2387ac7
   app_settings: 5127ae0678de1dcc19f2293271c51d37c89428b2
-  appcheck: f3c430f928f9c69ccd8b5d4df04766ac0e57c9aa
-  camera_avfoundation: 04b44aeb14070126c6529e5ab82cc7c9fca107cf
+  appcheck: 3c94d0ffc94bd639938cac7427d5b13df2795404
+  audioplayers_darwin: 4f9ca89d92d3d21cec7ec580e78ca888e5fb68bd
+  camera_avfoundation: be3be85408cd4126f250386828e9b1dfa40ab436
   connectivity_plus: cb623214f4e1f6ef8fe7403d580fdad517d2f7dd
   device_calendar: b55b2c5406cfba45c95a59f9059156daee1f74ed
   device_info_plus: 21fcca2080fbcd348be798aa36c3e5ed849eefbe
@@ -286,20 +283,19 @@ SPEC CHECKSUMS:
   emoji_picker_flutter: ece213fc274bdddefb77d502d33080dc54e616cc
   fc_native_video_thumbnail: ea75aa9d0f7e7b58215d2ad99ac9dddafc038bc9
   file_picker: a0560bc09d61de87f12d246fc47d2119e6ef37be
-  Firebase: d80354ed7f6df5f9aca55e9eb47cc4b634735eaf
-  firebase_core: 8d552814f6c01ccde5d88939fced4ec26f2f5510
-  FirebaseCore: 99fe0c4b44a39f37d99e6404e02009d2db5d718d
-  FirebaseCoreInternal: df24ce5af28864660ecbd13596fc8dd3a8c34629
+  Firebase: 3435bc66b4d494c2f22c79fd3aae4c1db6662327
+  firebase_core: 700bac7ed92bb754fd70fbf01d72b36ecdd6d450
+  FirebaseCore: c692c7f1c75305ab6aff2b367f25e11d73aa8bd0
+  FirebaseCoreInternal: 29d7b3af4aaf0b8f3ed20b568c13df399b06f68c
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   flutter_keyboard_visibility: 4625131e43015dbbe759d9b20daaf77e0e3f6619
   flutter_local_notifications: ad39620c743ea4c15127860f4b5641649a988100
   flutter_secure_storage: 1ed9476fba7e7a782b22888f956cce43e2c62f13
-  GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
+  GoogleUtilities: 00c88b9a86066ef77f0da2fab05f65d7768ed8e1
   image_picker_ios: 7fe1ff8e34c1790d6fff70a32484959f563a928a
   integration_test: 4a889634ef21a45d28d50d622cf412dc6d9f586e
   keyboard_height_plugin: ef70a8181b29f27670e9e2450814ca6b6dc05b05
   media_kit_libs_ios_video: 5a18affdb97d1f5d466dc79988b13eff6c5e2854
-  media_kit_native_event_loop: 5fba1a849a6c87a34985f1e178a0de5bd444a0cf
   media_kit_video: 1746e198cb697d1ffb734b1d05ec429d1fcd1474
   open_filex: 432f3cd11432da3e39f47fcc0df2b1603854eff1
   package_info_plus: af8e2ca6888548050f16fa2f1938db7b5a5df499
@@ -307,7 +303,6 @@ SPEC CHECKSUMS:
   permission_handler_apple: 4ed2196e43d0651e8ff7ca3483a069d469701f2d
   pointer_interceptor_ios: ec847ef8b0915778bed2b2cef636f4d177fa8eed
   push_ios: d8edf21b48ecb1ee9e384dd0cd9c1b049fd1ca11
-  screen_brightness_ios: 5ed898fa50fa82a26171c086ca5e28228f932576
   SDWebImage: f84b0feeb08d2d11e6a9b843cb06d75ebf5b8868
   sensors_plus: 6a11ed0c2e1d0bd0b20b4029d3bad27d96e0c65b
   Sentry: da60d980b197a46db0b35ea12cb8f39af48d8854
@@ -318,8 +313,8 @@ SPEC CHECKSUMS:
   SwiftyGif: 706c60cf65fa2bc5ee0313beece843c8eb8194d4
   url_launcher_ios: 694010445543906933d732453a59da0a173ae33d
   video_player_avfoundation: 2cef49524dd1f16c5300b9cd6efd9611ce03639b
-  volume_controller: ca1cde542ee70fad77d388f82e9616488110942b
-  wakelock_plus: 04623e3f525556020ebd4034310f20fe7fda8b49
+  volume_controller: 3657a1f65bedb98fa41ff7dc5793537919f31b12
+  wakelock_plus: e29112ab3ef0b318e58cfa5c32326458be66b556
 
 PODFILE CHECKSUM: fcb1d6a8b69ef1614eadff3ce844375007098b37
 
