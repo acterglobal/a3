@@ -9,12 +9,14 @@ import 'package:flutter_svg/svg.dart';
 
 class ChatBubble extends StatelessWidget {
   final Widget child;
+  final Widget? readWidgetBuilder;
   final int? messageWidth;
   final MainAxisAlignment bubbleAlignment;
   final int? timestamp;
   final bool isEdited;
   final String? displayName;
   final bool isMe;
+
   final bool isFirstMessageBySender;
   final bool isLastMessageBySender;
 
@@ -22,6 +24,7 @@ class ChatBubble extends StatelessWidget {
   const ChatBubble._inner({
     super.key,
     required this.child,
+    this.readWidgetBuilder,
     required this.bubbleAlignment,
     required this.isFirstMessageBySender,
     required this.isLastMessageBySender,
@@ -37,8 +40,10 @@ class ChatBubble extends StatelessWidget {
     required Widget child,
     required bool isFirstMessageBySender,
     required bool isLastMessageBySender,
+    Widget? readWidgetBuilder,
     String? displayName,
     bool isEdited = false,
+    bool isDM = false,
     int? messageWidth,
     int? timestamp,
   }) {
@@ -51,6 +56,7 @@ class ChatBubble extends StatelessWidget {
       isMe: false,
       isFirstMessageBySender: isFirstMessageBySender,
       isLastMessageBySender: isLastMessageBySender,
+      readWidgetBuilder: readWidgetBuilder,
       child: Stack(alignment: Alignment.bottomLeft, children: [child]),
     );
   }
@@ -61,6 +67,7 @@ class ChatBubble extends StatelessWidget {
     required Widget child,
     required bool isFirstMessageBySender,
     required bool isLastMessageBySender,
+    Widget? readWidgetBuilder,
     String? displayName,
     bool isEdited = false,
     int? messageWidth,
@@ -76,6 +83,7 @@ class ChatBubble extends StatelessWidget {
       isMe: true,
       isFirstMessageBySender: isFirstMessageBySender,
       isLastMessageBySender: isLastMessageBySender,
+      readWidgetBuilder: readWidgetBuilder,
       child: child,
     );
   }
@@ -182,7 +190,7 @@ class ChatBubble extends StatelessWidget {
                   const SizedBox(height: 8),
                 ],
                 wrappedChild,
-                _buildTimestampAndEditedLabel(context),
+                _buildMessageInfo(context, readWidgetBuilder),
               ],
             ),
           ),
@@ -191,7 +199,7 @@ class ChatBubble extends StatelessWidget {
     );
   }
 
-  Widget _buildTimestampAndEditedLabel(BuildContext context) {
+  Widget _buildMessageInfo(BuildContext context, Widget? readWidgetBuilder) {
     final chatTheme = Theme.of(context).chatTheme;
     final textStyle = chatTheme.emptyChatPlaceholderTextStyle.copyWith(
       fontSize: 12,
@@ -216,6 +224,10 @@ class ChatBubble extends StatelessWidget {
                     ).colorScheme.onSurface.withValues(alpha: 0.7)
                     : Theme.of(context).colorScheme.surfaceTint,
           ),
+        if (readWidgetBuilder != null) ...[
+          const SizedBox(width: 6),
+          readWidgetBuilder,
+        ],
       ],
     );
   }

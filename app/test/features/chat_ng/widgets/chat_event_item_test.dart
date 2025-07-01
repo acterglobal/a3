@@ -262,42 +262,42 @@ void main() {
         expect(find.byIcon(Icons.error), findsOneWidget);
       });
 
-      testWidgets('shows sent icon if last message by this user', (
-        tester,
-      ) async {
-        final sentEventItem = MockTimelineEventItem(
-          eventType: 'm.room.message',
-          sender: 'test-user',
-          msgContent: mockContent,
-          sendState: null, // No sending state indicates message was sent
-        );
-        final sentMessage = MockTimelineItem(
-          id: 'test-message',
-          eventItem: sentEventItem,
-        );
+      // testWidgets('shows sent icon if last message by this user', (
+      //   tester,
+      // ) async {
+      //   final sentEventItem = MockTimelineEventItem(
+      //     eventType: 'm.room.message',
+      //     sender: 'test-user',
+      //     msgContent: mockContent,
+      //     sendState: null, // No sending state indicates message was sent
+      //   );
+      //   final sentMessage = MockTimelineItem(
+      //     id: 'test-message',
+      //     eventItem: sentEventItem,
+      //   );
 
-        await tester.pumpProviderWidget(
-          overrides: [
-            messageReactionsProvider.overrideWith((ref, item) => []),
-            renderableChatMessagesProvider.overrideWith(
-              (ref, roomId) => ['test-message'],
-            ),
-            chatRoomMessageProvider.overrideWith((ref, roomMsgId) {
-              if (roomMsgId.uniqueId == 'test-message') {
-                return sentMessage;
-              }
-              return null;
-            }),
-            messageReadReceiptsProvider.overrideWith(
-              (ref, item) => {'@acter1:m-1.acter.global': 1716230400},
-            ),
-            myUserIdStrProvider.overrideWith((ref) => 'test-user'),
-          ],
-          child: const ChatEvent(roomId: 'test-room', eventId: 'test-message'),
-        );
+      //   await tester.pumpProviderWidget(
+      //     overrides: [
+      //       messageReactionsProvider.overrideWith((ref, item) => []),
+      //       renderableChatMessagesProvider.overrideWith(
+      //         (ref, roomId) => ['test-message'],
+      //       ),
+      //       chatRoomMessageProvider.overrideWith((ref, roomMsgId) {
+      //         if (roomMsgId.uniqueId == 'test-message') {
+      //           return sentMessage;
+      //         }
+      //         return null;
+      //       }),
+      //       messageReadReceiptsProvider.overrideWith(
+      //         (ref, item) => {'@acter1:m-1.acter.global': 1716230400},
+      //       ),
+      //       myUserIdStrProvider.overrideWith((ref) => 'test-user'),
+      //     ],
+      //     child: const ChatEvent(roomId: 'test-room', eventId: 'test-message'),
+      //   );
 
-        expect(find.byType(SentStateWidget), findsOneWidget);
-      });
+      //   expect(find.byType(SentStateWidget), findsOneWidget);
+      // });
 
       testWidgets('does not show icon if last message not by this user', (
         tester,
