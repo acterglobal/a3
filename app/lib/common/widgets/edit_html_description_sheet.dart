@@ -14,11 +14,24 @@ void showEditHtmlDescriptionBottomSheet({
   required Function(WidgetRef, String, String) onSave,
 }) {
   showModalBottomSheet(
-    showDragHandle: true,
+    showDragHandle: false,
+    isDismissible: false,
+    enableDrag: false,
     useSafeArea: true,
     context: context,
-    isDismissible: true,
     isScrollControlled: true,
+    constraints: BoxConstraints(
+      maxWidth: MediaQuery.of(context).size.width,
+      minWidth: MediaQuery.of(context).size.width,
+    ),
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.only(
+        topLeft: Radius.circular(16),
+        topRight: Radius.circular(16),
+        bottomLeft: Radius.circular(0),
+        bottomRight: Radius.circular(0),
+      ),
+    ),
     builder: (context) {
       return EditHtmlDescriptionSheet(
         bottomSheetTitle: bottomSheetTitle,
@@ -56,29 +69,56 @@ class _EditHtmlDescriptionSheetState
   @override
   void initState() {
     super.initState();
-    textEditorState = ActerEditorStateHelpers.fromContent(
-      widget.descriptionMarkdownValue ?? '',
-      widget.descriptionHtmlValue,
-    );
+    
+    // Check if there's meaningful content (not just empty HTML tags)
+    final markdownContent = widget.descriptionMarkdownValue?.trim() ?? '';
+    final htmlContent = widget.descriptionHtmlValue?.trim() ?? '';
+    
+    // Consider content empty if it's just <br> tags or whitespace
+    final hasContent = markdownContent.isNotEmpty && 
+                      htmlContent != '<br>' && 
+                      htmlContent.isNotEmpty &&
+                      htmlContent != '<p></p>' &&
+                      htmlContent != '<p><br></p>';
+    
+    if (hasContent) {
+      // Use existing content
+      textEditorState = ActerEditorStateHelpers.fromContent(
+        widget.descriptionMarkdownValue ?? '',
+        widget.descriptionHtmlValue,
+      );
+    } else {
+      // Use blank editor with initial text for empty state
+      textEditorState = EditorState.blank(withInitialText: true);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final lang = L10n.of(context);
     return Padding(
-      padding: MediaQuery.of(context).viewInsets,
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(widget.bottomSheetTitle ?? lang.editDescription),
-          const SizedBox(height: 20),
+          Text(
+            widget.bottomSheetTitle ?? lang.editDescription,
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          const SizedBox(height: 10),
           Container(
+            padding: const EdgeInsets.all(20),
             height: 200,
             decoration: BoxDecoration(
               border: Border.all(color: brandColor),
               borderRadius: BorderRadius.circular(10.0),
             ),
-            child: HtmlEditor(editorState: textEditorState, editable: true),
+            child: HtmlEditor(
+                editorState: textEditorState,
+                editable: true,
+                shrinkWrap: false,
+                hintText: lang.addDescription,
+              ),
           ),
           const SizedBox(height: 20),
           Row(
@@ -106,7 +146,7 @@ class _EditHtmlDescriptionSheetState
               ),
             ],
           ),
-          const SizedBox(height: 100),
+          const SizedBox(height: 20),
         ],
       ),
     );

@@ -2420,6 +2420,8 @@
   "@editName": {},
   "editDescription": "Edit Description",
   "@editDescription": {},
+  "addDescription": "Add description here",
+  "@addDescription": {},
   "updateNameFailed": "Updating name failed: {error}",
   "@updateNameFailed": {},
   "updateDescriptionFailed": "Updating description failed: {error}",
