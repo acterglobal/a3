@@ -40,27 +40,29 @@ void main() {
     when(() => mockDraft.descriptionHtml(any(), any())).thenReturn(null);
 
     // Set up location-related mock behavior
-    when(() => mockDraft.addPhysicalLocation(
-      any(),
-      any(),
-      any(),
-      any(),
-      any(),
-      any(),
-      any(),
-    )).thenReturn(null);
+    when(
+      () => mockDraft.addPhysicalLocation(
+        any(),
+        any(),
+        any(),
+        any(),
+        any(),
+        any(),
+        any(),
+      ),
+    ).thenReturn(null);
 
-    when(() => mockDraft.addVirtualLocation(
-      any(),
-      any(),
-      any(),
-      any(),
-      any(),
-    )).thenReturn(null);
+    when(
+      () => mockDraft.addVirtualLocation(any(), any(), any(), any(), any()),
+    ).thenReturn(null);
 
-    when(() => mockDraft.send()).thenAnswer((_) async => MockEventId('test-event-id'));
+    when(
+      () => mockDraft.send(),
+    ).thenAnswer((_) async => MockEventId('test-event-id'));
 
-    when(() => mockClient.waitForCalendarEvent(any(), any())).thenAnswer((_) async => mockEvent);
+    when(
+      () => mockClient.waitForCalendarEvent(any(), any()),
+    ).thenAnswer((_) async => mockEvent);
   });
 
   setUpAll(() {
@@ -80,7 +82,9 @@ void main() {
       overrides: [
         spaceProvider.overrideWith((ref, spaceId) => Future.value(mockSpace)),
         eventDraftLocationsProvider.overrideWith((ref) => mockLocationNotifier),
-        selectedSpaceIdProvider.overrideWith((ref) => initialSelectedSpace ?? 'test-space-id'),
+        selectedSpaceIdProvider.overrideWith(
+          (ref) => initialSelectedSpace ?? 'test-space-id',
+        ),
       ],
       child: CreateEventPage(
         initialSelectedSpace: initialSelectedSpace,
@@ -285,7 +289,8 @@ void main() {
         warnIfMissed: false,
       ); // Try to select a date before start date
       await tester.tap(find.text('OK'));
-      await tester.pump();
+      // add delay to avoid pending timer issue
+      await tester.pump(Durations.medium2);
 
       // Wait for any pending timers to complete
       await tester.pumpAndSettle(const Duration(seconds: 3));
@@ -356,12 +361,14 @@ void main() {
       // Verify location widget exists
       expect(find.text(lang.eventLocations), findsOneWidget);
       expect(find.byIcon(Icons.add_circle_outline), findsOneWidget);
-      
+
       // Verify empty state message is shown when no locations are added
       expect(find.text(lang.noLocationsAdded), findsOneWidget);
     });
 
-    testWidgets('displays location icons when locations are added', (tester) async {
+    testWidgets('displays location icons when locations are added', (
+      tester,
+    ) async {
       await pumpCreateEventPage(tester);
 
       // Add a physical location to the provider
@@ -372,7 +379,7 @@ void main() {
         note: 'Test note',
       );
       mockLocationNotifier.addLocation(physicalLocation);
-      
+
       // Add a virtual location to the provider
       final virtualLocation = EventLocationDraft(
         name: 'Test Meeting',
@@ -385,9 +392,18 @@ void main() {
       await tester.pump();
 
       // Verify both location icons are displayed
-      expect(find.byIcon(Icons.map_outlined), findsOneWidget); // Physical location icon
-      expect(find.byIcon(Icons.language), findsOneWidget); // Virtual location icon
-      expect(find.byIcon(Icons.add_circle_outline), findsOneWidget); // Add button icon
+      expect(
+        find.byIcon(Icons.map_outlined),
+        findsOneWidget,
+      ); // Physical location icon
+      expect(
+        find.byIcon(Icons.language),
+        findsOneWidget,
+      ); // Virtual location icon
+      expect(
+        find.byIcon(Icons.add_circle_outline),
+        findsOneWidget,
+      ); // Add button icon
     });
 
     testWidgets('adds physical location to event', (tester) async {
@@ -440,15 +456,17 @@ void main() {
       await tester.pump();
 
       // Verify physical location was added with exact parameters
-      verify(() => mockDraft.addPhysicalLocation(
-        'Office Building',
-        '',
-        '',
-        '',
-        '',
-        '123 Main St, City',
-        'Main entrance',
-      )).called(1);
+      verify(
+        () => mockDraft.addPhysicalLocation(
+          'Office Building',
+          '',
+          '',
+          '',
+          '',
+          '123 Main St, City',
+          'Main entrance',
+        ),
+      ).called(1);
     });
 
     testWidgets('adds virtual location to event', (tester) async {
@@ -501,13 +519,15 @@ void main() {
       await tester.pump();
 
       // Verify virtual location was added with exact parameters
-      verify(() => mockDraft.addVirtualLocation(
-        'Zoom Meeting',
-        '',
-        '',
-        'https://zoom.us/j/123456789',
-        'Password: 1234',
-      )).called(1);
+      verify(
+        () => mockDraft.addVirtualLocation(
+          'Zoom Meeting',
+          '',
+          '',
+          'https://zoom.us/j/123456789',
+          'Password: 1234',
+        ),
+      ).called(1);
     });
 
     testWidgets('adds multiple locations to event', (tester) async {
@@ -570,23 +590,27 @@ void main() {
       await tester.pump();
 
       // Verify both locations were added with exact parameters
-      verify(() => mockDraft.addPhysicalLocation(
-        'Office Building',
-        '',
-        '',
-        '',
-        '',
-        '123 Main St, City',
-        'Main entrance',
-      )).called(1);
+      verify(
+        () => mockDraft.addPhysicalLocation(
+          'Office Building',
+          '',
+          '',
+          '',
+          '',
+          '123 Main St, City',
+          'Main entrance',
+        ),
+      ).called(1);
 
-      verify(() => mockDraft.addVirtualLocation(
-        'Zoom Meeting',
-        '',
-        '',
-        'https://zoom.us/j/123456789',
-        'Password: 1234',
-      )).called(1);
+      verify(
+        () => mockDraft.addVirtualLocation(
+          'Zoom Meeting',
+          '',
+          '',
+          'https://zoom.us/j/123456789',
+          'Password: 1234',
+        ),
+      ).called(1);
     });
 
     testWidgets('generates valid Jitsi call link', (tester) async {
@@ -605,12 +629,17 @@ void main() {
       await tester.pump();
 
       // Get the state object
-      final state = tester.state<CreateEventPageConsumerState>(find.byType(CreateEventPage));
+      final state = tester.state<CreateEventPageConsumerState>(
+        find.byType(CreateEventPage),
+      );
       final link = state.createJitsiCallLink('Test Event Name');
 
       // Verify the link format
       expect(link, startsWith('https://meet.jit.si/'));
-      expect(link, matches(RegExp(r'^https://meet\.jit\.si/[a-zA-Z0-9]{10,}$')));
+      expect(
+        link,
+        matches(RegExp(r'^https://meet\.jit\.si/[a-zA-Z0-9]{10,}$')),
+      );
 
       // Verify the title is cleaned (no spaces or special characters)
       expect(link, contains('TestEventName'));
