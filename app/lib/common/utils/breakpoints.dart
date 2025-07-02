@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// Current breakpoints used across the app - documenting existing behavior
-/// before migration from flutter_adaptive_scaffold
+
 class ActerBreakpoints {
   // Current custom breakpoint from acter_build_context.dart
   static const double largeScreen = 770;

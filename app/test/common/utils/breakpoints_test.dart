@@ -346,8 +346,5 @@ void main() {
     testWidgets('has correct transition duration', (tester) async {
       expect(ActerAnimations.transitionDuration, const Duration(milliseconds: 300));
     });
-
-    // Animation tests could be expanded to test actual animation behavior
-    // This would require more complex setup with AnimationController
   });
 } 
