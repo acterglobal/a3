@@ -42,10 +42,18 @@ async fn test_room_power_levels_ban() -> Result<()> {
     while i > 0 {
         if let Some(diff) = stream.next().now_or_never().flatten() {
             match diff.action().as_str() {
-                "PushBack" | "Set" => {
+                "PushBack" => {
                     let value = diff
                         .value()
                         .expect("diff pushback action should have valid value");
+                    if let Some(result) = match_msg(&value) {
+                        found_result = Some(result);
+                    }
+                }
+                "Set" => {
+                    let value = diff
+                        .value()
+                        .expect("diff set action should have valid value");
                     if let Some(result) = match_msg(&value) {
                         found_result = Some(result);
                     }
@@ -127,10 +135,18 @@ async fn test_room_power_levels_events() -> Result<()> {
     while i > 0 {
         if let Some(diff) = stream.next().now_or_never().flatten() {
             match diff.action().as_str() {
-                "PushBack" | "Set" => {
+                "PushBack" => {
                     let value = diff
                         .value()
                         .expect("diff pushback action should have valid value");
+                    if let Some(result) = match_msg(&value) {
+                        found_result = Some(result);
+                    }
+                }
+                "Set" => {
+                    let value = diff
+                        .value()
+                        .expect("diff set action should have valid value");
                     if let Some(result) = match_msg(&value) {
                         found_result = Some(result);
                     }
@@ -212,10 +228,18 @@ async fn test_room_power_levels_events_default() -> Result<()> {
     while i > 0 {
         if let Some(diff) = stream.next().now_or_never().flatten() {
             match diff.action().as_str() {
-                "PushBack" | "Set" => {
+                "PushBack" => {
                     let value = diff
                         .value()
                         .expect("diff pushback action should have valid value");
+                    if let Some(result) = match_msg(&value) {
+                        found_result = Some(result);
+                    }
+                }
+                "Set" => {
+                    let value = diff
+                        .value()
+                        .expect("diff set action should have valid value");
                     if let Some(result) = match_msg(&value) {
                         found_result = Some(result);
                     }
@@ -294,10 +318,18 @@ async fn test_room_power_levels_invite() -> Result<()> {
     while i > 0 {
         if let Some(diff) = stream.next().now_or_never().flatten() {
             match diff.action().as_str() {
-                "PushBack" | "Set" => {
+                "PushBack" => {
                     let value = diff
                         .value()
                         .expect("diff pushback action should have valid value");
+                    if let Some(result) = match_msg(&value) {
+                        found_result = Some(result);
+                    }
+                }
+                "Set" => {
+                    let value = diff
+                        .value()
+                        .expect("diff set action should have valid value");
                     if let Some(result) = match_msg(&value) {
                         found_result = Some(result);
                     }
@@ -376,10 +408,18 @@ async fn test_room_power_levels_kick() -> Result<()> {
     while i > 0 {
         if let Some(diff) = stream.next().now_or_never().flatten() {
             match diff.action().as_str() {
-                "PushBack" | "Set" => {
+                "PushBack" => {
                     let value = diff
                         .value()
                         .expect("diff pushback action should have valid value");
+                    if let Some(result) = match_msg(&value) {
+                        found_result = Some(result);
+                    }
+                }
+                "Set" => {
+                    let value = diff
+                        .value()
+                        .expect("diff set action should have valid value");
                     if let Some(result) = match_msg(&value) {
                         found_result = Some(result);
                     }
@@ -458,10 +498,18 @@ async fn test_room_power_levels_redact() -> Result<()> {
     while i > 0 {
         if let Some(diff) = stream.next().now_or_never().flatten() {
             match diff.action().as_str() {
-                "PushBack" | "Set" => {
+                "PushBack" => {
                     let value = diff
                         .value()
                         .expect("diff pushback action should have valid value");
+                    if let Some(result) = match_msg(&value) {
+                        found_result = Some(result);
+                    }
+                }
+                "Set" => {
+                    let value = diff
+                        .value()
+                        .expect("diff set action should have valid value");
                     if let Some(result) = match_msg(&value) {
                         found_result = Some(result);
                     }
@@ -543,10 +591,18 @@ async fn test_room_power_levels_state_default() -> Result<()> {
     while i > 0 {
         if let Some(diff) = stream.next().now_or_never().flatten() {
             match diff.action().as_str() {
-                "PushBack" | "Set" => {
+                "PushBack" => {
                     let value = diff
                         .value()
                         .expect("diff pushback action should have valid value");
+                    if let Some(result) = match_msg(&value) {
+                        found_result = Some(result);
+                    }
+                }
+                "Set" => {
+                    let value = diff
+                        .value()
+                        .expect("diff set action should have valid value");
                     if let Some(result) = match_msg(&value) {
                         found_result = Some(result);
                     }
@@ -628,10 +684,18 @@ async fn test_room_power_levels_users_default() -> Result<()> {
     while i > 0 {
         if let Some(diff) = stream.next().now_or_never().flatten() {
             match diff.action().as_str() {
-                "PushBack" | "Set" => {
+                "PushBack" => {
                     let value = diff
                         .value()
                         .expect("diff pushback action should have valid value");
+                    if let Some(result) = match_msg(&value) {
+                        found_result = Some(result);
+                    }
+                }
+                "Set" => {
+                    let value = diff
+                        .value()
+                        .expect("diff set action should have valid value");
                     if let Some(result) = match_msg(&value) {
                         found_result = Some(result);
                     }
@@ -713,10 +777,18 @@ async fn test_room_power_levels_notifications() -> Result<()> {
     while i > 0 {
         if let Some(diff) = stream.next().now_or_never().flatten() {
             match diff.action().as_str() {
-                "PushBack" | "Set" => {
+                "PushBack" => {
                     let value = diff
                         .value()
                         .expect("diff pushback action should have valid value");
+                    if let Some(result) = match_msg(&value) {
+                        found_result = Some(result);
+                    }
+                }
+                "Set" => {
+                    let value = diff
+                        .value()
+                        .expect("diff set action should have valid value");
                     if let Some(result) = match_msg(&value) {
                         found_result = Some(result);
                     }

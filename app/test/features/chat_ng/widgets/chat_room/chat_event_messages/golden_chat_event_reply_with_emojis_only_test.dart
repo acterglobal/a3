@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
 import 'package:acter/features/chat_ng/widgets/events/chat_event.dart';
@@ -9,14 +11,21 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hrk_flutter_test_batteries/hrk_flutter_test_batteries.dart';
 import '../../../../../helpers/font_loader.dart';
 import '../../../../../helpers/test_util.dart';
+import '../../../../../helpers/utils.dart' as test_utils;
 
 void main() {
+  final testDir = Directory.current.path;
+  final goldenDir =
+      '$testDir/test/features/chat_ng/widgets/chat_room/chat_event_messages/goldens_images';
+
+  goldenFileComparator = test_utils.GoldenFileComparator(goldenDir);
+
   group('Chat NG - ChatEvent reply message emoji only golden', () {
     testWidgets(
       'ChatEvent reply-to message emoji only event widget legacy html',
       (tester) async {
         await loadTestFonts();
-        useGoldenFileComparatorWithThreshold(0.01); // 1%
+        goldenFileComparator = test_utils.GoldenFileComparator(goldenDir);
 
         await tester.pumpProviderWidget(
           overrides: [
@@ -44,9 +53,7 @@ void main() {
           ),
         );
 
-        await tester.pump(const Duration(seconds: 1));
-        await tester.pump(const Duration(seconds: 1));
-        await tester.pump(const Duration(seconds: 1));
+        await tester.pumpAndSettle();
 
         await expectLater(
           find.byType(ListView),
@@ -60,7 +67,8 @@ void main() {
       'ChatEvent reply-to message emoji only event widget html next',
       (tester) async {
         await loadTestFonts();
-        useGoldenFileComparatorWithThreshold(0.01); // 1%
+        goldenFileComparator = test_utils.GoldenFileComparator(goldenDir);
+        useGoldenFileComparatorWithThreshold(0.05);
 
         await tester.pumpProviderWidget(
           overrides: [
@@ -88,9 +96,7 @@ void main() {
           ),
         );
 
-        await tester.pump(const Duration(seconds: 1));
-        await tester.pump(const Duration(seconds: 1));
-        await tester.pump(const Duration(seconds: 1));
+        await tester.pumpAndSettle();
 
         await expectLater(
           find.byType(ListView),

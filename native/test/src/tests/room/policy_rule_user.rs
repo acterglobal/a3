@@ -44,10 +44,18 @@ async fn test_policy_rule_user() -> Result<()> {
     while i > 0 {
         if let Some(diff) = stream.next().now_or_never().flatten() {
             match diff.action().as_str() {
-                "PushBack" | "Set" => {
+                "PushBack" => {
                     let value = diff
                         .value()
                         .expect("diff pushback action should have valid value");
+                    if let Some(result) = match_msg(&value) {
+                        found_result = Some(result);
+                    }
+                }
+                "Set" => {
+                    let value = diff
+                        .value()
+                        .expect("diff set action should have valid value");
                     if let Some(result) = match_msg(&value) {
                         found_result = Some(result);
                     }

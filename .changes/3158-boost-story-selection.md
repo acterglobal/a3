@@ -1,0 +1,1 @@
+- [Fix] : Click-to-choose boost/story now works correctly with radio buttons at time of boost/story creation.
