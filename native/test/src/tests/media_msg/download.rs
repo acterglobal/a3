@@ -81,8 +81,12 @@ async fn room_msg_can_download_image() -> Result<()> {
                     let value = diff
                         .value()
                         .expect("diff set action should have valid value");
-                    if match_media_msg(&value, mimetype, &jpg_name).is_some() {
-                        found = value.event_item().and_then(|t| t.event_id());
+                    if let Some(msg_content) = match_media_msg(&value, mimetype, &jpg_name) {
+                        let event_id = value
+                            .event_item()
+                            .and_then(|t| t.event_id())
+                            .expect("media msg should be timeline event item");
+                        found = Some((msg_content, event_id));
                     }
                 }
                 "Reset" => {
