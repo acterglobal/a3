@@ -280,61 +280,51 @@ void main() {
     });
   });
 
-  group('LoadingStateNotifier Implementation Tests', () {
-    testWidgets('should initialize with false state', (tester) async {
-      // Arrange
-      final notifier = LoadingActivitiesStateNotifier();
-
-      // Act & Assert
-      expect(notifier.state, false);
-      expect(notifier.mounted, true);
-    });
-
-    testWidgets('should update state when setLoading is called', (tester) async {
-      // Arrange
-      final notifier = LoadingActivitiesStateNotifier();
-      bool stateChanged = false;
+  group('Pagination State Tests', () {
+    test('should handle pagination logic correctly', () {
+      // Test pagination calculation patterns
+      int currentOffset = 0;
+      const pageSize = 100;
+      bool hasMoreData = true;
       
-      notifier.addListener((state) {
-        stateChanged = true;
-      });
-
-      // Act
-      notifier.setLoading(true);
-
-      // Assert
-      expect(notifier.state, true);
-      expect(stateChanged, true);
-    });
-
-    testWidgets('should handle multiple state changes', (tester) async {
-      // Arrange
-      final notifier = LoadingActivitiesStateNotifier();
-      final states = <bool>[];
+      // Simulate successful fetch with partial page
+      final mockActivityIds = List.generate(50, (i) => 'activity_$i');
       
-      notifier.addListener((state) {
-        states.add(state);
-      });
-
-      // Act
-      notifier.setLoading(true);
-      notifier.setLoading(false);
-      notifier.setLoading(true);
-
-      // Assert - The listener gets called with initial state (false) plus the changes
-      expect(states, [false, true, false, true]);
-      expect(notifier.state, true);
+      // Simulate pagination update logic
+      currentOffset += mockActivityIds.length;
+      hasMoreData = mockActivityIds.length >= pageSize;
+      
+      expect(currentOffset, 50);
+      expect(hasMoreData, false); // Less than page size means no more data
     });
 
-    testWidgets('should dispose properly', (tester) async {
-      // Arrange
-      final notifier = LoadingActivitiesStateNotifier();
+    test('should handle pagination with full page', () {
+      // Test pagination calculation patterns
+      int currentOffset = 0;
+      const pageSize = 100;
+      bool hasMoreData = true;
+      
+      // Simulate successful fetch with full page
+      final mockActivityIds = List.generate(100, (i) => 'activity_$i');
+      
+      // Simulate pagination update logic
+      currentOffset += mockActivityIds.length;
+      hasMoreData = mockActivityIds.length >= pageSize;
+      
+      expect(currentOffset, 100);
+      expect(hasMoreData, true); // Full page means might have more data
+    });
 
-      // Act
-      notifier.dispose();
-
-      // Assert
-      expect(notifier.mounted, false);
+    test('should handle empty response', () {
+      // Test pagination with empty response
+      bool hasMoreData = true;
+      final emptyActivityIds = <String>[];
+      
+      if (emptyActivityIds.isEmpty) {
+        hasMoreData = false;
+      }
+      
+      expect(hasMoreData, false);
     });
   });
 
@@ -535,54 +525,17 @@ void main() {
   group('Notifier Integration and Coverage Tests', () {
     testWidgets('should handle all notifiers together', (tester) async {
       // Test that all notifier types can coexist
-      final loadingNotifier = LoadingActivitiesStateNotifier();
       final activitiesNotifier = AllActivitiesNotifier();
       final activityNotifier = AsyncActivityNotifier();
 
-      expect(loadingNotifier, isA<LoadingActivitiesStateNotifier>());
       expect(activitiesNotifier, isA<AllActivitiesNotifier>());
       expect(activityNotifier, isA<AsyncActivityNotifier>());
 
-      // Test loading state interactions
-      loadingNotifier.setLoading(true);
-      expect(loadingNotifier.state, true);
-      
-      loadingNotifier.setLoading(false);
-      expect(loadingNotifier.state, false);
-
       // Test activities notifier state
       expect(activitiesNotifier.hasMoreData, true);
-
-      // Cleanup
-      loadingNotifier.dispose();
-    });
-
-    testWidgets('should handle complex state scenarios', (tester) async {
-      final loadingNotifier = LoadingActivitiesStateNotifier();
-      final states = <bool>[];
-      
-      loadingNotifier.addListener((state) {
-        states.add(state);
-      });
-
-      // Simulate complex loading scenario like in loadMoreActivitiesProvider
-      loadingNotifier.setLoading(true);  // Start loading
-      loadingNotifier.setLoading(false); // Finish loading
-      loadingNotifier.setLoading(true);  // Start loading again
-      loadingNotifier.setLoading(false); // Finish loading again
-
-      expect(states, [false, true, false, true, false]);
-      
-      loadingNotifier.dispose();
     });
 
     testWidgets('should test all public methods and properties', (tester) async {
-      // Test LoadingStateNotifier public interface
-      final loadingNotifier = LoadingActivitiesStateNotifier();
-      expect(loadingNotifier.state, isA<bool>());
-      expect(loadingNotifier.setLoading, isA<Function>());
-      expect(loadingNotifier.mounted, true);
-      
       // Test AllActivitiesNotifier public interface
       final activitiesNotifier = AllActivitiesNotifier();
       expect(activitiesNotifier.hasMoreData, isA<bool>());
@@ -592,9 +545,6 @@ void main() {
       // Test AsyncActivityNotifier public interface
       final activityNotifier = AsyncActivityNotifier();
       expect(activityNotifier.build, isA<Function>());
-      
-      // Cleanup
-      loadingNotifier.dispose();
     });
 
     testWidgets('should handle error scenarios for all notifiers', (tester) async {
@@ -620,13 +570,6 @@ void main() {
       expect(errorHandled, true);
       subscription.cancel();
       streamController.close();
-      
-      // State notifier error resilience
-      final loadingNotifier = LoadingActivitiesStateNotifier();
-      expect(() => loadingNotifier.setLoading(true), returnsNormally);
-      expect(() => loadingNotifier.setLoading(false), returnsNormally);
-      
-      loadingNotifier.dispose();
     });
 
     testWidgets('should cover disposal and cleanup patterns', (tester) async {

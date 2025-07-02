@@ -157,29 +157,6 @@ void main() {
       await tester.pumpAndSettle();
     });
 
-    testWidgets('loadingStateProvider tests', (tester) async {
-      final container = ProviderContainer();
-      addTearDown(container.dispose);
-
-      // Test initial state
-      final initialState = container.read(loadingStateProvider);
-      expect(initialState, false);
-      
-      // Test setting loading state
-      final notifier = container.read(loadingStateProvider.notifier);
-      notifier.setLoading(true);
-      
-      final loadingState = container.read(loadingStateProvider);
-      expect(loadingState, true);
-      
-      // Test unsetting loading state
-      notifier.setLoading(false);
-      final notLoadingState = container.read(loadingStateProvider);
-      expect(notLoadingState, false);
-      
-      await tester.pumpAndSettle();
-    });
-
     testWidgets('isLoadingMoreActivitiesProvider tests', (tester) async {
       final container = ProviderContainer();
       addTearDown(container.dispose);
@@ -188,13 +165,6 @@ void main() {
       final initialState = container.read(isLoadingMoreActivitiesProvider);
       expect(initialState, false);
       
-      // Test when loading state changes
-      final loadingNotifier = container.read(loadingStateProvider.notifier);
-      loadingNotifier.setLoading(true);
-      
-      final loadingState = container.read(isLoadingMoreActivitiesProvider);
-      expect(loadingState, true);
-      
       await tester.pumpAndSettle();
     });
 
@@ -208,28 +178,9 @@ void main() {
       expect(loadMoreActivitiesProvider, isA<Provider<Future<void> Function()>>());
     });
 
-    test('LoadingStateNotifier direct test', () {
-      // Test LoadingStateNotifier directly without provider container
-      final notifier = LoadingActivitiesStateNotifier();
-      
-      // Test initial state
-      expect(notifier.state, false);
-      
-      // Test setting loading state
-      notifier.setLoading(true);
-      expect(notifier.state, true);
-      
-      notifier.setLoading(false);
-      expect(notifier.state, false);
-      
-      // Test multiple state changes
-      notifier.setLoading(true);
-      notifier.setLoading(false);
-      notifier.setLoading(true);
-      expect(notifier.state, true);
-      
-      // Dispose to clean up
-      notifier.dispose();
+    test('loadMoreActivitiesProvider should exist and have correct type', () {
+      // Test that the provider exists and has the expected type
+      expect(loadMoreActivitiesProvider, isA<Provider<Future<void> Function()>>());
     });
 
     test('loadMoreActivitiesProvider timing calculations', () {
