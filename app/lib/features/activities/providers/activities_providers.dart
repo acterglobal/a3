@@ -7,6 +7,9 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:acter_notifify/model/push_styles.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::activities::providers');
 
 final supportedActivityTypes = [
   PushStyles.comment,
@@ -114,51 +117,38 @@ final hasMoreActivitiesProvider = Provider<bool>((ref) {
   return notifier.hasMoreData;
 });
 
-final loadingStateProvider = StateNotifierProvider<LoadingActivitiesStateNotifier, bool>((ref) {
-  return LoadingActivitiesStateNotifier();
-});
+// Separate state provider for loading state that can be properly reactive
+final isLoadingMoreStateProvider = StateProvider<bool>((ref) => false);
 
 // Provider to check if currently loading more activities
 final isLoadingMoreActivitiesProvider = Provider<bool>((ref) {
-  // Use only the dedicated loading state for reliability
-  return ref.watch(loadingStateProvider);
+  return ref.watch(isLoadingMoreStateProvider);
 });
 
-// Provider function to load more activities
+// Simplified load more activities provider - just returns the action
 final loadMoreActivitiesProvider = Provider<Future<void> Function()>((ref) {
   return () async {
-    final loadingNotifier = ref.read(loadingStateProvider.notifier);
     final activitiesNotifier = ref.read(allActivitiesProvider.notifier);
+    final isCurrentlyLoading = ref.read(isLoadingMoreStateProvider);
     
-    // Set loading state immediately
-    loadingNotifier.setLoading(true);
+    // Check if we can load more and aren't already loading
+    if (!activitiesNotifier.hasMoreData || isCurrentlyLoading) {
+      return;
+    }
     
-    // Start timing for minimum loading duration
-    final startTime = DateTime.now();
-    const minLoadingDuration = Duration(seconds: 3);
+    // Set loading state to true
+    ref.read(isLoadingMoreStateProvider.notifier).state = true;
     
     try {
       await activitiesNotifier.loadMore();
       
-      // Calculate how much time has passed
-      final elapsed = DateTime.now().difference(startTime);
-      final remainingTime = minLoadingDuration - elapsed;
-      
-      // If less than 5 seconds have passed, wait for the remaining time
-      if (remainingTime.inMilliseconds > 0) {
-        await Future.delayed(remainingTime);
-      }
-    } catch (e) {
-      // Even on error, show loading for minimum duration
-      final elapsed = DateTime.now().difference(startTime);
-      final remainingTime = minLoadingDuration - elapsed;
-      
-      if (remainingTime.inMilliseconds > 0) {
-        await Future.delayed(remainingTime);
-      }
+      // Add 2-second delay to see the progress bar
+      await Future.delayed(const Duration(seconds: 2));
+    } catch (e) { 
+      _log.severe('Failed to load more activities', e);
     } finally {
-      // Always clear loading state after minimum duration
-      loadingNotifier.setLoading(false);
+      // Set loading state to false
+      ref.read(isLoadingMoreStateProvider.notifier).state = false;
     }
   };
 });

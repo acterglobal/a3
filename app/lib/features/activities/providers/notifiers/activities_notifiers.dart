@@ -167,13 +167,3 @@ class AllActivitiesNotifier extends AsyncNotifier<List<String>> {
     return await _fetchAllActivities(client);
   }
 }
-
-// Create a separate StateNotifier for loading state management
-class LoadingActivitiesStateNotifier extends StateNotifier<bool> {
-  LoadingActivitiesStateNotifier() : super(false);
-
-  void setLoading(bool loading) {
-    state = loading;
-  }
-}
-

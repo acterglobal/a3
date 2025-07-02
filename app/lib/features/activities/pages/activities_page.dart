@@ -67,17 +67,21 @@ class ActivitiesPage extends ConsumerWidget {
 
     return NotificationListener<ScrollNotification>(
       onNotification: (ScrollNotification scrollInfo) {
-
         if (scrollInfo is ScrollUpdateNotification) {
           final pixels = scrollInfo.metrics.pixels;
           final maxExtent = scrollInfo.metrics.maxScrollExtent;
-          final progress = maxExtent > 0 ? pixels / maxExtent : 0;
+          
+          // Avoid division by zero and ensure we have scrollable content
+          if (maxExtent <= 0) return false;
+          
+          final progress = pixels / maxExtent;
           
           // Check if conditions are met to load more activities
           final isNearBottom = progress >= 0.9;
           final canLoadMore = hasMoreActivities && !isLoadingMore;
           
           if (isNearBottom && canLoadMore) {
+            // Trigger loading more activities
             loadMoreActivities();
           }
         }
@@ -91,15 +95,20 @@ class ActivitiesPage extends ConsumerWidget {
             // Show loading indicator at the bottom when loading more activities
             if (isLoadingMore)
               Container(
-                padding: const EdgeInsets.all(20.0),
+                padding: const EdgeInsets.all(16.0),
                 child: Center(
                   child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      CircularProgressIndicator(),
-                      SizedBox(height: 8),
+                      const SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                      const SizedBox(height: 8),
                       Text(
                         lang.loadingMoreActivities,
-                        style: TextStyle(fontSize: 12, color: Colors.grey),
+                        style: const TextStyle(fontSize: 12, color: Colors.grey),
                       ),
                     ],
                   ),
