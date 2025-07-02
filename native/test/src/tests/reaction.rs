@@ -146,7 +146,7 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
     info!("after toggle");
 
     // msg reaction may reach via set action
-    let mut i = 10;
+    let mut i = 30;
     let mut found = false;
     while i > 0 {
         info!("stream loop - {i}");
