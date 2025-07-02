@@ -469,7 +469,7 @@ impl Client {
         };
         let new_msg = TimelineItem::from((item, my_id));
         let mut room_infos = self.sync_controller.room_infos.write().await;
-        let Some(room_info) = (*room_infos).get_mut(room_id) else {
+        let Some(room_info) = room_infos.get_mut(room_id) else {
             return false;
         };
         if let Some(prev_msg) = &room_info.latest_msg {
