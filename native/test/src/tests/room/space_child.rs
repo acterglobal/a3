@@ -1,5 +1,5 @@
 use acter::api::{CreateConvoSettingsBuilder, TimelineItem};
-use acter_core::models::status::SpaceChildContent;
+use acter_matrix::models::status::SpaceChildContent;
 use anyhow::Result;
 use core::time::Duration;
 use futures::{pin_mut, stream::StreamExt, FutureExt};

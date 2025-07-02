@@ -2,8 +2,8 @@ use std::ops::Deref;
 use std::sync::Arc;
 
 use crate::{Client, RUNTIME};
-use acter_core::events::{ObjRef as CoreObjRef, RefDetails as CoreRefDetails};
-use acter_core::share_link::api;
+use acter_matrix::events::{ObjRef as CoreObjRef, RefDetails as CoreRefDetails};
+use acter_matrix::share_link::api;
 use anyhow::{bail, Context, Result};
 use matrix_sdk::ruma::{
     events::room::message::UrlPreview, OwnedEventId, OwnedRoomId, OwnedServerName,

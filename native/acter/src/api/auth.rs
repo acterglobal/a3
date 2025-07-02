@@ -1,4 +1,4 @@
-use acter_core::RestoreToken;
+use acter_matrix::RestoreToken;
 use anyhow::{bail, Context, Result};
 use lazy_static::lazy_static;
 use matrix_sdk::{

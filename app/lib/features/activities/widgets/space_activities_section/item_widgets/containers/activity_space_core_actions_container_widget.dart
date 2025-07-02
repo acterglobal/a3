@@ -9,6 +9,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class ActivitySpaceCoreActionsContainerWidget extends ConsumerWidget {
   final ActivityObject? activityObject;
+  final VoidCallback? onTap;
   final String userId;
   final String roomId;
   final String actionTitle;
@@ -18,6 +19,7 @@ class ActivitySpaceCoreActionsContainerWidget extends ConsumerWidget {
   const ActivitySpaceCoreActionsContainerWidget({
     super.key,
     this.activityObject,
+    this.onTap,
     required this.userId,
     required this.roomId,
     required this.actionTitle,
@@ -36,7 +38,9 @@ class ActivitySpaceCoreActionsContainerWidget extends ConsumerWidget {
             .valueOrNull ??
         userId;
 
-    return Container(
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -46,14 +50,15 @@ class ActivitySpaceCoreActionsContainerWidget extends ConsumerWidget {
             actionIcon: PhosphorIconsRegular.pencilSimpleLine,
           ),
           const SizedBox(width: 10),
-          _buildSubtitleOrTime(context, displayName),
+          _buildTitleOrTime(context, displayName),
         ],
+      ),
       ),
     );
   }
 
   /// Subtitle + time or only time if subtitle is null
-  Widget _buildSubtitleOrTime(BuildContext context, String displayName) {
+  Widget _buildTitleOrTime(BuildContext context, String displayName) {
     final theme = Theme.of(context);
     return Expanded(
       child: Row(

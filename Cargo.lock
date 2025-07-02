@@ -18,7 +18,7 @@ dependencies = [
 name = "acter"
 version = "0.1.0"
 dependencies = [
- "acter-core",
+ "acter-matrix",
  "android_logger",
  "anyhow",
  "async-stream",
@@ -78,7 +78,7 @@ name = "acter-cli"
 version = "0.1.0"
 dependencies = [
  "acter",
- "acter-core",
+ "acter-matrix",
  "anyhow",
  "clap",
  "dialoguer",
@@ -92,6 +92,10 @@ dependencies = [
 
 [[package]]
 name = "acter-core"
+version = "0.1.0"
+
+[[package]]
+name = "acter-matrix"
 version = "0.1.0"
 dependencies = [
  "anyhow",
@@ -132,7 +136,7 @@ name = "acter-test"
 version = "0.1.0"
 dependencies = [
  "acter",
- "acter-core",
+ "acter-matrix",
  "anyhow",
  "chrono",
  "env_logger",

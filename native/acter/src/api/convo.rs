@@ -1,4 +1,4 @@
-use acter_core::{
+use acter_matrix::{
     referencing::{ExecuteReference, RoomParam},
     statics::default_acter_convo_states,
     Error,

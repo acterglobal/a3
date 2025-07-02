@@ -38,7 +38,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         if: ${{matrix.needs_flutter}}
         with:
-          flutter-version: '3.29'
+          flutter-version: '3.32'
           channel: 'stable'
       - name: Run Clippy
         run: cargo clippy  -p ${{matrix.package}} ${{matrix.clippy_extras}} -- -D warnings
@@ -91,7 +91,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         if: ${{matrix.needs_flutter}}
         with:
-          flutter-version: '3.29'
+          flutter-version: '3.32'
           channel: 'stable'
       - name: Release Build
         run: cargo build -p ${{matrix.package}} --release
@@ -104,7 +104,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.29'
+          flutter-version: '3.32'
           channel: 'stable'
       - name: Install supported rust toolchain
         uses: actions-rust-lang/setup-rust-toolchain@v1

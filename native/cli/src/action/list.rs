@@ -1,4 +1,4 @@
-use acter_core::spaces::SpaceRelation;
+use acter_matrix::spaces::SpaceRelation;
 use anyhow::Result;
 use clap::Parser;
 use futures::stream::StreamExt;

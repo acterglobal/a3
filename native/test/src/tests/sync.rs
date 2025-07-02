@@ -21,10 +21,12 @@ async fn history_sync_restart() -> Result<()> {
     .await?;
 
     let space = user.space(room_id.to_string()).await?;
-    let mut draft = space.news_draft()?;
     let text_draft = user.text_markdown_draft("## This is a simple text".to_owned());
-    draft.add_slide(Box::new(text_draft.into()));
-    draft.send().await?;
+    space
+        .news_draft()?
+        .add_slide(Box::new(text_draft.into()))
+        .send()
+        .await?;
 
     Retry::spawn(retry_strategy, || async {
         if space.latest_news_entries(1).await?.len() != 1 {

@@ -595,6 +595,30 @@ final productTeamMutedWithSingleTypingUserRoom2 = createMockChatItem(
             mockBody: 'Will do! See you all tomorrow.',
           ),
         ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-49',
+          mockSenderId: userId,
+          mockOriginServerTs: 1744096816000, // April 8, 2025 15:40:16
+          mockMsgContent: MockMsgContent(
+            mockBody: 'Hy Good morning!',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-50',
+          mockSenderId: '@michael:acter.global',
+          mockOriginServerTs: 1744096686000, // April 8, 2025 15:38:06
+          mockMsgContent: MockMsgContent(
+            mockBody: 'Hy, good morning! How’s your day starting?',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-51',
+          mockSenderId: userId,
+          mockOriginServerTs: 1744096816000, // April 8, 2025 15:40:16
+          mockMsgContent: MockMsgContent(
+            mockBody: 'Just wanted to check in and see how everything\'s going on your end. Hope you had a restful night and feel ready to take on the day. Let me know if you need anything or if there\'s something I can help with today!',
+          ),
+        ),
 
         // --- Reply-to-message example ---
         MockTimelineEventItem(

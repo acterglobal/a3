@@ -33,6 +33,14 @@ bool isValidUrl(String url) {
   return urlPattern.hasMatch(url);
 }
 
+bool isOnlyEmojis(String text) {
+  final emojiRegex = RegExp(
+    r'^(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff]|\s)+$',
+  );
+
+  return emojiRegex.hasMatch(text.trim());
+}
+
 bool isDesktop(BuildContext context) =>
     desktopPlatforms.contains(Theme.of(context).platform);
 
@@ -111,10 +119,11 @@ String taskDueDateFormat(DateTime dateTime) {
 }
 
 String formatTimeFromTimestamp(int originServerTs) {
-  final originServerDateTime = DateTime.fromMillisecondsSinceEpoch(
-    originServerTs,
-    isUtc: true,
-  ).toLocal();
+  final originServerDateTime =
+      DateTime.fromMillisecondsSinceEpoch(
+        originServerTs,
+        isUtc: true,
+      ).toLocal();
   return DateFormat('hh:mm a').format(originServerDateTime);
 }
 

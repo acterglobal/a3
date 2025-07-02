@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use acter_core::client;
+use acter_matrix::client;
 
 use super::client::UniffiClient;
 use crate::api::Client;

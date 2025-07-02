@@ -1,4 +1,4 @@
-use acter_core::{events::room::UserSettingsEventContent, referencing::ExecuteReference};
+use acter_matrix::{events::room::UserSettingsEventContent, referencing::ExecuteReference};
 use anyhow::Result;
 use futures::{Stream, StreamExt};
 use matrix_sdk::ruma::events::StaticEventContent;

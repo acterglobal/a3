@@ -1,4 +1,4 @@
-use acter_core::{
+use acter_matrix::{
     events::{
         attachments::{
             AttachmentBuilder, AttachmentContent, FallbackAttachmentContent, LinkAttachmentContent,

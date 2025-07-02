@@ -1,4 +1,4 @@
-use acter_core::{events::explicit_invites::ExplicitInviteEventContent, models};
+use acter_matrix::{events::explicit_invites::ExplicitInviteEventContent, models};
 use futures::{Stream, StreamExt};
 use matrix_sdk::ruma::{OwnedEventId, OwnedUserId};
 use ruma::UserId;

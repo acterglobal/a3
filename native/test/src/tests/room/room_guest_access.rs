@@ -1,5 +1,5 @@
 use acter::api::TimelineItem;
-use acter_core::models::status::RoomGuestAccessContent;
+use acter_matrix::models::status::RoomGuestAccessContent;
 use anyhow::Result;
 use core::time::Duration;
 use futures::{pin_mut, stream::StreamExt, FutureExt};

@@ -2,11 +2,11 @@ mod account_data;
 mod preview;
 mod subscription;
 
-pub use acter_core::spaces::{
+pub use acter_matrix::spaces::{
     CreateSpaceSettings, CreateSpaceSettingsBuilder, RelationTargetType, SpaceRelation,
     SpaceRelations as CoreSpaceRelations,
 };
-use acter_core::{
+use acter_matrix::{
     client::CoreClient,
     error::Error,
     events::{
