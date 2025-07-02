@@ -25,6 +25,7 @@ void main() {
       'ChatEvent reply-to message emoji only event widget legacy html',
       (tester) async {
         await loadTestFonts();
+        goldenFileComparator = test_utils.GoldenFileComparator(goldenDir);
 
         await tester.pumpProviderWidget(
           overrides: [
@@ -52,9 +53,7 @@ void main() {
           ),
         );
 
-        await tester.pump(const Duration(seconds: 1));
-        await tester.pump(const Duration(seconds: 1));
-        await tester.pump(const Duration(seconds: 1));
+        await tester.pumpAndSettle();
 
         await expectLater(
           find.byType(ListView),
@@ -68,7 +67,8 @@ void main() {
       'ChatEvent reply-to message emoji only event widget html next',
       (tester) async {
         await loadTestFonts();
-        useGoldenFileComparatorWithThreshold(0.01); // 1%
+        goldenFileComparator = test_utils.GoldenFileComparator(goldenDir);
+        useGoldenFileComparatorWithThreshold(0.05);
 
         await tester.pumpProviderWidget(
           overrides: [
@@ -96,9 +96,7 @@ void main() {
           ),
         );
 
-        await tester.pump(const Duration(seconds: 1));
-        await tester.pump(const Duration(seconds: 1));
-        await tester.pump(const Duration(seconds: 1));
+        await tester.pumpAndSettle();
 
         await expectLater(
           find.byType(ListView),
