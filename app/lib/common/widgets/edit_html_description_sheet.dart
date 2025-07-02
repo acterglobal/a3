@@ -106,7 +106,6 @@ class _EditHtmlDescriptionSheetState
             child: HtmlEditor(
                 editorState: textEditorState,
                 editable: true,
-                shrinkWrap: false,
                 hintText: lang.addDescription,
               ),
           ),
