@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
 import 'package:acter/features/chat_ng/widgets/events/chat_event.dart';
@@ -9,8 +11,15 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hrk_flutter_test_batteries/hrk_flutter_test_batteries.dart';
 import '../../../../../helpers/font_loader.dart';
 import '../../../../../helpers/test_util.dart';
+import '../../../../../helpers/utils.dart' as test_utils;
 
 void main() {
+  final testDir = Directory.current.path;
+  final goldenDir =
+      '$testDir/test/features/chat_ng/widgets/chat_room/chat_event_messages/goldens_images';
+
+  goldenFileComparator = test_utils.GoldenFileComparator(goldenDir);
+
   group('Chat NG : DM Chat - ChatEvent reactions message golden', () {
     testWidgets('ChatEvent reactions message event widget - legacy html', (
       tester,

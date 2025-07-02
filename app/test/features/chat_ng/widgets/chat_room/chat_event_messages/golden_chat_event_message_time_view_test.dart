@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/features/chat_ng/widgets/events/chat_event.dart';
 import 'package:acter/features/chat_ui_showcase/mocks/showcase/data/general_usecases.dart';
@@ -8,8 +10,14 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hrk_flutter_test_batteries/hrk_flutter_test_batteries.dart';
 import '../../../../../helpers/font_loader.dart';
 import '../../../../../helpers/test_util.dart';
+import '../../../../../helpers/utils.dart' as test_utils;
 
 void main() {
+  final testDir = Directory.current.path;
+  final goldenDir =
+      '$testDir/test/features/chat_ng/widgets/chat_room/chat_event_messages/goldens_images';
+
+  goldenFileComparator = test_utils.GoldenFileComparator(goldenDir);
   group('Chat NG - Chat message time view golden', () {
     testWidgets('Chat message time view event widget', (tester) async {
       await loadTestFonts();
