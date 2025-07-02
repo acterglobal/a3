@@ -79,10 +79,18 @@ async fn room_msg_can_support_image_thumbnail() -> Result<()> {
     while i > 0 {
         if let Some(diff) = stream.next().now_or_never().flatten() {
             match diff.action().as_str() {
-                "PushBack" | "Set" => {
+                "PushBack" => {
                     let value = diff
                         .value()
                         .expect("diff pushback action should have valid value");
+                    if let Some(msg_content) = match_media_msg(&value, mimetype, &jpg_name) {
+                        found = Some(msg_content);
+                    }
+                }
+                "Set" => {
+                    let value = diff
+                        .value()
+                        .expect("diff set action should have valid value");
                     if let Some(msg_content) = match_media_msg(&value, mimetype, &jpg_name) {
                         found = Some(msg_content);
                     }
@@ -198,10 +206,18 @@ async fn room_msg_can_support_video_thumbnail() -> Result<()> {
     while i > 0 {
         if let Some(diff) = stream.next().now_or_never().flatten() {
             match diff.action().as_str() {
-                "PushBack" | "Set" => {
+                "PushBack" => {
                     let value = diff
                         .value()
                         .expect("diff pushback action should have valid value");
+                    if let Some(msg_content) = match_media_msg(&value, mimetype, &mp4_name) {
+                        found = Some(msg_content);
+                    }
+                }
+                "Set" => {
+                    let value = diff
+                        .value()
+                        .expect("diff set action should have valid value");
                     if let Some(msg_content) = match_media_msg(&value, mimetype, &mp4_name) {
                         found = Some(msg_content);
                     }
@@ -307,10 +323,18 @@ async fn room_msg_can_support_file_thumbnail() -> Result<()> {
     while i > 0 {
         if let Some(diff) = stream.next().now_or_never().flatten() {
             match diff.action().as_str() {
-                "PushBack" | "Set" => {
+                "PushBack" => {
                     let value = diff
                         .value()
                         .expect("diff pushback action should have valid value");
+                    if let Some(msg_content) = match_media_msg(&value, mimetype, &pdf_name) {
+                        found = Some(msg_content);
+                    }
+                }
+                "Set" => {
+                    let value = diff
+                        .value()
+                        .expect("diff set action should have valid value");
                     if let Some(msg_content) = match_media_msg(&value, mimetype, &pdf_name) {
                         found = Some(msg_content);
                     }
@@ -408,10 +432,18 @@ async fn room_msg_can_support_location_thumbnail() -> Result<()> {
     while i > 0 {
         if let Some(diff) = stream.next().now_or_never().flatten() {
             match diff.action().as_str() {
-                "PushBack" | "Set" => {
+                "PushBack" => {
                     let value = diff
                         .value()
                         .expect("diff pushback action should have valid value");
+                    if let Some(msg_content) = match_location_msg(&value, body, geo_uri) {
+                        found = Some(msg_content);
+                    }
+                }
+                "Set" => {
+                    let value = diff
+                        .value()
+                        .expect("diff set action should have valid value");
                     if let Some(msg_content) = match_location_msg(&value, body, geo_uri) {
                         found = Some(msg_content);
                     }

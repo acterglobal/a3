@@ -58,10 +58,18 @@ async fn image_blurhash_support() -> Result<()> {
     while i > 0 {
         if let Some(diff) = stream.next().now_or_never().flatten() {
             match diff.action().as_str() {
-                "PushBack" | "Set" => {
+                "PushBack" => {
                     let value = diff
                         .value()
                         .expect("diff pushback action should have valid value");
+                    if let Some(msg_content) = match_media_msg(&value, mimetype, &jpg_name) {
+                        found = Some(msg_content);
+                    }
+                }
+                "Set" => {
+                    let value = diff
+                        .value()
+                        .expect("diff set action should have valid value");
                     if let Some(msg_content) = match_media_msg(&value, mimetype, &jpg_name) {
                         found = Some(msg_content);
                     }
@@ -144,10 +152,18 @@ async fn video_blurhash_support() -> Result<()> {
     while i > 0 {
         if let Some(diff) = stream.next().now_or_never().flatten() {
             match diff.action().as_str() {
-                "PushBack" | "Set" => {
+                "PushBack" => {
                     let value = diff
                         .value()
                         .expect("diff pushback action should have valid value");
+                    if let Some(msg_content) = match_media_msg(&value, mimetype, &mp4_name) {
+                        found = Some(msg_content);
+                    }
+                }
+                "Set" => {
+                    let value = diff
+                        .value()
+                        .expect("diff set action should have valid value");
                     if let Some(msg_content) = match_media_msg(&value, mimetype, &mp4_name) {
                         found = Some(msg_content);
                     }
