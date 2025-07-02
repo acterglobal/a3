@@ -9,6 +9,7 @@ import 'package:acter/common/providers/room_providers.dart';
 
 class ActivityBiggerVisualContainerWidget extends ConsumerWidget {
   final ActivityObject? activityObject;
+  final VoidCallback? onTap;
   final String userId;
   final String roomId;
   final String actionTitle;
@@ -23,6 +24,7 @@ class ActivityBiggerVisualContainerWidget extends ConsumerWidget {
   const ActivityBiggerVisualContainerWidget({
     super.key,
     this.activityObject,
+    this.onTap,
     required this.userId,
     required this.roomId,
     required this.actionTitle,
@@ -47,7 +49,9 @@ class ActivityBiggerVisualContainerWidget extends ConsumerWidget {
             .valueOrNull ??
         userId;
 
-    return Container(
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -69,8 +73,9 @@ class ActivityBiggerVisualContainerWidget extends ConsumerWidget {
                 _buildSubtitleOrTime(),
               ],
             ),
-          ),
-        ],
+            ),
+          ],
+        ),
       ),
     );
   }

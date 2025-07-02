@@ -1,5 +1,6 @@
 import 'package:acter/common/models/types.dart';
 import 'package:acter/common/providers/common_providers.dart';
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/features/activities/providers/notifiers/activities_notifiers.dart';
 import 'package:acter/features/invitations/providers/invitations_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
@@ -127,8 +128,15 @@ typedef RoomActivitiesInfo = ({String roomId, List<Activity> activities});
 final consecutiveGroupedActivitiesProvider = Provider.family<List<RoomActivitiesInfo>, DateTime>((ref, date) {
   final activitiesForDate = ref.watch(activitiesByDateProvider(date));
   
+  // Filter activities to only include those from spaces
+  final spaceActivities = activitiesForDate.where((activity) {
+    final roomId = activity.roomIdStr();
+    final room = ref.watch(maybeRoomProvider(roomId)).valueOrNull;
+    return room?.isSpace() == true;
+  }).toList();
+  
   // Sort by time descending
-  final sortedActivities = activitiesForDate.toList()..sort((a, b) => b.originServerTs().compareTo(a.originServerTs()));
+  final sortedActivities = spaceActivities..sort((a, b) => b.originServerTs().compareTo(a.originServerTs()));
 
   // Group consecutive activities by roomId
   final groups = <RoomActivitiesInfo>[];
