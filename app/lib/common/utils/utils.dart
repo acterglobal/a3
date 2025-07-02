@@ -252,10 +252,14 @@ bool isEmptyHtmlContent(String html) {
 
 /// html requires to have some kind of structure even when document is empty, so check for that
 bool hasValidEditorContent({required String plainText, required String html}) {
+  // If both are completely empty, no valid content
   if (plainText.trim().isEmpty && html.trim().isEmpty) return false;
 
-  // Use the comprehensive empty HTML check
-  return !isEmptyHtmlContent(html);
+  // Check if either plainText has content OR HTML has content
+  final hasPlainTextContent = plainText.trim().isNotEmpty;
+  final hasHtmlContent = !isEmptyHtmlContent(html);
+  
+  return hasPlainTextContent || hasHtmlContent;
 }
 
 String formatChatDayDividerDateString(BuildContext context, String dateString) {
