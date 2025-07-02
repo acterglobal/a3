@@ -6,8 +6,11 @@ import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/toolkit/buttons/user_chip.dart';
 import 'package:acter/common/toolkit/html/utils.dart';
+import 'package:acter/common/toolkit/html_editor/clipboard/commands/custom_copy_handler.dart';
+import 'package:acter/common/toolkit/html_editor/clipboard/commands/custom_paste_command.dart';
 import 'package:acter/common/toolkit/html_editor/mentions/commands/mention_movements.dart';
 import 'package:acter/common/toolkit/html_editor/mentions/mention_detection.dart';
+import 'package:acter/common/toolkit/html_editor/services/clipboard_service.dart';
 import 'package:acter/config/constants.dart';
 import 'package:acter/common/toolkit/html_editor/services/constants.dart';
 import 'package:acter/common/toolkit/html_editor/mentions/mention_shortcuts.dart';
@@ -229,6 +232,8 @@ class _HtmlEditorState extends ConsumerState<HtmlEditor> {
     ]);
 
     updateEditorState(widget.editorState ?? EditorState.blank());
+    CustomCopyHandler.initialize(editorState);
+    CustomPasteHandler.initialize(editorState);
   }
 
   @override
@@ -245,6 +250,8 @@ class _HtmlEditorState extends ConsumerState<HtmlEditor> {
       _updateEditorHeight,
     );
     _changeListener?.cancel();
+    CustomCopyHandler.dispose();
+    CustomPasteHandler.dispose();
     super.dispose();
   }
 
@@ -355,6 +362,16 @@ class _HtmlEditorState extends ConsumerState<HtmlEditor> {
     ];
   }
 
+  List<CommandShortcutEvent> _buildCommandShortcutEvents() {
+    return [
+      ...standardCommandShortcutEvents.where(
+        (e) => e != pasteCommand && e != pasteTextWithoutFormattingCommand,
+      ),
+      ...mentionMenuCommandShortcutEvents,
+      ...customPasteCommands,
+    ];
+  }
+
   Widget? generateFooter() {
     if (widget.footer != null) {
       return widget.footer;
@@ -450,7 +467,16 @@ class _HtmlEditorState extends ConsumerState<HtmlEditor> {
               closeToolbar();
             },
             onCut: () => cutCommand.execute(editorState),
-            onPaste: () => pasteCommand.execute(editorState),
+            onPaste: () async {
+              final data = await HtmlEditorClipboardService()
+                  .getFormattedText();
+              final richText = data.richText;
+              if (richText != null && richText.isNotEmpty) {
+                customPasteCommand.execute(editorState);
+              } else {
+                pasteCommand.execute(editorState);
+              }
+            },
             onSelectAll: () => selectAllCommand.execute(editorState),
             onLiveTextInput: null,
             onLookUp: null,
@@ -478,10 +504,7 @@ class _HtmlEditorState extends ConsumerState<HtmlEditor> {
       footer: generateFooter(),
       blockComponentBuilders: _buildBlockComponentBuilders(),
       characterShortcutEvents: _buildCharacterShortcutEvents(),
-      commandShortcutEvents: [
-        ...mentionMenuCommandShortcutEvents,
-        ...standardCommandShortcutEvents,
-      ],
+      commandShortcutEvents: _buildCommandShortcutEvents(),
       disableAutoScroll: false,
       autoScrollEdgeOffset: 20,
     );
@@ -492,14 +515,13 @@ class _HtmlEditorState extends ConsumerState<HtmlEditor> {
 
     return ValueListenableBuilder(
       valueListenable: _contentHeightNotifier,
-      builder:
-          (context, value, child) => AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            curve: Curves.easeInOutCubic,
-            width: MediaQuery.sizeOf(context).width,
-            height: max(value, widget.minHeight ?? 50),
-            child: editor,
-          ),
+      builder: (context, value, child) => AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeInOutCubic,
+        width: MediaQuery.sizeOf(context).width,
+        height: max(value, widget.minHeight ?? 50),
+        child: editor,
+      ),
     );
   }
 
@@ -516,8 +538,9 @@ class _HtmlEditorState extends ConsumerState<HtmlEditor> {
             ).textTheme.bodySmall.expect('bodySmall style not available'),
             lineHeight: 1.0,
           ),
-      textSpanDecorator:
-          widget.roomId != null ? customizeAttributeDecorator : null,
+      textSpanDecorator: widget.roomId != null
+          ? customizeAttributeDecorator
+          : null,
     );
   }
 
@@ -534,10 +557,12 @@ class _HtmlEditorState extends ConsumerState<HtmlEditor> {
             ).textTheme.bodySmall.expect('bodySmall style not available'),
             lineHeight: 1.0,
           ),
-      textSpanDecorator:
-          widget.roomId != null ? customizeAttributeDecorator : null,
-      mobileDragHandleBallSize:
-          Platform.isIOS ? const Size.square(16) : const Size.square(12),
+      textSpanDecorator: widget.roomId != null
+          ? customizeAttributeDecorator
+          : null,
+      mobileDragHandleBallSize: Platform.isIOS
+          ? const Size.square(16)
+          : const Size.square(12),
     );
   }
 
