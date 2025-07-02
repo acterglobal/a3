@@ -73,12 +73,11 @@ class ActivitiesPage extends ConsumerWidget {
           final maxExtent = scrollInfo.metrics.maxScrollExtent;
           final progress = maxExtent > 0 ? pixels / maxExtent : 0;
           
-          // Check if user has scrolled to near the bottom (90% of the way)
-          // and ensure we have more data to load and aren't already loading
-          if (progress >= 0.9 &&
-              hasMoreActivities && 
-              !isLoadingMore &&
-              maxExtent > 0) {
+          // Check if conditions are met to load more activities
+          final isNearBottom = progress >= 0.9;
+          final canLoadMore = hasMoreActivities && !isLoadingMore;
+          
+          if (isNearBottom && canLoadMore) {
             loadMoreActivities();
           }
         }
