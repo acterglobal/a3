@@ -230,20 +230,32 @@ extension ColorUtils on Color {
   }
 }
 
+/// Comprehensive regex for detecting empty HTML tags and structures
+final RegExp emptyHtmlTagsRegex = RegExp(
+  r'<br\s*/?>\s*|<p\s*>(\s|&nbsp;|&#160;|<br\s*/?>)*</p>\s*|<div\s*>(\s|&nbsp;|&#160;)*</div>\s*|<span\s*>(\s|&nbsp;|&#160;)*</span>\s*|<h[1-6]\s*>(\s|&nbsp;|&#160;)*</h[1-6]>\s*|<(strong|b|em|i)\s*>(\s|&nbsp;|&#160;)*</(strong|b|em|i)>\s*|<(ul|ol|li)\s*>(\s|&nbsp;|&#160;)*</(ul|ol|li)>\s*',
+  multiLine: true,
+  caseSensitive: false,
+);
+
+/// Check if HTML content contains only empty tags or whitespace
+bool isEmptyHtmlContent(String html) {
+  if (html.trim().isEmpty) return true;
+  
+  // Remove all empty tags and structures
+  String cleanedHtml = html
+      .replaceAll(emptyHtmlTagsRegex, '')
+      .replaceAll(RegExp(r'\s+'), ' ') // Normalize whitespace
+      .trim();
+  
+  return cleanedHtml.isEmpty;
+}
+
 /// html requires to have some kind of structure even when document is empty, so check for that
 bool hasValidEditorContent({required String plainText, required String html}) {
-  if (plainText.trim().isEmpty) return false;
-  if (html.isEmpty) return false;
+  if (plainText.trim().isEmpty && html.trim().isEmpty) return false;
 
-  final hasOnlyStructure =
-      html
-          .replaceAll(RegExp(r'<br\s*/?>|<p\s*></p>|<p\s*>\s*</p>'), '')
-          .replaceAll(RegExp(r'<[^>]*>'), '')
-          .replaceAll('&nbsp;', ' ')
-          .trim()
-          .isEmpty;
-
-  return !hasOnlyStructure;
+  // Use the comprehensive empty HTML check
+  return !isEmptyHtmlContent(html);
 }
 
 String formatChatDayDividerDateString(BuildContext context, String dateString) {

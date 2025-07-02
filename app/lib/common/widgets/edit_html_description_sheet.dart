@@ -1,6 +1,7 @@
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/toolkit/html_editor/html_editor.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/l10n/generated/l10n.dart';
@@ -65,19 +66,12 @@ class _EditHtmlDescriptionSheetState
   @override
   void initState() {
     super.initState();
-    
-    // Check if there's meaningful content (not just empty HTML tags)
-    final markdownContent = widget.descriptionMarkdownValue?.trim() ?? '';
-    final htmlContent = widget.descriptionHtmlValue?.trim() ?? '';
-    
-    // Consider content empty if it's just <br> tags or whitespace
-    final hasContent = markdownContent.isNotEmpty && 
-                      htmlContent != '<br>' && 
-                      htmlContent.isNotEmpty &&
-                      htmlContent != '<p></p>' &&
-                      htmlContent != '<p><br></p>';
-    
-    if (hasContent) {
+
+    final hasValidContent = hasValidEditorContent(
+        plainText: widget.descriptionMarkdownValue ?? '',
+        html: widget.descriptionHtmlValue ?? '');
+
+    if (hasValidContent) {
       // Use existing content
       textEditorState = ActerEditorStateHelpers.fromContent(
         widget.descriptionMarkdownValue ?? '',
