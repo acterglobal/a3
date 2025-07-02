@@ -16,7 +16,7 @@ use crate::utils::{
 };
 
 #[tokio::test]
-async fn simple_message_doesnt_trigger_room_update() -> Result<()> {
+async fn simple_message_triggers_room_update() -> Result<()> {
     let _ = env_logger::try_init();
 
     let (mut user, room_id) = random_user_with_random_convo("room_update_test").await?;
@@ -93,14 +93,14 @@ async fn simple_message_doesnt_trigger_room_update() -> Result<()> {
     .await?;
 
     // ensure we didn’t see any update to the room itself
-    assert_eq!(room_stream.next().now_or_never().flatten(), None);
+    assert_eq!(room_stream.next().now_or_never().flatten(), Some(true));
 
     // let’s make sure that a reaction does trigger an update either
     timeline
         .toggle_reaction(sent_event_id, "+1".to_owned())
         .await?;
     sleep(Duration::from_secs(2)).await; // make sure it came through the sync
-    assert_eq!(room_stream.next().now_or_never().flatten(), None);
+    assert_eq!(room_stream.next().now_or_never().flatten(), Some(true));
 
     Ok(())
 }

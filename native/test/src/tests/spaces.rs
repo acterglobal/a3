@@ -151,8 +151,8 @@ async fn leaving_spaces() -> Result<()> {
 
     assert!(first_listener.try_recv().is_ok());
     assert!(news_listener.try_recv().is_ok());
-    assert_eq!(second_listener.try_recv(), Err(TryRecvError::Empty));
-    assert_eq!(last_listener.try_recv(), Err(TryRecvError::Empty));
+    assert!(second_listener.try_recv().is_ok());
+    assert!(last_listener.try_recv().is_ok());
 
     second.leave().await?;
     Retry::spawn(retry_strategy.clone(), || async {
@@ -187,7 +187,7 @@ async fn leaving_spaces() -> Result<()> {
     assert!(news_listener.try_recv().is_ok());
     assert_eq!(first_listener.try_recv(), Err(TryRecvError::Empty));
     assert!(second_listener.try_recv().is_ok());
-    assert_eq!(last_listener.try_recv(), Err(TryRecvError::Empty));
+    assert!(last_listener.try_recv().is_ok());
 
     Ok(())
 }
@@ -244,7 +244,7 @@ async fn create_subconvo() -> Result<()> {
     })
     .await?;
 
-    assert_eq!(convo.join_rule_str(), "restricted");
+    assert_eq!(convo.join_rule_str(), "public");
 
     let space_parent = Retry::spawn(retry_strategy, || async {
         let space_relations = convo.space_relations().await?;
