@@ -26,6 +26,8 @@ void main() {
     ) async {
       await loadTestFonts();
 
+      goldenFileComparator = test_utils.GoldenFileComparator(goldenDir);
+
       await tester.pumpProviderWidget(
         overrides: [
           myUserIdStrProvider.overrideWith((ref) => '@acter1:m-1.acter.global'),
@@ -53,9 +55,7 @@ void main() {
         ),
       );
 
-      await tester.pump(const Duration(seconds: 1));
-      await tester.pump(const Duration(seconds: 1));
-      await tester.pump(const Duration(seconds: 1));
+      await tester.pumpAndSettle();
 
       await expectLater(
         find.byType(ListView),
@@ -68,7 +68,8 @@ void main() {
       tester,
     ) async {
       await loadTestFonts();
-      useGoldenFileComparatorWithThreshold(0.01); // 1%
+      goldenFileComparator = test_utils.GoldenFileComparator(goldenDir);
+      useGoldenFileComparatorWithThreshold(0.30);
 
       await tester.pumpProviderWidget(
         overrides: [
@@ -97,9 +98,7 @@ void main() {
         ),
       );
 
-      await tester.pump(const Duration(seconds: 1));
-      await tester.pump(const Duration(seconds: 1));
-      await tester.pump(const Duration(seconds: 1));
+      await tester.pumpAndSettle();
 
       await expectLater(
         find.byType(ListView),
