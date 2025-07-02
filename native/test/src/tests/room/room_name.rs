@@ -37,7 +37,7 @@ async fn test_room_name() -> Result<()> {
 
     // room state event may reach via pushback action or reset action
     let mut i = 30;
-    let mut found_result = None;
+    let mut found = None;
     while i > 0 {
         if let Some(diff) = stream.next().now_or_never().flatten() {
             match diff.action().as_str() {
@@ -45,16 +45,16 @@ async fn test_room_name() -> Result<()> {
                     let value = diff
                         .value()
                         .expect("diff pushback action should have valid value");
-                    if let Some(result) = match_msg(&value) {
-                        found_result = Some(result);
+                    if let Some(content) = match_msg(&value, name_event_id.as_str()) {
+                        found = Some(content);
                     }
                 }
                 "Set" => {
                     let value = diff
                         .value()
                         .expect("diff set action should have valid value");
-                    if let Some(result) = match_msg(&value) {
-                        found_result = Some(result);
+                    if let Some(content) = match_msg(&value, name_event_id.as_str()) {
+                        found = Some(content);
                     }
                 }
                 "Reset" => {
@@ -62,8 +62,8 @@ async fn test_room_name() -> Result<()> {
                         .values()
                         .expect("diff reset action should have valid values");
                     for value in values.iter() {
-                        if let Some(result) = match_msg(value) {
-                            found_result = Some(result);
+                        if let Some(content) = match_msg(value, name_event_id.as_str()) {
+                            found = Some(content);
                             break;
                         }
                     }
@@ -71,16 +71,14 @@ async fn test_room_name() -> Result<()> {
                 _ => {}
             }
             // yay
-            if found_result.is_some() {
+            if found.is_some() {
                 break;
             }
         }
         i -= 1;
         sleep(Duration::from_secs(1)).await;
     }
-    let (found_event_id, content) =
-        found_result.expect("Even after 30 seconds, room name not received");
-    assert_eq!(found_event_id, name_event_id, "event id should match");
+    let content = found.expect("Even after 30 seconds, room name not received");
 
     assert_eq!(
         content.change().as_deref(),
@@ -101,14 +99,13 @@ async fn test_room_name() -> Result<()> {
     Ok(())
 }
 
-fn match_msg(msg: &TimelineItem) -> Option<(String, RoomNameContent)> {
+fn match_msg(msg: &TimelineItem, event_id: &str) -> Option<RoomNameContent> {
     if msg.is_virtual() {
         return None;
     }
     let event_item = msg.event_item().expect("room msg should have event item");
-    let content = event_item.room_name_content()?;
-    let event_id = event_item
-        .event_id()
-        .expect("event item should have event id");
-    Some((event_id, content))
+    if event_item.event_id().as_deref() != Some(event_id) {
+        return None;
+    }
+    event_item.room_name_content()
 }
