@@ -150,7 +150,7 @@ final timelineStreamProvider = FutureProvider.family<TimelineStream, String>((
   if (chat == null) {
     throw RoomNotFound();
   }
-  return chat.timelineStream();
+  return await chat.timelineStream();
 });
 
 final filteredChatsProvider = FutureProvider.autoDispose<List<String>>((

@@ -20,7 +20,7 @@ async fn task_smoketests() -> Result<()> {
     let (mut user, room_id) = random_user_with_random_space("tasks_smoketest").await?;
 
     let user_id = user.user_id()?;
-    let state_sync = user.start_sync();
+    let state_sync = user.start_sync().await?;
     state_sync.await_has_synced_history().await?;
 
     // wait for sync to catch up
@@ -243,7 +243,7 @@ async fn task_lists_comments_smoketests() -> Result<()> {
     let _ = env_logger::try_init();
     let (mut user, room_id) = random_user_with_random_space("tasklist_comments_smoketest").await?;
 
-    let state_sync = user.start_sync();
+    let state_sync = user.start_sync().await?;
     state_sync.await_has_synced_history().await?;
 
     // wait for sync to catch up
@@ -367,7 +367,7 @@ async fn task_comment_smoketests() -> Result<()> {
     let _ = env_logger::try_init();
     let (mut user, room_id) = random_user_with_random_space("tasks_smoketest").await?;
 
-    let state_sync = user.start_sync();
+    let state_sync = user.start_sync().await?;
     state_sync.await_has_synced_history().await?;
 
     // wait for sync to catch up
@@ -525,7 +525,7 @@ async fn task_list_external_link() -> Result<()> {
     let _ = env_logger::try_init();
     let (mut user, room_id) = random_user_with_random_space("tasks_smoketest").await?;
 
-    let state_sync = user.start_sync();
+    let state_sync = user.start_sync().await?;
     state_sync.await_has_synced_history().await?;
 
     // wait for sync to catch up

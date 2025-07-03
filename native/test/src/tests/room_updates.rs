@@ -16,11 +16,11 @@ use crate::utils::{
 };
 
 #[tokio::test]
-async fn simple_message_doesnt_trigger_room_update() -> Result<()> {
+async fn simple_message_triggers_room_update() -> Result<()> {
     let _ = env_logger::try_init();
 
     let (mut user, room_id) = random_user_with_random_convo("room_update_test").await?;
-    let state_sync = user.start_sync();
+    let state_sync = user.start_sync().await?;
     state_sync.await_has_synced_history().await?;
 
     // wait for sync to catch up
@@ -34,7 +34,7 @@ async fn simple_message_doesnt_trigger_room_update() -> Result<()> {
     // clear the stream
     while room_stream.next().now_or_never().flatten().is_some() {}
 
-    let timeline = convo.timeline_stream();
+    let timeline = convo.timeline_stream().await?;
     let stream = timeline.messages_stream();
     pin_mut!(stream);
 
@@ -93,14 +93,14 @@ async fn simple_message_doesnt_trigger_room_update() -> Result<()> {
     .await?;
 
     // ensure we didn’t see any update to the room itself
-    assert_eq!(room_stream.next().now_or_never().flatten(), None);
+    assert_eq!(room_stream.next().now_or_never().flatten(), Some(true));
 
     // let’s make sure that a reaction does trigger an update either
     timeline
         .toggle_reaction(sent_event_id, "+1".to_owned())
         .await?;
     sleep(Duration::from_secs(2)).await; // make sure it came through the sync
-    assert_eq!(room_stream.next().now_or_never().flatten(), None);
+    assert_eq!(room_stream.next().now_or_never().flatten(), Some(true));
 
     Ok(())
 }
@@ -110,7 +110,7 @@ async fn state_update_triggers_room_update() -> Result<()> {
     let _ = env_logger::try_init();
 
     let (mut user, room_id) = random_user_with_random_convo("room_update_test").await?;
-    let state_sync = user.start_sync();
+    let state_sync = user.start_sync().await?;
     state_sync.await_has_synced_history().await?;
 
     // wait for sync to catch up
@@ -138,10 +138,10 @@ async fn joining_room_triggers_room_update() -> Result<()> {
     let _ = env_logger::try_init();
 
     let (mut sisko, room_id) = random_user_with_random_space("spI").await?;
-    let _sisko_syncer = sisko.start_sync();
+    let _sisko_syncer = sisko.start_sync().await?;
 
     let mut kyra = random_user("spI").await?;
-    let _kyra_syncer = kyra.start_sync();
+    let _kyra_syncer = kyra.start_sync().await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
 

@@ -22,3 +22,12 @@ class MockTimelineItem extends Mock implements TimelineItem {
       mockTimelineVirtualItem?.mockEventId ??
       Random().nextInt(1000000).toString();
 }
+
+class MockOptionTimelineItem extends Mock implements OptionTimelineItem {
+  final MockTimelineItem? mockTimelineItem;
+
+  MockOptionTimelineItem({this.mockTimelineItem});
+
+  @override
+  TimelineItem? data() => mockTimelineItem;
+}

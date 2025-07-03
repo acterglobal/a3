@@ -74,8 +74,10 @@ MockChatItem Function(String userId) createMockChatItem({
         mockNumUnreadNotificationCount: unreadNotificationCount ?? 0,
         mockNumUnreadMentions: unreadMentions ?? 0,
         mockNumUnreadMessages: unreadMessages ?? 0,
-        mockTimelineItem: MockTimelineItem(
-          mockTimelineEventItem: eventItems.lastOrNull,
+        mockOptionTimelineItem: MockOptionTimelineItem(
+          mockTimelineItem: MockTimelineItem(
+            mockTimelineEventItem: eventItems.lastOrNull,
+          ),
         ),
         mockTimelineStream: MockTimelineStream(
           mockMessagesStream: mockMessagesStream,

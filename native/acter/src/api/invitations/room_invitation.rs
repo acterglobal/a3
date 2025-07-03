@@ -22,8 +22,11 @@ use tokio::time::{sleep, Duration};
 use tokio_retry::{strategy::FixedInterval, Retry};
 use tracing::{error, info};
 
-use super::super::profile::{PublicProfile, UserProfile};
-use crate::{Client, RUNTIME};
+use super::super::{
+    client::{Client, SyncController},
+    profile::{PublicProfile, UserProfile},
+};
+use crate::RUNTIME;
 
 #[derive(Clone, Debug)]
 enum Sender {
@@ -37,6 +40,7 @@ pub struct RoomInvitation {
     is_dm: bool,
     room: Room,
     sender: Sender,
+    sync_controller: SyncController,
 }
 
 impl Deref for RoomInvitation {
@@ -48,7 +52,11 @@ impl Deref for RoomInvitation {
 }
 
 impl RoomInvitation {
-    pub async fn parse(core: &CoreClient, room: Room) -> Result<Self> {
+    pub async fn parse(
+        core: &CoreClient,
+        room: Room,
+        sync_controller: SyncController,
+    ) -> Result<Self> {
         let Some(invitee) = room.get_member_no_sync(room.own_user_id()).await? else {
             bail!("Failed to get own member event");
         };
@@ -63,10 +71,16 @@ impl RoomInvitation {
             is_dm: room.is_direct().await.unwrap_or_default(),
             room,
             sender,
+            sync_controller,
         })
     }
+
     pub fn room(&self) -> crate::Room {
-        crate::Room::new(self.core.clone(), self.room.clone())
+        crate::Room::new(
+            self.core.clone(),
+            self.room.clone(),
+            self.sync_controller.clone(),
+        )
     }
 
     pub fn is_dm(&self) -> bool {

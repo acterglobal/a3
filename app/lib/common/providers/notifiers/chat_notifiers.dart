@@ -59,22 +59,14 @@ class AsyncLatestMsgNotifier
 
   FutureOr<TimelineItem?> _refresh(String roomId) async {
     final convo = await ref.read(chatProvider(roomId).future);
-    return convo?.latestMessage();
+    if (convo == null) return null;
+    final msg = await convo.latestMessage();
+    return msg.data();
   }
 
   @override
   FutureOr<TimelineItem?> build(String arg) async {
     final roomId = arg;
-
-    // if we are in chat showcase mode, return a mock timeline item
-    if (includeShowCases) {
-      final mockLatestMessage = ref.watch(mockLatestMessageProvider(roomId));
-      if (mockLatestMessage != null) {
-        return mockLatestMessage;
-      }
-    }
-
-    // otherwise, get the latest message from the client
     final client = await ref.watch(alwaysClientProvider.future);
     _listener = client.subscribeRoomParamStream(roomId, 'latest_message');
     _poller = _listener.listen(

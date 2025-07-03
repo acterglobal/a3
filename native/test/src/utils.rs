@@ -10,7 +10,7 @@ use anyhow::Result;
 use futures::{pin_mut, stream::StreamExt};
 use matrix_sdk::config::StoreConfig;
 use matrix_sdk_base::ruma::{OwnedRoomId, UserId};
-use rand::{thread_rng, Rng};
+use rand::{rng, Rng};
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
     Retry,
@@ -200,7 +200,7 @@ pub async fn random_user_with_template(
     )
     .await?;
 
-    let sync_state = user.start_sync();
+    let sync_state = user.start_sync().await?;
 
     let tmpl_engine = user.template_engine(template).await?;
     let exec_stream = tmpl_engine.execute()?;
@@ -221,7 +221,7 @@ pub async fn random_users_with_random_space_under_template(
     observer_count: usize,
     template: &str,
 ) -> Result<(Vec<Client>, Vec<SyncState>, OwnedRoomId, Engine)> {
-    let (mut clients, room_id) = random_users_with_random_space(prefix, observer_count).await?;
+    let (clients, room_id) = random_users_with_random_space(prefix, observer_count).await?;
     let user = clients.first().expect("there are more than one");
 
     let mut tmpl_engine = user.template_engine(template).await?;
@@ -240,7 +240,11 @@ pub async fn random_users_with_random_space_under_template(
         i?
     }
 
-    let sync_states: Vec<SyncState> = clients.iter_mut().map(|c| c.start_sync()).collect();
+    let mut sync_states = vec![];
+    for mut client in clients.clone() {
+        let sync_state = client.start_sync().await?;
+        sync_states.push(sync_state);
+    }
 
     Ok((clients, sync_states, room_id, tmpl_engine))
 }
@@ -375,11 +379,11 @@ pub(crate) async fn invite_user(
 }
 
 pub fn random_string(length: usize, charset: &[u8]) -> String {
-    let mut rng = thread_rng();
+    let mut gen = rng();
 
     (0..length)
         .map(|_| {
-            let idx = rng.gen_range(0..charset.len());
+            let idx = gen.random_range(0..charset.len());
             charset[idx] as char
         })
         .collect()

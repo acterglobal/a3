@@ -11,7 +11,7 @@ class MockConvo extends Mock implements Convo {
   final int mockNumUnreadNotificationCount;
   final int mockNumUnreadMentions;
   final int mockNumUnreadMessages;
-  final MockTimelineItem? mockTimelineItem;
+  final MockOptionTimelineItem? mockOptionTimelineItem;
   final MockTimelineStream mockTimelineStream;
   final MockOptionComposeDraft? mockMsgDraft;
 
@@ -23,7 +23,7 @@ class MockConvo extends Mock implements Convo {
     this.mockNumUnreadNotificationCount = 0,
     this.mockNumUnreadMentions = 0,
     this.mockNumUnreadMessages = 0,
-    this.mockTimelineItem,
+    this.mockOptionTimelineItem,
     this.mockMsgDraft,
   });
 
@@ -46,10 +46,11 @@ class MockConvo extends Mock implements Convo {
   int numUnreadMessages() => mockNumUnreadMessages;
 
   @override
-  TimelineItem? latestMessage() => mockTimelineItem;
+  Future<OptionTimelineItem> latestMessage() =>
+      Future.value(mockOptionTimelineItem);
 
   @override
-  TimelineStream timelineStream() => mockTimelineStream;
+  Future<TimelineStream> timelineStream() => Future.value(mockTimelineStream);
 
   @override
   Future<OptionComposeDraft> msgDraft() =>

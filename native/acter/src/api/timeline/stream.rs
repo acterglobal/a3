@@ -13,9 +13,15 @@ use matrix_sdk_base::{
     },
     RoomState,
 };
-use matrix_sdk_ui::timeline::{Timeline, TimelineEventItemId};
+use matrix_sdk_ui::{
+    eyeball_im::VectorDiff,
+    timeline::{
+        MsgLikeContent, MsgLikeKind, Timeline, TimelineEventItemId,
+        TimelineItem as SdkTimelineItem, TimelineItemContent,
+    },
+};
 use std::{ops::Deref, sync::Arc};
-use tracing::info;
+use tracing::{error, info};
 
 use crate::{Client, Room, TimelineItem, RUNTIME};
 
@@ -33,13 +39,13 @@ pub struct TimelineStream {
 }
 
 impl TimelineStream {
-    pub fn new(room: Room, timeline: Arc<Timeline>) -> Self {
+    pub(crate) fn new(room: Room, timeline: Arc<Timeline>) -> Self {
         TimelineStream { room, timeline }
     }
 
     pub fn messages_stream(&self) -> impl Stream<Item = TimelineItemDiff> {
         let timeline = self.timeline.clone();
-        let user_id = self
+        let my_id = self
             .room
             .deref()
             .client()
@@ -51,20 +57,132 @@ impl TimelineStream {
             let (timeline_items, mut timeline_stream) = timeline.subscribe().await;
             let values = timeline_items
                 .into_iter()
-                .map(|x| TimelineItem::from((x, user_id.clone())))
+                .map(|x| TimelineItem::from((x, my_id.clone())))
                 .collect::<Vec<TimelineItem>>();
             yield TimelineItemDiff::current_items(values);
 
-            let mut remap = timeline_stream.map(|diff| {
-                diff
-                    .into_iter()
-                    .map(|d| remap_for_diff(d, |x| TimelineItem::from((x, user_id.clone()))))
-                    .collect::<Vec<ApiVectorDiff<TimelineItem>>>()
-            });
-
-            while let Some(d) = remap.next().await {
-                for e in d {
-                    yield e
+            while let Some(diffs) = timeline_stream.next().await {
+                for diff in diffs {
+                    let d = match diff {
+                        VectorDiff::Append { values } => {
+                            info!("items append");
+                            for value in values.clone() {
+                                fetch_details_for_event(value, timeline.clone()).await;
+                            }
+                            let items = values
+                                .into_iter()
+                                .map(|x| TimelineItem::from((x, my_id.clone())))
+                                .collect::<Vec<TimelineItem>>();
+                            ApiVectorDiff {
+                                action: "Append".to_string(),
+                                values: Some(items),
+                                index: None,
+                                value: None,
+                            }
+                        }
+                        VectorDiff::Clear => {
+                            info!("items clear");
+                            ApiVectorDiff {
+                                action: "Clear".to_string(),
+                                values: None,
+                                index: None,
+                                value: None,
+                            }
+                        }
+                        VectorDiff::Insert { index, value } => {
+                            info!("items insert");
+                            fetch_details_for_event(value.clone(), timeline.clone()).await;
+                            ApiVectorDiff {
+                                action: "Insert".to_string(),
+                                values: None,
+                                index: Some(index),
+                                value: Some(TimelineItem::from((value, my_id.clone()))),
+                            }
+                        }
+                        VectorDiff::PopBack => {
+                            info!("items pop back");
+                            ApiVectorDiff {
+                                action: "PopBack".to_string(),
+                                values: None,
+                                index: None,
+                                value: None,
+                            }
+                        }
+                        VectorDiff::PopFront => {
+                            info!("items pop front");
+                            ApiVectorDiff {
+                                action: "PopFront".to_string(),
+                                values: None,
+                                index: None,
+                                value: None,
+                            }
+                        }
+                        VectorDiff::PushBack { value } => {
+                            info!("items push back");
+                            fetch_details_for_event(value.clone(), timeline.clone()).await;
+                            ApiVectorDiff {
+                                action: "PushBack".to_string(),
+                                values: None,
+                                index: None,
+                                value: Some(TimelineItem::from((value, my_id.clone()))),
+                            }
+                        }
+                        VectorDiff::PushFront { value } => {
+                            info!("items push front");
+                            fetch_details_for_event(value.clone(), timeline.clone()).await;
+                            ApiVectorDiff {
+                                action: "PushFront".to_string(),
+                                values: None,
+                                index: None,
+                                value: Some(TimelineItem::from((value, my_id.clone()))),
+                            }
+                        }
+                        VectorDiff::Remove { index } => {
+                            info!("items remove");
+                            ApiVectorDiff {
+                                action: "Remove".to_string(),
+                                values: None,
+                                index: Some(index),
+                                value: None,
+                            }
+                        }
+                        VectorDiff::Reset { values } => {
+                            info!("items reset");
+                            for value in values.clone() {
+                                fetch_details_for_event(value, timeline.clone()).await;
+                            }
+                            let items = values
+                                .into_iter()
+                                .map(|x| TimelineItem::from((x, my_id.clone())))
+                                .collect::<Vec<TimelineItem>>();
+                            ApiVectorDiff {
+                                action: "Reset".to_string(),
+                                values: Some(items),
+                                index: None,
+                                value: None,
+                            }
+                        }
+                        VectorDiff::Set { index, value } => {
+                            info!("items set");
+                            fetch_details_for_event(value.clone(), timeline.clone()).await;
+                            ApiVectorDiff {
+                                action: "Set".to_string(),
+                                values: None,
+                                index: Some(index),
+                                value: Some(TimelineItem::from((value, my_id.clone()))),
+                            }
+                        }
+                        VectorDiff::Truncate { length } => {
+                            info!("items truncate");
+                            ApiVectorDiff {
+                                action: "Truncate".to_string(),
+                                values: None,
+                                index: Some(length),
+                                value: None,
+                            }
+                        }
+                    };
+                    yield d;
                 }
             }
         }
@@ -74,23 +192,26 @@ impl TimelineStream {
     pub async fn paginate_backwards(&self, mut count: u16) -> Result<bool> {
         let timeline = self.timeline.clone();
 
-        Ok(RUNTIME
-            .spawn(async move { timeline.paginate_backwards(count).await })
-            .await??)
+        RUNTIME
+            .spawn(async move {
+                let result = timeline.paginate_backwards(count).await?;
+                Ok(result)
+            })
+            .await?
     }
 
     pub async fn get_message(&self, event_id: String) -> Result<TimelineItem> {
         let event_id = OwnedEventId::try_from(event_id)?;
-
         let timeline = self.timeline.clone();
-        let user_id = self.room.user_id()?;
+        let my_id = self.room.user_id()?;
 
         RUNTIME
             .spawn(async move {
-                let Some(tl) = timeline.item_by_event_id(&event_id).await else {
-                    bail!("Event not found")
-                };
-                Ok(TimelineItem::new_event_item(&tl, user_id))
+                let tl = timeline
+                    .item_by_event_id(&event_id)
+                    .await
+                    .context("Event not found")?;
+                Ok(TimelineItem::new_event_item(&tl, my_id))
             })
             .await?
     }
@@ -118,8 +239,8 @@ impl TimelineStream {
             bail!("Unable to send message in a room we are not in");
         }
         let room = self.room.clone();
-        let my_id = self.room.user_id()?;
         let timeline = self.timeline.clone();
+        let my_id = self.room.user_id()?;
 
         RUNTIME
             .spawn(async move {
@@ -144,7 +265,6 @@ impl TimelineStream {
         let my_id = self.room.user_id()?;
         let timeline = self.timeline.clone();
         let event_id = EventId::parse(event_id)?;
-        let client = self.room.client();
 
         RUNTIME
             .spawn(async move {
@@ -155,9 +275,10 @@ impl TimelineStream {
                     bail!("No permissions to send message in this room");
                 }
 
-                let Some(item) = timeline.item_by_event_id(&event_id).await else {
-                    bail!("Unable to find event");
-                };
+                let item = timeline
+                    .item_by_event_id(&event_id)
+                    .await
+                    .context("Unable to find event")?;
 
                 if !item.is_own() {
                     // !item.is_editable() { // FIXME: matrix-sdk is_editable doesn't allow us to post other things
@@ -184,7 +305,6 @@ impl TimelineStream {
         let my_id = self.room.user_id()?;
         let timeline = self.timeline.clone();
         let event_id = EventId::parse(event_id)?;
-        let client = self.room.client();
 
         RUNTIME
             .spawn(async move {
@@ -327,4 +447,32 @@ impl Client {
             info: None,
         })
     }
+}
+
+async fn fetch_details_for_event(
+    item: Arc<SdkTimelineItem>,
+    timeline: Arc<Timeline>,
+) -> Result<bool> {
+    RUNTIME
+        .spawn(async move {
+            if let Some(event) = item.as_event() {
+                if let TimelineItemContent::MsgLike(MsgLikeContent {
+                    kind: MsgLikeKind::Message(msg),
+                    in_reply_to: Some(in_reply_to),
+                    ..
+                }) = event.content()
+                {
+                    info!("fetching replied_to: {}", in_reply_to.event_id);
+                    if let Err(err) = timeline
+                        .fetch_details_for_event(&in_reply_to.event_id)
+                        .await
+                    {
+                        error!("error when fetching replied_to_info via timeline: {err}");
+                        return Ok(false);
+                    }
+                }
+            }
+            Ok(true)
+        })
+        .await?
 }
