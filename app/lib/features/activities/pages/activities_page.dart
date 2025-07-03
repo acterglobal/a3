@@ -29,6 +29,7 @@ class ActivitiesPage extends ConsumerWidget {
     if (securityWidget != null) {
       sectionWidgetList.add(securityWidget);
     }
+
     // Space Activities Section
     final spaceActivitiesWidget = buildSpaceActivitiesSectionWidget(
       context,
@@ -57,31 +58,18 @@ class ActivitiesPage extends ConsumerWidget {
     WidgetRef ref,
     List<Widget> sectionWidgetList,
   ) {
-    final isActivityEmpty = sectionWidgetList.isEmpty;
-    if (isActivityEmpty) return buildEmptyStateWidget(context);
-
-    final isLoadingMore = ref.read(allActivitiesProvider.notifier).isLoadingMore;
+    // Show empty state when no activities and no other sections
+    if (sectionWidgetList.isEmpty) return buildEmptyStateWidget(context);
 
     return NotificationListener<ScrollNotification>(
-      onNotification: (ScrollNotification scrollInfo) {
-        if (scrollInfo is ScrollUpdateNotification) {
-          final pixels = scrollInfo.metrics.pixels;
-          final maxExtent = scrollInfo.metrics.maxScrollExtent;
-          
-          // Avoid division by zero and ensure we have scrollable content
-          if (maxExtent <= 0) return false;
-          
-          final progress = pixels / maxExtent;
-          
-          // Check if conditions are met to load more activities
-          final isNearBottom = progress >= 0.9;
-          final canLoadMore = ref.read(allActivitiesProvider.notifier).hasMoreData && !isLoadingMore;
-          
-          if (isNearBottom && canLoadMore) {
-            // Trigger loading more activities
-            ref.read(allActivitiesProvider.notifier).loadMore();
-          }
+      onNotification: (scrollInfo) {
+        final pixels = scrollInfo.metrics.pixels;
+        final maxScroll = scrollInfo.metrics.maxScrollExtent;
+
+        if (maxScroll > 0 && pixels / maxScroll >= 0.7) {
+          ref.read(allActivitiesProvider.notifier).loadMore();
         }
+
         return false;
       },
       child: SingleChildScrollView(
@@ -89,9 +77,8 @@ class ActivitiesPage extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ...sectionWidgetList,
-            // Show loading indicator at the bottom when loading more activities
-            if (isLoadingMore) 
-	            const Center(child: LinearProgressIndicator()),
+            if (ref.watch(allActivitiesProvider).isLoading)
+              const  Center(child: LinearProgressIndicator()),
           ],
         ),
       ),
