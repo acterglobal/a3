@@ -254,7 +254,6 @@ bool isEmptyHtmlContent(String html) {
 bool hasValidEditorContent({required String plainText, required String html}) {
   final hasPlainTextContent = plainText.trim().isNotEmpty;
   final hasHtmlTextContent = !isEmptyHtmlContent(html);
-  
   return hasPlainTextContent || hasHtmlTextContent;
 }
 
