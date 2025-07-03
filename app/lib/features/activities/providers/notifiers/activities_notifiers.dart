@@ -104,7 +104,6 @@ class AllActivitiesNotifier extends AsyncNotifier<List<String>> {
     
     _isLoadingMore = true;
     
-    // Run the loading in the background without blocking
     _loadMoreActivities(isLoadMore: true).then((result) {
       _isLoadingMore = false;
       state = AsyncValue.data(result);
@@ -129,7 +128,6 @@ class AllActivitiesNotifier extends AsyncNotifier<List<String>> {
     
     _activities = client.allActivities();
     
-    // Load first page of activities
     return await _loadMoreActivities(isLoadMore: false);
   }
 
