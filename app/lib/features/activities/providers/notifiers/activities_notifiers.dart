@@ -56,102 +56,31 @@ class AsyncActivityNotifier extends FamilyAsyncNotifier<Activity?, String> {
 }
 
 class AllActivitiesNotifier extends AsyncNotifier<List<String>> {
+  static const int _pageSize = 100;
+  
   final List<StreamSubscription> _subscriptions = [];
   Activities? _activities;
-  
-  // Pagination state
-  static const int _pageSize = 100;
-  int _currentOffset = 0;
-  bool _hasMoreData = true;
-
-  Future<List<String>> _fetchAllActivities(Client client, {bool loadMore = false}) async {
-    if (!loadMore) {
-      // Reset pagination for initial load
-      _currentOffset = 0;
-      _hasMoreData = true;
-      _activities?.drop();
-      _activities = null;
-      _activities = client.allActivities();
-    }
-
-    if (!_hasMoreData) {
-      return state.valueOrNull ?? [];
-    }
-
-    try {
-      // Ensure we have an Activities object
-      _activities ??= client.allActivities();
-
-      final activityIds = await _activities?.getIds(_currentOffset, _pageSize);
-      
-      if (activityIds == null || activityIds.isEmpty) {
-        _hasMoreData = false;
-        return state.valueOrNull ?? [];
-      }
-
-      final newActivityIds = asDartStringList(activityIds);
-      
-      // Update pagination state
-      _currentOffset += activityIds.length;
-      _hasMoreData = activityIds.length >= _pageSize;
-
-      List<String> result;
-      if (loadMore) {
-        // Append new activities to existing list
-        final currentActivities = state.valueOrNull ?? [];
-        result = [...currentActivities, ...newActivityIds];
-      } else {
-        // Return new activities for initial load
-        result = newActivityIds;
-      }
-
-      return result;
-    } catch (e, s) {
-      _log.severe('Failed to fetch activities', e, s);
-      rethrow;
-    }
-  }
-
-  // Method to load more activities (called when scrolling)
-  Future<void> loadMore() async {
-    if (!_hasMoreData) return;
-
-    try {
-      final client = await ref.read(alwaysClientProvider.future);
-      final newActivities = await _fetchAllActivities(client, loadMore: true);
-      state = AsyncValue.data(newActivities);
-    } catch (e, s) {
-      _log.severe('Failed to load more activities', e, s);
-      state = AsyncValue.error(e, s);
-    }
-  }
-
-  // Getter to check if more data can be loaded
-  bool get hasMoreData => _hasMoreData;
+  int _offset = 0;
 
   @override
   Future<List<String>> build() async {
     final client = await ref.watch(alwaysClientProvider.future);
     final spaces = ref.watch(spacesProvider);
 
-    // Subscribe to each room's stream
+    // Subscribe to room streams
     for (final space in spaces) {
       final roomId = space.getRoomIdStr();
       final stream = client.subscribeRoomStream(roomId);
       final sub = stream.listen(
         (data) async {
           try {
-            state = AsyncValue.data(await _fetchAllActivities(client));
+            await _refresh(client);
           } catch (e, s) {
             _log.severe('Failed to refresh activities', e, s);
           }
         },
-        onError: (e, s) {
-          _log.severe('Room stream error', e, s);
-        },
-        onDone: () {
-          _log.info('Room stream ended');
-        },
+        onError: (e, s) => _log.severe('Room stream error', e, s),
+        onDone: () => _log.info('Room stream ended'),
       );
       _subscriptions.add(sub);
     }
@@ -161,9 +90,58 @@ class AllActivitiesNotifier extends AsyncNotifier<List<String>> {
         sub.cancel();
       }
       _activities?.drop();
-      _activities = null; // Prevent double free
+      _activities = null;
     });
 
-    return await _fetchAllActivities(client);
+    return await _refresh(client);
+  }
+
+  Future<void> loadMore() async {
+    try {
+      await _loadMoreActivities(isLoadMore: true);
+    } catch (e, s) {
+      _log.severe('Failed to load more activities', e, s);
+      state = AsyncValue.error(e, s);
+    }
+  }
+
+  /// Returns true if more activities can be loaded
+  bool get hasMoreData => true;
+
+  Future<List<String>> _refresh(Client client) async {
+     _offset = 0;        
+     _activities?.drop(); 
+    
+    _activities = client.allActivities();
+      
+    return await _loadMoreActivities(isLoadMore: false);
+  }
+
+  Future<List<String>> _loadMoreActivities({required bool isLoadMore}) async {
+    try {
+      // Get activities from current offset position
+      final activityIds = await _activities?.getIds(_offset, _pageSize);
+      
+      // Check if we've reached the end
+      if (activityIds == null || activityIds.isEmpty) {
+        return isLoadMore ? (state.valueOrNull ?? <String>[]) : [];
+      }
+
+      final newIds = asDartStringList(activityIds);
+      
+      // Update pagination state
+      _offset += newIds.length;                
+      
+      final List<String> result = isLoadMore 
+          ? [...(state.valueOrNull ?? <String>[]), ...newIds]  // Append to existing
+          : newIds;                                     // Replace with new
+      
+      // Update state and return
+      state = AsyncValue.data(result);
+      return result;
+    } catch (e, s) {
+      _log.severe('Failed to load activities', e, s);
+      rethrow;
+    }
   }
 }

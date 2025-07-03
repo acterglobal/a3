@@ -141,9 +141,6 @@ final loadMoreActivitiesProvider = Provider<Future<void> Function()>((ref) {
     
     try {
       await activitiesNotifier.loadMore();
-      
-      // Add 2-second delay to see the progress bar
-      await Future.delayed(const Duration(seconds: 2));
     } catch (e) { 
       _log.severe('Failed to load more activities', e);
     } finally {
