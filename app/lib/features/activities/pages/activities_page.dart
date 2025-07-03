@@ -61,7 +61,7 @@ class ActivitiesPage extends ConsumerWidget {
     if (isActivityEmpty) return buildEmptyStateWidget(context);
 
     final hasMoreActivities = ref.watch(hasMoreActivitiesProvider);
-    final isLoadingMore = ref.watch(isLoadingMoreActivitiesProvider);
+    final isLoadingMore = ref.watch(isLoadingMoreStateProvider);
     final loadMoreActivities = ref.watch(loadMoreActivitiesProvider);
 
     return NotificationListener<ScrollNotification>(

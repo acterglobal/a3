@@ -109,34 +109,23 @@ final allActivitiesByIdProvider = FutureProvider<List<Activity>>((ref) async {
   return activities;
 });
 
-// Provider to check if more activities can be loaded
 final hasMoreActivitiesProvider = Provider<bool>((ref) {
-  // Watch the provider to ensure we get updates when state changes
   ref.watch(allActivitiesProvider);
   final notifier = ref.read(allActivitiesProvider.notifier);
   return notifier.hasMoreData;
 });
 
-// Separate state provider for loading state that can be properly reactive
 final isLoadingMoreStateProvider = StateProvider<bool>((ref) => false);
 
-// Provider to check if currently loading more activities
-final isLoadingMoreActivitiesProvider = Provider<bool>((ref) {
-  return ref.watch(isLoadingMoreStateProvider);
-});
-
-// Simplified load more activities provider - just returns the action
 final loadMoreActivitiesProvider = Provider<Future<void> Function()>((ref) {
   return () async {
     final activitiesNotifier = ref.read(allActivitiesProvider.notifier);
     final isCurrentlyLoading = ref.read(isLoadingMoreStateProvider);
     
-    // Check if we can load more and aren't already loading
     if (!activitiesNotifier.hasMoreData || isCurrentlyLoading) {
       return;
     }
     
-    // Set loading state to true
     ref.read(isLoadingMoreStateProvider.notifier).state = true;
     
     try {
@@ -144,7 +133,6 @@ final loadMoreActivitiesProvider = Provider<Future<void> Function()>((ref) {
     } catch (e) { 
       _log.severe('Failed to load more activities', e);
     } finally {
-      // Set loading state to false
       ref.read(isLoadingMoreStateProvider.notifier).state = false;
     }
   };
