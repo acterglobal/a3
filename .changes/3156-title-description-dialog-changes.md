@@ -1,0 +1,1 @@
+- [Fix] : Fixed description editing, enhanced dialog UI, and require users to press Save or Cancel (dialog no longer draggable).

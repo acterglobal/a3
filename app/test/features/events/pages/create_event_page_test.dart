@@ -295,6 +295,9 @@ void main() {
       // Wait for any pending timers to complete
       await tester.pumpAndSettle(const Duration(seconds: 3));
 
+      // Wait for any pending timers to complete
+      await tester.pumpAndSettle(const Duration(seconds: 3));
+
       // Verify end date is not updated
       expect(find.text('14'), findsNothing);
       
