@@ -11,6 +11,7 @@ import 'package:riverpod/riverpod.dart';
 
 final _log = Logger('a3::activities::notifiers');
 
+
 // Single Activity Notifier 
 class AsyncActivityNotifier extends FamilyAsyncNotifier<Activity?, String> {
   late Stream<bool> _listener;
@@ -56,11 +57,13 @@ class AsyncActivityNotifier extends FamilyAsyncNotifier<Activity?, String> {
 }
 
 class AllActivitiesNotifier extends AsyncNotifier<List<String>> {
-  static const int _pageSize = 100;
+  static const int _pageSize = 20;
   
   final List<StreamSubscription> _subscriptions = [];
   Activities? _activities;
   int _offset = 0;
+  bool _hasMore = true;
+  bool _isLoadingMore = false;
 
   @override
   Future<List<String>> build() async {
@@ -96,24 +99,37 @@ class AllActivitiesNotifier extends AsyncNotifier<List<String>> {
     return await _refresh(client);
   }
 
-  Future<void> loadMore() async {
-    try {
-      await _loadMoreActivities(isLoadMore: true);
-    } catch (e, s) {
-      _log.severe('Failed to load more activities', e, s);
-      state = AsyncValue.error(e, s);
-    }
+  void loadMore() {
+    if (!_hasMore || _isLoadingMore) return;
+    
+    _isLoadingMore = true;
+    
+    // Run the loading in the background without blocking
+    _loadMoreActivities(isLoadMore: true).then((result) {
+      _isLoadingMore = false;
+      state = AsyncValue.data(result);
+    }).catchError((error, stackTrace) {
+      _isLoadingMore = false;
+      _log.severe('Failed to load more activities', error, stackTrace);
+      state = AsyncValue.error(error, stackTrace);
+    });
   }
 
   /// Returns true if more activities can be loaded
-  bool get hasMoreData => true;
+  bool get hasMoreData => _hasMore;
+  
+  /// Returns true if currently loading more data
+  bool get isLoadingMore => _isLoadingMore;
 
   Future<List<String>> _refresh(Client client) async {
-     _offset = 0;        
-     _activities?.drop(); 
+    _offset = 0;        
+    _hasMore = true;    
+    _activities?.drop(); 
+    _isLoadingMore = false;
     
     _activities = client.allActivities();
-      
+    
+    // Load first page of activities
     return await _loadMoreActivities(isLoadMore: false);
   }
 
@@ -124,20 +140,19 @@ class AllActivitiesNotifier extends AsyncNotifier<List<String>> {
       
       // Check if we've reached the end
       if (activityIds == null || activityIds.isEmpty) {
-        return isLoadMore ? (state.valueOrNull ?? <String>[]) : [];
+        _hasMore = false;
+        return isLoadMore ? (state.valueOrNull ?? []) : [];
       }
 
       final newIds = asDartStringList(activityIds);
       
-      // Update pagination state
-      _offset += newIds.length;                
+      _offset += newIds.length;                    // Move offset forward
+      _hasMore = newIds.length >= _pageSize;       // Check if more pages exist
       
       final List<String> result = isLoadMore 
           ? [...(state.valueOrNull ?? <String>[]), ...newIds]  // Append to existing
           : newIds;                                     // Replace with new
       
-      // Update state and return
-      state = AsyncValue.data(result);
       return result;
     } catch (e, s) {
       _log.severe('Failed to load activities', e, s);

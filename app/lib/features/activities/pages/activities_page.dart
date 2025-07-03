@@ -60,9 +60,7 @@ class ActivitiesPage extends ConsumerWidget {
     final isActivityEmpty = sectionWidgetList.isEmpty;
     if (isActivityEmpty) return buildEmptyStateWidget(context);
 
-    final hasMoreActivities = ref.watch(hasMoreActivitiesProvider);
-    final isLoadingMore = ref.watch(isLoadingMoreStateProvider);
-    final loadMoreActivities = ref.watch(loadMoreActivitiesProvider);
+    final isLoadingMore = ref.read(allActivitiesProvider.notifier).isLoadingMore;
 
     return NotificationListener<ScrollNotification>(
       onNotification: (ScrollNotification scrollInfo) {
@@ -77,11 +75,11 @@ class ActivitiesPage extends ConsumerWidget {
           
           // Check if conditions are met to load more activities
           final isNearBottom = progress >= 0.9;
-          final canLoadMore = hasMoreActivities && !isLoadingMore;
+          final canLoadMore = ref.read(allActivitiesProvider.notifier).hasMoreData && !isLoadingMore;
           
           if (isNearBottom && canLoadMore) {
             // Trigger loading more activities
-            loadMoreActivities();
+            ref.read(allActivitiesProvider.notifier).loadMore();
           }
         }
         return false;

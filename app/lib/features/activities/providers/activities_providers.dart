@@ -7,9 +7,6 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:acter_notifify/model/push_styles.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:logging/logging.dart';
-
-final _log = Logger('a3::activities::providers');
 
 final supportedActivityTypes = [
   PushStyles.comment,
@@ -107,35 +104,6 @@ final allActivitiesByIdProvider = FutureProvider<List<Activity>>((ref) async {
     }
   }
   return activities;
-});
-
-final hasMoreActivitiesProvider = Provider<bool>((ref) {
-  ref.watch(allActivitiesProvider);
-  final notifier = ref.read(allActivitiesProvider.notifier);
-  return notifier.hasMoreData;
-});
-
-final isLoadingMoreStateProvider = StateProvider<bool>((ref) => false);
-
-final loadMoreActivitiesProvider = Provider<Future<void> Function()>((ref) {
-  return () async {
-    final activitiesNotifier = ref.read(allActivitiesProvider.notifier);
-    final isCurrentlyLoading = ref.read(isLoadingMoreStateProvider);
-    
-    if (!activitiesNotifier.hasMoreData || isCurrentlyLoading) {
-      return;
-    }
-    
-    ref.read(isLoadingMoreStateProvider.notifier).state = true;
-    
-    try {
-      await activitiesNotifier.loadMore();
-    } catch (e) { 
-      _log.severe('Failed to load more activities', e);
-    } finally {
-      ref.read(isLoadingMoreStateProvider.notifier).state = false;
-    }
-  };
 });
 
 final activityDatesProvider = Provider<List<DateTime>>((ref) {
