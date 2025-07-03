@@ -57,7 +57,6 @@ class ActivitiesPage extends ConsumerWidget {
     WidgetRef ref,
     List<Widget> sectionWidgetList,
   ) {
-    final lang = L10n.of(context);
     final isActivityEmpty = sectionWidgetList.isEmpty;
     if (isActivityEmpty) return buildEmptyStateWidget(context);
 
@@ -93,27 +92,8 @@ class ActivitiesPage extends ConsumerWidget {
           children: [
             ...sectionWidgetList,
             // Show loading indicator at the bottom when loading more activities
-            if (isLoadingMore)
-              Container(
-                padding: const EdgeInsets.all(16.0),
-                child: Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        lang.loadingMoreActivities,
-                        style: const TextStyle(fontSize: 12, color: Colors.grey),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+            if (isLoadingMore) 
+	            const Center(child: LinearProgressIndicator()),
           ],
         ),
       ),
