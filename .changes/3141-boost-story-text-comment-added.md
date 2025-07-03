@@ -1,1 +1,0 @@
- - [Fix] : The comment activity in activity screen now includes the text "Boost" or "Story" in the title when a comment is made.
