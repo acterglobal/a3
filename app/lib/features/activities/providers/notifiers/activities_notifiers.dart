@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/config/constants.dart';
 import 'package:acter/features/activity_ui_showcase/mocks/providers/mock_activities_provider.dart';
@@ -55,7 +54,7 @@ class AsyncActivityNotifier extends FamilyAsyncNotifier<Activity?, String> {
 }
 
 class AllActivitiesNotifier extends AsyncNotifier<List<String>> {
-  final int _limit = 100;
+  final int _limit = 10;
   int _offset = 0;
   bool _hasMoreData = true;
   bool _isLoadingMore = false;
@@ -66,7 +65,6 @@ class AllActivitiesNotifier extends AsyncNotifier<List<String>> {
   @override
   Future<List<String>> build() async {
     final client = await ref.watch(alwaysClientProvider.future);
-    final spaces = ref.watch(spacesProvider);
 
     // Clean up previous subscriptions
     for (final sub in _subscriptions) {
@@ -74,23 +72,20 @@ class AllActivitiesNotifier extends AsyncNotifier<List<String>> {
     }
     _subscriptions.clear();
 
-    for (final space in spaces) {
-      final roomId = space.getRoomIdStr();
-      final stream = client.subscribeRoomStream(roomId);
-      final sub = stream.listen(
-        (data) async {
-          try {
-            // Reset pagination state and reload from beginning
-            await _initialLoad();
-          } catch (e, s) {
-            _log.severe('Failed to refresh activities', e, s);
-          }
-        },
-        onError: (e, s) => _log.severe('Room stream error', e, s),
-        onDone: () => _log.info('Room stream ended'),
-      );
-      _subscriptions.add(sub);
-    }
+    final stream = client.allActivities().subscribeStream();
+    final sub = stream.listen(
+      (data) async {
+        try {
+          // Reset pagination state and reload from beginning
+          await _initialLoad();
+        } catch (e, s) {
+          _log.severe('Failed to refresh activities', e, s);
+        }
+      },
+      onError: (e, s) => _log.severe('Room stream error', e, s),
+      onDone: () => _log.info('Room stream ended'),
+    );
+    _subscriptions.add(sub);
 
     ref.onDispose(() {
       for (final sub in _subscriptions) {
