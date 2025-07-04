@@ -1,5 +1,6 @@
 import 'package:acter/common/extensions/ref_debounce.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter/features/tasks/providers/notifiers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -62,3 +63,28 @@ final filteredSuggestedUsersProvider =
             true;
       }).toList();
     });
+
+// Provider for getting the list of invited users for a task
+final taskInvitationsProvider = AsyncNotifierProvider.family<AsyncTaskInvitationsNotifier, List<String>, Task>(
+  () => AsyncTaskInvitationsNotifier(),
+);
+
+// Provider for checking if a task has any invitations
+final taskHasInvitationsProvider = AsyncNotifierProvider.family<AsyncTaskHasInvitationsNotifier, bool, Task>(
+  () => AsyncTaskHasInvitationsNotifier(),
+);
+
+// Provider for checking if a user is invited to a task
+final taskUserInvitationProvider = AsyncNotifierProvider.family<AsyncTaskUserInvitationNotifier, bool, (Task, String)>(
+  () => AsyncTaskUserInvitationNotifier(),
+);
+
+/// Provider for getting display names of invited users
+final invitedUserDisplayNameProvider = Provider.family<String, String>(
+  (ref, userId) {
+    // Extract username from Matrix ID (e.g., @acter017:m-1.acter.global -> acter017)
+    return userId.startsWith('@') 
+        ? userId.substring(1).split(':')[0] 
+        : userId.split(':')[0];
+  },
+);

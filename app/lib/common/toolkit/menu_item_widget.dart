@@ -34,6 +34,7 @@ class MenuItemWidget extends StatelessWidget {
     final disabledColor = Theme.of(context).disabledColor;
     return Card(
       child: ListTile(
+        contentPadding: EdgeInsets.zero,
         key: innerKey,
         onTap: onTap,
         visualDensity: visualDensity,
