@@ -85,7 +85,7 @@ class ActivitiesPage extends ConsumerWidget {
               child: Center(
                 child: hasMore
                     ? CircularProgressIndicator()
-                    : Text('No more activities to load'),
+                    : Text(L10n.of(context).noMoreActivities),
               ),
             ),
           ],
