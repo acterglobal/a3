@@ -79,15 +79,15 @@ impl ActivityObject {
 
     pub fn target_url(&self) -> String {
         match self {
-            ActivityObject::News { object_id } => format!("/updates/{}", object_id),
-            ActivityObject::Story { object_id } => format!("/updates/{}", object_id),
-            ActivityObject::Pin { object_id, .. } => format!("/pins/{}", object_id),
-            ActivityObject::TaskList { object_id, .. } => format!("/tasks/{}", object_id),
+            ActivityObject::News { object_id } => format!("/updates/{object_id}"),
+            ActivityObject::Story { object_id } => format!("/updates/{object_id}"),
+            ActivityObject::Pin { object_id, .. } => format!("/pins/{object_id}"),
+            ActivityObject::TaskList { object_id, .. } => format!("/tasks/{object_id}"),
             ActivityObject::Task {
                 object_id, tl_id, ..
             } => format!("/tasks/{tl_id}/{object_id}"),
             ActivityObject::CalendarEvent { object_id, .. } => {
-                format!("/events/{}", object_id)
+                format!("/events/{object_id}")
             }
             ActivityObject::Unknown { object_id } => {
                 format!("/forward?eventId={}", encode(object_id.as_str()),)

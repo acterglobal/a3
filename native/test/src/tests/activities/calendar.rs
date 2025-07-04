@@ -110,7 +110,7 @@ async fn calendar_update_start_activity() -> Result<()> {
         activity
             .date_time_range_content()
             .and_then(|c| c.start_new_val()),
-        Some(utc_start.clone())
+        Some(utc_start)
     );
     assert_eq!(
         activity
@@ -183,7 +183,7 @@ async fn calendar_update_end_activity() -> Result<()> {
         activity
             .date_time_range_content()
             .and_then(|c| c.end_new_val()),
-        Some(utc_end.clone())
+        Some(utc_end)
     );
 
     let object = activity.object().expect("we have an object");
@@ -246,13 +246,13 @@ async fn calendar_update_start_end_activity() -> Result<()> {
         activity
             .date_time_range_content()
             .and_then(|c| c.start_new_val()),
-        Some(utc_start.clone())
+        Some(utc_start)
     );
     assert_eq!(
         activity
             .date_time_range_content()
             .and_then(|c| c.end_new_val()),
-        Some(utc_end.clone())
+        Some(utc_end)
     );
 
     let object = activity.object().expect("we have an object");

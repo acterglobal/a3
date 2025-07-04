@@ -64,7 +64,6 @@ impl From<OriginalRoomRedactionEvent> for RedactionContent {
         }
     }
 }
-
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct RedactedActerModel {
     orig_type: String,
@@ -114,7 +113,7 @@ impl ActerModel for RedactedActerModel {
     }
 
     fn transition(&mut self, model: &AnyActerModel) -> crate::Result<bool> {
-        // Transitions aren’t possible anymore when the source has been redacted
+        // Transitions aren't possible anymore when the source has been redacted
         // so we eat up the content and just log that we had to do that.
         info!(?self, ?model, "Transition on Redaction Swallowed");
         Ok(false)

@@ -10,6 +10,11 @@ path = "../acter"
 default-features = false
 features = ["testing"]
 
+[dependencies.acter-core]
+path = "../core"
+default-features = false
+features = ["testing"]
+
 [dependencies.acter-matrix]
 path = "../matrix"
 features = ["testing"]

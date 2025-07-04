@@ -15,7 +15,7 @@ pub struct CoreClient {
 impl CoreClient {
     pub async fn new(client: Client) -> Result<Self, Error> {
         let store = Store::new(client.clone()).await?;
-        let executor = Executor::new(store.clone()).await?;
+        let executor = Executor::new(store.clone());
         client.add_event_handler_context(executor.clone());
 
         Ok(CoreClient {
