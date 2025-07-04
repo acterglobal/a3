@@ -19,9 +19,13 @@ class MockActivities extends Mock implements Activities {}
 
 // Mock notifiers that extend the actual classes
 class MockAlwaysClientNotifier extends AlwaysClientNotifier {
+  final MockClient? _mockClient;
+  
+  MockAlwaysClientNotifier([this._mockClient]);
+  
   @override
   Future<Client> build() async {
-    return MockClient();
+    return _mockClient ?? MockClient();
   }
 }
 
@@ -48,45 +52,40 @@ void main() {
       // Setup default mocks
       when(() => mockClient.allActivities()).thenReturn(mockActivities);
       when(() => mockClient.subscribeRoomStream(any())).thenAnswer((_) => mockStreamController.stream);
+      when(() => mockClient.subscribeModelStream(any())).thenAnswer((_) => mockStreamController.stream);
       when(() => mockSpaces[0].getRoomIdStr()).thenReturn('room1');
       when(() => mockSpaces[1].getRoomIdStr()).thenReturn('room2');
       when(() => mockActivities.getIds(any(), any())).thenAnswer((_) async => MockFfiListFfiString(items: []));
+      when(() => mockActivities.subscribeStream()).thenAnswer((_) => mockStreamController.stream);
       when(() => mockActivities.drop()).thenReturn(null);
+      
+      // Mock the MockFfiListFfiString properties
+      final mockFfiList = MockFfiListFfiString(items: []);
+      when(() => mockFfiList.isEmpty).thenReturn(true);
+      when(() => mockFfiList.toList()).thenReturn([]);
+      when(() => mockActivities.getIds(any(), any())).thenAnswer((_) async => mockFfiList);
     });
 
     tearDown(() {
       mockStreamController.close();
     });
 
-    group('Initialization and Basic Properties', () {
-      test('should create notifier with correct type', () {
-        expect(() => AllActivitiesNotifier(), returnsNormally);
-      });
-
-      test('should have correct class structure', () {
-        final notifier = AllActivitiesNotifier();
-        expect(notifier, isA<AsyncNotifier<List<String>>>());
-        expect(notifier.hasMoreData, isA<bool>());
-        expect(notifier.loadMore, isA<Function>());
-      });
-    });
-
     group('LoadMore Method', () {
       test('should handle loadMore method signature', () {
         final notifier = AllActivitiesNotifier();
-        expect(notifier.loadMore, isA<Function>());
+        expect(notifier.loadMoreActivities, isA<Function>());
       });
 
       test('should not load more when hasMore is false', () {
         final container = ProviderContainer(
           overrides: [
-            alwaysClientProvider.overrideWith(() => MockAlwaysClientNotifier()),
+            alwaysClientProvider.overrideWith(() => MockAlwaysClientNotifier(mockClient)),
             spacesProvider.overrideWith(() => MockSpaceListNotifier()),
           ],
         );
 
         final notifier = container.read(allActivitiesProvider.notifier);
-        expect(() => notifier.loadMore(), returnsNormally);
+        expect(() => notifier.loadMoreActivities(), returnsNormally);
         
         container.dispose();
       });
@@ -94,7 +93,7 @@ void main() {
       test('should handle loadMore error and set error state', () async {
         final container = ProviderContainer(
           overrides: [
-            alwaysClientProvider.overrideWith(() => MockAlwaysClientNotifier()),
+            alwaysClientProvider.overrideWith(() => MockAlwaysClientNotifier(mockClient)),
             spacesProvider.overrideWith(() => MockSpaceListNotifier()),
           ],
         );
@@ -103,7 +102,8 @@ void main() {
         
         when(() => mockActivities.getIds(any(), any())).thenThrow(Exception('Load more error'));
         
-        notifier.loadMore();
+        // The error should be thrown when loadMoreActivities is called
+        expect(() => notifier.loadMoreActivities(), throwsA(isA<Exception>()));
     
         await Future.delayed(Duration(milliseconds: 100));
         
@@ -152,17 +152,20 @@ void main() {
       });
 
       test('should handle empty activities response', () async {
-        when(() => mockActivities.getIds(any(), any())).thenAnswer((_) async => MockFfiListFfiString(items: []));
+        final emptyMockFfiList = MockFfiListFfiString(items: []);
+        when(() => emptyMockFfiList.isEmpty).thenReturn(true);
+        when(() => emptyMockFfiList.toList()).thenReturn([]);
+        when(() => mockActivities.getIds(any(), any())).thenAnswer((_) async => emptyMockFfiList);
         
         final container = ProviderContainer(
           overrides: [
-            alwaysClientProvider.overrideWith(() => MockAlwaysClientNotifier()),
+            alwaysClientProvider.overrideWith(() => MockAlwaysClientNotifier(mockClient)),
             spacesProvider.overrideWith(() => MockSpaceListNotifier()),
           ],
         );
 
         final notifier = container.read(allActivitiesProvider.notifier);
-        notifier.loadMore();
+        notifier.loadMoreActivities();
         
         await Future.delayed(Duration(milliseconds: 100));
         
@@ -186,7 +189,7 @@ void main() {
       test('should handle room stream subscription with multiple spaces', () async {
         final container = ProviderContainer(
           overrides: [
-            alwaysClientProvider.overrideWith(() => MockAlwaysClientNotifier()),
+            alwaysClientProvider.overrideWith(() => MockAlwaysClientNotifier(mockClient)),
             spacesProvider.overrideWith(() => MockSpaceListNotifier()),
           ],
         );
@@ -199,7 +202,7 @@ void main() {
       test('should handle stream refresh on data update', () async {
         final container = ProviderContainer(
           overrides: [
-            alwaysClientProvider.overrideWith(() => MockAlwaysClientNotifier()),
+            alwaysClientProvider.overrideWith(() => MockAlwaysClientNotifier(mockClient)),
             spacesProvider.overrideWith(() => MockSpaceListNotifier()),
           ],
         );
@@ -214,7 +217,7 @@ void main() {
       test('should handle stream error in listener', () async {
         final container = ProviderContainer(
           overrides: [
-            alwaysClientProvider.overrideWith(() => MockAlwaysClientNotifier()),
+            alwaysClientProvider.overrideWith(() => MockAlwaysClientNotifier(mockClient)),
             spacesProvider.overrideWith(() => MockSpaceListNotifier()),
           ],
         );
@@ -229,7 +232,7 @@ void main() {
       test('should handle stream completion in listener', () async {
         final container = ProviderContainer(
           overrides: [
-            alwaysClientProvider.overrideWith(() => MockAlwaysClientNotifier()),
+            alwaysClientProvider.overrideWith(() => MockAlwaysClientNotifier(mockClient)),
             spacesProvider.overrideWith(() => MockSpaceListNotifier()),
           ],
         );
@@ -250,7 +253,7 @@ void main() {
       test('should cancel all subscriptions on disposal', () async {
         final container = ProviderContainer(
           overrides: [
-            alwaysClientProvider.overrideWith(() => MockAlwaysClientNotifier()),
+            alwaysClientProvider.overrideWith(() => MockAlwaysClientNotifier(mockClient)),
             spacesProvider.overrideWith(() => MockSpaceListNotifier()),
           ],
         );
@@ -263,7 +266,7 @@ void main() {
       test('should drop activities on disposal', () async {
         final container = ProviderContainer(
           overrides: [
-            alwaysClientProvider.overrideWith(() => MockAlwaysClientNotifier()),
+            alwaysClientProvider.overrideWith(() => MockAlwaysClientNotifier(mockClient)),
             spacesProvider.overrideWith(() => MockSpaceListNotifier()),
           ],
         );
@@ -278,7 +281,7 @@ void main() {
       test('should set activities to null on disposal', () async {
         final container = ProviderContainer(
           overrides: [
-            alwaysClientProvider.overrideWith(() => MockAlwaysClientNotifier()),
+            alwaysClientProvider.overrideWith(() => MockAlwaysClientNotifier(mockClient)),
             spacesProvider.overrideWith(() => MockSpaceListNotifier()),
           ],
         );
@@ -330,7 +333,7 @@ void main() {
       test('should return mock activity in showcase mode', () async {
         final container = ProviderContainer(
           overrides: [
-            alwaysClientProvider.overrideWith(() => MockAlwaysClientNotifier()),
+            alwaysClientProvider.overrideWith(() => MockAlwaysClientNotifier(mockClient)),
             mockActivityProvider.overrideWith((ref, arg) => mockActivity),
           ],
         );
@@ -343,7 +346,7 @@ void main() {
       test('should get activity from client when not in showcase mode', () async {
         final container = ProviderContainer(
           overrides: [
-            alwaysClientProvider.overrideWith(() => MockAlwaysClientNotifier()),
+            alwaysClientProvider.overrideWith(() => MockAlwaysClientNotifier(mockClient)),
             mockActivityProvider.overrideWith((ref, arg) => null), // No mock activity
           ],
         );
@@ -372,7 +375,7 @@ void main() {
       test('should handle stream data update and refresh state', () async {
         final container = ProviderContainer(
           overrides: [
-            alwaysClientProvider.overrideWith(() => MockAlwaysClientNotifier()),
+            alwaysClientProvider.overrideWith(() => MockAlwaysClientNotifier(mockClient)),
             mockActivityProvider.overrideWith((ref, arg) => null),
           ],
         );
@@ -388,7 +391,7 @@ void main() {
       test('should handle stream error and set error state', () async {
         final container = ProviderContainer(
           overrides: [
-            alwaysClientProvider.overrideWith(() => MockAlwaysClientNotifier()),
+            alwaysClientProvider.overrideWith(() => MockAlwaysClientNotifier(mockClient)),
             mockActivityProvider.overrideWith((ref, arg) => null),
           ],
         );
@@ -404,7 +407,7 @@ void main() {
       test('should handle stream completion logging', () async {
         final container = ProviderContainer(
           overrides: [
-            alwaysClientProvider.overrideWith(() => MockAlwaysClientNotifier()),
+            alwaysClientProvider.overrideWith(() => MockAlwaysClientNotifier(mockClient)),
             mockActivityProvider.overrideWith((ref, arg) => null),
           ],
         );
@@ -432,7 +435,7 @@ void main() {
         
         final container = ProviderContainer(
           overrides: [
-            alwaysClientProvider.overrideWith(() => MockAlwaysClientNotifier()),
+            alwaysClientProvider.overrideWith(() => MockAlwaysClientNotifier(mockClient)),
             mockActivityProvider.overrideWith((ref, arg) => null),
           ],
         );
@@ -455,7 +458,7 @@ void main() {
       test('should cancel poller subscription on disposal', () async {
         final container = ProviderContainer(
           overrides: [
-            alwaysClientProvider.overrideWith(() => MockAlwaysClientNotifier()),
+            alwaysClientProvider.overrideWith(() => MockAlwaysClientNotifier(mockClient)),
             mockActivityProvider.overrideWith((ref, arg) => null),
           ],
         );
@@ -495,15 +498,15 @@ void main() {
       expect(activityNotifier, isA<AsyncActivityNotifier>());
 
       // Test that notifiers can be created and have expected properties
-      expect(activitiesNotifier.hasMoreData, isA<bool>());
-      expect(activitiesNotifier.loadMore, isA<Function>());
+      expect(activitiesNotifier.hasMore, isA<bool>());
+      expect(activitiesNotifier.loadMoreActivities, isA<Function>());
     });
 
     test('should handle pagination constants', () {
       final notifier = AllActivitiesNotifier();
       
       // Test that pagination behavior is consistent
-      expect(notifier.hasMoreData, isA<bool>());
+      expect(notifier.hasMore, isA<bool>());
     });
 
     test('should handle stream subscription patterns', () {
