@@ -92,11 +92,11 @@ async fn story_smoketest() -> Result<()> {
     assert_eq!(main_space.latest_stories(10).await?.len(), 3);
 
     let text_draft = user.text_plain_draft("This is text slide".to_owned());
-    let event_id = {
-        let mut draft = main_space.story_draft()?;
-        draft.add_slide(Box::new(text_draft.into()));
-        draft.send().await?
-    };
+    let event_id = main_space
+        .story_draft()?
+        .add_slide(Box::new(text_draft.into()))
+        .send()
+        .await?;
     print!("draft sent event id: {}", event_id);
 
     Ok(())
@@ -117,11 +117,13 @@ async fn story_plain_text_test() -> Result<()> {
     .await?;
 
     let space = user.space(room_id.to_string()).await?;
-    let mut draft = space.story_draft()?;
     let body = "This is a simple text";
     let text_draft = user.text_plain_draft(body.to_owned());
-    draft.add_slide(Box::new(text_draft.into()));
-    draft.send().await?;
+    space
+        .story_draft()?
+        .add_slide(Box::new(text_draft.into()))
+        .send()
+        .await?;
 
     let story = Retry::spawn(retry_strategy.clone(), || async {
         let stories = space.latest_stories(1).await?;
@@ -202,7 +204,6 @@ async fn story_slide_color_test() -> Result<()> {
     .await?;
 
     let space = user.space(room_id.to_string()).await?;
-    let mut draft = space.story_draft()?;
     let mut slide_draft: StorySlideDraft = user
         .text_plain_draft("This is a simple text".to_owned())
         .into();
@@ -211,8 +212,11 @@ async fn story_slide_color_test() -> Result<()> {
         Some(0xFF112233),
         Some(0xFF112233),
     )?));
-    draft.add_slide(Box::new(slide_draft));
-    draft.send().await?;
+    space
+        .story_draft()?
+        .add_slide(Box::new(slide_draft))
+        .send()
+        .await?;
 
     Retry::spawn(retry_strategy, || async {
         if space.latest_stories(1).await?.len() != 1 {
@@ -256,10 +260,12 @@ async fn story_markdown_text_test() -> Result<()> {
     .await?;
 
     let space = user.space(room_id.to_string()).await?;
-    let mut draft = space.story_draft()?;
     let text_draft = user.text_markdown_draft("## This is a simple text".to_owned());
-    draft.add_slide(Box::new(text_draft.into()));
-    draft.send().await?;
+    space
+        .story_draft()?
+        .add_slide(Box::new(text_draft.into()))
+        .send()
+        .await?;
 
     Retry::spawn(retry_strategy, || async {
         if space.latest_stories(1).await?.len() != 1 {
@@ -316,13 +322,15 @@ async fn story_jpg_image_with_text_test() -> Result<()> {
     tmp_file.as_file_mut().write_all(bytes)?;
 
     let space = user.space(room_id.to_string()).await?;
-    let mut draft = space.story_draft()?;
     let image_draft = user.image_draft(
         tmp_file.path().to_string_lossy().to_string(),
         "image/jpg".to_owned(),
     );
-    draft.add_slide(Box::new(image_draft.into()));
-    draft.send().await?;
+    space
+        .story_draft()?
+        .add_slide(Box::new(image_draft.into()))
+        .send()
+        .await?;
 
     Retry::spawn(retry_strategy, || async {
         if space.latest_stories(1).await?.len() != 1 {
@@ -374,13 +382,15 @@ async fn story_png_image_with_text_test() -> Result<()> {
     tmp_file.as_file_mut().write_all(bytes)?;
 
     let space = user.space(room_id.to_string()).await?;
-    let mut draft = space.story_draft()?;
     let image_draft = user.image_draft(
         tmp_file.path().to_string_lossy().to_string(),
         "image/png".to_owned(),
     );
-    draft.add_slide(Box::new(image_draft.into()));
-    draft.send().await?;
+    space
+        .story_draft()?
+        .add_slide(Box::new(image_draft.into()))
+        .send()
+        .await?;
 
     Retry::spawn(retry_strategy, || async {
         if space.latest_stories(1).await?.len() != 1 {
@@ -418,7 +428,6 @@ async fn story_multiple_slide_test() -> Result<()> {
     ))?;
 
     let space = user.space(room_id.to_string()).await?;
-    let mut draft = space.story_draft()?;
     let image_draft = user.image_draft(
         tmp_file.path().to_string_lossy().to_string(),
         "image/png".to_owned(),
@@ -440,11 +449,14 @@ async fn story_multiple_slide_test() -> Result<()> {
     );
 
     // we add three slides
-    draft.add_slide(Box::new(image_draft.into()));
-    draft.add_slide(Box::new(markdown_draft.into()));
-    draft.add_slide(Box::new(plain_draft.into()));
-    draft.add_slide(Box::new(video_draft.into()));
-    draft.send().await?;
+    space
+        .story_draft()?
+        .add_slide(Box::new(image_draft.into()))
+        .add_slide(Box::new(markdown_draft.into()))
+        .add_slide(Box::new(plain_draft.into()))
+        .add_slide(Box::new(video_draft.into()))
+        .send()
+        .await?;
 
     Retry::spawn(retry_strategy, || async {
         if space.latest_stories(1).await?.len() != 1 {
@@ -500,13 +512,15 @@ async fn story_like_reaction_test() -> Result<()> {
     tmp_file.as_file_mut().write_all(bytes)?;
 
     let space = user.space(room_id.to_string()).await?;
-    let mut draft = space.story_draft()?;
     let image_draft = user.image_draft(
         tmp_file.path().to_string_lossy().to_string(),
         "image/png".to_owned(),
     );
-    draft.add_slide(Box::new(image_draft.into()));
-    draft.send().await?;
+    space
+        .story_draft()?
+        .add_slide(Box::new(image_draft.into()))
+        .send()
+        .await?;
 
     Retry::spawn(retry_strategy, || async {
         if space.latest_stories(1).await?.len() != 1 {
@@ -592,10 +606,12 @@ async fn story_read_receipt_test() -> Result<()> {
     .await?;
 
     let space = user.space(room_id.to_string()).await?;
-    let mut draft = space.story_draft()?;
     let text_draft = user.text_markdown_draft("## This is a simple text".to_owned());
-    draft.add_slide(Box::new(text_draft.into()));
-    draft.send().await?;
+    space
+        .story_draft()?
+        .add_slide(Box::new(text_draft.into()))
+        .send()
+        .await?;
 
     Retry::spawn(retry_strategy.clone(), || async {
         if space.latest_stories(1).await?.len() != 1 {
@@ -684,18 +700,18 @@ async fn multi_story_read_receipt_test() -> Result<()> {
     let space = user.space(room_id.to_string()).await?;
 
     let text_draft = user.text_markdown_draft("## This is a simple text".to_owned());
-    let first_story_id = {
-        let mut draft = space.story_draft()?;
-        draft.add_slide(Box::new(text_draft.into()));
-        draft.send().await?
-    };
+    let first_story_id = space
+        .story_draft()?
+        .add_slide(Box::new(text_draft.into()))
+        .send()
+        .await?;
 
     let text_draft = user.text_markdown_draft("## This is a second story".to_owned());
-    let second_story_id = {
-        let mut draft = space.story_draft()?;
-        draft.add_slide(Box::new(text_draft.into()));
-        draft.send().await?
-    };
+    let second_story_id = space
+        .story_draft()?
+        .add_slide(Box::new(text_draft.into()))
+        .send()
+        .await?;
 
     let slides = Retry::spawn(retry_strategy.clone(), || async {
         let story_entries = space.latest_stories(2).await?;

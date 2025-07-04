@@ -19606,6 +19606,13 @@ class Api {
 
   late final _newsEntryOriginServerTs =
       _newsEntryOriginServerTsPtr.asFunction<int Function(int)>();
+  late final _newsEntryUpdateBuilderPtr = _lookup<
+    ffi.NativeFunction<_NewsEntryUpdateBuilderReturn Function(ffi.IntPtr)>
+  >("__NewsEntry_update_builder");
+
+  late final _newsEntryUpdateBuilder =
+      _newsEntryUpdateBuilderPtr
+          .asFunction<_NewsEntryUpdateBuilderReturn Function(int)>();
   late final _newsEntryCanRedactPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__NewsEntry_can_redact",
@@ -19649,11 +19656,16 @@ class Api {
   late final _newsEntryDraftAddSlide =
       _newsEntryDraftAddSlidePtr.asFunction<void Function(int, int)>();
   late final _newsEntryDraftSwapSlidesPtr = _lookup<
-    ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint8, ffi.Uint8)>
+    ffi.NativeFunction<
+      _NewsEntryDraftSwapSlidesReturn Function(ffi.IntPtr, ffi.Uint8, ffi.Uint8)
+    >
   >("__NewsEntryDraft_swap_slides");
 
   late final _newsEntryDraftSwapSlides =
-      _newsEntryDraftSwapSlidesPtr.asFunction<void Function(int, int, int)>();
+      _newsEntryDraftSwapSlidesPtr
+          .asFunction<
+            _NewsEntryDraftSwapSlidesReturn Function(int, int, int)
+          >();
   late final _newsEntryDraftSlidesPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__NewsEntryDraft_slides",
@@ -19698,12 +19710,20 @@ class Api {
       _newsEntryUpdateBuilderUnsetSlidesUpdatePtr
           .asFunction<void Function(int)>();
   late final _newsEntryUpdateBuilderSwapSlidesPtr = _lookup<
-    ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint8, ffi.Uint8)>
+    ffi.NativeFunction<
+      _NewsEntryUpdateBuilderSwapSlidesReturn Function(
+        ffi.IntPtr,
+        ffi.Uint8,
+        ffi.Uint8,
+      )
+    >
   >("__NewsEntryUpdateBuilder_swap_slides");
 
   late final _newsEntryUpdateBuilderSwapSlides =
       _newsEntryUpdateBuilderSwapSlidesPtr
-          .asFunction<void Function(int, int, int)>();
+          .asFunction<
+            _NewsEntryUpdateBuilderSwapSlidesReturn Function(int, int, int)
+          >();
   late final _newsEntryUpdateBuilderSendPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__NewsEntryUpdateBuilder_send",
@@ -19817,6 +19837,13 @@ class Api {
 
   late final _storyOriginServerTs =
       _storyOriginServerTsPtr.asFunction<int Function(int)>();
+  late final _storyUpdateBuilderPtr = _lookup<
+    ffi.NativeFunction<_StoryUpdateBuilderReturn Function(ffi.IntPtr)>
+  >("__Story_update_builder");
+
+  late final _storyUpdateBuilder =
+      _storyUpdateBuilderPtr
+          .asFunction<_StoryUpdateBuilderReturn Function(int)>();
   late final _storyCanRedactPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__Story_can_redact",
@@ -19852,11 +19879,14 @@ class Api {
   late final _storyDraftAddSlide =
       _storyDraftAddSlidePtr.asFunction<void Function(int, int)>();
   late final _storyDraftSwapSlidesPtr = _lookup<
-    ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint8, ffi.Uint8)>
+    ffi.NativeFunction<
+      _StoryDraftSwapSlidesReturn Function(ffi.IntPtr, ffi.Uint8, ffi.Uint8)
+    >
   >("__StoryDraft_swap_slides");
 
   late final _storyDraftSwapSlides =
-      _storyDraftSwapSlidesPtr.asFunction<void Function(int, int, int)>();
+      _storyDraftSwapSlidesPtr
+          .asFunction<_StoryDraftSwapSlidesReturn Function(int, int, int)>();
   late final _storyDraftSlidesPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__StoryDraft_slides",
@@ -19900,12 +19930,20 @@ class Api {
   late final _storyUpdateBuilderUnsetSlidesUpdate =
       _storyUpdateBuilderUnsetSlidesUpdatePtr.asFunction<void Function(int)>();
   late final _storyUpdateBuilderSwapSlidesPtr = _lookup<
-    ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint8, ffi.Uint8)>
+    ffi.NativeFunction<
+      _StoryUpdateBuilderSwapSlidesReturn Function(
+        ffi.IntPtr,
+        ffi.Uint8,
+        ffi.Uint8,
+      )
+    >
   >("__StoryUpdateBuilder_swap_slides");
 
   late final _storyUpdateBuilderSwapSlides =
       _storyUpdateBuilderSwapSlidesPtr
-          .asFunction<void Function(int, int, int)>();
+          .asFunction<
+            _StoryUpdateBuilderSwapSlidesReturn Function(int, int, int)
+          >();
   late final _storyUpdateBuilderSendPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__StoryUpdateBuilder_send",
@@ -23477,53 +23515,45 @@ class Api {
   late final _msgDraftAddRoomMention =
       _msgDraftAddRoomMentionPtr
           .asFunction<_MsgDraftAddRoomMentionReturn Function(int, int)>();
-  late final _msgDraftMimetypePtr = _lookup<
-    ffi.NativeFunction<
-      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
-    >
-  >("__MsgDraft_mimetype");
-
-  late final _msgDraftMimetype =
-      _msgDraftMimetypePtr.asFunction<int Function(int, int, int, int)>();
   late final _msgDraftSizePtr =
-      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint64)>>(
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint64)>>(
         "__MsgDraft_size",
       );
 
   late final _msgDraftSize =
-      _msgDraftSizePtr.asFunction<int Function(int, int)>();
+      _msgDraftSizePtr.asFunction<void Function(int, int)>();
   late final _msgDraftWidthPtr =
-      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint64)>>(
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint64)>>(
         "__MsgDraft_width",
       );
 
   late final _msgDraftWidth =
-      _msgDraftWidthPtr.asFunction<int Function(int, int)>();
+      _msgDraftWidthPtr.asFunction<void Function(int, int)>();
   late final _msgDraftHeightPtr =
-      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint64)>>(
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint64)>>(
         "__MsgDraft_height",
       );
 
   late final _msgDraftHeight =
-      _msgDraftHeightPtr.asFunction<int Function(int, int)>();
+      _msgDraftHeightPtr.asFunction<void Function(int, int)>();
   late final _msgDraftDurationPtr =
-      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint64)>>(
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint64)>>(
         "__MsgDraft_duration",
       );
 
   late final _msgDraftDuration =
-      _msgDraftDurationPtr.asFunction<int Function(int, int)>();
+      _msgDraftDurationPtr.asFunction<void Function(int, int)>();
   late final _msgDraftBlurhashPtr = _lookup<
     ffi.NativeFunction<
-      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
     >
   >("__MsgDraft_blurhash");
 
   late final _msgDraftBlurhash =
-      _msgDraftBlurhashPtr.asFunction<int Function(int, int, int, int)>();
+      _msgDraftBlurhashPtr.asFunction<void Function(int, int, int, int)>();
   late final _msgDraftThumbnailImagePtr = _lookup<
     ffi.NativeFunction<
-      ffi.IntPtr Function(
+      ffi.Void Function(
         ffi.IntPtr,
         ffi.IntPtr,
         ffi.UintPtr,
@@ -23537,10 +23567,10 @@ class Api {
 
   late final _msgDraftThumbnailImage =
       _msgDraftThumbnailImagePtr
-          .asFunction<int Function(int, int, int, int, int, int, int)>();
+          .asFunction<void Function(int, int, int, int, int, int, int)>();
   late final _msgDraftThumbnailInfoPtr = _lookup<
     ffi.NativeFunction<
-      ffi.IntPtr Function(
+      ffi.Void Function(
         ffi.IntPtr,
         ffi.Uint8,
         ffi.Uint64,
@@ -23554,23 +23584,15 @@ class Api {
 
   late final _msgDraftThumbnailInfo =
       _msgDraftThumbnailInfoPtr
-          .asFunction<int Function(int, int, int, int, int, int, int)>();
+          .asFunction<void Function(int, int, int, int, int, int, int)>();
   late final _msgDraftFilenamePtr = _lookup<
     ffi.NativeFunction<
-      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
     >
   >("__MsgDraft_filename");
 
   late final _msgDraftFilename =
-      _msgDraftFilenamePtr.asFunction<int Function(int, int, int, int)>();
-  late final _msgDraftGeoUriPtr = _lookup<
-    ffi.NativeFunction<
-      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
-    >
-  >("__MsgDraft_geo_uri");
-
-  late final _msgDraftGeoUri =
-      _msgDraftGeoUriPtr.asFunction<int Function(int, int, int, int)>();
+      _msgDraftFilenamePtr.asFunction<void Function(int, int, int, int)>();
   late final _msgDraftIntoNewsSlideDraftPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__MsgDraft_into_news_slide_draft",
@@ -40845,6 +40867,37 @@ class NewsEntry {
     return tmp2;
   }
 
+  /// make a builder for updating the news entry
+  NewsEntryUpdateBuilder updateBuilder() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._newsEntryUpdateBuilder(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    final tmp7 = tmp1.arg4;
+    if (tmp3 == 0) {
+      debugAllocation("handle error", tmp4, tmp5);
+      final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      final tmp3_0 = utf8.decode(
+        tmp4_0.asTypedList(tmp5),
+        allowMalformed: true,
+      );
+      if (tmp5 > 0) {
+        final ffi.Pointer<ffi.Void> tmp4_0;
+        tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+        _api.__deallocate(tmp4_0, tmp6, 1);
+      }
+      throw tmp3_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_NewsEntryUpdateBuilder");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp2 = NewsEntryUpdateBuilder._(_api, tmp7_1);
+    return tmp2;
+  }
+
   /// whether or not this user can redact this item
   Future<bool> canRedact() {
     var tmp0 = 0;
@@ -40943,7 +40996,25 @@ class NewsEntryDraft {
     tmp0 = _box.borrow();
     tmp2 = tmp1;
     tmp4 = tmp3;
-    _api._newsEntryDraftSwapSlides(tmp0, tmp2, tmp4);
+    final tmp5 = _api._newsEntryDraftSwapSlides(tmp0, tmp2, tmp4);
+    final tmp7 = tmp5.arg0;
+    final tmp8 = tmp5.arg1;
+    final tmp9 = tmp5.arg2;
+    final tmp10 = tmp5.arg3;
+    if (tmp7 == 0) {
+      debugAllocation("handle error", tmp8, tmp9);
+      final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+      final tmp7_0 = utf8.decode(
+        tmp8_0.asTypedList(tmp9),
+        allowMalformed: true,
+      );
+      if (tmp9 > 0) {
+        final ffi.Pointer<ffi.Void> tmp8_0;
+        tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+        _api.__deallocate(tmp8_0, tmp10, 1);
+      }
+      throw tmp7_0;
+    }
     return;
   }
 
@@ -41030,7 +41101,25 @@ class NewsEntryUpdateBuilder {
     tmp0 = _box.borrow();
     tmp2 = tmp1;
     tmp4 = tmp3;
-    _api._newsEntryUpdateBuilderSwapSlides(tmp0, tmp2, tmp4);
+    final tmp5 = _api._newsEntryUpdateBuilderSwapSlides(tmp0, tmp2, tmp4);
+    final tmp7 = tmp5.arg0;
+    final tmp8 = tmp5.arg1;
+    final tmp9 = tmp5.arg2;
+    final tmp10 = tmp5.arg3;
+    if (tmp7 == 0) {
+      debugAllocation("handle error", tmp8, tmp9);
+      final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+      final tmp7_0 = utf8.decode(
+        tmp8_0.asTypedList(tmp9),
+        allowMalformed: true,
+      );
+      if (tmp9 > 0) {
+        final ffi.Pointer<ffi.Void> tmp8_0;
+        tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+        _api.__deallocate(tmp8_0, tmp10, 1);
+      }
+      throw tmp7_0;
+    }
     return;
   }
 
@@ -41340,6 +41429,37 @@ class Story {
     return tmp2;
   }
 
+  /// make a builder for updating the story
+  StoryUpdateBuilder updateBuilder() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._storyUpdateBuilder(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    final tmp7 = tmp1.arg4;
+    if (tmp3 == 0) {
+      debugAllocation("handle error", tmp4, tmp5);
+      final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      final tmp3_0 = utf8.decode(
+        tmp4_0.asTypedList(tmp5),
+        allowMalformed: true,
+      );
+      if (tmp5 > 0) {
+        final ffi.Pointer<ffi.Void> tmp4_0;
+        tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+        _api.__deallocate(tmp4_0, tmp6, 1);
+      }
+      throw tmp3_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_StoryUpdateBuilder");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp2 = StoryUpdateBuilder._(_api, tmp7_1);
+    return tmp2;
+  }
+
   /// whether or not this user can redact this item
   Future<bool> canRedact() {
     var tmp0 = 0;
@@ -41425,7 +41545,25 @@ class StoryDraft {
     tmp0 = _box.borrow();
     tmp2 = tmp1;
     tmp4 = tmp3;
-    _api._storyDraftSwapSlides(tmp0, tmp2, tmp4);
+    final tmp5 = _api._storyDraftSwapSlides(tmp0, tmp2, tmp4);
+    final tmp7 = tmp5.arg0;
+    final tmp8 = tmp5.arg1;
+    final tmp9 = tmp5.arg2;
+    final tmp10 = tmp5.arg3;
+    if (tmp7 == 0) {
+      debugAllocation("handle error", tmp8, tmp9);
+      final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+      final tmp7_0 = utf8.decode(
+        tmp8_0.asTypedList(tmp9),
+        allowMalformed: true,
+      );
+      if (tmp9 > 0) {
+        final ffi.Pointer<ffi.Void> tmp8_0;
+        tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+        _api.__deallocate(tmp8_0, tmp10, 1);
+      }
+      throw tmp7_0;
+    }
     return;
   }
 
@@ -41512,7 +41650,25 @@ class StoryUpdateBuilder {
     tmp0 = _box.borrow();
     tmp2 = tmp1;
     tmp4 = tmp3;
-    _api._storyUpdateBuilderSwapSlides(tmp0, tmp2, tmp4);
+    final tmp5 = _api._storyUpdateBuilderSwapSlides(tmp0, tmp2, tmp4);
+    final tmp7 = tmp5.arg0;
+    final tmp8 = tmp5.arg1;
+    final tmp9 = tmp5.arg2;
+    final tmp10 = tmp5.arg3;
+    if (tmp7 == 0) {
+      debugAllocation("handle error", tmp8, tmp9);
+      final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+      final tmp7_0 = utf8.decode(
+        tmp8_0.asTypedList(tmp9),
+        allowMalformed: true,
+      );
+      if (tmp9 > 0) {
+        final ffi.Pointer<ffi.Void> tmp8_0;
+        tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+        _api.__deallocate(tmp8_0, tmp10, 1);
+      }
+      throw tmp7_0;
+    }
     return;
   }
 
@@ -50818,7 +50974,7 @@ class MsgDraft {
   MsgDraft._(this._api, this._box);
 
   /// add a user mention
-  MsgDraft addMention(String userId) {
+  void addMention(String userId) {
     final tmp1 = userId;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -50838,7 +50994,6 @@ class MsgDraft {
     final tmp8 = tmp5.arg1;
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
-    final tmp11 = tmp5.arg4;
     if (tmp7 == 0) {
       debugAllocation("handle error", tmp8, tmp9);
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
@@ -50853,15 +51008,11 @@ class MsgDraft {
       }
       throw tmp7_0;
     }
-    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_MsgDraft");
-    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
-    final tmp6 = MsgDraft._(_api, tmp11_1);
-    return tmp6;
+    return;
   }
 
   /// add a ref details
-  MsgDraft addRefDetails(RefDetails details) {
+  void addRefDetails(RefDetails details) {
     final tmp1 = details;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -50872,7 +51023,6 @@ class MsgDraft {
     final tmp6 = tmp3.arg1;
     final tmp7 = tmp3.arg2;
     final tmp8 = tmp3.arg3;
-    final tmp9 = tmp3.arg4;
     if (tmp5 == 0) {
       debugAllocation("handle error", tmp6, tmp7);
       final ffi.Pointer<ffi.Uint8> tmp6_0 = ffi.Pointer.fromAddress(tmp6);
@@ -50887,15 +51037,11 @@ class MsgDraft {
       }
       throw tmp5_0;
     }
-    final ffi.Pointer<ffi.Void> tmp9_0 = ffi.Pointer.fromAddress(tmp9);
-    final tmp9_1 = _Box(_api, tmp9_0, "drop_box_MsgDraft");
-    tmp9_1._finalizer = _api._registerFinalizer(tmp9_1);
-    final tmp4 = MsgDraft._(_api, tmp9_1);
-    return tmp4;
+    return;
   }
 
   /// add a url preview
-  MsgDraft addUrlPreview(LocalUrlPreview details) {
+  void addUrlPreview(LocalUrlPreview details) {
     final tmp1 = details;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -50906,7 +51052,6 @@ class MsgDraft {
     final tmp6 = tmp3.arg1;
     final tmp7 = tmp3.arg2;
     final tmp8 = tmp3.arg3;
-    final tmp9 = tmp3.arg4;
     if (tmp5 == 0) {
       debugAllocation("handle error", tmp6, tmp7);
       final ffi.Pointer<ffi.Uint8> tmp6_0 = ffi.Pointer.fromAddress(tmp6);
@@ -50921,15 +51066,11 @@ class MsgDraft {
       }
       throw tmp5_0;
     }
-    final ffi.Pointer<ffi.Void> tmp9_0 = ffi.Pointer.fromAddress(tmp9);
-    final tmp9_1 = _Box(_api, tmp9_0, "drop_box_MsgDraft");
-    tmp9_1._finalizer = _api._registerFinalizer(tmp9_1);
-    final tmp4 = MsgDraft._(_api, tmp9_1);
-    return tmp4;
+    return;
   }
 
   /// whether to mention the entire room
-  MsgDraft addRoomMention(bool mention) {
+  void addRoomMention(bool mention) {
     final tmp1 = mention;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -50940,7 +51081,6 @@ class MsgDraft {
     final tmp6 = tmp3.arg1;
     final tmp7 = tmp3.arg2;
     final tmp8 = tmp3.arg3;
-    final tmp9 = tmp3.arg4;
     if (tmp5 == 0) {
       debugAllocation("handle error", tmp6, tmp7);
       final ffi.Pointer<ffi.Uint8> tmp6_0 = ffi.Pointer.fromAddress(tmp6);
@@ -50955,104 +51095,55 @@ class MsgDraft {
       }
       throw tmp5_0;
     }
-    final ffi.Pointer<ffi.Void> tmp9_0 = ffi.Pointer.fromAddress(tmp9);
-    final tmp9_1 = _Box(_api, tmp9_0, "drop_box_MsgDraft");
-    tmp9_1._finalizer = _api._registerFinalizer(tmp9_1);
-    final tmp4 = MsgDraft._(_api, tmp9_1);
-    return tmp4;
+    return;
   }
 
   /// available for only image/audio/video/file
-  MsgDraft mimetype(String value) {
-    final tmp1 = value;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp4 = 0;
-    tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    final tmp5 = _api._msgDraftMimetype(tmp0, tmp2, tmp3, tmp4);
-    final tmp7 = tmp5;
-    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_MsgDraft");
-    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 = MsgDraft._(_api, tmp7_1);
-    return tmp6;
-  }
-
-  /// available for only image/audio/video/file
-  MsgDraft size(int value) {
+  void size(int value) {
     final tmp1 = value;
     var tmp0 = 0;
     var tmp2 = 0;
     tmp0 = _box.borrow();
     tmp2 = tmp1;
-    final tmp3 = _api._msgDraftSize(tmp0, tmp2);
-    final tmp5 = tmp3;
-    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
-    final tmp5_1 = _Box(_api, tmp5_0, "drop_box_MsgDraft");
-    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
-    final tmp4 = MsgDraft._(_api, tmp5_1);
-    return tmp4;
+    _api._msgDraftSize(tmp0, tmp2);
+    return;
   }
 
   /// available for only image/video
-  MsgDraft width(int value) {
+  void width(int value) {
     final tmp1 = value;
     var tmp0 = 0;
     var tmp2 = 0;
     tmp0 = _box.borrow();
     tmp2 = tmp1;
-    final tmp3 = _api._msgDraftWidth(tmp0, tmp2);
-    final tmp5 = tmp3;
-    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
-    final tmp5_1 = _Box(_api, tmp5_0, "drop_box_MsgDraft");
-    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
-    final tmp4 = MsgDraft._(_api, tmp5_1);
-    return tmp4;
+    _api._msgDraftWidth(tmp0, tmp2);
+    return;
   }
 
   /// available for only image/video
-  MsgDraft height(int value) {
+  void height(int value) {
     final tmp1 = value;
     var tmp0 = 0;
     var tmp2 = 0;
     tmp0 = _box.borrow();
     tmp2 = tmp1;
-    final tmp3 = _api._msgDraftHeight(tmp0, tmp2);
-    final tmp5 = tmp3;
-    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
-    final tmp5_1 = _Box(_api, tmp5_0, "drop_box_MsgDraft");
-    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
-    final tmp4 = MsgDraft._(_api, tmp5_1);
-    return tmp4;
+    _api._msgDraftHeight(tmp0, tmp2);
+    return;
   }
 
   /// available for only audio/video
-  MsgDraft duration(int value) {
+  void duration(int value) {
     final tmp1 = value;
     var tmp0 = 0;
     var tmp2 = 0;
     tmp0 = _box.borrow();
     tmp2 = tmp1;
-    final tmp3 = _api._msgDraftDuration(tmp0, tmp2);
-    final tmp5 = tmp3;
-    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
-    final tmp5_1 = _Box(_api, tmp5_0, "drop_box_MsgDraft");
-    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
-    final tmp4 = MsgDraft._(_api, tmp5_1);
-    return tmp4;
+    _api._msgDraftDuration(tmp0, tmp2);
+    return;
   }
 
   /// available for only image/video
-  MsgDraft blurhash(String value) {
+  void blurhash(String value) {
     final tmp1 = value;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -51067,20 +51158,15 @@ class MsgDraft {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    final tmp5 = _api._msgDraftBlurhash(tmp0, tmp2, tmp3, tmp4);
-    final tmp7 = tmp5;
-    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_MsgDraft");
-    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 = MsgDraft._(_api, tmp7_1);
-    return tmp6;
+    _api._msgDraftBlurhash(tmp0, tmp2, tmp3, tmp4);
+    return;
   }
 
   /// Provide the file system path to a static thumbnail
   /// for this media to be read and shared upon sending
   ///
   /// available for only image/video/file/location
-  MsgDraft thumbnailImage(String source, String mimetype) {
+  void thumbnailImage(String source, String mimetype) {
     final tmp1 = source;
     final tmp5 = mimetype;
     var tmp0 = 0;
@@ -51107,25 +51193,12 @@ class MsgDraft {
     tmp6_1.setAll(0, tmp5_0);
     tmp6 = tmp6_0.address;
     tmp8 = tmp7;
-    final tmp9 = _api._msgDraftThumbnailImage(
-      tmp0,
-      tmp2,
-      tmp3,
-      tmp4,
-      tmp6,
-      tmp7,
-      tmp8,
-    );
-    final tmp11 = tmp9;
-    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_MsgDraft");
-    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
-    final tmp10 = MsgDraft._(_api, tmp11_1);
-    return tmp10;
+    _api._msgDraftThumbnailImage(tmp0, tmp2, tmp3, tmp4, tmp6, tmp7, tmp8);
+    return;
   }
 
   /// available for only image/video/file/location
-  MsgDraft thumbnailInfo(int? width, int? height, int? size) {
+  void thumbnailInfo(int? width, int? height, int? size) {
     final tmp1 = width;
     final tmp5 = height;
     final tmp9 = size;
@@ -51158,25 +51231,12 @@ class MsgDraft {
       final tmp11 = tmp9;
       tmp12 = tmp11;
     }
-    final tmp13 = _api._msgDraftThumbnailInfo(
-      tmp0,
-      tmp2,
-      tmp4,
-      tmp6,
-      tmp8,
-      tmp10,
-      tmp12,
-    );
-    final tmp15 = tmp13;
-    final ffi.Pointer<ffi.Void> tmp15_0 = ffi.Pointer.fromAddress(tmp15);
-    final tmp15_1 = _Box(_api, tmp15_0, "drop_box_MsgDraft");
-    tmp15_1._finalizer = _api._registerFinalizer(tmp15_1);
-    final tmp14 = MsgDraft._(_api, tmp15_1);
-    return tmp14;
+    _api._msgDraftThumbnailInfo(tmp0, tmp2, tmp4, tmp6, tmp8, tmp10, tmp12);
+    return;
   }
 
   /// available for only file
-  MsgDraft filename(String value) {
+  void filename(String value) {
     final tmp1 = value;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -51191,39 +51251,8 @@ class MsgDraft {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    final tmp5 = _api._msgDraftFilename(tmp0, tmp2, tmp3, tmp4);
-    final tmp7 = tmp5;
-    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_MsgDraft");
-    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 = MsgDraft._(_api, tmp7_1);
-    return tmp6;
-  }
-
-  /// available for only location
-  /// geo_uri follows RFC 5870, for example `geo:51.5074,-0.1278`
-  MsgDraft geoUri(String value) {
-    final tmp1 = value;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp4 = 0;
-    tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    final tmp5 = _api._msgDraftGeoUri(tmp0, tmp2, tmp3, tmp4);
-    final tmp7 = tmp5;
-    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_MsgDraft");
-    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 = MsgDraft._(_api, tmp7_1);
-    return tmp6;
+    _api._msgDraftFilename(tmp0, tmp2, tmp3, tmp4);
+    return;
   }
 
   /// convert this into a NewsSlideDraft;
@@ -70999,6 +71028,41 @@ class _NewsEntryGetSlideReturn extends ffi.Struct {
   external int arg1;
 }
 
+class _NewsEntryUpdateBuilderReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
+}
+
+class _NewsEntryDraftSwapSlidesReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _NewsEntryUpdateBuilderSwapSlidesReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
 class _StorySlideTypeStrReturn extends ffi.Struct {
   @ffi.IntPtr()
   external int arg0;
@@ -71029,6 +71093,41 @@ class _StoryGetSlideReturn extends ffi.Struct {
   external int arg0;
   @ffi.IntPtr()
   external int arg1;
+}
+
+class _StoryUpdateBuilderReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
+}
+
+class _StoryDraftSwapSlidesReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _StoryUpdateBuilderSwapSlidesReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
 }
 
 class _ActerPinTitleReturn extends ffi.Struct {
@@ -72941,8 +73040,6 @@ class _MsgDraftAddMentionReturn extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
-  @ffi.IntPtr()
-  external int arg4;
 }
 
 class _MsgDraftAddRefDetailsReturn extends ffi.Struct {
@@ -72954,8 +73051,6 @@ class _MsgDraftAddRefDetailsReturn extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
-  @ffi.IntPtr()
-  external int arg4;
 }
 
 class _MsgDraftAddUrlPreviewReturn extends ffi.Struct {
@@ -72967,8 +73062,6 @@ class _MsgDraftAddUrlPreviewReturn extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
-  @ffi.IntPtr()
-  external int arg4;
 }
 
 class _MsgDraftAddRoomMentionReturn extends ffi.Struct {
@@ -72980,8 +73073,6 @@ class _MsgDraftAddRoomMentionReturn extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
-  @ffi.IntPtr()
-  external int arg4;
 }
 
 class _ConvoTopicReturn extends ffi.Struct {

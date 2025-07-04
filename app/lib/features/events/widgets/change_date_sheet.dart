@@ -333,14 +333,11 @@ class _ChangeDateSheetState extends ConsumerState<ChangeDateSheet> {
         _selectedEndTime,
       );
 
-      // Convert UTC time zone
-      final utcStartDateTime = startDateTime.toUtc().toIso8601String();
-      final utcEndDateTime = endDateTime.toUtc().toIso8601String();
-
       // Updating calender event
-      final updateBuilder = calendarEvent.updateBuilder();
-      updateBuilder.utcStartFromRfc3339(utcStartDateTime);
-      updateBuilder.utcEndFromRfc3339(utcEndDateTime);
+      final updateBuilder =
+          calendarEvent.updateBuilder()
+            ..utcStartFromRfc3339(startDateTime.toUtc().toIso8601String())
+            ..utcEndFromRfc3339(endDateTime.toUtc().toIso8601String());
       final eventId = await updateBuilder.send();
       _log.info('Calendar Event updated $eventId');
 

@@ -1,3 +1,4 @@
+import 'package:acter/features/activities/actions/activity_item_click_action.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/containers/activity_individual_action_container_widget.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -12,6 +13,7 @@ class ActivityEventDateChangeItemWidget extends StatelessWidget {
     final activityObject = activity.object();
 
     return ActivityIndividualActionContainerWidget(
+      onTap: () => onTapActivityItem(context, activityObject),
       target: activityObject?.title() ?? '',
       actionIcon: Icons.access_time,
       actionIconColor: Colors.white,

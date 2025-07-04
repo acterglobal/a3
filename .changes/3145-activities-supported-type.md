@@ -1,1 +1,0 @@
-- [Fix] : Display activities on the activity screen only for spaces that have activities with supported types.

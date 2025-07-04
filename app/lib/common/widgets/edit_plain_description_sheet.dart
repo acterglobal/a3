@@ -8,10 +8,20 @@ void showEditPlainDescriptionBottomSheet({
   required Function(String) onSave,
 }) {
   showModalBottomSheet(
-    showDragHandle: true,
+    showDragHandle: false,
+    isDismissible: false,
+    enableDrag: false,
     useSafeArea: true,
     context: context,
-    isDismissible: true,
+    isScrollControlled: true,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.only(
+        topLeft: Radius.circular(16),
+        topRight: Radius.circular(16),
+        bottomLeft: Radius.circular(0),
+        bottomRight: Radius.circular(0),
+      ),
+    ),
     builder: (context) {
       return EditPlainDescriptionSheet(
         descriptionValue: descriptionValue,
@@ -50,10 +60,10 @@ class _EditPlainDescriptionSheetState extends State<EditPlainDescriptionSheet> {
     final lang = L10n.of(context);
     return SingleChildScrollView(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
         child: Column(
           children: [
-            Text(lang.editDescription),
+            Text(lang.editDescription,style: Theme.of(context).textTheme.titleMedium,),
             const SizedBox(height: 20),
             TextFormField(
               keyboardType: TextInputType.multiline,
@@ -62,7 +72,7 @@ class _EditPlainDescriptionSheetState extends State<EditPlainDescriptionSheet> {
               minLines: 4,
               autofocus: true,
               maxLines: 4,
-              decoration: InputDecoration(hintText: lang.description),
+              decoration: InputDecoration(hintText: lang.addDescription),
             ),
             const SizedBox(height: 20),
             Row(

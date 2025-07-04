@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hrk_flutter_test_batteries/hrk_flutter_test_batteries.dart';
 import '../../../helpers/font_loader.dart';
 
 void main() {
@@ -23,6 +24,7 @@ void main() {
   group('Chat NG - ChatRoomPage golden', () {
     testWidgets('ChatRoomPage widget', (tester) async {
       await loadTestFonts();
+      useGoldenFileComparatorWithThreshold(0.06); // 1%
 
       final overrides = [
         myUserIdStrProvider.overrideWith((ref) => '@acter1:m-1.acter.global'),

@@ -1,3 +1,4 @@
+import 'package:acter/features/activities/actions/activity_item_click_action.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/containers/activity_individual_action_container_widget.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -11,16 +12,18 @@ class ActivityCreationItemWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final activityObject = activity.object();
     return ActivityIndividualActionContainerWidget(
+      onTap: () => onTapActivityItem(context, activityObject),
       actionIcon: Icons.add,
       actionIconBgColor: Colors.deepPurple,
       actionIconColor: Colors.white,
       actionTitle:
-          '${L10n.of(context).creation} ${activity.object()?.typeStr() ?? ''}',
-      activityObject: activity.object(),
+          '${L10n.of(context).creation} ${activityObject?.typeStr() ?? ''}',
+      activityObject: activityObject,
       userId: activity.senderIdStr(),
       roomId: activity.roomIdStr(),
-      target: activity.object()?.title() ?? '',
+      target: activityObject?.title() ?? '',
       originServerTs: activity.originServerTs(),
     );
   }

@@ -169,10 +169,19 @@ async fn edit_image_msg() -> Result<()> {
     while i > 0 {
         if let Some(diff) = stream.next().now_or_never().flatten() {
             match diff.action().as_str() {
-                "PushBack" | "Set" => {
+                "PushBack" => {
                     let value = diff
                         .value()
                         .expect("diff pushback action should have valid value");
+                    if let Some((event_id, body)) = match_image_msg(&value, mimetype, false) {
+                        assert_eq!(body, jpg_name, "msg body should be filename");
+                        sent_event_id = Some(event_id);
+                    }
+                }
+                "Set" => {
+                    let value = diff
+                        .value()
+                        .expect("diff set action should have valid value");
                     if let Some((event_id, body)) = match_image_msg(&value, mimetype, false) {
                         assert_eq!(body, jpg_name, "msg body should be filename");
                         sent_event_id = Some(event_id);

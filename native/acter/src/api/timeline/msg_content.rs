@@ -31,17 +31,20 @@ pub enum MsgContent {
         body: String,
         source: SdkMediaSource,
         info: Option<ImageInfo>,
+        filename: Option<String>,
     },
     Audio {
         body: String,
         source: SdkMediaSource,
         info: Option<AudioInfo>,
         audio: Option<UnstableAudioDetailsContentBlock>,
+        filename: Option<String>,
     },
     Video {
         body: String,
         source: SdkMediaSource,
         info: Option<VideoInfo>,
+        filename: Option<String>,
     },
     File {
         body: String,
@@ -118,6 +121,7 @@ impl From<&ImageMessageEventContent> for MsgContent {
             body: value.body.clone(),
             source: value.source.clone(),
             info: value.info.clone().map(Box::into_inner),
+            filename: value.filename.clone(),
         }
     }
 }
@@ -129,6 +133,7 @@ impl From<&AudioMessageEventContent> for MsgContent {
             source: value.source.clone(),
             info: value.info.clone().map(Box::into_inner),
             audio: value.audio.clone(),
+            filename: value.filename.clone(),
         }
     }
 }
@@ -139,6 +144,7 @@ impl From<&VideoMessageEventContent> for MsgContent {
             body: value.body.clone(),
             source: value.source.clone(),
             info: value.info.clone().map(Box::into_inner),
+            filename: value.filename.clone(),
         }
     }
 }
@@ -205,6 +211,7 @@ impl TryFrom<&AttachmentContent> for MsgContent {
                     body: content.body.clone(),
                     source: content.source.clone(),
                     info: content.info.clone().map(Box::into_inner),
+                    filename: content.filename.clone(),
                 })
             }
             AttachmentContent::Audio(content)
@@ -214,6 +221,7 @@ impl TryFrom<&AttachmentContent> for MsgContent {
                     source: content.source.clone(),
                     info: content.info.clone().map(Box::into_inner),
                     audio: content.audio.clone(),
+                    filename: content.filename.clone(),
                 })
             }
             AttachmentContent::Video(content)
@@ -222,6 +230,7 @@ impl TryFrom<&AttachmentContent> for MsgContent {
                     body: content.body.clone(),
                     source: content.source.clone(),
                     info: content.info.clone().map(Box::into_inner),
+                    filename: content.filename.clone(),
                 })
             }
             AttachmentContent::File(content)
@@ -256,14 +265,6 @@ impl MsgContent {
             body,
             formatted_body: None,
             url_previews: Default::default(),
-        }
-    }
-
-    pub(crate) fn from_image(body: String, source: OwnedMxcUri) -> Self {
-        MsgContent::Image {
-            body,
-            source: SdkMediaSource::Plain(source),
-            info: Some(ImageInfo::new()),
         }
     }
 
@@ -400,6 +401,9 @@ impl MsgContent {
 
     pub fn filename(&self) -> Option<String> {
         match self {
+            MsgContent::Image { filename, .. } => filename.clone(),
+            MsgContent::Audio { filename, .. } => filename.clone(),
+            MsgContent::Video { filename, .. } => filename.clone(),
             MsgContent::File { filename, .. } => filename.clone(),
             _ => None,
         }

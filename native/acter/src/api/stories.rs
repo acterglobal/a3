@@ -461,8 +461,9 @@ pub struct StoryDraft {
 }
 
 impl StoryDraft {
-    pub fn add_slide(&mut self, draft: Box<StorySlideDraft>) {
+    pub fn add_slide(&mut self, draft: Box<StorySlideDraft>) -> &mut Self {
         self.slides.push(*draft);
+        self
     }
 
     pub fn slides(&self) -> Vec<StorySlideDraft> {
@@ -524,13 +525,14 @@ pub struct StoryUpdateBuilder {
 }
 
 impl StoryUpdateBuilder {
-    pub fn add_slide(&mut self, draft: Box<StorySlideDraft>) {
+    pub fn add_slide(&mut self, draft: Box<StorySlideDraft>) -> &mut Self {
         if let Some(slides) = self.slides.as_mut() {
             slides.push(*draft);
             self.slides = Some(slides.to_vec());
         } else {
             self.slides = Some(vec![*draft]);
         }
+        self
     }
 
     pub fn swap_slides(&mut self, from: u8, to: u8) -> Result<&mut Self> {

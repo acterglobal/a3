@@ -10,10 +10,20 @@ void showEditTitleBottomSheet({
   required Function(WidgetRef, String) onSave,
 }) {
   showModalBottomSheet(
-    showDragHandle: true,
+    showDragHandle: false,
+    isDismissible: false,
+    enableDrag: false,
     useSafeArea: true,
     context: context,
     isScrollControlled: true,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.only(
+        topLeft: Radius.circular(16),
+        topRight: Radius.circular(16),
+        bottomLeft: Radius.circular(0),
+        bottomRight: Radius.circular(0),
+      ),
+    ),
     builder: (context) {
       return EditTitleSheet(
         bottomSheetTitle: bottomSheetTitle,
@@ -53,7 +63,7 @@ class _EditTitleSheetState extends ConsumerState<EditTitleSheet> {
   Widget build(BuildContext context) {
     final lang = L10n.of(context);
     return Container(
-      padding: MediaQuery.of(context).viewInsets,
+      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -62,7 +72,7 @@ class _EditTitleSheetState extends ConsumerState<EditTitleSheet> {
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.titleMedium,
           ),
-          const SizedBox(height: 40),
+          const SizedBox(height: 20),
           TextFormField(
             keyboardType: TextInputType.text,
             textInputAction: TextInputAction.done,
@@ -97,6 +107,7 @@ class _EditTitleSheetState extends ConsumerState<EditTitleSheet> {
               ),
             ],
           ),
+          const SizedBox(height: 20),
         ],
       ),
     );
