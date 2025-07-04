@@ -3190,5 +3190,7 @@
   "activityUIShowcase": "Activity UI Showcase",
   "@activityUIShowcase": {},
   "showcaseList": "Showcase List",
-  "@showcaseList": {}
+  "@showcaseList": {},
+  "noMoreActivities": "No more activities to load",
+  "@noMoreActivities": {}
 }
