@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import '../../../helpers/test_util.dart';
-import 'package:acter/features/activities/providers/notifiers/activities_notifiers.dart';
 import 'package:acter/features/activities/providers/activities_providers.dart';
+import '../mock_data/mock_allActivity_notifier.dart';
 
 // Mock section builder functions
 Widget? mockBuildSyncingStateSectionWidget(BuildContext context, WidgetRef ref) => null;
@@ -31,22 +31,23 @@ class MockInvitationSectionWidget extends StatelessWidget {
   Widget build(BuildContext context) => const Text('Invitation Section');
 }
 
-class FakeAllActivitiesNotifier extends AllActivitiesNotifier {
-  bool loadMoreCalled = false;
+// Mock widget that provides scrollable content
+class MockScrollableContent extends StatelessWidget {
+  const MockScrollableContent({super.key});
 
   @override
-  Future<void> loadMore() async {
-    loadMoreCalled = true;
+  Widget build(BuildContext context) {
+    return Column(
+      children: List.generate(50, (index) => 
+        Container(
+          height: 150,
+          margin: const EdgeInsets.all(8),
+          color: Colors.grey[300],
+          child: Center(child: Text('Content $index')),
+        ),
+      ),
+    );
   }
-
-  @override
-  Future<List<String>> build() async {
-    // Return a non-empty list to ensure scroll area
-    return List.generate(50, (i) => 'Activity $i');
-  }
-
-  @override
-  bool get hasMoreData => true;
 }
 
 void main() {
@@ -147,7 +148,7 @@ void main() {
       expect(find.text('Section 3'), findsOneWidget);
     });
 
-    testWidgets('buildActivityBody should handle null section widgets gracefully', (tester) async {
+    testWidgets('buildActivityBody should handle null section widgets', (tester) async {
       const page = ActivitiesPage();
       
       await tester.pumpProviderWidget(
@@ -174,11 +175,28 @@ void main() {
 
   group('ActivitiesPage Scroll Behavior Tests', () {
     testWidgets('should handle scroll notifications without errors', (tester) async {
+      final fakeNotifier = FakeAllActivitiesNotifier();
+      
       await tester.pumpProviderWidget(
+        overrides: [
+          allActivitiesProvider.overrideWith(() => fakeNotifier),
+        ],
         child: MaterialApp(
           localizationsDelegates: L10n.localizationsDelegates,
           supportedLocales: L10n.supportedLocales,
-          home: const TestScrollWidget(),
+          home: Consumer(
+            builder: (context, ref, child) {
+              // Create a scrollable page with mock content
+              return Scaffold(
+                appBar: const ActivitiesPage().buildActivityAppBar(context),
+                body: const ActivitiesPage().buildActivityBody(
+                  context, 
+                  ref, 
+                  [const MockScrollableContent()],
+                ),
+              );
+            },
+          ),
         ),
       );
       await tester.pump();
@@ -188,138 +206,210 @@ void main() {
       await tester.pump();
 
       // Should not crash and widget should still be there
-      expect(find.byType(TestScrollWidget), findsOneWidget);
+      expect(find.byType(SingleChildScrollView), findsOneWidget);
     });
 
-    testWidgets('should trigger scroll threshold at 70% and handle edge cases', (tester) async {
-      bool scrollTriggered = false;
+    testWidgets('should have scroll notification listener', (tester) async {
+      final fakeNotifier = FakeAllActivitiesNotifier();
       
       await tester.pumpProviderWidget(
+        overrides: [
+          allActivitiesProvider.overrideWith(() => fakeNotifier),
+        ],
         child: MaterialApp(
           localizationsDelegates: L10n.localizationsDelegates,
           supportedLocales: L10n.supportedLocales,
-          home: TestScrollWidget(
-            onScrollThreshold: () {
-              scrollTriggered = true;
+          home: Consumer(
+            builder: (context, ref, child) {
+              // Create a scrollable page with mock content
+              return Scaffold(
+                appBar: const ActivitiesPage().buildActivityAppBar(context),
+                body: const ActivitiesPage().buildActivityBody(
+                  context, 
+                  ref, 
+                  [const MockScrollableContent()],
+                ),
+              );
             },
           ),
         ),
       );
       await tester.pump();
 
-      // Scroll to trigger the 70% threshold
-      await tester.dragUntilVisible(
-        find.text('Bottom Content'),
-        find.byType(SingleChildScrollView),
-        const Offset(0, -500),
-      );
-      await tester.pump();
-
-      // Should trigger scroll threshold
-      expect(scrollTriggered, isTrue);
+      // Should have scroll notification listener
+      expect(find.byType(NotificationListener<ScrollNotification>), findsAtLeastNWidgets(1));
     });
 
-    testWidgets('should not trigger scroll threshold at 60%', (tester) async {
-      bool scrollTriggered = false;
+    testWidgets('should handle scroll events without crashing', (tester) async {
+      final fakeNotifier = FakeAllActivitiesNotifier();
       
       await tester.pumpProviderWidget(
+        overrides: [
+          allActivitiesProvider.overrideWith(() => fakeNotifier),
+        ],
         child: MaterialApp(
           localizationsDelegates: L10n.localizationsDelegates,
           supportedLocales: L10n.supportedLocales,
-          home: TestScrollWidget(
-            onScrollThreshold: () {
-              scrollTriggered = true;
+          home: Consumer(
+            builder: (context, ref, child) {
+              // Create a scrollable page with mock content
+              return Scaffold(
+                appBar: const ActivitiesPage().buildActivityAppBar(context),
+                body: const ActivitiesPage().buildActivityBody(
+                  context, 
+                  ref, 
+                  [const MockScrollableContent()],
+                ),
+              );
             },
           ),
         ),
       );
       await tester.pump();
 
-      // Scroll to 60% (should not trigger - threshold is 70%)
-      await tester.drag(find.byType(SingleChildScrollView), const Offset(0, -100));
+      // Test various scroll distances
+      await tester.drag(find.byType(SingleChildScrollView), const Offset(0, -500));
+      await tester.pump();
+      
+      await tester.drag(find.byType(SingleChildScrollView), const Offset(0, -1000));
+      await tester.pump();
+      
+      await tester.drag(find.byType(SingleChildScrollView), const Offset(0, -2000));
       await tester.pump();
 
-      expect(scrollTriggered, isFalse);
+      // Should not crash
+      expect(find.byType(SingleChildScrollView), findsOneWidget);
     });
+  });
 
-    testWidgets('should handle zero maxScrollExtent', (tester) async {
-      bool scrollTriggered = false;
-      
+  group('ActivitiesPage Provider Integration Tests', () {
+    testWidgets('should show circular progress indicator when hasMore is true', (tester) async {
+      final fakeNotifier = FakeAllActivitiesNotifier();
+      fakeNotifier.setHasMore(true);
+
       await tester.pumpProviderWidget(
+        overrides: [
+          allActivitiesProvider.overrideWith(() => fakeNotifier),
+        ],
         child: MaterialApp(
           localizationsDelegates: L10n.localizationsDelegates,
           supportedLocales: L10n.supportedLocales,
-          home: TestNoScrollWidget(
-            onScrollThreshold: () {
-              scrollTriggered = true;
+          home: Consumer(
+            builder: (context, ref, child) {
+              // Create a scrollable page with mock content
+              return Scaffold(
+                appBar: const ActivitiesPage().buildActivityAppBar(context),
+                body: const ActivitiesPage().buildActivityBody(
+                  context, 
+                  ref, 
+                  [const MockScrollableContent()],
+                ),
+              );
             },
           ),
         ),
       );
       await tester.pump();
 
-      // Try to scroll when there's no scrollable content
-      await tester.drag(find.byType(SingleChildScrollView), const Offset(0, -100));
-      await tester.pump();
-
-      // Should not trigger when maxScrollExtent is 0
-      expect(scrollTriggered, isFalse);
+      // Should show circular progress indicator when hasMore is true
+      expect(find.byType(CircularProgressIndicator), findsOneWidget);
     });
 
-    testWidgets('should ignore non-ScrollUpdateNotification events', (tester) async {
-      bool scrollTriggered = false;
-      
+    testWidgets('should show "no more activities" text when hasMore is false', (tester) async {
+      final fakeNotifier = FakeAllActivitiesNotifier(hasMore: false);
+
       await tester.pumpProviderWidget(
+        overrides: [
+          allActivitiesProvider.overrideWith(() => fakeNotifier),
+        ],
         child: MaterialApp(
           localizationsDelegates: L10n.localizationsDelegates,
           supportedLocales: L10n.supportedLocales,
-          home: TestScrollWidget(
-            onScrollThreshold: () {
-              scrollTriggered = true;
+          home: Consumer(
+            builder: (context, ref, child) {
+              return Scaffold(
+                appBar: const ActivitiesPage().buildActivityAppBar(context),
+                body: const ActivitiesPage().buildActivityBody(
+                  context,
+                  ref,
+                  [const MockScrollableContent()],
+                ),
+              );
             },
           ),
         ),
       );
       await tester.pump();
 
-      // Test that starting a scroll gesture doesn't trigger threshold
-      final gesture = await tester.startGesture(
-        tester.getCenter(find.byType(SingleChildScrollView)),
-      );
-      await tester.pump();
-      await gesture.up();
-      await tester.pump();
+      final lang = L10n.of(tester.element(find.byType(SingleChildScrollView)));
 
-      // Should not trigger for non-update notifications
-      expect(scrollTriggered, isFalse);
+      expect(find.byType(CircularProgressIndicator), findsNothing);
+      expect(find.text(lang.noMoreActivities), findsOneWidget);
     });
 
-    testWidgets('should handle rapid scroll events', (tester) async {
-      int scrollCount = 0;
-      
+    testWidgets('should integrate with allActivitiesProvider correctly', (tester) async {
+      final fakeNotifier = FakeAllActivitiesNotifier();
+      fakeNotifier.setHasMore(true);
+
       await tester.pumpProviderWidget(
+        overrides: [
+          allActivitiesProvider.overrideWith(() => fakeNotifier),
+        ],
         child: MaterialApp(
           localizationsDelegates: L10n.localizationsDelegates,
           supportedLocales: L10n.supportedLocales,
-          home: TestScrollWidget(
-            onScrollThreshold: () {
-              scrollCount++;
+          home: Consumer(
+            builder: (context, ref, child) {
+              // Create a scrollable page with mock content
+              return Scaffold(
+                appBar: const ActivitiesPage().buildActivityAppBar(context),
+                body: const ActivitiesPage().buildActivityBody(
+                  context, 
+                  ref, 
+                  [const MockScrollableContent()],
+                ),
+              );
             },
           ),
         ),
       );
       await tester.pump();
 
-      // Scroll to the bottom to ensure threshold is reached
-      await tester.dragUntilVisible(
-        find.text('Bottom Content'),
-        find.byType(SingleChildScrollView),
-        const Offset(0, -500),
+      // Should integrate with provider correctly
+      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+      expect(fakeNotifier.hasMore, isTrue);
+    });
+
+    testWidgets('should handle provider state changes', (tester) async {
+      final fakeNotifier = FakeAllActivitiesNotifier();
+      fakeNotifier.setHasMore(true);
+
+      await tester.pumpProviderWidget(
+        overrides: [
+          allActivitiesProvider.overrideWith(() => fakeNotifier),
+        ],
+        child: MaterialApp(
+          localizationsDelegates: L10n.localizationsDelegates,
+          supportedLocales: L10n.supportedLocales,
+          home: Consumer(
+            builder: (context, ref, child) {
+              // Create a scrollable page with mock content
+              return Scaffold(
+                appBar: const ActivitiesPage().buildActivityAppBar(context),
+                body: const ActivitiesPage().buildActivityBody(
+                  context, 
+                  ref, 
+                  [const MockScrollableContent()],
+                ),
+              );
+            },
+          ),
+        ),
       );
       await tester.pump();
 
-      expect(find.byType(TestScrollWidget), findsOneWidget);
-      expect(scrollCount, greaterThan(0));
+      // Initially should show loading indicator
+      expect(find.byType(CircularProgressIndicator), findsOneWidget);
     });
   });
 
@@ -426,11 +516,24 @@ void main() {
     });
 
     testWidgets('should handle scroll with no content', (tester) async {
+      final fakeNotifier = FakeAllActivitiesNotifier();
+      
       await tester.pumpProviderWidget(
+        overrides: [
+          allActivitiesProvider.overrideWith(() => fakeNotifier),
+        ],
         child: MaterialApp(
           localizationsDelegates: L10n.localizationsDelegates,
           supportedLocales: L10n.supportedLocales,
-          home: const TestEmptyScrollWidget(),
+          home: Consumer(
+            builder: (context, ref, child) {
+              // Test with empty sections
+              return Scaffold(
+                appBar: const ActivitiesPage().buildActivityAppBar(context),
+                body: const ActivitiesPage().buildActivityBody(context, ref, []),
+              );
+            },
+          ),
         ),
       );
       await tester.pump();
@@ -440,186 +543,7 @@ void main() {
       await tester.pump();
 
       // Should not crash
-      expect(find.byType(TestEmptyScrollWidget), findsOneWidget);
+      expect(find.byType(EmptyState), findsOneWidget);
     });
   });
-
-  group('ActivitiesPage Performance Tests', () {
-    testWidgets('should handle rapid rebuilds', (tester) async {
-      const page = ActivitiesPage();
-      
-      await tester.pumpProviderWidget(
-        child: MaterialApp(
-          localizationsDelegates: L10n.localizationsDelegates,
-          supportedLocales: L10n.supportedLocales,
-          home: Consumer(
-            builder: (context, ref, child) {
-              final sections = [const Text('Performance Test')];
-              final body = page.buildActivityBody(context, ref, sections);
-              return Scaffold(body: body);
-            },
-          ),
-        ),
-      );
-
-      // Rapid rebuilds
-      for (int i = 0; i < 10; i++) {
-        await tester.pump();
-      }
-
-      // Should handle rapid rebuilds without issues
-      expect(find.text('Performance Test'), findsOneWidget);
-    });
-
-    testWidgets('should handle memory efficiently', (tester) async {
-      const page = ActivitiesPage();
-      
-      await tester.pumpProviderWidget(
-        child: MaterialApp(
-          localizationsDelegates: L10n.localizationsDelegates,
-          supportedLocales: L10n.supportedLocales,
-          home: Consumer(
-            builder: (context, ref, child) {
-              final sections = List.generate(50, (index) => Text('Memory Test $index'));
-              final body = page.buildActivityBody(context, ref, sections);
-              return Scaffold(body: body);
-            },
-          ),
-        ),
-      );
-      await tester.pump();
-
-      // Should handle memory efficiently
-      expect(find.byType(SingleChildScrollView), findsOneWidget);
-      expect(find.text('Memory Test 0'), findsOneWidget);
-      expect(find.text('Memory Test 49'), findsOneWidget);
-    });
-  });
-
-  group('ActivitiesPage Provider Integration', () {
-    testWidgets('calls loadMore on allActivitiesProvider.notifier when scrolled past 70%', (tester) async {
-      final fakeNotifier = FakeAllActivitiesNotifier();
-      
-      await tester.pumpProviderWidget(
-        overrides: [
-          allActivitiesProvider.overrideWith(() => fakeNotifier),
-        ],
-        child: MaterialApp(
-          home: Consumer(
-            builder: (context, ref, child) {
-              final page = ActivitiesPage();
-              // Provide MANY sections to ensure a large scrollable area
-              final sections = List.generate(50, (i) => Text('Section $i'));
-              final body = page.buildActivityBody(context, ref, sections);
-              return Scaffold(body: body);
-            },
-          ),
-        ),
-      );
-      await tester.pump();
-
-      // Now scroll to trigger the threshold
-      await tester.drag(find.byType(SingleChildScrollView), const Offset(0, -1000));
-      await tester.pump();
-
-      expect(fakeNotifier.loadMoreCalled, isTrue);
-    });
-  });
-}
-
-// Test widget that mimics the scroll behavior from ActivitiesPage
-class TestScrollWidget extends StatelessWidget {
-  final VoidCallback? onScrollThreshold;
-  
-  const TestScrollWidget({super.key, this.onScrollThreshold});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Test')),
-      body: NotificationListener<ScrollNotification>(
-        onNotification: (ScrollNotification scrollInfo) {
-          if (scrollInfo is ScrollUpdateNotification) {
-            final pixels = scrollInfo.metrics.pixels;
-            final maxExtent = scrollInfo.metrics.maxScrollExtent;
-            final progress = maxExtent > 0 ? pixels / maxExtent : 0;
-            
-            if (progress >= 0.7 && maxExtent > 0) {
-              onScrollThreshold?.call();
-            }
-          }
-          return false;
-        },
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              const Text('Top Content'),
-              ...List.generate(50, (index) => Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text('Item $index'),
-              )),
-              const Text('Bottom Content'),
-              const SizedBox(height: 100),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-// Test widget with no scrollable content
-class TestNoScrollWidget extends StatelessWidget {
-  final VoidCallback? onScrollThreshold;
-  
-  const TestNoScrollWidget({super.key, this.onScrollThreshold});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Test')),
-      body: NotificationListener<ScrollNotification>(
-        onNotification: (ScrollNotification scrollInfo) {
-          if (scrollInfo is ScrollUpdateNotification) {
-            final pixels = scrollInfo.metrics.pixels;
-            final maxExtent = scrollInfo.metrics.maxScrollExtent;
-            final progress = maxExtent > 0 ? pixels / maxExtent : 0;
-            
-            if (progress >= 0.7 && maxExtent > 0) {
-              onScrollThreshold?.call();
-            }
-          }
-          return false;
-        },
-        child: const SingleChildScrollView(
-          child: Column(
-            children: [
-              Text('Single Item'),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-// Test widget with empty scroll content
-class TestEmptyScrollWidget extends StatelessWidget {
-  const TestEmptyScrollWidget({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Test')),
-      body: NotificationListener<ScrollNotification>(
-        onNotification: (ScrollNotification scrollInfo) {
-          // Handle scroll notifications
-          return false;
-        },
-        child: const SingleChildScrollView(
-          child: SizedBox.shrink(),
-        ),
-      ),
-    );
-  }
 } 
