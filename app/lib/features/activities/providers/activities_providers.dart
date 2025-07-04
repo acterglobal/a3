@@ -115,6 +115,7 @@ final activityDatesProvider = Provider<List<DateTime>>((ref) {
   return uniqueDates.toList()..sort((a, b) => b.compareTo(a));
 });
 
+// Base provider for activities filtered by date
 final activitiesByDateProvider = Provider.family<List<Activity>, DateTime>((ref, date) {
   final activities = ref.watch(allActivitiesByIdProvider).valueOrNull ?? [];
   return activities.where((activity) => getActivityDate(activity.originServerTs()).isAtSameMomentAs(date)).toList();
