@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import '../../../helpers/test_util.dart';
+import 'package:acter/features/activities/providers/notifiers/activities_notifiers.dart';
+import 'package:acter/features/activities/providers/activities_providers.dart';
 
 // Mock section builder functions
 Widget? mockBuildSyncingStateSectionWidget(BuildContext context, WidgetRef ref) => null;
@@ -27,6 +29,24 @@ class MockInvitationSectionWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => const Text('Invitation Section');
+}
+
+class FakeAllActivitiesNotifier extends AllActivitiesNotifier {
+  bool loadMoreCalled = false;
+
+  @override
+  Future<void> loadMore() async {
+    loadMoreCalled = true;
+  }
+
+  @override
+  Future<List<String>> build() async {
+    // Return a non-empty list to ensure scroll area
+    return List.generate(50, (i) => 'Activity $i');
+  }
+
+  @override
+  bool get hasMoreData => true;
 }
 
 void main() {
@@ -473,6 +493,36 @@ void main() {
       expect(find.byType(SingleChildScrollView), findsOneWidget);
       expect(find.text('Memory Test 0'), findsOneWidget);
       expect(find.text('Memory Test 49'), findsOneWidget);
+    });
+  });
+
+  group('ActivitiesPage Provider Integration', () {
+    testWidgets('calls loadMore on allActivitiesProvider.notifier when scrolled past 70%', (tester) async {
+      final fakeNotifier = FakeAllActivitiesNotifier();
+      
+      await tester.pumpProviderWidget(
+        overrides: [
+          allActivitiesProvider.overrideWith(() => fakeNotifier),
+        ],
+        child: MaterialApp(
+          home: Consumer(
+            builder: (context, ref, child) {
+              final page = ActivitiesPage();
+              // Provide MANY sections to ensure a large scrollable area
+              final sections = List.generate(50, (i) => Text('Section $i'));
+              final body = page.buildActivityBody(context, ref, sections);
+              return Scaffold(body: body);
+            },
+          ),
+        ),
+      );
+      await tester.pump();
+
+      // Now scroll to trigger the threshold
+      await tester.drag(find.byType(SingleChildScrollView), const Offset(0, -1000));
+      await tester.pump();
+
+      expect(fakeNotifier.loadMoreCalled, isTrue);
     });
   });
 }
