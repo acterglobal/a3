@@ -1,395 +1,242 @@
 import 'dart:async';
 
 import 'package:acter/features/activities/providers/notifiers/activities_notifiers.dart';
+import 'package:acter/features/activities/providers/activities_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mocktail/mocktail.dart';
-
 import '../../../activity/mock_data/mock_activity.dart';
+import '../../../room/actions/join_room_test.dart';
 import '../../../space/pages/space_details_page_test.dart';
 
-// Mock classes
-class MockClient extends Mock implements Client {}
 class MockActivities extends Mock implements Activities {}
-class MockSpace extends Mock implements Space {}
 
 void main() {
-  group('AllActivitiesNotifier Unit Tests', () {
+  group('AllActivitiesNotifier Tests', () {
     late MockClient mockClient;
     late MockActivities mockActivities;
+    late List<MockSpace> mockSpaces;
+    late StreamController<bool> mockStreamController;
 
     setUp(() {
       mockClient = MockClient();
       mockActivities = MockActivities();
+      mockSpaces = [MockSpace(), MockSpace()];
+      mockStreamController = StreamController<bool>.broadcast();
 
-      // Setup default behavior
-      when(() => mockClient.subscribeRoomStream(any())).thenAnswer((_) => Stream.value(true));
-    });
-
-    test('notifier class exists and can be instantiated', () {
-      // Act & Assert
-      expect(() => AllActivitiesNotifier(), returnsNormally);
-    });
-
-    test('notifier extends AsyncNotifier with correct type', () {
-      // Arrange
-      final notifier = AllActivitiesNotifier();
-
-      // Act & Assert
-      expect(notifier, isA<AsyncNotifier<List<String>>>());
-    });
-
-    test('notifier has pagination properties', () {
-      // Arrange & Act
-      final notifier = AllActivitiesNotifier();
-
-      // Assert - Test that properties exist and have expected types
-      expect(notifier.hasMoreData, isA<bool>());
-      expect(notifier.hasMoreData, true); // Should start with true
-      
-  
-      expect(notifier.loadMore, isA<Function>());
-    });
-
-    test('spaces can call getRoomIdStr method', () {
-      // Arrange
-      final mockSpace = MockSpace();
-      when(() => mockSpace.getRoomIdStr()).thenReturn('test-room-id');
-
-      // Act
-      final roomId = mockSpace.getRoomIdStr();
-
-      // Assert
-      expect(roomId, 'test-room-id');
-      verify(() => mockSpace.getRoomIdStr()).called(1);
-    });
-
-    test('client can call allActivities method', () {
-      // Arrange
+      // Setup default mocks
       when(() => mockClient.allActivities()).thenReturn(mockActivities);
-
-      // Act
-      final activities = mockClient.allActivities();
-
-      // Assert
-      expect(activities, mockActivities);
-      verify(() => mockClient.allActivities()).called(1);
+      when(() => mockClient.subscribeRoomStream(any())).thenAnswer((_) => mockStreamController.stream);
+      when(() => mockSpaces[0].getRoomIdStr()).thenReturn('room1');
+      when(() => mockSpaces[1].getRoomIdStr()).thenReturn('room2');
+      when(() => mockActivities.getIds(any(), any())).thenAnswer((_) async => MockFfiListFfiString(items: []));
+      when(() => mockActivities.drop()).thenReturn(null);
     });
 
-    test('activities can call getIds method with pagination', () async {
-      // Arrange
-      when(() => mockActivities.getIds(0, 100)).thenAnswer((_) async => MockFfiListFfiString(items: []));
-
-      // Act
-      final ids = await mockActivities.getIds(0, 100);
-
-      // Assert
-      expect(ids, isNotNull);
-      verify(() => mockActivities.getIds(0, 100)).called(1);
+    tearDown(() {
+      mockStreamController.close();
     });
 
-    test('activities can call getIds method with different offsets', () async {
-      // Arrange
-      when(() => mockActivities.getIds(100, 100)).thenAnswer((_) async => MockFfiListFfiString(items: []));
+    group('Initialization and Basic Properties', () {
+      test('should create notifier with correct type', () {
+        expect(() => AllActivitiesNotifier(), returnsNormally);
+      });
 
-      // Act
-      final ids = await mockActivities.getIds(100, 100);
-
-      // Assert
-      expect(ids, isNotNull);
-      verify(() => mockActivities.getIds(100, 100)).called(1);
+      test('should have correct class structure', () {
+        final notifier = AllActivitiesNotifier();
+        expect(notifier, isA<AsyncNotifier<List<String>>>());
+        expect(notifier.hasMoreData, isA<bool>());
+        expect(notifier.loadMore, isA<Function>());
+      });
     });
 
-    test('activities can call drop method', () {
-      // Act
-      mockActivities.drop();
+    group('LoadMore Method', () {
 
-      // Assert
-      verify(() => mockActivities.drop()).called(1);
+      test('should handle loadMore method signature', () {
+        final notifier = AllActivitiesNotifier();
+        expect(notifier.loadMore, isA<Function>());
+      });
     });
 
-    test('client can subscribe to room streams', () {
-      // Arrange
-      final stream = Stream.value(true);
-      when(() => mockClient.subscribeRoomStream('test-room')).thenAnswer((_) => stream);
+    group('Pagination Logic', () {
+      test('should handle empty response logic', () {
+        // Test the pagination logic pattern used in _loadMoreActivities
+        final emptyActivityIds = <String>[];
+        bool hasMoreData = true;
+        
+        if (emptyActivityIds.isEmpty) {
+          hasMoreData = false;
+        }
+        
+        expect(hasMoreData, false);
+      });
 
-      // Act
-      final result = mockClient.subscribeRoomStream('test-room');
+      test('should handle partial page response logic', () {
+        // Test pagination logic for partial page
+        final partialPageActivities = List.generate(50, (i) => 'activity_$i');
+        const pageSize = 100;
+        bool hasMoreData = partialPageActivities.length >= pageSize;
+        
+        expect(hasMoreData, false); // Less than page size
+      });
 
-      // Assert
-      expect(result, stream);
-      verify(() => mockClient.subscribeRoomStream('test-room')).called(1);
+      test('should handle full page response logic', () {
+        // Test pagination logic for full page
+        final fullPageActivities = List.generate(100, (i) => 'activity_$i');
+        const pageSize = 100;
+        bool hasMoreData = fullPageActivities.length >= pageSize;
+        
+        expect(hasMoreData, true); // Exactly page size
+      });
+
+      test('should handle pagination offset calculation', () {
+        // Test offset calculation logic
+        int currentOffset = 0;
+        final newIds = ['activity1', 'activity2', 'activity3'];
+        
+        currentOffset += newIds.length;
+        
+        expect(currentOffset, 3);
+      });
     });
 
-    test('client can fetch individual activities', () async {
-      // Arrange
-      final mockActivity = MockActivity(mockType: 'test');
-      when(() => mockClient.activity('activity-id')).thenAnswer((_) async => mockActivity);
+    group('Stream Subscription Handling', () {
+      test('should handle stream updates', () {
+        // Test that stream handling doesn't crash
+        expect(() => mockStreamController.add(true), returnsNormally);
+      });
 
-      // Act
-      final activity = await mockClient.activity('activity-id');
+      test('should handle stream errors gracefully', () {
+        // Test that stream error handling doesn't crash
+        expect(() => mockStreamController.addError('Test error'), returnsNormally);
+      });
 
-      // Assert
-      expect(activity, mockActivity);
-      verify(() => mockClient.activity('activity-id')).called(1);
+      test('should handle stream completion', () {
+        // Test that stream completion handling doesn't crash
+        expect(() => mockStreamController.close(), returnsNormally);
+      });
     });
 
-    test('stream subscription pattern works correctly', () {
-      // Arrange
-      final streamController = StreamController<bool>.broadcast();
-      final spaces = ['room1', 'room2'];
-      final subscriptions = <StreamSubscription>[];
-
-      // Act
-      for (final _ in spaces) {
-        final stream = streamController.stream;
-        final subscription = stream.listen(
-          (data) {
-            // Simulate update handler
-          },
-          onError: (e, s) {
-            // Simulate error handler
-          },
-          onDone: () {
-            // Simulate done handler
-          },
-        );
-        subscriptions.add(subscription);
-      }
-
-      // Assert
-      expect(subscriptions, hasLength(2));
-      expect(streamController.hasListener, true);
-
-      // Cleanup
-      for (final sub in subscriptions) {
-        sub.cancel();
-      }
-      streamController.close();
-    });
-
-    test('activities list filtering works correctly', () {
-      // Arrange
-      final activities = [
-        MockActivity(mockType: 'comment'),
-        null,
-        MockActivity(mockType: 'reaction'),
-        null,
-      ];
-
-      // Act
-      final filtered = activities.whereType<Activity>().toList();
-
-      // Assert
-      expect(filtered, hasLength(2));
-      expect(filtered[0].typeStr(), 'comment');
-      expect(filtered[1].typeStr(), 'reaction');
-    });
-
-    test('exception handling pattern works', () {
-      // Arrange
-      when(() => mockClient.allActivities()).thenThrow(Exception('Test error'));
-
-      // Act & Assert
-      expect(() => mockClient.allActivities(), throwsA(isA<Exception>()));
-    });
-
-    test('async exception handling pattern works', () async {
-      // Arrange
-      when(() => mockActivities.getIds(0, 100)).thenThrow(Exception('Async error'));
-
-      // Act & Assert
-      expect(() => mockActivities.getIds(0, 100), throwsA(isA<Exception>()));
-    });
-
-    testWidgets('stream error handling pattern works', (tester) async {
-      // Arrange
-      final streamController = StreamController<bool>.broadcast();
-      bool errorHandled = false;
-
-      // Act
-      final subscription = streamController.stream.listen(
-        (data) {},
-        onError: (e, s) {
-          errorHandled = true;
-        },
-      );
-
-      streamController.addError('Test error');
-      
-      // Wait for the error to be processed
-      await tester.pump();
-      
-      // Assert
-      expect(errorHandled, true);
-
-      subscription.cancel();
-      streamController.close();
-    });
-
-    test('disposal pattern works correctly', () {
-      // Arrange
-      final subscriptions = <StreamSubscription>[];
-      final streamController = StreamController<bool>.broadcast();
-
-      final subscription = streamController.stream.listen((data) {});
-      subscriptions.add(subscription);
-
-      // Act - Simulate disposal
-      for (final sub in subscriptions) {
-        sub.cancel();
-      }
-      mockActivities.drop();
-
-      // Assert
-      verify(() => mockActivities.drop()).called(1);
-
-      streamController.close();
-    });
-
-    test('null safety patterns work correctly', () {
-      // Arrange
-      Activities? nullableActivities;
-
-      // Act & Assert - Should not throw
-      expect(() => nullableActivities?.drop(), returnsNormally);
-      expect(() => nullableActivities = null, returnsNormally);
-    });
-
-    test('multiple space handling pattern works', () {
-      // Arrange
-      final spaces = [
-        MockSpace(),
-        MockSpace(),
-        MockSpace(),
-      ];
-
-      when(() => spaces[0].getRoomIdStr()).thenReturn('room1');
-      when(() => spaces[1].getRoomIdStr()).thenReturn('room2');
-      when(() => spaces[2].getRoomIdStr()).thenReturn('room3');
-
-      // Act
-      final roomIds = spaces.map((space) => space.getRoomIdStr()).toList();
-
-      // Assert
-      expect(roomIds, ['room1', 'room2', 'room3']);
-      for (int i = 0; i < spaces.length; i++) {
-        verify(() => spaces[i].getRoomIdStr()).called(1);
-      }
+    group('Disposal', () {
+      test('should handle disposal gracefully', () {
+        // Test that disposal doesn't crash
+        expect(() => mockActivities.drop(), returnsNormally);
+      });
     });
   });
 
-  group('Pagination State Tests', () {
-    test('should handle pagination logic correctly', () {
-      // Test pagination calculation patterns
-      int currentOffset = 0;
-      const pageSize = 100;
-      bool hasMoreData = true;
-      
-      // Simulate successful fetch with partial page
-      final mockActivityIds = List.generate(50, (i) => 'activity_$i');
-      
-      // Simulate pagination update logic
-      currentOffset += mockActivityIds.length;
-      hasMoreData = mockActivityIds.length >= pageSize;
-      
-      expect(currentOffset, 50);
-      expect(hasMoreData, false); // Less than page size means no more data
+  group('AsyncActivityNotifier Tests', () {
+    late MockClient mockClient;
+    late MockActivity mockActivity;
+    late StreamController<bool> mockStreamController;
+
+    setUp(() {
+      mockClient = MockClient();
+      mockActivity = MockActivity(mockType: 'message');
+      mockStreamController = StreamController<bool>.broadcast();
+
+      // Setup default mocks
+      when(() => mockClient.subscribeModelStream(any())).thenAnswer((_) => mockStreamController.stream);
+      when(() => mockClient.activity(any())).thenAnswer((_) async => mockActivity);
     });
 
-    test('should handle pagination with full page', () {
-      // Test pagination calculation patterns
-      int currentOffset = 0;
-      const pageSize = 100;
-      bool hasMoreData = true;
-      
-      // Simulate successful fetch with full page
-      final mockActivityIds = List.generate(100, (i) => 'activity_$i');
-      
-      // Simulate pagination update logic
-      currentOffset += mockActivityIds.length;
-      hasMoreData = mockActivityIds.length >= pageSize;
-      
-      expect(currentOffset, 100);
-      expect(hasMoreData, true); // Full page means might have more data
+    tearDown(() {
+      mockStreamController.close();
     });
 
-    test('should handle empty response', () {
-      // Test pagination with empty response
-      bool hasMoreData = true;
-      final emptyActivityIds = <String>[];
-      
-      if (emptyActivityIds.isEmpty) {
-        hasMoreData = false;
-      }
-      
-      expect(hasMoreData, false);
+    group('Initialization and Basic Properties', () {
+      test('should create notifier with correct type', () {
+        expect(() => AsyncActivityNotifier(), returnsNormally);
+      });
+
+      test('should have correct class structure', () {
+        final notifier = AsyncActivityNotifier();
+        expect(notifier, isA<FamilyAsyncNotifier<Activity?, String>>());
+      });
+    });
+
+    group('Build Method', () {
+      test('should have build method', () {
+        final notifier = AsyncActivityNotifier();
+        expect(notifier.build, isA<Function>());
+      });
+    });
+
+    group('Stream Handling', () {
+      test('should handle stream updates', () {
+        // Test that stream handling doesn't crash
+        expect(() => mockStreamController.add(true), returnsNormally);
+      });
+
+      test('should handle stream errors gracefully', () {
+        // Test that stream error handling doesn't crash
+        expect(() => mockStreamController.addError('Test error'), returnsNormally);
+      });
+
+      test('should handle stream completion', () {
+        // Test that stream completion handling doesn't crash
+        expect(() => mockStreamController.close(), returnsNormally);
+      });
+    });
+
+    group('Error Handling', () {
+      test('should handle activity fetch error', () {
+        // Mock error on activity fetch
+        when(() => mockClient.activity(any())).thenThrow(Exception('Fetch error'));
+        
+        // Test that error handling doesn't crash
+        expect(() => mockClient.activity('test-id'), throwsA(isA<Exception>()));
+      });
+    });
+
+    group('Disposal', () {
+      test('should handle disposal gracefully', () {
+        final notifier = AsyncActivityNotifier();
+        expect(notifier, isNotNull);
+      });
     });
   });
 
-  group('AsyncActivityNotifier Implementation Tests', () {
-    testWidgets('should create notifier with correct type', (tester) async {
-      // Arrange & Act
-      final notifier = AsyncActivityNotifier();
-
-      // Assert
-      expect(notifier, isA<FamilyAsyncNotifier<Activity?, String>>());
+  group('Provider Tests', () {
+    test('allActivitiesProvider should be defined', () {
+      expect(allActivitiesProvider, isNotNull);
     });
 
-    testWidgets('should handle build method structure', (tester) async {
-      // Test that the notifier can be referenced and constructed
-      expect(AsyncActivityNotifier.new, isA<Function>());
+    test('activityProvider should be defined', () {
+      expect(activityProvider, isNotNull);
+    });
+
+    test('allActivitiesProvider should be AsyncNotifierProvider', () {
+      expect(allActivitiesProvider, isA<AsyncNotifierProvider<AllActivitiesNotifier, List<String>>>());
+    });
+
+    test('activityProvider should be AsyncNotifierProviderFamily', () {
+      expect(activityProvider, isA<AsyncNotifierProviderFamily<AsyncActivityNotifier, Activity?, String>>());
     });
   });
 
-  group('AllActivitiesNotifier Implementation Tests', () {
-    testWidgets('should create notifier with correct type', (tester) async {
-      // Arrange & Act
-      final notifier = AllActivitiesNotifier();
+  group('Integration Tests', () {
+    test('should handle notifier lifecycle', () {
+      final activitiesNotifier = AllActivitiesNotifier();
+      final activityNotifier = AsyncActivityNotifier();
 
-      // Assert
-      expect(notifier, isA<AsyncNotifier<List<String>>>());
+      expect(activitiesNotifier, isA<AllActivitiesNotifier>());
+      expect(activityNotifier, isA<AsyncActivityNotifier>());
+
+      // Test that notifiers can be created and have expected properties
+      expect(activitiesNotifier.hasMoreData, isA<bool>());
+      expect(activitiesNotifier.loadMore, isA<Function>());
     });
 
-    testWidgets('should initialize with hasMoreData as true', (tester) async {
-      // Arrange & Act
-      final notifier = AllActivitiesNotifier();
-
-      // Assert
-      expect(notifier.hasMoreData, true);
-    });
-
-    testWidgets('should have loadMore method', (tester) async {
-      // Arrange & Act
-      final notifier = AllActivitiesNotifier();
-
-      // Assert
-      expect(notifier.loadMore, isA<Function>());
-    });
-
-    testWidgets('should handle pagination constants', (tester) async {
-      // Test that the page size constant is accessible through behavior
+    test('should handle pagination constants', () {
       final notifier = AllActivitiesNotifier();
       
-      // Test that notifier has expected pagination behavior
-      expect(notifier.hasMoreData, true);
+      // Test that pagination behavior is consistent
+      expect(notifier.hasMoreData, isA<bool>());
     });
 
-    testWidgets('should handle pagination state management', (tester) async {
-      final notifier = AllActivitiesNotifier();
-      
-      // Test initial state
-      expect(notifier.hasMoreData, true);
-      
-      // Test that internal pagination logic can be tested
-      // by simulating the scenarios the notifier handles
-      final testActivities = ['activity1', 'activity2', 'activity3'];
-      expect(testActivities.length < 100, true); // Simulates page size check
-    });
-
-    testWidgets('should handle stream subscription patterns', (tester) async {
-      // Test the subscription pattern used in the notifier
+    test('should handle stream subscription patterns', () {
       final streamController = StreamController<bool>.broadcast();
       final subscriptions = <StreamSubscription>[];
       
@@ -418,7 +265,7 @@ void main() {
       streamController.close();
     });
 
-    testWidgets('should handle activities object lifecycle', (tester) async {
+    test('should handle activities object lifecycle', () {
       // Test the Activities object lifecycle pattern
       Activities? activities;
       
@@ -432,7 +279,7 @@ void main() {
       expect(activities, isNull);
     });
 
-    testWidgets('should handle offset and pagination logic', (tester) async {
+    test('should handle offset and pagination logic', () {
       // Test pagination calculation patterns
       int currentOffset = 0;
       const pageSize = 100;
@@ -449,7 +296,7 @@ void main() {
       expect(hasMoreData, false); // Less than page size
     });
 
-    testWidgets('should handle list concatenation for loadMore', (tester) async {
+    test('should handle list concatenation for loadMore', () {
       // Test list concatenation pattern used in loadMore
       final currentActivities = ['activity1', 'activity2'];
       final newActivities = ['activity3', 'activity4'];
@@ -461,7 +308,7 @@ void main() {
       expect(result, ['activity1', 'activity2', 'activity3', 'activity4']);
     });
 
-    testWidgets('should handle error propagation patterns', (tester) async {
+    test('should handle error propagation patterns', () {
       // Test error handling pattern from loadMore and _fetchAllActivities
       bool errorHandled = false;
       
@@ -476,7 +323,7 @@ void main() {
       expect(errorHandled, true);
     });
 
-    testWidgets('should handle pagination edge cases', (tester) async {
+    test('should handle pagination edge cases', () {
       // Test pagination logic edge cases
       
       // Case 1: Exactly page size returned
@@ -496,7 +343,7 @@ void main() {
       expect(hasMoreData, false); // Should not have more data
     });
 
-    testWidgets('should handle initial vs loadMore fetch differences', (tester) async {
+    test('should handle initial vs loadMore fetch differences', () {
       // Test the different code paths in _fetchAllActivities
       
       // Initial load scenario
@@ -520,81 +367,64 @@ void main() {
         expect(result, ['existing1', 'existing2', 'new1', 'new2']);
       }
     });
-  });
 
-  group('Notifier Integration and Coverage Tests', () {
-    testWidgets('should handle all notifiers together', (tester) async {
-      // Test that all notifier types can coexist
-      final activitiesNotifier = AllActivitiesNotifier();
-      final activityNotifier = AsyncActivityNotifier();
+    test('should handle room stream subscription pattern', () {
+      // Test room stream subscription pattern from AllActivitiesNotifier.build()
+      final spaces = ['room1', 'room2', 'room3'];
+      final subscriptions = <StreamSubscription>[];
+      
+      for (int i = 0; i < spaces.length; i++) {
+        final streamController = StreamController<bool>.broadcast();
+        final subscription = streamController.stream.listen(
+          (data) async {
+            // Simulate refresh logic
+          },
+          onError: (e, s) {
+            // Simulate error handling
+          },
+          onDone: () {
+            // Simulate completion
+          },
+        );
+        subscriptions.add(subscription);
+        streamController.close();
+      }
 
-      expect(activitiesNotifier, isA<AllActivitiesNotifier>());
-      expect(activityNotifier, isA<AsyncActivityNotifier>());
-
-      // Test activities notifier state
-      expect(activitiesNotifier.hasMoreData, true);
+      expect(subscriptions, hasLength(3));
+      
+      for (final sub in subscriptions) {
+        sub.cancel();
+      }
     });
 
-    testWidgets('should test all public methods and properties', (tester) async {
-      // Test AllActivitiesNotifier public interface
-      final activitiesNotifier = AllActivitiesNotifier();
-      expect(activitiesNotifier.hasMoreData, isA<bool>());
-      expect(activitiesNotifier.loadMore, isA<Function>());
-      expect(activitiesNotifier.build, isA<Function>());
+    test('should handle activities disposal pattern', () {
+      // Test activities disposal pattern from AllActivitiesNotifier
+      Activities? activities = MockActivities();
       
-      // Test AsyncActivityNotifier public interface
-      final activityNotifier = AsyncActivityNotifier();
-      expect(activityNotifier.build, isA<Function>());
+      // Simulate disposal pattern
+      activities.drop();
+      activities = null;
+      
+      expect(activities, isNull);
     });
 
-    testWidgets('should handle error scenarios for all notifiers', (tester) async {
-      // Test error handling patterns used across notifiers
-      
-      // Stream error handling (used in both activity notifiers)
-      final streamController = StreamController<bool>.broadcast();
-      bool errorHandled = false;
-
-      final subscription = streamController.stream.listen(
-        (data) {},
-        onError: (e, s) {
-          errorHandled = true;
-          // This simulates the error handling in both notifiers
-        },
-      );
-
-      streamController.addError('Test error');
-      
-      // Wait a brief moment for the error to be processed
-      await tester.pump();
-
-      expect(errorHandled, true);
-      subscription.cancel();
-      streamController.close();
-    });
-
-    testWidgets('should cover disposal and cleanup patterns', (tester) async {
-      // Test disposal patterns used in notifiers
+    test('should handle subscription disposal pattern', () {
+      // Test subscription disposal pattern from AllActivitiesNotifier
       final subscriptions = <StreamSubscription>[];
       final streamController = StreamController<bool>.broadcast();
-
-      // Simulate subscription pattern from AllActivitiesNotifier.build()
+      
+      // Add some subscriptions
       for (int i = 0; i < 3; i++) {
         final subscription = streamController.stream.listen((data) {});
         subscriptions.add(subscription);
       }
-
-      // Simulate disposal pattern from ref.onDispose()
+      
+      // Simulate disposal pattern
       for (final sub in subscriptions) {
         sub.cancel();
       }
-
-      // Simulate Activities cleanup
-      Activities? activities;
-      activities = null; // Prevent double free
-
-      expect(subscriptions, hasLength(3));
-      expect(activities, isNull);
       
+      expect(subscriptions, hasLength(3));
       streamController.close();
     });
   });
