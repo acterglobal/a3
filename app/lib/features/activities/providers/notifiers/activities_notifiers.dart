@@ -54,7 +54,7 @@ class AsyncActivityNotifier extends FamilyAsyncNotifier<Activity?, String> {
 }
 
 class AllActivitiesNotifier extends AsyncNotifier<List<String>> {
-  final int _limit = 10;
+  final int _limit = 100;
   int _offset = 0;
   bool _hasMoreData = true;
   bool _isLoadingMore = false;
