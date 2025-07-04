@@ -32,4 +32,8 @@ class AppDelegate: FlutterAppDelegate {
 
     return false // Returning true will stop the propagation to other packages
   }
+
+  override func applicationSupportsSecureRestorableState(_ app: NSApplication) -> Bool {
+    return true
+  }
 }
