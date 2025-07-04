@@ -61,13 +61,15 @@ class ActivitiesPage extends ConsumerWidget {
     // Show empty state when no activities and no other sections
     if (sectionWidgetList.isEmpty) return buildEmptyStateWidget(context);
 
+    final hasMore = ref.watch(allActivitiesProvider.notifier).hasMore;
+
     return NotificationListener<ScrollNotification>(
       onNotification: (scrollInfo) {
         final pixels = scrollInfo.metrics.pixels;
         final maxScroll = scrollInfo.metrics.maxScrollExtent;
 
-        if (maxScroll > 0 && pixels / maxScroll >= 0.7) {
-          ref.read(allActivitiesProvider.notifier).loadMore();
+        if (maxScroll > 0 && pixels / maxScroll >= 0.8 && hasMore) {
+          ref.read(allActivitiesProvider.notifier).loadMoreActivities();
         }
 
         return false;
@@ -77,8 +79,15 @@ class ActivitiesPage extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ...sectionWidgetList,
-            if (ref.watch(allActivitiesProvider).isLoading)
-              const  Center(child: LinearProgressIndicator()),
+            // Show loading indicator when loading more data
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Center(
+                child: hasMore
+                    ? CircularProgressIndicator()
+                    : Text('No more activities to load'),
+              ),
+            ),
           ],
         ),
       ),

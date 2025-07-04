@@ -4,15 +4,13 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/config/constants.dart';
 import 'package:acter/features/activity_ui_showcase/mocks/providers/mock_activities_provider.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show Activities, Activity, Client;
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show Activity;
 import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
 
 final _log = Logger('a3::activities::notifiers');
 
-
-// Single Activity Notifier 
+// Single Activity Notifier
 class AsyncActivityNotifier extends FamilyAsyncNotifier<Activity?, String> {
   late Stream<bool> _listener;
   late StreamSubscription<bool> _poller;
@@ -57,25 +55,33 @@ class AsyncActivityNotifier extends FamilyAsyncNotifier<Activity?, String> {
 }
 
 class AllActivitiesNotifier extends AsyncNotifier<List<String>> {
-  static const int _pageSize = 100;
-
-  final List<StreamSubscription> _subscriptions = [];
-  Activities? _activities;
+  final int _limit = 100;
   int _offset = 0;
-  bool _hasMore = true;
+  bool _hasMoreData = true;
+  bool _isLoadingMore = false;
+  final List<StreamSubscription> _subscriptions = [];
+
+  bool get hasMore => _hasMoreData;
 
   @override
   Future<List<String>> build() async {
     final client = await ref.watch(alwaysClientProvider.future);
     final spaces = ref.watch(spacesProvider);
 
+    // Clean up previous subscriptions
+    for (final sub in _subscriptions) {
+      sub.cancel();
+    }
+    _subscriptions.clear();
+
     for (final space in spaces) {
       final roomId = space.getRoomIdStr();
       final stream = client.subscribeRoomStream(roomId);
       final sub = stream.listen(
-            (data) async {
+        (data) async {
           try {
-            await _refresh(client);
+            // Reset pagination state and reload from beginning
+            await _initialLoad();
           } catch (e, s) {
             _log.severe('Failed to refresh activities', e, s);
           }
@@ -90,47 +96,59 @@ class AllActivitiesNotifier extends AsyncNotifier<List<String>> {
       for (final sub in _subscriptions) {
         sub.cancel();
       }
-      _activities?.drop();
-      _activities = null;
     });
 
-    return await _refresh(client);
+    // Reset pagination state for initial load
+    return await _initialLoad();
   }
 
-  void loadMore() {
-    if (!_hasMore) return;
-
-    _loadMoreActivities().then((newList) {
-      state = AsyncValue.data(newList);
-    }).catchError((error, stackTrace) {
-      _log.severe('Failed to load more activities', error, stackTrace);
-      state = AsyncValue.error(error, stackTrace);
-    });
-  }
-
-  bool get hasMoreData => _hasMore;
-
-  Future<List<String>> _refresh(Client client) async {
+  Future<List<String>> _initialLoad() async {
+    // Reset pagination state
     _offset = 0;
-    _hasMore = true;
-    _activities?.drop();
-    _activities = client.allActivities();
-    return await _loadMoreActivities();
+    _hasMoreData = true;
+    _isLoadingMore = false;
+
+    // Load activities
+    final activityIds = await _loadActivitiesInternal(reset: true);
+    state = AsyncValue.data(activityIds);
+    return activityIds;
   }
 
-  Future<List<String>> _loadMoreActivities() async {
-    final prevList = state.valueOrNull ?? [];
-    final newIdsRaw = await _activities?.getIds(_offset, _pageSize);
+  Future<void> loadMoreActivities() async {
+    // Check if we are already loading or if we have no more data
+    if (_isLoadingMore || !_hasMoreData) return;
 
-    if (newIdsRaw == null || newIdsRaw.isEmpty) {
-      _hasMore = false;
-      return prevList;
+    // Load more activities
+    final newActivities = await _loadActivitiesInternal(reset: false);
+    state = AsyncValue.data(newActivities);
+  }
+
+  Future<List<String>> _loadActivitiesInternal({required bool reset}) async {
+    _isLoadingMore = true;
+
+    try {
+      final client = await ref.watch(alwaysClientProvider.future);
+
+      final activityIds = await client.allActivities().getIds(_offset, _limit);
+      final activityIdsDartList = asDartStringList(activityIds);
+
+      _offset += _limit;
+      _hasMoreData = activityIdsDartList.length == _limit;
+
+      if (reset) {
+        // Return new activities only if we are resetting
+        return activityIdsDartList;
+      } else {
+        // Merge with existing data
+        final existingData = state.valueOrNull ?? [];
+        return [...existingData, ...activityIdsDartList];
+      }
+    } catch (e, s) {
+      _log.severe('Failed to load activities', e, s);
+      rethrow;
+    } finally {
+      // Reset loading state to false
+      _isLoadingMore = false;
     }
-
-    final newIds = asDartStringList(newIdsRaw);
-    _offset += newIds.length;
-    _hasMore = newIds.length >= _pageSize;
-
-    return [...prevList, ...newIds];
   }
 }
