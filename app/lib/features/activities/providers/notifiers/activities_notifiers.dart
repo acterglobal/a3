@@ -1,13 +1,18 @@
 import 'dart:async';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/config/constants.dart';
 import 'package:acter/features/activity_ui_showcase/mocks/providers/mock_activities_provider.dart';
+import 'package:acter/features/activities/providers/activities_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show Activity;
 import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
 
 final _log = Logger('a3::activities::notifiers');
+
+// Provider for consecutive grouped activities using records 
+typedef RoomActivitiesInfo = ({String roomId, List<Activity> activities});
 
 // Single Activity Notifier
 class AsyncActivityNotifier extends FamilyAsyncNotifier<Activity?, String> {
@@ -53,17 +58,17 @@ class AsyncActivityNotifier extends FamilyAsyncNotifier<Activity?, String> {
   }
 }
 
-class AllActivitiesNotifier extends AsyncNotifier<List<String>> {
+class AllActivitiesNotifier extends AsyncNotifier<List<RoomActivitiesInfo>> {
   final int _limit = 100;
   int _offset = 0;
   bool _hasMoreData = true;
   bool _isLoadingMore = false;
   final List<StreamSubscription> _subscriptions = [];
-
+  final List<String> _allActivityIds = []; // Store all activity IDs for pagination
   bool get hasMore => _hasMoreData;
 
   @override
-  Future<List<String>> build() async {
+  Future<List<RoomActivitiesInfo>> build() async {
     final client = await ref.watch(alwaysClientProvider.future);
 
     // Clean up previous subscriptions
@@ -97,53 +102,99 @@ class AllActivitiesNotifier extends AsyncNotifier<List<String>> {
     return await _initialLoad();
   }
 
-  Future<List<String>> _initialLoad() async {
+  Future<List<RoomActivitiesInfo>> _initialLoad() async {
     // Reset pagination state
     _offset = 0;
     _hasMoreData = true;
     _isLoadingMore = false;
+    _allActivityIds.clear();
 
     // Load activities
-    final activityIds = await _loadActivitiesInternal(reset: true);
-    state = AsyncValue.data(activityIds);
-    return activityIds;
+    final groupedActivities = await _loadActivitiesInternal(reset: true);
+    state = AsyncValue.data(groupedActivities);
+    return groupedActivities;
   }
 
   Future<void> loadMoreActivities() async {
     // Check if we are already loading or if we have no more data
     if (_isLoadingMore || !_hasMoreData) return;
 
-    // Load more activities
-    final newActivities = await _loadActivitiesInternal(reset: false);
-    state = AsyncValue.data(newActivities);
+    try {
+      final newGroupedActivities = await _loadActivitiesInternal(reset: false);
+      state = AsyncValue.data(newGroupedActivities);
+    } catch (e, s) {
+      _log.severe('Failed to load more activities', e, s);
+      _isLoadingMore = false;
+    }
   }
 
-  Future<List<String>> _loadActivitiesInternal({required bool reset}) async {
+  Future<List<RoomActivitiesInfo>> _loadActivitiesInternal({required bool reset}) async {
     _isLoadingMore = true;
-
     try {
       final client = await ref.watch(alwaysClientProvider.future);
 
+      // Get activity IDs from the client
       final activityIds = await client.allActivities().getIds(_offset, _limit);
       final activityIdsDartList = asDartStringList(activityIds);
 
       _offset += _limit;
       _hasMoreData = activityIdsDartList.length == _limit;
-
+      
       if (reset) {
-        // Return new activities only if we are resetting
-        return activityIdsDartList;
+        // Reset: clear all activity IDs and start fresh
+        _allActivityIds.clear();
+        _allActivityIds.addAll(activityIdsDartList);
       } else {
-        // Merge with existing data
-        final existingData = state.valueOrNull ?? [];
-        return [...existingData, ...activityIdsDartList];
+        // Pagination: add new activity IDs to the list
+        _allActivityIds.addAll(activityIdsDartList);
       }
+
+      _allActivityIds.sort((a, b) => b.compareTo(a));
+      
+      final activities = <Activity>[];
+      for (final id in _allActivityIds) {
+        final activity = reset 
+            ? ref.watch(activityProvider(id)).valueOrNull
+            : ref.read(activityProvider(id)).valueOrNull;
+        if (activity != null && isActivityTypeSupported(activity.typeStr())) {
+          activities.add(activity);
+        }
+      }
+
+      //  Filter activities to only include those from spaces
+      final spaceActivities = activities.where((activity) {
+        final roomId = activity.roomIdStr();
+        final room = reset 
+            ? ref.watch(maybeRoomProvider(roomId)).valueOrNull
+            : ref.read(maybeRoomProvider(roomId)).valueOrNull;
+        return room?.isSpace() == true;
+      }).toList();
+      
+      // Sort by time descending
+      final sortedActivities = spaceActivities..sort((a, b) => b.originServerTs().compareTo(a.originServerTs()));
+
+      // Group consecutive activities by roomId AND date
+      final groups = <RoomActivitiesInfo>[];
+      
+      for (final activity in sortedActivities) {
+        final roomId = activity.roomIdStr();
+        final activityDate = getActivityDate(activity.originServerTs());
+        
+        if (groups.isNotEmpty && 
+            groups.last.roomId == roomId && 
+            getActivityDate(groups.last.activities.first.originServerTs()).isAtSameMomentAs(activityDate)) {
+          final lastGroup = groups.last;
+          groups[groups.length - 1] = (roomId: roomId, activities: [...lastGroup.activities, activity]);
+        } else {
+          // Create new group (different room OR different date)
+          groups.add((roomId: roomId, activities: [activity]));
+        }
+      }
+      _isLoadingMore = false;
+      return groups;
     } catch (e, s) {
       _log.severe('Failed to load activities', e, s);
       rethrow;
-    } finally {
-      // Reset loading state to false
-      _isLoadingMore = false;
-    }
+    } 
   }
 }

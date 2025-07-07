@@ -1,6 +1,5 @@
 import 'package:acter/common/models/types.dart';
 import 'package:acter/common/providers/common_providers.dart';
-import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/features/activities/providers/notifiers/activities_notifiers.dart';
 import 'package:acter/features/invitations/providers/invitations_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
@@ -74,7 +73,7 @@ final activityProvider =
     );
 
 final allActivitiesProvider =
-    AsyncNotifierProvider<AllActivitiesNotifier, List<String>>(
+    AsyncNotifierProvider<AllActivitiesNotifier, List<RoomActivitiesInfo>>(
   AllActivitiesNotifier.new,
 );
 
@@ -89,71 +88,28 @@ DateTime getActivityDate(int timestamp) {
   final activityDate = DateTime.fromMillisecondsSinceEpoch(timestamp).toLocal();
   return DateTime(activityDate.year, activityDate.month, activityDate.day);
 }
-
-// Provider to get activities by id with filtering for supported types
-final allActivitiesByIdProvider = FutureProvider<List<Activity>>((ref) async {
-
-  final activityIds = await ref.watch(allActivitiesProvider.future);
-
-  if (activityIds.isEmpty) return [];
-
-  final activities = <Activity>[];
-  for (final id in activityIds) {
-    final activity = ref.watch(activityProvider(id)).valueOrNull;
-    if (activity != null && isActivityTypeSupported(activity.typeStr())) {
-      activities.add(activity);
-    }
-  }
-  return activities;
-});
-
+      
 final activityDatesProvider = Provider<List<DateTime>>((ref) {
-  final activities = ref.watch(allActivitiesByIdProvider).valueOrNull ?? [];
+  final activities = ref.watch(allActivitiesProvider).valueOrNull ?? [];
 
   if (activities.isEmpty) return [];
 
-  final uniqueDates = activities.map((activity) => getActivityDate(activity.originServerTs())).toSet();
+  final uniqueDates = activities.map((group) => getActivityDate(group.activities.first.originServerTs())).toSet();
   return uniqueDates.toList()..sort((a, b) => b.compareTo(a));
 });
 
-// Base provider for activities filtered by date
-final activitiesByDateProvider = Provider.family<List<Activity>, DateTime>((ref, date) {
-  final activities = ref.watch(allActivitiesByIdProvider).valueOrNull ?? [];
-  return activities.where((activity) => getActivityDate(activity.originServerTs()).isAtSameMomentAs(date)).toList();
-});
-
-// Provider for consecutive grouped activities using records 
-typedef RoomActivitiesInfo = ({String roomId, List<Activity> activities});
-
+// Provider for consecutive grouped activities - uses the notifie r's state directly
 final consecutiveGroupedActivitiesProvider = Provider.family<List<RoomActivitiesInfo>, DateTime>((ref, date) {
-  final activitiesForDate = ref.watch(activitiesByDateProvider(date));
+  final allGroups = ref.watch(allActivitiesProvider).valueOrNull ?? [];
   
-  // Filter activities to only include those from spaces
-  final spaceActivities = activitiesForDate.where((activity) {
-    final roomId = activity.roomIdStr();
-    final room = ref.watch(maybeRoomProvider(roomId)).valueOrNull;
-    return room?.isSpace() == true;
+  if (allGroups.isEmpty) return []; 
+
+  // Filter groups by date
+  final groupsForDate = allGroups.where((group) {
+    if (group.activities.isEmpty) return false;
+    final groupDate = getActivityDate(group.activities.first.originServerTs());
+    return groupDate.isAtSameMomentAs(date);
   }).toList();
   
-  // Sort by time descending
-  final sortedActivities = spaceActivities..sort((a, b) => b.originServerTs().compareTo(a.originServerTs()));
-
-  // Group consecutive activities by roomId
-  final groups = <RoomActivitiesInfo>[];
-  
-  for (final activity in sortedActivities) {
-    final roomId = activity.roomIdStr();
-    
-    if (groups.isNotEmpty && groups.last.roomId == roomId) {
-      // Add to existing group
-      final lastGroup = groups.last;
-      groups[groups.length - 1] = (roomId: roomId, activities: [...lastGroup.activities, activity]);
-    } else {
-      // Create new group
-      groups.add((roomId: roomId, activities: [activity]));
-    }
-  }
-  
-  return groups;
+  return groupsForDate;
 });
-

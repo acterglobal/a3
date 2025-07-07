@@ -1,4 +1,5 @@
 import 'package:acter/features/activities/providers/activities_providers.dart';
+import 'package:acter/features/activities/providers/notifiers/activities_notifiers.dart';
 import 'package:acter/features/activity_ui_showcase/mocks/data/mock_activities_list_generator.dart';
 import 'package:acter/features/activity_ui_showcase/mocks/general/mock_activity.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
