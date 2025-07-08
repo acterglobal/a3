@@ -32,11 +32,11 @@ class AcceptDeclineTaskInvitationWidget extends ConsumerWidget {
           children: [
             Row(
               children: [
-                ActerAvatar(options: AvatarOptions.DM(avatarInfo, size: 16)),
+                avatarInfo.displayName != null ? ActerAvatar(options: AvatarOptions.DM(avatarInfo, size: 16)) : const Icon(Icons.person),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                  lang.invitedYouToTakeOverThisTask(avatarInfo.displayName ?? 'Someone'),
+                  lang.invitedYouToTakeOverThisTask,
                 ),
                 ),
               ],
