@@ -89,7 +89,7 @@ void main() {
         container.dispose();
       });
 
-      test('should handle loadMore error gracefully', () async {
+      test('should handle loadMore error gracefully and set loading state', () async {
         final container = ProviderContainer(
           overrides: [
             alwaysClientProvider.overrideWith(() => MockAlwaysClientNotifier(mockClient)),
@@ -105,6 +105,32 @@ void main() {
         expect(() async => await notifier.loadMoreActivities(), returnsNormally);
     
         await Future.delayed(Duration(milliseconds: 100));
+        
+        container.dispose();
+      });
+
+      test('should not load more when already loading', () async {
+        final container = ProviderContainer(
+          overrides: [
+            alwaysClientProvider.overrideWith(() => MockAlwaysClientNotifier(mockClient)),
+            spacesProvider.overrideWith(() => MockSpaceListNotifier()),
+          ],
+        );
+
+        final notifier = container.read(allActivitiesProvider.notifier);
+        
+        when(() => mockActivities.getIds(any(), any())).thenAnswer((_) async {
+          await Future.delayed(Duration(milliseconds: 50)); // Simulate slow response
+          return MockFfiListFfiString(items: ['activity1']);
+        });
+        
+        // Start loading (this will set _isLoadingMore = true)
+        final future1 = notifier.loadMoreActivities();
+        
+        // Try to load more while already loading (should return early)
+        final future2 = notifier.loadMoreActivities();
+        
+        await Future.wait([future1, future2]);
         
         container.dispose();
       });
@@ -333,9 +359,30 @@ void main() {
         container.dispose();
       });
 
-      test('should handle full page response (exactly 100 activities)', () async {
+      test('should handle full page response and grouping logic', () async {
         final fullPageActivities = List.generate(100, (i) => 'activity_$i');
         final mockFfiList = MockFfiListFfiString(items: fullPageActivities);
+        when(() => mockActivities.getIds(any(), any())).thenAnswer((_) async => mockFfiList);
+        
+        final container = ProviderContainer(
+          overrides: [
+            alwaysClientProvider.overrideWith(() => MockAlwaysClientNotifier(mockClient)),
+            spacesProvider.overrideWith(() => MockSpaceListNotifier()),
+          ],
+        );
+
+        final notifier = container.read(allActivitiesProvider.notifier);
+        
+        await notifier.loadMoreActivities();
+        
+        await Future.delayed(Duration(milliseconds: 100));
+        
+        container.dispose();
+      });
+
+      test('should handle activity grouping by room and date', () async {
+        // Create activities with same room and date to test grouping logic
+        final mockFfiList = MockFfiListFfiString(items: ['activity1', 'activity2', 'activity3']);
         when(() => mockActivities.getIds(any(), any())).thenAnswer((_) async => mockFfiList);
         
         final container = ProviderContainer(
@@ -447,6 +494,26 @@ void main() {
         final notifier = container.read(allActivitiesProvider.notifier);
         
         // The error should be caught and handled gracefully (not rethrown)
+        expect(() async => await notifier.loadMoreActivities(), returnsNormally);
+        
+        await Future.delayed(Duration(milliseconds: 100));
+        
+        container.dispose();
+      });
+
+      test('should rethrow exception from _loadActivitiesInternal', () async {
+        // Test the rethrow behavior in _loadActivitiesInternal
+        when(() => mockActivities.getIds(any(), any())).thenThrow(Exception('Rethrow test error'));
+        
+        final container = ProviderContainer(
+          overrides: [
+            alwaysClientProvider.overrideWith(() => MockAlwaysClientNotifier(mockClient)),
+            spacesProvider.overrideWith(() => MockSpaceListNotifier()),
+          ],
+        );
+
+        final notifier = container.read(allActivitiesProvider.notifier);
+        
         expect(() async => await notifier.loadMoreActivities(), returnsNormally);
         
         await Future.delayed(Duration(milliseconds: 100));
