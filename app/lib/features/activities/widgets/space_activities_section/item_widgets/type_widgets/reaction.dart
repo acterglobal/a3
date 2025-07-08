@@ -1,3 +1,4 @@
+import 'package:acter/features/activities/actions/activity_item_click_action.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/containers/activity_social_container_widget.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -17,6 +18,7 @@ class ActivityReactionItemWidget extends StatelessWidget {
       iconColor: Colors.red.shade400,
       actionTitle: L10n.of(context).reactedOn,
       originServerTs: activity.originServerTs(),
+      onTap: () => onTapActivityItem(context, activity.object()),
     );
   }
 }
