@@ -1,4 +1,4 @@
-use acter_core::events::CategoriesStateEventContent;
+use acter_matrix::events::CategoriesStateEventContent;
 use anyhow::{bail, Result};
 use matrix_sdk_base::{deserialized_responses::RawSyncOrStrippedState, ruma::events::EventContent};
 use tracing::warn;

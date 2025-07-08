@@ -12,8 +12,9 @@ class AsyncNotifierMock extends AllActivitiesNotifier {
   AsyncNotifierMock(this.mockActivities);
   
   @override
-  Future<List<Activity>> build() async {
-    return mockActivities;
+  Future<List<String>> build() async {
+    // Convert activities to list of activity IDs
+    return mockActivities.map((activity) => activity.eventIdStr()).toList();
   }
 }
 
@@ -102,6 +103,9 @@ void main() {
       expect(groups, isEmpty); // No activities, so no groups
       
       container.dispose();
+      
+      // Flush any pending timers
+      await tester.pumpAndSettle();
     });
 
     testWidgets('Provider method calls', (tester) async {
@@ -125,6 +129,9 @@ void main() {
       container.read(consecutiveGroupedActivitiesProvider(date2));
       
       container.dispose();
+      
+      // Flush any pending timers
+      await tester.pumpAndSettle();
     });
 
     testWidgets('Integration test to ensure provider code paths are executed', (tester) async {
@@ -177,9 +184,12 @@ void main() {
       final midnightDate = getActivityDate(midnightTimestamp);
       final almostMidnightDate = getActivityDate(almostMidnightTimestamp);
       
-      expect(midnightDate, DateTime(2024, 6, 15));
-             expect(almostMidnightDate, DateTime(2024, 6, 15));
-     });
+              expect(midnightDate, DateTime(2024, 6, 15));
+        expect(almostMidnightDate, DateTime(2024, 6, 15));
+        
+        // Flush any pending timers
+        await tester.pumpAndSettle();
+      });
 
      test('Direct test of consecutiveGroupedActivitiesProvider logic with comprehensive scenarios', () {
     

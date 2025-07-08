@@ -1,4 +1,4 @@
-use acter_core::events::{CategoriesStateEventContent, Category, CategoryBuilder};
+use acter_matrix::events::{CategoriesStateEventContent, Category, CategoryBuilder};
 
 pub struct Categories {
     inner: Option<CategoriesStateEventContent>,

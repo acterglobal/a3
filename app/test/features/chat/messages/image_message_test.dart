@@ -1,38 +1,14 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/toolkit/errors/inline_error_button.dart';
-import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/image_message_builder.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:convenient_test_dev/convenient_test_dev.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
 
 import '../../../helpers/error_helpers.dart';
 import '../../../helpers/mock_chat_providers.dart';
 import '../../../helpers/test_util.dart';
-
-class FixedOptionStringMock extends Mock implements OptionString {
-  final String? result;
-
-  FixedOptionStringMock(this.result);
-
-  @override
-  String? text() => result;
-}
-
-/// Mocked version of ActerSdk for test purposes
-class RetryMediaConvoMock extends Mock implements Convo {
-  bool shouldFail = true;
-  @override
-  Future<OptionString> mediaPath(String eventId, bool isThumb) async {
-    if (shouldFail) {
-      shouldFail = false;
-      return FixedOptionStringMock('bad_path');
-    }
-    return FixedOptionStringMock(null);
-  }
-}
+import '../../chat_ng/messages/chat_message_test.dart';
 
 void main() {
   group('Image Fails to Load Error', () {

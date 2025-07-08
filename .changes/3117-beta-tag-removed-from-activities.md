@@ -1,1 +1,0 @@
-- [Fixes] : The beta tag has been removed because all activities of user are now fully implemented and covered. 

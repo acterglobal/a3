@@ -26,8 +26,7 @@ Future<void> saveEventLocations({
       return;
     }
 
-    final updateBuilder = calendarEvent.updateBuilder();
-    updateBuilder.unsetLocations();
+    final updateBuilder = calendarEvent.updateBuilder()..unsetLocations();
 
     for (final location in locations) {
       if (location.type == LocationType.physical) {

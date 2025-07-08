@@ -6,7 +6,10 @@ import 'package:flutter/material.dart';
 
 ElevatedButtonThemeData elevatedButtonTheme() => ElevatedButtonThemeData(
   style: ElevatedButton.styleFrom(
-    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+    padding: EdgeInsets.symmetric(
+      horizontal: 16,
+      vertical: Platform.isAndroid || Platform.isIOS ? 12 : 16,
+    ),
     elevation: 0,
     textStyle: textTheme.titleMedium?.copyWith(
       color: colorScheme.primary,
@@ -48,7 +51,7 @@ OutlinedButtonThemeData outlinedButtonTheme() => OutlinedButtonThemeData(
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
     padding: EdgeInsets.symmetric(
       horizontal: 12,
-      vertical: Platform.isAndroid || Platform.isIOS ? 6 : 12,
+      vertical: Platform.isAndroid || Platform.isIOS ? 6 : 16,
     ),
     textStyle: textTheme.titleMedium?.copyWith(fontSize: 15),
     minimumSize: Size.zero,

@@ -1,4 +1,4 @@
-use acter_core::events::three_pid::{ThreePidContent, ThreePidRecord};
+use acter_matrix::events::three_pid::{ThreePidContent, ThreePidRecord};
 use anyhow::{bail, Context, Result};
 use matrix_sdk::reqwest::{ClientBuilder, StatusCode};
 use matrix_sdk_base::ruma::{

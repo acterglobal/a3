@@ -1,0 +1,88 @@
+[package]
+name = "acter-matrix"
+authors = [ "ben@acter.global" ]
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.70"
+description = "Matrix core transport implemenation of acter app"
+homepage = "https://acter.global"
+repository = "https://github.com/acterglobal/a3"
+license-file = "../../LICENSE.txt"
+
+[features]
+default = ["client"]
+templates = ["toml", "minijinja", "indexmap", "tokio-retry"]
+
+# for ruma macros
+client = [] 
+server = []
+unstable-exhaustive-types = []
+
+# for testing helper
+testing = ['dep:uuid']
+
+[dependencies]
+tokio = { version = "1", features = ["rt", "macros"] }
+async-recursion = "1"
+chrono = { version = "0.4", default-features = false, features = ["serde", "clock"] }
+chrono-tz = { version = "0.10", default-features = false, features = ["serde"] }
+scc = { workspace = true }
+derive-getters = { workspace = true }
+derive_builder = { workspace = true }
+enum_dispatch = "0.3.12"
+futures = "0.3.30"
+mime_guess = "2.0.4"
+icalendar = { workspace = true }
+eyeball-im = { workspace = true }
+serde = "1"
+serde_json = "1"
+serde_repr = "0.1"
+strum = { workspace = true }
+thiserror = "2"
+tracing = { version = "0.1.40", features = ["log"] }
+url = { workspace = true }
+urlencoding = { workspace = true }
+uuid = { version = "1.6.1", features = ["v4"], optional = true }
+
+# templates
+async-stream = "0.3.5"
+indexmap = { version = "2.1.0", optional = true }
+minijinja = { version = "2.2.0", optional = true, features = ["builtins"] }
+tokio-retry = { version = "0.3.0", optional = true }
+toml = { version = "0.8.8", optional = true, features = ["preserve_order"] }
+
+
+[dependencies.matrix-sdk-base]
+workspace = true
+default-features = false
+
+[dependencies.matrix-sdk-ui]
+workspace = true
+
+
+[target.'cfg(target_os = "android")'.dependencies.matrix-sdk]
+workspace = true
+default-features = false
+features = ["rustls-tls", "markdown"]
+
+
+[target.'cfg(not(target_os = "android"))'.dependencies.matrix-sdk]
+workspace = true
+default-features = false
+features = ["native-tls"]
+
+
+[dev-dependencies]
+anyhow = "1.0.79"
+env_logger = { workspace = true }
+tracing = { version = "0.1.40", default-features = false, features = ["log"] }
+uuid = { version = "1.6.1", features = ["v4"] }
+
+
+[dev-dependencies.matrix-sdk-base]
+workspace = true
+default-features = false
+
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(ruma_unstable_exhaustive_types)'] }

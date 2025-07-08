@@ -38,7 +38,7 @@ url = "https://acter.global"
 #[tokio::test]
 async fn image_attachment_activity_on_pin() -> Result<()> {
     let (users, _sync_states, _space_id, _engine) =
-        random_users_with_random_space_under_template("aOnpin", 1, TMPL).await?;
+        random_users_with_random_space_under_template("image_on_pin", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
@@ -72,7 +72,8 @@ async fn image_attachment_activity_on_pin() -> Result<()> {
             png_file.path().to_string_lossy().to_string(),
             "image/png".to_owned(),
         )
-        .filename("Fishy.png".to_owned());
+        .filename("Fishy.png".to_owned())
+        .clone(); // switch variable from temporary to normal so that content_draft can use it
     let activity_id = manager
         .content_draft(Box::new(base_draft))
         .await?
@@ -84,9 +85,9 @@ async fn image_attachment_activity_on_pin() -> Result<()> {
     })
     .await?;
     assert_eq!(activity.type_str(), "attachment");
+    // check the attachment details
     assert_eq!(activity.sub_type_str().as_deref(), Some("image"));
     assert_eq!(activity.name().as_deref(), Some("Fishy.png"));
-    let parent = activity.object().expect("parent was found");
     assert_eq!(
         activity.target_url(),
         format!(
@@ -95,10 +96,18 @@ async fn image_attachment_activity_on_pin() -> Result<()> {
             encode(activity_id.as_str())
         )
     );
-    assert_eq!(parent.type_str(), "pin");
-    assert_eq!(parent.title().as_deref(), Some("Acter Website"));
-    assert_eq!(parent.emoji(), "📌"); // pin
-    assert_eq!(parent.object_id_str(), obj_id);
+
+    // check the parent
+    assert_eq!(
+        activity.object().map(|o| o.type_str()).as_deref(),
+        Some("pin")
+    );
+    assert_eq!(
+        activity.object().and_then(|o| o.title()).as_deref(),
+        Some("Acter Website")
+    );
+    assert_eq!(activity.object().map(|o| o.emoji()).as_deref(), Some("📌")); // pin
+    assert_eq!(activity.object().map(|o| o.object_id_str()), Some(obj_id));
 
     assert_triggered_with_latest_activity(&mut act_obs, activity.event_id_str()).await?;
 
@@ -108,7 +117,7 @@ async fn image_attachment_activity_on_pin() -> Result<()> {
 #[tokio::test]
 async fn file_attachment_activity_on_calendar() -> Result<()> {
     let (users, _sync_states, _space_id, _engine) =
-        random_users_with_random_space_under_template("aOncal", 1, TMPL).await?;
+        random_users_with_random_space_under_template("file_on_cal", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
@@ -142,7 +151,8 @@ async fn file_attachment_activity_on_calendar() -> Result<()> {
             png_file.path().to_string_lossy().to_string(),
             "image/png".to_owned(),
         )
-        .filename("Fishy.png".to_owned());
+        .filename("Fishy.png".to_owned())
+        .clone(); // switch variable from temporary to normal so that content_draft can use it
     let activity_id = manager
         .content_draft(Box::new(base_draft))
         .await?
@@ -154,9 +164,9 @@ async fn file_attachment_activity_on_calendar() -> Result<()> {
     })
     .await?;
     assert_eq!(activity.type_str(), "attachment");
+    // check the attachment details
     assert_eq!(activity.sub_type_str().as_deref(), Some("file"));
     assert_eq!(activity.name().as_deref(), Some("Fishy.png"));
-    let parent = activity.object().expect("parent was found");
     assert_eq!(
         activity.target_url(),
         format!(
@@ -165,10 +175,18 @@ async fn file_attachment_activity_on_calendar() -> Result<()> {
             encode(activity_id.as_str())
         )
     );
-    assert_eq!(parent.type_str(), "event");
-    assert_eq!(parent.title().as_deref(), Some("First meeting"));
-    assert_eq!(parent.emoji(), "🗓️"); // calendar
-    assert_eq!(parent.object_id_str(), obj_id);
+
+    // check the parent
+    assert_eq!(
+        activity.object().map(|o| o.type_str()).as_deref(),
+        Some("event")
+    );
+    assert_eq!(
+        activity.object().and_then(|o| o.title()).as_deref(),
+        Some("First meeting")
+    );
+    assert_eq!(activity.object().map(|o| o.emoji()).as_deref(), Some("🗓️")); // calendar
+    assert_eq!(activity.object().map(|o| o.object_id_str()), Some(obj_id));
 
     assert_triggered_with_latest_activity(&mut act_obs, activity_id.to_string()).await?;
 
@@ -178,7 +196,7 @@ async fn file_attachment_activity_on_calendar() -> Result<()> {
 #[tokio::test]
 async fn reference_attachment_activity_on_calendar() -> Result<()> {
     let (users, _sync_states, _space_id, _engine) =
-        random_users_with_random_space_under_template("aOncal", 1, TMPL).await?;
+        random_users_with_random_space_under_template("ref_on_cal", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
@@ -228,9 +246,6 @@ async fn reference_attachment_activity_on_calendar() -> Result<()> {
         ref_details.target_id_str(),
         Some(pin.event_id().to_string())
     );
-
-    // check the parent
-    let parent = activity.object().expect("parent was found");
     assert_eq!(
         activity.target_url(),
         format!(
@@ -240,10 +255,17 @@ async fn reference_attachment_activity_on_calendar() -> Result<()> {
         )
     );
 
-    assert_eq!(parent.type_str(), "event");
-    assert_eq!(parent.title().as_deref(), Some("First meeting"));
-    assert_eq!(parent.emoji(), "🗓️"); // calendar
-    assert_eq!(parent.object_id_str(), obj_id);
+    // check the parent
+    assert_eq!(
+        activity.object().map(|o| o.type_str()).as_deref(),
+        Some("event")
+    );
+    assert_eq!(
+        activity.object().and_then(|o| o.title()).as_deref(),
+        Some("First meeting")
+    );
+    assert_eq!(activity.object().map(|o| o.emoji()).as_deref(), Some("🗓️")); // calendar
+    assert_eq!(activity.object().map(|o| o.object_id_str()), Some(obj_id));
 
     assert_triggered_with_latest_activity(&mut act_obs, activity_id.to_string()).await?;
 

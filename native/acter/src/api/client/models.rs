@@ -3,7 +3,7 @@
 use std::collections::{hash_map::Entry, HashMap};
 use std::convert::TryFrom;
 
-use acter_core::{
+use acter_matrix::{
     models::{ActerModel, AnyActerModel},
     referencing::IndexKey,
 };

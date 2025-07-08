@@ -48,7 +48,8 @@ async fn image_blurhash_support() -> Result<()> {
             tmp_jpg.path().to_string_lossy().to_string(),
             mimetype.to_owned(),
         )
-        .blurhash(blurhash.to_owned());
+        .blurhash(blurhash.to_owned())
+        .clone(); // switch variable from temporary to normal so that send_message can use it
     timeline.send_message(Box::new(draft)).await?;
 
     // image msg may reach via pushback action or reset action
@@ -57,10 +58,18 @@ async fn image_blurhash_support() -> Result<()> {
     while i > 0 {
         if let Some(diff) = stream.next().now_or_never().flatten() {
             match diff.action().as_str() {
-                "PushBack" | "Set" => {
+                "PushBack" => {
                     let value = diff
                         .value()
                         .expect("diff pushback action should have valid value");
+                    if let Some(msg_content) = match_media_msg(&value, mimetype, &jpg_name) {
+                        found = Some(msg_content);
+                    }
+                }
+                "Set" => {
+                    let value = diff
+                        .value()
+                        .expect("diff set action should have valid value");
                     if let Some(msg_content) = match_media_msg(&value, mimetype, &jpg_name) {
                         found = Some(msg_content);
                     }
@@ -133,7 +142,8 @@ async fn video_blurhash_support() -> Result<()> {
             tmp_mp4.path().to_string_lossy().to_string(),
             mimetype.to_owned(),
         )
-        .blurhash(blurhash.to_owned());
+        .blurhash(blurhash.to_owned())
+        .clone(); // switch variable from temporary to normal so that send_message can use it
     timeline.send_message(Box::new(draft)).await?;
 
     // video msg may reach via pushback action or reset action
@@ -142,10 +152,18 @@ async fn video_blurhash_support() -> Result<()> {
     while i > 0 {
         if let Some(diff) = stream.next().now_or_never().flatten() {
             match diff.action().as_str() {
-                "PushBack" | "Set" => {
+                "PushBack" => {
                     let value = diff
                         .value()
                         .expect("diff pushback action should have valid value");
+                    if let Some(msg_content) = match_media_msg(&value, mimetype, &mp4_name) {
+                        found = Some(msg_content);
+                    }
+                }
+                "Set" => {
+                    let value = diff
+                        .value()
+                        .expect("diff set action should have valid value");
                     if let Some(msg_content) = match_media_msg(&value, mimetype, &mp4_name) {
                         found = Some(msg_content);
                     }

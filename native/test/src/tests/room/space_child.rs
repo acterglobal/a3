@@ -1,5 +1,5 @@
 use acter::api::{CreateConvoSettingsBuilder, TimelineItem};
-use acter_core::models::status::SpaceChildContent;
+use acter_matrix::models::status::SpaceChildContent;
 use anyhow::Result;
 use core::time::Duration;
 use futures::{pin_mut, stream::StreamExt, FutureExt};
@@ -45,10 +45,18 @@ async fn test_space_child() -> Result<()> {
     while i > 0 {
         if let Some(diff) = stream.next().now_or_never().flatten() {
             match diff.action().as_str() {
-                "PushBack" | "Set" => {
+                "PushBack" => {
                     let value = diff
                         .value()
                         .expect("diff pushback action should have valid value");
+                    if let Some(result) = match_msg(&value) {
+                        found_result = Some(result);
+                    }
+                }
+                "Set" => {
+                    let value = diff
+                        .value()
+                        .expect("diff set action should have valid value");
                     if let Some(result) = match_msg(&value) {
                         found_result = Some(result);
                     }

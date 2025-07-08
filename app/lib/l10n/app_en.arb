@@ -577,6 +577,10 @@
   "@helpCenterTitle": {},
   "helpCenterDesc": "Get helpful tips about Acter",
   "@helpCenterDesc": {},
+  "hostSupport": "HOST Support",
+  "@hostSupport": {},
+  "hostSupportDesc": "Get HOST for project hosting and fiscal support",
+  "@hostSupportDesc": {},
   "hereYouCanSeeAllUsersYouBlocked": "Here you can see all users you’ve blocked.",
   "@hereYouCanSeeAllUsersYouBlocked": {},
   "hintMessageDisplayName": "Enter the name you want others to see",
@@ -2416,6 +2420,8 @@
   "@editName": {},
   "editDescription": "Edit Description",
   "@editDescription": {},
+  "addDescription": "Add description here",
+  "@addDescription": {},
   "updateNameFailed": "Updating name failed: {error}",
   "@updateNameFailed": {},
   "updateDescriptionFailed": "Updating description failed: {error}",
@@ -3184,5 +3190,9 @@
   "updatingLocations": "Updating locations...",
   "@updatingLocations": {},
   "noIconsFound": "No icons found",
-  "@noIconsFound": {}
+  "@noIconsFound": {},
+  "activityUIShowcase": "Activity UI Showcase",
+  "@activityUIShowcase": {},
+  "showcaseList": "Showcase List",
+  "@showcaseList": {}
 }

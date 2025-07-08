@@ -5,10 +5,10 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
 import 'package:acter/features/notifications/actions/autosubscribe.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
@@ -23,8 +23,7 @@ Future<void> updatePinTitle(
   final lang = L10n.of(context);
   try {
     EasyLoading.show(status: lang.updateName);
-    final updateBuilder = pin.updateBuilder();
-    updateBuilder.title(newTitle);
+    final updateBuilder = pin.updateBuilder()..title(newTitle);
     await updateBuilder.send();
 
     await autosubscribe(ref: ref, objectId: pin.eventIdStr(), lang: lang);
@@ -52,8 +51,7 @@ Future<void> updatePinLink(
   final lang = L10n.of(context);
   try {
     EasyLoading.show(status: lang.updatingLinking);
-    final updateBuilder = pin.updateBuilder();
-    updateBuilder.url(newLink);
+    final updateBuilder = pin.updateBuilder()..url(newLink);
     await updateBuilder.send();
     EasyLoading.dismiss();
   } catch (e, s) {
@@ -79,9 +77,10 @@ Future<void> updatePinDescription(
   final lang = L10n.of(context);
   try {
     EasyLoading.show(status: lang.updatingDescription);
-    final updateBuilder = pin.updateBuilder();
-    updateBuilder.contentText(plainDescription);
-    updateBuilder.contentHtml(plainDescription, htmlBodyDescription);
+    final updateBuilder =
+        pin.updateBuilder()
+          ..contentText(plainDescription)
+          ..contentHtml(plainDescription, htmlBodyDescription);
     await updateBuilder.send();
 
     await autosubscribe(ref: ref, objectId: pin.eventIdStr(), lang: lang);
@@ -117,9 +116,7 @@ Future<void> updatePinIcon(
     displayBuilder.color(color.toInt());
     displayBuilder.icon('acter-icon', acterIcon.name);
 
-    final updateBuilder = pin.updateBuilder();
-    updateBuilder.display(displayBuilder.build());
-
+    final updateBuilder = pin.updateBuilder()..display(displayBuilder.build());
     await updateBuilder.send();
     EasyLoading.dismiss();
 

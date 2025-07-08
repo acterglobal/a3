@@ -33,6 +33,14 @@ bool isValidUrl(String url) {
   return urlPattern.hasMatch(url);
 }
 
+bool isOnlyEmojis(String text) {
+  final emojiRegex = RegExp(
+    r'^(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff]|\s)+$',
+  );
+
+  return emojiRegex.hasMatch(text.trim());
+}
+
 bool isDesktop(BuildContext context) =>
     desktopPlatforms.contains(Theme.of(context).platform);
 
@@ -111,10 +119,11 @@ String taskDueDateFormat(DateTime dateTime) {
 }
 
 String formatTimeFromTimestamp(int originServerTs) {
-  final originServerDateTime = DateTime.fromMillisecondsSinceEpoch(
-    originServerTs,
-    isUtc: true,
-  ).toLocal();
+  final originServerDateTime =
+      DateTime.fromMillisecondsSinceEpoch(
+        originServerTs,
+        isUtc: true,
+      ).toLocal();
   return DateFormat('hh:mm a').format(originServerDateTime);
 }
 
@@ -221,20 +230,31 @@ extension ColorUtils on Color {
   }
 }
 
+/// Comprehensive regex for detecting empty HTML tags and structures
+final RegExp emptyHtmlTagsRegex = RegExp(
+  r'<br\s*/?>\s*|<p\s*>(\s|&nbsp;|&#160;|<br\s*/?>)*</p>\s*|<div\s*>(\s|&nbsp;|&#160;)*</div>\s*|<span\s*>(\s|&nbsp;|&#160;)*</span>\s*|<h[1-6]\s*>(\s|&nbsp;|&#160;)*</h[1-6]>\s*|<(strong|b|em|i)\s*>(\s|&nbsp;|&#160;)*</(strong|b|em|i)>\s*|<(ul|ol|li)\s*>(\s|&nbsp;|&#160;)*</(ul|ol|li)>\s*',
+  multiLine: true,
+  caseSensitive: false,
+);
+
+/// Check if HTML content contains only empty tags or whitespace
+bool isEmptyHtmlContent(String html) {
+  if (html.trim().isEmpty) return true;
+  
+  // Remove all empty tags and structures
+  String cleanedHtml = html
+      .replaceAll(emptyHtmlTagsRegex, '')
+      .replaceAll(RegExp(r'\s+'), ' ') // Normalize whitespace
+      .trim();
+  
+  return cleanedHtml.isEmpty;
+}
+
 /// html requires to have some kind of structure even when document is empty, so check for that
 bool hasValidEditorContent({required String plainText, required String html}) {
-  if (plainText.trim().isEmpty) return false;
-  if (html.isEmpty) return false;
-
-  final hasOnlyStructure =
-      html
-          .replaceAll(RegExp(r'<br\s*/?>|<p\s*></p>|<p\s*>\s*</p>'), '')
-          .replaceAll(RegExp(r'<[^>]*>'), '')
-          .replaceAll('&nbsp;', ' ')
-          .trim()
-          .isEmpty;
-
-  return !hasOnlyStructure;
+  final hasPlainTextContent = plainText.trim().isNotEmpty;
+  final hasHtmlTextContent = !isEmptyHtmlContent(html);
+  return hasPlainTextContent || hasHtmlTextContent;
 }
 
 String formatChatDayDividerDateString(BuildContext context, String dateString) {

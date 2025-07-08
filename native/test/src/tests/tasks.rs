@@ -1,8 +1,9 @@
 mod invitations;
 
 use acter::testing::wait_for;
-use acter_core::models::ActerModel;
+use acter_matrix::models::ActerModel;
 use anyhow::{bail, Context, Result};
+use chrono::{Datelike, Duration, Utc};
 use matrix_sdk_base::ruma::{
     events::room::redaction::RoomRedactionEvent, MilliSecondsSinceUnixEpoch,
 };
@@ -64,10 +65,19 @@ async fn task_smoketests() -> Result<()> {
     let task_list_listener = task_list.subscribe();
 
     let title = "Testing 1";
+    let body = "This is testing task";
+    let today = Utc::now().date_naive();
+    let tomorrow = today + Duration::days(1);
     let task_1_id = task_list
         .task_builder()?
         .title(title.to_owned())
-        .description_text("This is testing task".into())
+        .description_text(body.to_owned())
+        .due_date(today.year(), today.month0() + 1, today.day0() + 1)
+        .unset_due_date()
+        .due_date(tomorrow.year(), tomorrow.month0() + 1, tomorrow.day0() + 1)
+        .utc_due_time_of_day(9 * 3600) // 9 AM UTC
+        .unset_utc_due_time_of_day()
+        .utc_due_time_of_day(11 * 3600) // 11 AM UTC
         .send()
         .await?;
 
@@ -88,18 +98,35 @@ async fn task_smoketests() -> Result<()> {
     let task_1 = tasks[0].clone();
     assert_eq!(task_1.title(), title);
     assert_eq!(
-        task_1.description().map(|msg| msg.body()),
-        Some("This is testing task".to_owned())
+        task_1.description().map(|msg| msg.body()).as_deref(),
+        Some(body)
     );
+    assert_ne!(
+        task_1.due_date(),
+        Some(today.format("%Y-%m-%d").to_string())
+    );
+    assert_eq!(
+        task_1.due_date(),
+        Some(tomorrow.format("%Y-%m-%d").to_string())
+    );
+    assert_eq!(task_1.utc_due_time_of_day(), Some(11 * 3600)); // not 9 AM UTC
     assert!(!task_1.is_done());
 
     let task_list_listener = task_list.subscribe();
 
     let title = "Testing 2";
+    let today = Utc::now();
+    let tomorrow = today + Duration::days(1);
+    let fmt = "%Y-%m-%dT%H:%M:%S%:z"; // ISO 8601 format with timezone
     let task_2_id = task_list
         .task_builder()?
         .title(title.to_owned())
         .sort_order(1)
+        .utc_start_from_rfc2822(today.to_rfc2822())?
+        .unset_utc_start()
+        .utc_start_from_rfc3339(today.to_rfc3339())?
+        .unset_utc_start()
+        .utc_start_from_format(tomorrow.format(fmt).to_string(), fmt.to_owned())?
         .send()
         .await?;
 
@@ -121,13 +148,32 @@ async fn task_smoketests() -> Result<()> {
     let task_2 = tasks[1].clone();
     assert_eq!(task_2.title(), title);
     assert!(!task_2.is_done());
+    assert_ne!(
+        task_2.utc_start().map(|d| d.to_rfc2822()),
+        Some(today.to_rfc2822())
+    );
+    assert_ne!(
+        task_2.utc_start().map(|d| d.to_rfc3339()),
+        Some(today.to_rfc3339())
+    );
+    assert_eq!(
+        task_2.utc_start().map(|d| d.format(fmt).to_string()),
+        Some(tomorrow.format(fmt).to_string())
+    );
 
     let task_1_updater = task_1.subscribe();
 
     let title = "Replacement Name";
+    let someday = today + Duration::days(10);
+    let otherday = today + Duration::days(15);
     task_1
         .update_builder()?
         .title(title.to_owned())
+        .utc_start_from_rfc2822(someday.to_rfc2822())?
+        .unset_utc_start()
+        .utc_start_from_rfc3339(someday.to_rfc3339())?
+        .unset_utc_start()
+        .utc_start_from_format(otherday.format(fmt).to_string(), fmt.to_owned())?
         .mark_done()
         .send()
         .await?;
@@ -149,6 +195,18 @@ async fn task_smoketests() -> Result<()> {
     let assignees = task_1.assignees();
     assert_eq!(assignees, vec![user_id]);
     assert!(task_1.is_done());
+    assert_ne!(
+        task_1.utc_start().map(|d| d.to_rfc2822()),
+        Some(someday.to_rfc2822())
+    );
+    assert_ne!(
+        task_1.utc_start().map(|d| d.to_rfc3339()),
+        Some(someday.to_rfc3339())
+    );
+    assert_eq!(
+        task_1.utc_start().map(|d| d.format(fmt).to_string()),
+        Some(otherday.format(fmt).to_string())
+    );
 
     let task_list_listener = task_list.subscribe();
 

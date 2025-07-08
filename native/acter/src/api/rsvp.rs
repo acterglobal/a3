@@ -1,5 +1,5 @@
-pub use acter_core::events::rsvp::RsvpStatus;
-use acter_core::{
+pub use acter_matrix::events::rsvp::RsvpStatus;
+use acter_matrix::{
     events::rsvp::RsvpBuilder,
     models::{self, ActerModel, AnyActerModel},
     referencing::{IndexKey, SectionIndex},

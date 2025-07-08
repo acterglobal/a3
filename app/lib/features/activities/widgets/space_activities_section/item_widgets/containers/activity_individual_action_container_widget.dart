@@ -9,6 +9,7 @@ import 'package:acter/common/providers/room_providers.dart';
 
 class ActivityIndividualActionContainerWidget extends ConsumerWidget {
   final ActivityObject? activityObject;
+  final VoidCallback? onTap;
   final String userId;
   final String roomId;
   final String actionTitle;
@@ -21,6 +22,7 @@ class ActivityIndividualActionContainerWidget extends ConsumerWidget {
   const ActivityIndividualActionContainerWidget({
     super.key,
     this.activityObject,
+    this.onTap,
     required this.userId,
     required this.roomId,
     required this.actionTitle,
@@ -43,7 +45,9 @@ class ActivityIndividualActionContainerWidget extends ConsumerWidget {
             .valueOrNull ??
         userId;
 
-    return Container(
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -66,6 +70,7 @@ class ActivityIndividualActionContainerWidget extends ConsumerWidget {
             ),
           ),
         ],
+        ),
       ),
     );
   }
@@ -105,10 +110,10 @@ class ActivityIndividualActionContainerWidget extends ConsumerWidget {
           child: RichText(
             text: TextSpan(
               children: [
-                TextSpan(text: displayName, style: theme.textTheme.bodySmall),
+                TextSpan(text: displayName, style: theme.textTheme.labelSmall),
                 TextSpan(
                   text: ' $actionTitle ',
-                  style: theme.textTheme.bodySmall?.copyWith(
+                  style: theme.textTheme.labelSmall?.copyWith(
                     color: colorScheme.surfaceTint,
                   ),
                 ),

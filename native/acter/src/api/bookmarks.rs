@@ -1,4 +1,4 @@
-use acter_core::events::bookmarks::BookmarksEventContent;
+use acter_matrix::events::bookmarks::BookmarksEventContent;
 use anyhow::Result;
 use matrix_sdk::Account;
 
