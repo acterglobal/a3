@@ -148,8 +148,6 @@ class AllActivitiesNotifier extends AsyncNotifier<List<RoomActivitiesInfo>> {
         // Pagination: add new activity IDs to the list
         _allActivityIds.addAll(activityIdsDartList);
       }
-
-      _allActivityIds.sort((a, b) => b.compareTo(a));
       
       final activities = <Activity>[];
       for (final id in _allActivityIds) {

@@ -19,8 +19,8 @@ class FakeAllActivitiesNotifier extends AllActivitiesNotifier {
   }
 
   @override
-  Future<List<String>> build() async {
+  Future<List<RoomActivitiesInfo>> build() async {
     // Return a non-empty list to ensure scroll area
-    return List.generate(50, (i) => 'Activity $i');
+    return List.generate(5, (i) => (roomId: 'Room $i', activities: []));
   }
 }
