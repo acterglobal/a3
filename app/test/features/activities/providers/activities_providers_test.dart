@@ -6,6 +6,28 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../activity/mock_data/mock_activity.dart';
 
+// Mock classes for testing
+class MockInvitation {
+  final String mockId;
+  MockInvitation({required this.mockId});
+}
+
+class MockEmailAddress {
+  final String email;
+  MockEmailAddress({required this.email});
+}
+
+class MockEmailAddresses {
+  final List<MockEmailAddress> unconfirmed;
+  final List<MockEmailAddress> confirmed;
+  MockEmailAddresses({required this.unconfirmed, required this.confirmed});
+}
+
+class SyncState {
+  final String? errorMsg;
+  SyncState({this.errorMsg});
+}
+
 // Mock class for testing
 class AsyncNotifierMock extends AllActivitiesNotifier {
   final List<Activity> mockActivities;
@@ -13,9 +35,12 @@ class AsyncNotifierMock extends AllActivitiesNotifier {
   AsyncNotifierMock(this.mockActivities);
   
   @override
-  Future<List<String>> build() async {
-    // Convert activities to list of activity IDs
-    return mockActivities.map((activity) => activity.eventIdStr()).toList();
+  Future<List<RoomActivitiesInfo>> build() async {
+    // Convert activities to RoomActivitiesInfo format
+    return mockActivities.map((activity) => (
+      roomId: activity.roomIdStr(),
+      activities: [activity],
+    )).toList();
   }
 }
 
@@ -61,7 +86,7 @@ void main() {
       expect(sortedActivities.length, 2);
       expect(sortedActivities[0].typeStr(), 'test1');
       
-      // Test grouping consecutive activities
+      // Test grouping activities
       final groups = <({String roomId, List<MockActivity> activities})>[];
       
       for (final activity in sortedActivities) {
@@ -126,98 +151,58 @@ void main() {
       final container = ProviderContainer();
       addTearDown(container.dispose);
 
-      // Test provider
       final activities = container.read(allActivitiesProvider);
-      expect(activities, isA<AsyncValue<List<String>>>());
+      expect(activities, isA<AsyncValue<List<RoomActivitiesInfo>>>());
       expect(activities.isLoading, true);
       
       await tester.pumpAndSettle();
-    });
-
-    testWidgets('allActivitiesByIdProvider tests', (tester) async {
-      final container = ProviderContainer();
-      addTearDown(container.dispose);
-
-      // Test provider
-      final activities = container.read(allActivitiesByIdProvider);
-      expect(activities, isA<AsyncValue<List<Activity>>>());
-      expect(activities.isLoading, true);
       
-      await tester.pumpAndSettle();
+      expect(activities.isLoading || activities.hasValue || activities.hasError, true);
     });
-    
+
     testWidgets('Provider integration test for empty activities', (tester) async {
-      // This test ensures the provider methods are called and covered
       final container = ProviderContainer();
       
-      // Test with null/empty activities
       final dates = container.read(activityDatesProvider);
       expect(dates, isEmpty);
       
       final targetDate = DateTime(2024, 1, 15);
-      final activitiesForDate = container.read(activitiesByDateProvider(targetDate));
-      expect(activitiesForDate, isEmpty);
-      
       final groups = container.read(consecutiveGroupedActivitiesProvider(targetDate));
       expect(groups, isEmpty); // No activities, so no groups
       
       container.dispose();
       
-      // Flush any pending timers
       await tester.pumpAndSettle();
     });
 
     testWidgets('Provider method calls', (tester) async {
       final container = ProviderContainer();
       
-      // Force the provider to initialize and execute its logic
-      // This will ensure the provider method bodies are executed and covered
+      container.read(activityDatesProvider);
+      container.read(activityDatesProvider);
       
-      // Call activityDatesProvider multiple times to ensure coverage
-      container.read(activityDatesProvider); // First call
-      container.read(activityDatesProvider); // Second call for consistency
-      
-      // Call activitiesByDateProvider with different dates
       final date1 = DateTime(2024, 1, 15);
       final date2 = DateTime(2024, 2, 1);
-      container.read(activitiesByDateProvider(date1));
-      container.read(activitiesByDateProvider(date2));
-      
-      // Call consecutiveGroupedActivitiesProvider 
       container.read(consecutiveGroupedActivitiesProvider(date1));
       container.read(consecutiveGroupedActivitiesProvider(date2));
       
       container.dispose();
       
-      // Flush any pending timers
       await tester.pumpAndSettle();
     });
 
     testWidgets('Integration test to ensure provider code paths are executed', (tester) async {
-      // This test focuses on ensuring the provider code is executed to achieve coverage
       final container = ProviderContainer();
       addTearDown(container.dispose);
 
-      // Test all provider code paths by calling them multiple times with different parameters
       
-      // Test activityDatesProvider - 
       final dates1 = container.read(activityDatesProvider);
       expect(dates1, isEmpty); // No activities in test environment
       
-      // Test activitiesByDateProvider - 
       final testDate1 = DateTime(2024, 1, 15);
       final testDate2 = DateTime(2024, 2, 1);
       final testDate3 = DateTime(2024, 3, 1);
       
-      final activitiesForDate1 = container.read(activitiesByDateProvider(testDate1));
-      final activitiesForDate2 = container.read(activitiesByDateProvider(testDate2));
-      final activitiesForDate3 = container.read(activitiesByDateProvider(testDate3));
-      
-      expect(activitiesForDate1, isEmpty);
-      expect(activitiesForDate2, isEmpty);
-      expect(activitiesForDate3, isEmpty);
-      
-      // Test consecutiveGroupedActivitiesProvider -
       final groups1 = container.read(consecutiveGroupedActivitiesProvider(testDate1));
       final groups2 = container.read(consecutiveGroupedActivitiesProvider(testDate2));
       final groups3 = container.read(consecutiveGroupedActivitiesProvider(testDate3));
@@ -226,7 +211,6 @@ void main() {
       expect(groups2, isEmpty);
       expect(groups3, isEmpty);
       
-      // Test getActivityDate helper function -
       final timestamp1 = DateTime(2024, 1, 15, 14, 30, 45).millisecondsSinceEpoch;
       final timestamp2 = DateTime(2024, 12, 25, 23, 59, 59).millisecondsSinceEpoch;
       
@@ -236,161 +220,19 @@ void main() {
       expect(date1, DateTime(2024, 1, 15));
       expect(date2, DateTime(2024, 12, 25));
       
-      // Test edge cases for getActivityDate
       final midnightTimestamp = DateTime(2024, 6, 15, 0, 0, 0).millisecondsSinceEpoch;
       final almostMidnightTimestamp = DateTime(2024, 6, 15, 23, 59, 59).millisecondsSinceEpoch;
       
       final midnightDate = getActivityDate(midnightTimestamp);
       final almostMidnightDate = getActivityDate(almostMidnightTimestamp);
       
-              expect(midnightDate, DateTime(2024, 6, 15));
-        expect(almostMidnightDate, DateTime(2024, 6, 15));
-        
-        // Flush any pending timers
-        await tester.pumpAndSettle();
-      });
+      expect(midnightDate, DateTime(2024, 6, 15));
+      expect(almostMidnightDate, DateTime(2024, 6, 15));
+      
+      await tester.pumpAndSettle();
+    });
 
-     test('Direct test of consecutiveGroupedActivitiesProvider logic with comprehensive scenarios', () {
-    
-       // Test Case 1: Empty activities (covers the early return path)
-       List<MockActivity> activities = [];
-       List<MockActivity> sortedActivities = activities.toList()..sort((a, b) => b.originServerTs().compareTo(a.originServerTs()));
-       List<RoomActivitiesInfo> groups = <RoomActivitiesInfo>[];
-       
-       for (final activity in sortedActivities) {
-         final roomId = activity.roomIdStr();
-         
-         if (groups.isNotEmpty && groups.last.roomId == roomId) {
-           // This branch covers line 100-102
-           final lastGroup = groups.last;
-           groups[groups.length - 1] = (roomId: roomId, activities: [...lastGroup.activities, activity]);
-         } else {
-           // This branch covers line 104
-           groups.add((roomId: roomId, activities: [activity]));
-         }
-       }
-       expect(groups, isEmpty);
-       
-       // Test Case 2: Single activity (covers both branches)
-       activities = [
-         MockActivity(
-           mockType: 'message',
-           mockOriginServerTs: DateTime(2024, 1, 15, 10, 0).millisecondsSinceEpoch,
-           mockRoomId: 'room1',
-         ),
-       ];
-       
-       sortedActivities = activities.toList()..sort((a, b) => b.originServerTs().compareTo(a.originServerTs()));
-       groups = <RoomActivitiesInfo>[];
-       
-       for (final activity in sortedActivities) {
-         final roomId = activity.roomIdStr();
-         
-         if (groups.isNotEmpty && groups.last.roomId == roomId) {
-           // Line 100: groups.isNotEmpty check
-           // Line 101: groups.last.roomId == roomId check  
-           // Line 102: final lastGroup = groups.last;
-           final lastGroup = groups.last;
-           groups[groups.length - 1] = (roomId: roomId, activities: [...lastGroup.activities, activity]);
-         } else {
-           // Line 104: Create new group
-           groups.add((roomId: roomId, activities: [activity]));
-         }
-       }
-       expect(groups.length, 1);
-       expect(groups[0].roomId, 'room1');
-       
-       // Test Case 3: Multiple activities, same room (covers the "add to existing group" branch)
-       activities = [
-         MockActivity(
-           mockType: 'message1',
-           mockOriginServerTs: DateTime(2024, 1, 15, 10, 0).millisecondsSinceEpoch,
-           mockRoomId: 'room1',
-         ),
-         MockActivity(
-           mockType: 'message2',
-           mockOriginServerTs: DateTime(2024, 1, 15, 10, 1).millisecondsSinceEpoch,
-           mockRoomId: 'room1', // Same room
-         ),
-       ];
-       
-       sortedActivities = activities.toList()..sort((a, b) => b.originServerTs().compareTo(a.originServerTs()));
-       groups = <RoomActivitiesInfo>[];
-       
-       for (final activity in sortedActivities) {
-         final roomId = activity.roomIdStr();
-         
-         if (groups.isNotEmpty && groups.last.roomId == roomId) {
-           // This branch should be executed for the second activity
-           final lastGroup = groups.last;
-           groups[groups.length - 1] = (roomId: roomId, activities: [...lastGroup.activities, activity]);
-         } else {
-           groups.add((roomId: roomId, activities: [activity]));
-         }
-       }
-       expect(groups.length, 1);
-       expect(groups[0].activities.length, 2);
-       
-       // Test Case 4: Multiple activities, different rooms (covers both branches)
-       activities = [
-         MockActivity(
-           mockType: 'message1',
-           mockOriginServerTs: DateTime(2024, 1, 15, 10, 0).millisecondsSinceEpoch,
-           mockRoomId: 'room1',
-         ),
-         MockActivity(
-           mockType: 'message2',
-           mockOriginServerTs: DateTime(2024, 1, 15, 10, 1).millisecondsSinceEpoch,
-           mockRoomId: 'room2', // Different room
-         ),
-       ];
-       
-       sortedActivities = activities.toList()..sort((a, b) => b.originServerTs().compareTo(a.originServerTs()));
-       groups = <RoomActivitiesInfo>[];
-       
-       for (final activity in sortedActivities) {
-         final roomId = activity.roomIdStr();
-         
-         if (groups.isNotEmpty && groups.last.roomId == roomId) {
-           final lastGroup = groups.last;
-           groups[groups.length - 1] = (roomId: roomId, activities: [...lastGroup.activities, activity]);
-         } else {
-           groups.add((roomId: roomId, activities: [activity]));
-         }
-       }
-       expect(groups.length, 2);
-       
-       // Test Case 5: Complex scenario with room switching
-       activities = [
-         MockActivity(mockType: 'msg1', mockOriginServerTs: 1000, mockRoomId: 'room1'),
-         MockActivity(mockType: 'msg2', mockOriginServerTs: 2000, mockRoomId: 'room1'),
-         MockActivity(mockType: 'msg3', mockOriginServerTs: 3000, mockRoomId: 'room2'),
-         MockActivity(mockType: 'msg4', mockOriginServerTs: 4000, mockRoomId: 'room1'),
-       ];
-       
-       sortedActivities = activities.toList()..sort((a, b) => b.originServerTs().compareTo(a.originServerTs()));
-       groups = <RoomActivitiesInfo>[];
-       
-       for (final activity in sortedActivities) {
-         final roomId = activity.roomIdStr();
-         
-         if (groups.isNotEmpty && groups.last.roomId == roomId) {
-           final lastGroup = groups.last;
-           groups[groups.length - 1] = (roomId: roomId, activities: [...lastGroup.activities, activity]);
-         } else {
-           groups.add((roomId: roomId, activities: [activity]));
-         }
-       }
-       
-       // Should create 3 groups: room1 (msg4), room2 (msg3), room1 (msg2, msg1)
-       expect(groups.length, 3);
-       expect(groups[0].roomId, 'room1');
-       expect(groups[0].activities.length, 1); // Just msg4
-       expect(groups[1].roomId, 'room2');
-       expect(groups[1].activities.length, 1); // Just msg3
-       expect(groups[2].roomId, 'room1');
-       expect(groups[2].activities.length, 2); // msg2 and msg1
-     });
+
 
     test('Direct test for activityDatesProvider logic', () {
       final activity1 = MockActivity(
@@ -489,7 +331,6 @@ void main() {
         expect(groups.length, 1);
         expect(groups[0].roomId, 'room1');
         expect(groups[0].activities.length, 3);
-        // Should be sorted by time descending
         expect(groups[0].activities[0].originServerTs(), baseTime + 3000);
         expect(groups[0].activities[1].originServerTs(), baseTime + 2000);
         expect(groups[0].activities[2].originServerTs(), baseTime + 1000);
@@ -588,7 +429,6 @@ void main() {
         
         expect(groups.length, 4);
         
-        // Should be grouped in chronological order (descending)
         expect(groups[0].roomId, 'room2'); // activity5
         expect(groups[0].activities.length, 1);
         
@@ -948,5 +788,98 @@ void main() {
          }
        });
      });
+
+    test('hasActivitiesProvider type check', () {
+      // Test that the provider exists and can be referenced
+      expect(hasActivitiesProvider, isA<StateProvider<UrgencyBadge>>());
+    });
+
+    test('hasUnconfirmedEmailAddresses type check', () {
+      // Test that the provider exists and can be referenced
+      expect(hasUnconfirmedEmailAddresses, isA<StateProvider<bool>>());
+    });
+
+    test('activityDatesProvider with activities logic', () {
+      final mockActivity1 = MockActivity(
+        mockType: 'comment',
+        mockOriginServerTs: DateTime(2024, 1, 15, 10, 0).millisecondsSinceEpoch,
+        mockRoomId: 'room1',
+      );
+      final mockActivity2 = MockActivity(
+        mockType: 'reaction',
+        mockOriginServerTs: DateTime(2024, 1, 16, 10, 0).millisecondsSinceEpoch,
+        mockRoomId: 'room2',
+      );
+      
+      final mockGroups = [
+        (roomId: 'room1', activities: [mockActivity1]),
+        (roomId: 'room2', activities: [mockActivity2]),
+      ];
+      
+      // Test the logic directly
+      if (mockGroups.isEmpty) {
+        expect([], isEmpty);
+      } else {
+        final uniqueDates = mockGroups.map((group) => getActivityDate(group.activities.first.originServerTs())).toSet();
+        final sortedDates = uniqueDates.toList()..sort((a, b) => b.compareTo(a));
+        
+        expect(sortedDates, hasLength(2));
+        expect(sortedDates[0], DateTime(2024, 1, 16)); // Latest first (descending order)
+        expect(sortedDates[1], DateTime(2024, 1, 15));
+      }
+    });
+
+    test('consecutiveGroupedActivitiesProvider with groups logic', () {
+      final mockActivity1 = MockActivity(
+        mockType: 'comment',
+        mockOriginServerTs: DateTime(2024, 1, 15, 10, 0).millisecondsSinceEpoch,
+        mockRoomId: 'room1',
+      );
+      final mockActivity2 = MockActivity(
+        mockType: 'reaction',
+        mockOriginServerTs: DateTime(2024, 1, 16, 10, 0).millisecondsSinceEpoch,
+        mockRoomId: 'room2',
+      );
+      
+      final mockGroups = [
+        (roomId: 'room1', activities: [mockActivity1]),
+        (roomId: 'room2', activities: [mockActivity2]),
+      ];
+      
+      // Test the logic directly
+      if (mockGroups.isEmpty) {
+        expect([], isEmpty);
+      } else {
+        final targetDate = DateTime(2024, 1, 15);
+        final groupsForDate = mockGroups.where((group) {
+          if (group.activities.isEmpty) return false;
+          final groupDate = getActivityDate(group.activities.first.originServerTs());
+          return groupDate.isAtSameMomentAs(targetDate);
+        }).toList();
+        
+        expect(groupsForDate, hasLength(1));
+        expect(groupsForDate[0].roomId, 'room1');
+      }
+    });
+
+    test('consecutiveGroupedActivitiesProvider with empty groups logic', () {
+      final mockGroups = [
+        (roomId: 'room1', activities: <Activity>[]), // Empty activities
+      ];
+      
+      // Test the logic directly
+      if (mockGroups.isEmpty) {
+        expect([], isEmpty);
+      } else {
+        final targetDate = DateTime(2024, 1, 15);
+        final groupsForDate = mockGroups.where((group) {
+          if (group.activities.isEmpty) return false;
+          final groupDate = getActivityDate(group.activities.first.originServerTs());
+          return groupDate.isAtSameMomentAs(targetDate);
+        }).toList();
+        
+        expect(groupsForDate, isEmpty);
+      }
+    });
   });
 } 

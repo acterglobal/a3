@@ -1366,4 +1366,78 @@ void main() {
       container.dispose();
     });
   });
+
+  group('Grouping Logic Tests', () {
+    test('should test basic grouping logic directly', () {
+      // Test the grouping logic that's implemented in the notifier
+      final activity1 = showcase.MockActivity(
+        mockType: 'message',
+        mockActivityId: 'activity1',
+        mockOriginServerTs: DateTime(2024, 1, 15, 10, 0).millisecondsSinceEpoch,
+        mockRoomId: 'room1',
+      );
+      final activity2 = showcase.MockActivity(
+        mockType: 'reaction',
+        mockActivityId: 'activity2',
+        mockOriginServerTs: DateTime(2024, 1, 15, 10, 1).millisecondsSinceEpoch,
+        mockRoomId: 'room1',
+      );
+      
+      final activities = [activity1, activity2];
+      final sortedActivities = activities.toList()..sort((a, b) => b.originServerTs().compareTo(a.originServerTs()));
+      final groups = <RoomActivitiesInfo>[];
+      
+      for (final activity in sortedActivities) {
+        final roomId = activity.roomIdStr();
+        
+        if (groups.isNotEmpty && groups.last.roomId == roomId) {
+          final lastGroup = groups.last;
+          groups[groups.length - 1] = (roomId: roomId, activities: [...lastGroup.activities, activity]);
+        } else {
+          groups.add((roomId: roomId, activities: [activity]));
+        }
+      }
+      
+      expect(groups.length, 1);
+      expect(groups[0].roomId, 'room1');
+      expect(groups[0].activities.length, 2);
+    });
+
+    test('should test grouping logic with different rooms', () {
+      // Test grouping logic with activities from different rooms
+      final activity1 = showcase.MockActivity(
+        mockType: 'message',
+        mockActivityId: 'activity1',
+        mockOriginServerTs: DateTime(2024, 1, 15, 10, 0).millisecondsSinceEpoch,
+        mockRoomId: 'room1',
+      );
+      final activity2 = showcase.MockActivity(
+        mockType: 'reaction',
+        mockActivityId: 'activity2',
+        mockOriginServerTs: DateTime(2024, 1, 15, 10, 1).millisecondsSinceEpoch,
+        mockRoomId: 'room2',
+      );
+      
+      final activities = [activity1, activity2];
+      final sortedActivities = activities.toList()..sort((a, b) => b.originServerTs().compareTo(a.originServerTs()));
+      final groups = <RoomActivitiesInfo>[];
+      
+      for (final activity in sortedActivities) {
+        final roomId = activity.roomIdStr();
+        
+        if (groups.isNotEmpty && groups.last.roomId == roomId) {
+          final lastGroup = groups.last;
+          groups[groups.length - 1] = (roomId: roomId, activities: [...lastGroup.activities, activity]);
+        } else {
+          groups.add((roomId: roomId, activities: [activity]));
+        }
+      }
+      
+      expect(groups.length, 2);
+      expect(groups[0].roomId, 'room2');
+      expect(groups[0].activities.length, 1);
+      expect(groups[1].roomId, 'room1');
+      expect(groups[1].activities.length, 1);
+    });
+  });
 } 
