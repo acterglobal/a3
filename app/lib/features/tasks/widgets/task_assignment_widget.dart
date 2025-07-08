@@ -1,3 +1,4 @@
+import 'package:acter/features/tasks/actions/assign_unassign_task.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,13 +8,8 @@ import 'package:acter/l10n/generated/l10n.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:acter/router/routes.dart';
-import 'package:acter/features/notifications/actions/autosubscribe.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:logging/logging.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:atlas_icons/atlas_icons.dart';
-
-final _log = Logger('a3::tasks::task_assignment');
 
 class TaskAssignmentWidget extends ConsumerWidget {
   final Task task;
@@ -80,7 +76,7 @@ class TaskAssignmentWidget extends ConsumerWidget {
               memberId: memberId,
               style: Theme.of(context).textTheme.bodyLarge,
               onTap: (context, {required bool isMe, required VoidCallback defaultOnTap}) =>
-                  isMe ? _onUnAssign(context, ref) : defaultOnTap(),
+                  isMe ? onUnAssign(context, ref, task) : defaultOnTap(),
               trailingBuilder: (context, {bool isMe = false, double fontSize = 12}) =>
                   isMe ? Icon(PhosphorIconsLight.x, size: fontSize) : null,
             ),
@@ -111,7 +107,7 @@ class TaskAssignmentWidget extends ConsumerWidget {
           if (task.isAssignedToMe())
             MenuItemWidget(
               onTap: () {
-                _onUnAssign(context, ref);
+                onUnAssign(context, ref, task);
                 Navigator.pop(context);
               },
               title: lang.removeYourself,
@@ -123,7 +119,7 @@ class TaskAssignmentWidget extends ConsumerWidget {
           else
             MenuItemWidget(
               onTap: () {
-                _onAssign(context, ref);
+                onAssign(context, ref, task);
                 Navigator.pop(context);
               },
               title: lang.assignYourself,
@@ -150,45 +146,5 @@ class TaskAssignmentWidget extends ConsumerWidget {
         ],
       ),
     );
-  }
-
-  Future<void> _onAssign(BuildContext context, WidgetRef ref) async {
-    final lang = L10n.of(context);
-    EasyLoading.show(status: lang.assigningSelf);
-    try {
-      await task.assignSelf();
-      await autosubscribe(ref: ref, objectId: task.eventIdStr(), lang: lang);
-      EasyLoading.showToast(lang.assignedYourself);
-    } catch (e, s) {
-      _log.severe('Failed to self-assign task', e, s);
-      if (!context.mounted) {
-        EasyLoading.dismiss();
-        return;
-      }
-      EasyLoading.showError(
-        lang.failedToAssignSelf(e),
-        duration: const Duration(seconds: 3),
-      );
-    }
-  }
-
-  Future<void> _onUnAssign(BuildContext context, WidgetRef ref) async {
-    final lang = L10n.of(context);
-    EasyLoading.show(status: lang.unassigningSelf);
-    try {
-      await task.unassignSelf();
-      await autosubscribe(ref: ref, objectId: task.eventIdStr(), lang: lang);
-      EasyLoading.showToast(lang.assignmentWithdrawn);
-    } catch (e, s) {
-      _log.severe('Failed to self-unassign task', e, s);
-      if (!context.mounted) {
-        EasyLoading.dismiss();
-        return;
-      }
-      EasyLoading.showError(
-        lang.failedToUnassignSelf(e),
-        duration: const Duration(seconds: 3),
-      );
-    }
   }
 } 

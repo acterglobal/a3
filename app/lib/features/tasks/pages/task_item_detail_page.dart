@@ -3,8 +3,11 @@ import 'dart:async';
 import 'package:acter/common/actions/redact_content.dart';
 import 'package:acter/common/actions/report_content.dart';
 import 'package:acter/common/extensions/options.dart';
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/toolkit/errors/error_page.dart';
 import 'package:acter/common/toolkit/html/render_html.dart';
+import 'package:acter/features/member/providers/invite_providers.dart';
+import 'package:acter/features/tasks/widgets/accept_decline_task_invitation_widget.dart';
 import 'package:acter/features/tasks/widgets/task_assignment_widget.dart';
 import 'package:acter/features/tasks/widgets/task_invitations_widget.dart';
 import 'package:acter/router/routes.dart';
@@ -103,6 +106,8 @@ class _TaskItemBody extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final myUserId = ref.watch(myUserIdStrProvider);
+    final isUserInvitedForTask = ref.watch(taskUserInvitationProvider((task, myUserId))).valueOrNull ?? false;
     return Scaffold(
       appBar: _buildAppBar(context, ref),
       body: SingleChildScrollView(
@@ -115,6 +120,7 @@ class _TaskItemBody extends ConsumerWidget {
               _taskHeader(context, ref),
               const SizedBox(height: 10),
               _widgetTaskDate(context, ref),
+              if (isUserInvitedForTask) AcceptDeclineTaskInvitationWidget(task: task),
               TaskAssignmentWidget(task: task),
               TaskInvitationsWidget(task: task),
               ..._widgetDescription(context),

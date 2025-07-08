@@ -3194,5 +3194,7 @@
   "activityUIShowcase": "Activity UI Showcase",
   "@activityUIShowcase": {},
   "showcaseList": "Showcase List",
-  "@showcaseList": {}
+  "@showcaseList": {},
+  "invitedYouToTakeOverThisTask": "{inviterName} invited YOU to take over this task",
+  "@invitedYouToTakeOverThisTask": {}
 }

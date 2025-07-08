@@ -78,13 +78,3 @@ final taskHasInvitationsProvider = AsyncNotifierProvider.family<AsyncTaskHasInvi
 final taskUserInvitationProvider = AsyncNotifierProvider.family<AsyncTaskUserInvitationNotifier, bool, (Task, String)>(
   () => AsyncTaskUserInvitationNotifier(),
 );
-
-/// Provider for getting display names of invited users
-final invitedUserDisplayNameProvider = Provider.family<String, String>(
-  (ref, userId) {
-    // Extract username from Matrix ID (e.g., @acter017:m-1.acter.global -> acter017)
-    return userId.startsWith('@') 
-        ? userId.substring(1).split(':')[0] 
-        : userId.split(':')[0];
-  },
-);

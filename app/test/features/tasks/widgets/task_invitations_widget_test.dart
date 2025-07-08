@@ -45,9 +45,6 @@ void main() {
         taskInvitationsProvider.overrideWith(
           () => MockAsyncTaskInvitationsNotifier(),
         ),
-        invitedUserDisplayNameProvider.overrideWith(
-          (ref, userId) => userId,
-        ),
         myUserIdStrProvider.overrideWithValue('current_user'),
       ],
     );

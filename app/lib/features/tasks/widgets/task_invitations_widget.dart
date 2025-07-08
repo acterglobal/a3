@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:acter/common/toolkit/buttons/user_chip.dart';
 import 'package:acter/features/member/providers/invite_providers.dart';
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:go_router/go_router.dart';
@@ -60,15 +61,23 @@ class TaskInvitationsWidget extends ConsumerWidget {
     String roomId,
     WidgetRef ref,
   ) {
+    // sort users so that current user appears first
+    final currentUserId = ref.watch(myUserIdStrProvider);
+    final sortedUsers = List<String>.from(invitedUsers);
+    
+    if (sortedUsers.contains(currentUserId)) {
+      sortedUsers.remove(currentUserId);
+      sortedUsers.insert(0, currentUserId);
+    }
+    
     return Wrap(
       direction: Axis.horizontal,
       spacing: 5,
       runSpacing: 5,
-      children: invitedUsers.map((userId) {
-        final displayName = ref.watch(invitedUserDisplayNameProvider(userId));
+      children: sortedUsers.map((userId) {
         return UserChip(
           key: ValueKey(userId),
-          memberId: displayName,
+          memberId: userId,
           style: Theme.of(context).textTheme.bodyLarge,
           trailingBuilder: (context, {bool isMe = false, double fontSize = 12}) {
             return isMe ? Icon(PhosphorIconsLight.x, size: fontSize) : null;

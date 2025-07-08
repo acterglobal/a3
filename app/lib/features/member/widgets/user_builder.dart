@@ -268,7 +268,18 @@ class UserStateButton extends ConsumerWidget {
         ),
       );
     }
-    if (isJoined(userId, joined)) {
+    if (isUserInvitedForTask) {
+      return Chip(
+        label: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 5),
+          child: Text(lang.invited),
+        ),
+        backgroundColor: disabledColor,
+        side: BorderSide.none,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      );
+    }
+    if (isJoined(userId, joined) && task == null) {
       return Chip(
         label: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 5),
@@ -280,22 +291,21 @@ class UserStateButton extends ConsumerWidget {
       );
     }
     return InkWell(
-      onTap: () => isUserInvitedForTask ? null : onInvite.call(userId),
+      onTap: () => onInvite.call(userId),
       child: Chip(
-        backgroundColor: isUserInvitedForTask ? disabledColor : null,
         label: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(isUserInvitedForTask ? lang.invited : lang.invite, style: TextStyle(color: isUserInvitedForTask ? colorScheme.onSecondary : colorScheme.primary)),
+            Text(lang.invite, style: TextStyle(color: colorScheme.primary)),
             const SizedBox(width: 5),
-            isUserInvitedForTask ? const SizedBox.shrink() : Icon(
+            Icon(
               Atlas.paper_airplane_thin,
               color: colorScheme.primary,
               size: 16,
             ),
           ],
         ),
-        side: isUserInvitedForTask ? BorderSide.none : BorderSide(color: colorScheme.primary),
+        side: BorderSide(color: colorScheme.primary),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
     );
