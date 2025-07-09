@@ -171,20 +171,23 @@ class AllActivitiesNotifier extends AsyncNotifier<List<RoomActivitiesInfo>> {
       // Sort by time descending
       final sortedActivities = spaceActivities..sort((a, b) => b.originServerTs().compareTo(a.originServerTs()));
 
-      // Group consecutive activities by roomId AND date
+      // Group activities by roomId AND date for better UI organization
+      // This creates separate groups when activities are from different rooms or different dates
       final groups = <RoomActivitiesInfo>[];
       
       for (final activity in sortedActivities) {
         final roomId = activity.roomIdStr();
         final activityDate = getActivityDate(activity.originServerTs());
         
+        // Check if we can add to the last group (same room AND same date)
         if (groups.isNotEmpty && 
             groups.last.roomId == roomId && 
             getActivityDate(groups.last.activities.first.originServerTs()).isAtSameMomentAs(activityDate)) {
+          // Add to existing group: same room and same date
           final lastGroup = groups.last;
           groups[groups.length - 1] = (roomId: roomId, activities: [...lastGroup.activities, activity]);
         } else {
-          // Create new group (different room OR different date)
+          // Create new group: different room OR different date
           groups.add((roomId: roomId, activities: [activity]));
         }
       }
