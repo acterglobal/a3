@@ -208,7 +208,7 @@ void main() {
     });
   });
 
-  group('AcceptDeclineTaskInvitationWidget - side effects and provider variations', () {
+  group('AcceptDeclineTaskInvitationWidget - Provider Integration and Avatar Logic Tests', () {
     late MockTask mockTask;
     late AvatarInfo mockAvatarInfo;
     const testRoomId = 'room123';
