@@ -245,6 +245,7 @@ void main() {
         eventId: 'event123',
         hasInvitations: true,
         invitedUsers: ['@user1:example.com'],
+        currentUserId: '@user1:example.com',
       );
 
       final notifier = container.read(asyncTaskUserInvitationProvider((mockTask, '@user1:example.com')).notifier);
@@ -260,6 +261,7 @@ void main() {
         eventId: 'event123',
         hasInvitations: true,
         invitedUsers: ['@user1:example.com'],
+        currentUserId: '@user2:example.com',
       );
 
       final notifier = container.read(asyncTaskUserInvitationProvider((mockTask, '@user2:example.com')).notifier);
@@ -275,6 +277,7 @@ void main() {
         eventId: 'event123',
         hasInvitations: false,
         invitedUsers: [],
+        currentUserId: '@user1:example.com',
       );
 
       final notifier = container.read(asyncTaskUserInvitationProvider((mockTask, '@user1:example.com')).notifier);
@@ -290,6 +293,7 @@ void main() {
         eventId: 'event123',
         hasInvitations: true,
         invitedUsers: ['@user1:example.com'],
+        currentUserId: '@user2:example.com',
       );
 
       final notifier = container.read(asyncTaskUserInvitationProvider((initialTask, '@user2:example.com')).notifier);
@@ -302,6 +306,7 @@ void main() {
         eventId: 'event123',
         hasInvitations: true,
         invitedUsers: ['@user1:example.com', '@user2:example.com'],
+        currentUserId: '@user2:example.com',
       );
 
       // Create a new notifier with the updated task

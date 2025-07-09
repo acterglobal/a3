@@ -7,12 +7,22 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:acter/l10n/generated/l10n.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import '../../../helpers/mock_invites.dart' as invites;
 import '../../../helpers/mock_tasks_providers.dart' as tasks;
 import '../../../helpers/test_util.dart';
 import '../../../helpers/mock_room_providers.dart' as room_mocks;
 import '../../../helpers/mock_membership.dart' as membership;
 import '../../../helpers/mock_room_providers.dart' show MockAlwaysTheSameRoomNotifier;
+
+class MockAsyncTaskUserInvitationNotifier extends AsyncTaskUserInvitationNotifier {
+  final bool isUserInvitedForTask;
+
+  MockAsyncTaskUserInvitationNotifier(this.isUserInvitedForTask);
+
+  @override
+  Future<bool> build((Task, String) params) async => isUserInvitedForTask;
+}
 
 void main() {
   late invites.MockUserProfile mockUserProfile;
@@ -43,6 +53,10 @@ void main() {
     WidgetTester tester, {
     required bool includeSharedRooms,
     required VoidCallback onTap,
+    String? roomId,
+    bool? includeUserJoinState,
+    tasks.MockTask? task,
+    bool roomExists = true,
   }) async {
     await tester.pumpProviderWidget(
       child: MaterialApp(
@@ -56,20 +70,28 @@ void main() {
         locale: const Locale('en'),
         home: UserBuilder(
           userProfile: mockUserProfile,
-          roomId: mockRoom.roomIdStr(),
+          roomId: roomId,
           userId: mockUserProfile.userId().toString(),
           includeSharedRooms: includeSharedRooms,
+          includeUserJoinState: includeUserJoinState ?? true,
           onTap: onTap,
+          task: task,
         ),
       ),
       overrides: [
-        maybeRoomProvider.overrideWith(() => MockAlwaysTheSameRoomNotifier(room: mockRoom)),
+        maybeRoomProvider.overrideWith(() => roomExists 
+          ? MockAlwaysTheSameRoomNotifier(room: mockRoom)
+          : MockAlwaysTheSameRoomNotifier(room: null)
+        ),
         membersIdsProvider.overrideWith((ref, roomId) => Future.value(['test_user_id'])),
         roomInvitedMembersProvider.overrideWith((ref, roomId) => Future.value([])),
         isDirectChatProvider.overrideWith((ref, roomId) => Future.value(false)),
         roomDisplayNameProvider.overrideWith((ref, roomId) async {
           if (roomId == 'room1') return 'Shared Room 1';
           if (roomId == 'room2') return 'Shared Room 2';
+          if (roomId == 'room3') return 'Shared Room 3';
+          if (roomId == 'room4') return 'Shared Room 4';
+          if (roomId == 'room5') return 'Shared Room 5';
           if (roomId == mockRoom.roomIdStr()) return 'Test Room';
           final room = await ref.watch(maybeRoomProvider(roomId).future);
           if (room == null) return null;
@@ -77,7 +99,7 @@ void main() {
         }),
       ],
     );
-    await tester.pumpAndSettle();
+    await tester.pump();
   }
 
   Future<void> pumpUserStateButton(
@@ -85,36 +107,39 @@ void main() {
     required bool isInvited,
     required Future<void> Function(String) onInvite,
     required Future<void> Function(String) onCancelInvite,
+    bool isUserInvitedForTask = false,
+    bool isJoined = false,
+    tasks.MockTask? task,
   }) async {
-    mockTask = tasks.MockTask(
+    final testTask = tasks.MockTask(
       fakeTitle: 'Test Task',
       roomId: 'test_room_id',
       eventId: 'test_event_id',
       hasInvitations: true,
       invitedUsers: isInvited ? ['test_user_id'] : [],
+      currentUserId: isUserInvitedForTask ? 'test_user_id' : null,
     );
-
-    final notifier = AsyncTaskUserInvitationNotifier();
-    notifier.arg = (mockTask, mockUserProfile.userId().toString());
 
     await tester.pumpProviderWidget(
       child: UserStateButton(
         room: mockRoom,
-        task: mockTask,
+        task: task ?? testTask,
         userId: mockUserProfile.userId().toString(),
         onInvite: onInvite,
         onCancelInvite: onCancelInvite,
       ),
       overrides: [
-        taskUserInvitationProvider.overrideWith(() => notifier),
+        taskUserInvitationProvider.overrideWith(() => MockAsyncTaskUserInvitationNotifier(isUserInvitedForTask)),
         roomInvitedMembersProvider.overrideWith((ref, roomId) => Future.value(
           isInvited ? [membership.MockMember(userId: 'test_user_id')] : []
         )),
-        membersIdsProvider.overrideWith((ref, roomId) => Future.value([])),
+        membersIdsProvider.overrideWith((ref, roomId) => Future.value(
+          isJoined ? ['test_user_id'] : []
+        )),
         isDirectChatProvider.overrideWith((ref, roomId) => Future.value(false)),
       ],
     );
-    await tester.pumpAndSettle();
+    await tester.pump();
   }
 
   group('UserBuilder', () {
@@ -137,6 +162,88 @@ void main() {
       await tester.tap(find.byType(ListTile));
       expect(tapped, true);
     });
+
+    testWidgets('shows skeletonizer when room is null', (tester) async {
+      await pumpUserBuilder(
+        tester,
+        includeSharedRooms: false,
+        onTap: () {},
+        roomId: 'non_existent_room',
+        roomExists: false,
+      );
+      expect(find.text('user'), findsOneWidget);
+    });
+
+    testWidgets('does not show trailing when includeUserJoinState is false', (tester) async {
+      await pumpUserBuilder(
+        tester,
+        includeSharedRooms: false,
+        onTap: () {},
+        includeUserJoinState: false,
+      );
+      // Should not find any UserStateButton or Skeletonizer
+      expect(find.byType(UserStateButton), findsNothing);
+      expect(find.text('user'), findsNothing);
+    });
+
+    testWidgets('shows shared rooms when includeSharedRooms is true', (tester) async {
+      await pumpUserBuilder(
+        tester,
+        includeSharedRooms: true,
+        onTap: () {},
+      );
+      final context = tester.element(find.byType(UserBuilder));
+      final lang = L10n.of(context);
+      expect(find.text(lang.youAreBothIn), findsOneWidget);
+    });
+
+    testWidgets('shows shared rooms with 3 rooms', (tester) async {
+      mockUserProfile = invites.MockUserProfile(
+        userId: 'test_user_id',
+        displayName: 'Test User',
+        sharedRooms: ['room1', 'room2', 'room3'],
+      );
+      await pumpUserBuilder(
+        tester,
+        includeSharedRooms: true,
+        onTap: () {},
+      );
+      final context = tester.element(find.byType(UserBuilder));
+      final lang = L10n.of(context);
+      expect(find.text(lang.youAreBothIn), findsOneWidget);
+    });
+
+    testWidgets('shows shared rooms with more than 3 rooms', (tester) async {
+      mockUserProfile = invites.MockUserProfile(
+        userId: 'test_user_id',
+        displayName: 'Test User',
+        sharedRooms: ['room1', 'room2', 'room3', 'room4', 'room5'],
+      );
+      await pumpUserBuilder(
+        tester,
+        includeSharedRooms: true,
+        onTap: () {},
+      );
+      final context = tester.element(find.byType(UserBuilder));
+      final lang = L10n.of(context);
+      expect(find.text(lang.youAreBothIn), findsOneWidget);
+    });
+
+    testWidgets('does not show shared rooms when empty', (tester) async {
+      mockUserProfile = invites.MockUserProfile(
+        userId: 'test_user_id',
+        displayName: 'Test User',
+        sharedRooms: [],
+      );
+      await pumpUserBuilder(
+        tester,
+        includeSharedRooms: true,
+        onTap: () {},
+      );
+      final context = tester.element(find.byType(UserBuilder));
+      final lang = L10n.of(context);
+      expect(find.text(lang.youAreBothIn), findsNothing);
+    });
   });
 
   group('UserStateButton', () {
@@ -147,7 +254,6 @@ void main() {
         onInvite: (_) async {},
         onCancelInvite: (_) async {},
       );
-      await tester.pumpAndSettle();
       expect(find.byIcon(Atlas.paper_airplane_thin), findsOneWidget);
     });
 
@@ -161,6 +267,31 @@ void main() {
       expect(find.text('Revoke'), findsOneWidget);
     });
 
+    testWidgets('shows invited chip when user is invited for task', (tester) async {
+      await pumpUserStateButton(
+        tester,
+        isInvited: false,
+        isUserInvitedForTask: true,
+        onInvite: (_) async {},
+        onCancelInvite: (_) async {},
+        task: mockTask,
+      );
+      expect(find.text('Invited'), findsOneWidget);
+    });
+
+    testWidgets('does not show joined chip when user is joined but task exists', (tester) async {
+      await pumpUserStateButton(
+        tester,
+        isInvited: false,
+        isJoined: true,
+        onInvite: (_) async {},
+        onCancelInvite: (_) async {},
+        task: mockTask,
+      );
+      expect(find.text('Joined'), findsNothing);
+      expect(find.byIcon(Atlas.paper_airplane_thin), findsOneWidget);
+    });
+
     testWidgets('handles invite callback', (tester) async {
       var callbackCalled = false;
       await pumpUserStateButton(
@@ -172,7 +303,6 @@ void main() {
         },
         onCancelInvite: (userId) async {},
       );
-      await tester.pumpAndSettle();
       
       // Find the first InkWell that contains the paper airplane icon
       final buttonFinder = find.ancestor(
@@ -181,7 +311,6 @@ void main() {
       ).first;
       expect(buttonFinder, findsOneWidget, reason: 'Invite button should be present');
       await tester.tap(buttonFinder);
-      await tester.pumpAndSettle();
       expect(callbackCalled, true);
     });
 
@@ -197,4 +326,4 @@ void main() {
       expect(cancelled, true);
     });
   });
-} 
+}

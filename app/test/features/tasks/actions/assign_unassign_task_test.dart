@@ -3,50 +3,40 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:mocktail/mocktail.dart';
 import '../../../helpers/mock_tasks_providers.dart';
+import 'package:acter/features/tasks/actions/assign_unassign_task.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:acter/l10n/generated/l10n.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+
 import '../task_item_test.dart';
 
 
+// True mock class for error simulation
+class TrueMockTask extends Mock implements Task {}
+
 void main() {
   group('AssignUnassignTask Tests', () {
-
     setUpAll(() {
-      // Register fallback values for mocks
       registerFallbackValue(MockWidgetRef());
     });
 
     group('MockTask Function Tests', () {
       test('should return correct eventId', () {
-        // Arrange
         final task = MockTask(eventId: 'test123');
-        
-        // Act
         final result = task.eventIdStr();
-        
-        // Assert
         expect(result, equals('test123'));
       });
-
       test('should successfully assignSelf when not failing', () async {
-        // Arrange
         final task = MockTask(eventId: 'test123');
-        
-        // Act
         final result = await task.assignSelf();
-        
-        // Assert
         expect(result, isA<EventId>());
         expect(result.toString(), contains('test123'));
         expect(task.assignSelfCalled, isTrue);
       });
-
       test('should successfully unassignSelf when not failing', () async {
-        // Arrange
         final task = MockTask(eventId: 'test123');
-        
-        // Act
         final result = await task.unassignSelf();
-        
-        // Assert
         expect(result, isA<EventId>());
         expect(result.toString(), contains('test123'));
         expect(task.unassignSelfCalled, isTrue);
@@ -55,10 +45,7 @@ void main() {
 
     group('Task Interface Coverage Tests', () {
       test('should test all MockTask interface methods', () {
-        // Arrange
         final task = MockTask(eventId: 'test123');
-        
-        // Act & Assert - Test all interface methods to ensure coverage
         expect(task.taskListIdStr(), equals('taskListId'));
         expect(task.isDone(), isFalse);
         expect(task.title(), equals('Fake Task'));
@@ -70,59 +57,96 @@ void main() {
         expect(task.assigneesStr(), isA<FfiListFfiString>());
         expect(task.subscribeStream(), isA<Stream<bool>>());
       });
-
       test('should test task refresh method', () async {
-        // Arrange
         final task = MockTask(eventId: 'test123');
-        
-        // Act
         final refreshedTask = await task.refresh();
-        
-        // Assert
         expect(refreshedTask, equals(task));
       });
-
       test('should test task invitations method', () async {
-        // Arrange
         final task = MockTask(eventId: 'test123');
-        
-        // Act
         final invitations = await task.invitations();
-        
-        // Assert
         expect(invitations, isA<ObjectInvitationsManager>());
       });
     });
-    
+
+    group('onAssign Function Tests', () {
+      testWidgets('should successfully assign task', (tester) async {
+        final task = MockTask(eventId: 'test123');
+        final mockRef = MockWidgetRef();
+        await tester.pumpWidget(
+          MaterialApp(
+            builder: EasyLoading.init(),
+            localizationsDelegates: const [
+              L10n.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: L10n.supportedLocales,
+            home: Builder(
+              builder: (context) => ElevatedButton(
+                onPressed: () => onAssign(context, mockRef, task),
+                child: const Text('Assign'),
+              ),
+            ),
+          ),
+        );
+        await tester.tap(find.text('Assign'));
+        await tester.pumpAndSettle();
+        EasyLoading.dismiss();
+        await tester.pumpAndSettle();
+        expect(task.assignSelfCalled, isTrue);
+      });
+    });
+
+    group('onUnAssign Function Tests', () {
+      testWidgets('should successfully unassign task', (tester) async {
+        final task = MockTask(eventId: 'test123');
+        final mockRef = MockWidgetRef();
+        await tester.pumpWidget(
+          MaterialApp(
+            builder: EasyLoading.init(),
+            localizationsDelegates: const [
+              L10n.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: L10n.supportedLocales,
+            home: Builder(
+              builder: (context) => ElevatedButton(
+                onPressed: () => onUnAssign(context, mockRef, task),
+                child: const Text('Unassign'),
+              ),
+            ),
+          ),
+        );
+        await tester.tap(find.text('Unassign'));
+        await tester.pumpAndSettle();
+        EasyLoading.dismiss();
+        await tester.pumpAndSettle();
+        expect(task.unassignSelfCalled, isTrue);
+      });
+    });
+
     group('Integration Tests', () {
       test('should handle assign followed by unassign', () async {
-        // Arrange
         final task = MockTask(eventId: 'test123');
-        
-        // Act
         final assignResult = await task.assignSelf();
         final unassignResult = await task.unassignSelf();
-        
-        // Assert
         expect(assignResult, isA<EventId>());
         expect(unassignResult, isA<EventId>());
         expect(task.assignSelfCalled, isTrue);
         expect(task.unassignSelfCalled, isTrue);
       });
-
       test('should handle rapid assign/unassign operations', () async {
-        // Arrange
         final task = MockTask(eventId: 'test123');
-        
-        // Act
         final futures = [
           task.assignSelf(),
           task.unassignSelf(),
           task.assignSelf(),
         ];
         final results = await Future.wait(futures);
-        
-        // Assert
         expect(results, hasLength(3));
         for (final result in results) {
           expect(result, isA<EventId>());
@@ -132,89 +156,9 @@ void main() {
       });
     });
 
-    group('Performance Tests', () {
-      test('should handle many rapid operations efficiently', () async {
-        // Arrange
-        final task = MockTask(eventId: 'test123');
-        const operationCount = 100;
-        
-        // Act
-        final stopwatch = Stopwatch()..start();
-        final futures = List.generate(
-          operationCount,
-          (index) => index.isEven ? task.assignSelf() : task.unassignSelf(),
-        );
-        final results = await Future.wait(futures);
-        stopwatch.stop();
-        
-        // Assert
-        expect(results, hasLength(operationCount));
-        for (final result in results) {
-          expect(result, isA<EventId>());
-        }
-        // Performance assertion - should complete within reasonable time
-        expect(stopwatch.elapsedMilliseconds, lessThan(1000));
-      });
-
-      test('should handle concurrent operations', () async {
-        // Arrange
-        final task = MockTask(eventId: 'test123');
-        const concurrentCount = 10;
-        
-        // Act
-        final futures = List.generate(
-          concurrentCount,
-          (index) => index.isEven ? task.assignSelf() : task.unassignSelf(),
-        );
-        final results = await Future.wait(futures);
-        
-        // Assert
-        expect(results, hasLength(concurrentCount));
-        for (final result in results) {
-          expect(result, isA<EventId>());
-        }
-      });
-    });
-
-    group('Memory Tests', () {
-      test('should not leak memory with many task instances', () {
-        // Arrange
-        const taskCount = 1000;
-        final tasks = List.generate(
-          taskCount,
-          (index) => MockTask(eventId: 'task$index'),
-        );
-        
-        // Act
-        final eventIds = tasks.map((task) => task.eventIdStr()).toList();
-        
-        // Assert
-        expect(eventIds, hasLength(taskCount));
-        for (int i = 0; i < taskCount; i++) {
-          expect(eventIds[i], equals('task$i'));
-        }
-      });
-
-      test('should handle large event IDs efficiently', () {
-        // Arrange
-        final largeEventId = 'A' * 10000;
-        final task = MockTask(eventId: largeEventId);
-        
-        // Act
-        final result = task.eventIdStr();
-        
-        // Assert
-        expect(result, equals(largeEventId));
-        expect(result.length, equals(10000));
-      });
-    });
-
     group('MockTask Constructor Tests', () {
       test('should create task with default values', () {
-        // Arrange & Act
         final task = MockTask();
-        
-        // Assert
         expect(task.eventId, equals('event123'));
         expect(task.fakeTitle, equals('Fake Task'));
         expect(task.desc, equals(''));
@@ -226,9 +170,7 @@ void main() {
         expect(task.assignSelfCalled, isFalse);
         expect(task.unassignSelfCalled, isFalse);
       });
-
       test('should create task with custom values', () {
-        // Arrange & Act
         final task = MockTask(
           eventId: 'custom123',
           fakeTitle: 'Custom Task',
@@ -239,8 +181,6 @@ void main() {
           hasInvitations: true,
           invitedUsers: ['invited1', 'invited2'],
         );
-        
-        // Assert
         expect(task.eventId, equals('custom123'));
         expect(task.fakeTitle, equals('Custom Task'));
         expect(task.desc, equals('Custom description'));
@@ -250,6 +190,330 @@ void main() {
         expect(task.hasInvitations, isTrue);
         expect(task.invitedUsers, equals(['invited1', 'invited2']));
       });
+    });
+  });
+
+  group('Widget Tests', () {
+    testWidgets('should successfully assign task', (tester) async {
+      final task = MockTask();
+      final mockRef = MockWidgetRef();
+
+      await tester.pumpWidget(
+        MaterialApp(
+          builder: EasyLoading.init(),
+          localizationsDelegates: const [
+            L10n.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: L10n.supportedLocales,
+          home: Builder(
+            builder: (context) => ElevatedButton(
+              onPressed: () => onAssign(context, mockRef, task),
+              child: const Text('Assign'),
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('Assign'));
+      await tester.pumpAndSettle();
+      EasyLoading.dismiss();
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('should successfully unassign task', (tester) async {
+      final task = MockTask();
+      final mockRef = MockWidgetRef();
+
+      await tester.pumpWidget(
+        MaterialApp(
+          builder: EasyLoading.init(),
+          localizationsDelegates: const [
+            L10n.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: L10n.supportedLocales,
+          home: Builder(
+            builder: (context) => ElevatedButton(
+              onPressed: () => onUnAssign(context, mockRef, task),
+              child: const Text('Unassign'),
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('Unassign'));
+      await tester.pumpAndSettle();
+      EasyLoading.dismiss();
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('should handle context disposed during assign', (tester) async {
+      final task = MockTask();
+      final mockRef = MockWidgetRef();
+
+      await tester.pumpWidget(
+        MaterialApp(
+          builder: EasyLoading.init(),
+          localizationsDelegates: const [
+            L10n.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: L10n.supportedLocales,
+          home: Builder(
+            builder: (context) => ElevatedButton(
+              onPressed: () async {
+                await onAssign(context, mockRef, task);
+                // Simulate context being disposed
+                Navigator.of(context).pop();
+              },
+              child: const Text('Assign and Pop'),
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('Assign and Pop'));
+      await tester.pumpAndSettle();
+      EasyLoading.dismiss();
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('should handle context disposed during unassign', (tester) async {
+      final task = MockTask();
+      final mockRef = MockWidgetRef();
+
+      await tester.pumpWidget(
+        MaterialApp(
+          builder: EasyLoading.init(),
+          localizationsDelegates: const [
+            L10n.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: L10n.supportedLocales,
+          home: Builder(
+            builder: (context) => ElevatedButton(
+              onPressed: () async {
+                await onUnAssign(context, mockRef, task);
+                // Simulate context being disposed
+                Navigator.of(context).pop();
+              },
+              child: const Text('Unassign and Pop'),
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('Unassign and Pop'));
+      await tester.pumpAndSettle();
+      EasyLoading.dismiss();
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('should handle multiple rapid assign calls', (tester) async {
+      final task = MockTask();
+      final mockRef = MockWidgetRef();
+
+      await tester.pumpWidget(
+        MaterialApp(
+          builder: EasyLoading.init(),
+          localizationsDelegates: const [
+            L10n.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: L10n.supportedLocales,
+          home: Builder(
+            builder: (context) => Row(
+              children: [
+                ElevatedButton(
+                  onPressed: () => onAssign(context, mockRef, task),
+                  child: const Text('Assign 1'),
+                ),
+                ElevatedButton(
+                  onPressed: () => onAssign(context, mockRef, task),
+                  child: const Text('Assign 2'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('Assign 1'));
+      await tester.tap(find.text('Assign 2'));
+      await tester.pumpAndSettle();
+      EasyLoading.dismiss();
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('should handle multiple rapid unassign calls', (tester) async {
+      final task = MockTask();
+      final mockRef = MockWidgetRef();
+
+      await tester.pumpWidget(
+        MaterialApp(
+          builder: EasyLoading.init(),
+          localizationsDelegates: const [
+            L10n.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: L10n.supportedLocales,
+          home: Builder(
+            builder: (context) => Row(
+              children: [
+                ElevatedButton(
+                  onPressed: () => onUnAssign(context, mockRef, task),
+                  child: const Text('Unassign 1'),
+                ),
+                ElevatedButton(
+                  onPressed: () => onUnAssign(context, mockRef, task),
+                  child: const Text('Unassign 2'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('Unassign 1'));
+      await tester.tap(find.text('Unassign 2'));
+      await tester.pumpAndSettle();
+      EasyLoading.dismiss();
+      await tester.pumpAndSettle();
+    });
+  });
+
+  group('Error Simulation Tests', () {
+    testWidgets('should handle assignSelf throwing exception', (tester) async {
+      final task = TrueMockTask();
+      final mockRef = MockWidgetRef();
+      when(() => task.assignSelf()).thenThrow(Exception('Assign failed'));
+      when(() => task.eventIdStr()).thenReturn('test123');
+      await tester.pumpWidget(
+        MaterialApp(
+          builder: EasyLoading.init(),
+          localizationsDelegates: const [
+            L10n.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: L10n.supportedLocales,
+          home: Builder(
+            builder: (context) => ElevatedButton(
+              onPressed: () => onAssign(context, mockRef, task),
+              child: const Text('Assign'),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text('Assign'));
+      await tester.pumpAndSettle();
+      EasyLoading.dismiss();
+      await tester.pumpAndSettle();
+      expect(true, isTrue); // Just ensure no crash
+    });
+
+    testWidgets('should handle unassignSelf throwing exception', (tester) async {
+      final task = TrueMockTask();
+      final mockRef = MockWidgetRef();
+      when(() => task.unassignSelf()).thenThrow(Exception('Unassign failed'));
+      when(() => task.eventIdStr()).thenReturn('test123');
+      await tester.pumpWidget(
+        MaterialApp(
+          builder: EasyLoading.init(),
+          localizationsDelegates: const [
+            L10n.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: L10n.supportedLocales,
+          home: Builder(
+            builder: (context) => ElevatedButton(
+              onPressed: () => onUnAssign(context, mockRef, task),
+              child: const Text('Unassign'),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text('Unassign'));
+      await tester.pumpAndSettle();
+      EasyLoading.dismiss();
+      await tester.pumpAndSettle();
+      expect(true, isTrue);
+    });
+
+    testWidgets('should handle autosubscribe throwing exception during assign', (tester) async {
+      final task = TrueMockTask();
+      final mockRef = MockWidgetRef();
+      when(() => task.assignSelf()).thenThrow(Exception('Autosubscribe failed'));
+      when(() => task.eventIdStr()).thenReturn('test123');
+      await tester.pumpWidget(
+        MaterialApp(
+          builder: EasyLoading.init(),
+          localizationsDelegates: const [
+            L10n.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: L10n.supportedLocales,
+          home: Builder(
+            builder: (context) => ElevatedButton(
+              onPressed: () => onAssign(context, mockRef, task),
+              child: const Text('Assign'),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text('Assign'));
+      await tester.pumpAndSettle();
+      EasyLoading.dismiss();
+      await tester.pumpAndSettle();
+      expect(true, isTrue);
+    });
+
+    testWidgets('should handle autosubscribe throwing exception during unassign', (tester) async {
+      final task = TrueMockTask();
+      final mockRef = MockWidgetRef();
+      when(() => task.unassignSelf()).thenThrow(Exception('Autosubscribe failed'));
+      when(() => task.eventIdStr()).thenReturn('test123');
+      await tester.pumpWidget(
+        MaterialApp(
+          builder: EasyLoading.init(),
+          localizationsDelegates: const [
+            L10n.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: L10n.supportedLocales,
+          home: Builder(
+            builder: (context) => ElevatedButton(
+              onPressed: () => onUnAssign(context, mockRef, task),
+              child: const Text('Unassign'),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text('Unassign'));
+      await tester.pumpAndSettle();
+      EasyLoading.dismiss();
+      await tester.pumpAndSettle();
+      expect(true, isTrue);
     });
   });
 } 

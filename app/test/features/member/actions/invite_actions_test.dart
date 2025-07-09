@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 
 import '../../../helpers/mock_membership.dart';
 import '../../../helpers/mock_room_providers.dart';
@@ -109,6 +110,68 @@ void main() {
     testWidgets('handleCancelInvite', (tester) async {
       final mockRoom = MockRoom(roomId: testRoomId);
       final mockMember = MockMember();
+
+      await tester.pumpProviderWidget(
+        overrides: [
+          memberProvider.overrideWith((ref, params) => Future.value(mockMember)),
+        ],
+        child: buildTestWidget(
+          Builder(
+            builder: (context) => Consumer(
+              builder: (context, ref, _) => ElevatedButton(
+                onPressed: () => InviteActions.handleCancelInvite(
+                  context: context,
+                  ref: ref,
+                  userId: testUserId,
+                  room: mockRoom,
+                ),
+                child: const Text('Cancel Invite'),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.byType(ElevatedButton));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
+    });
+
+    testWidgets('handleCancelInvite when member is null', (tester) async {
+      final mockRoom = MockRoom(roomId: testRoomId);
+
+      await tester.pumpProviderWidget(
+        overrides: [
+          memberProvider.overrideWith((ref, params) => Future.value(MockMember())),
+        ],
+        child: buildTestWidget(
+          Builder(
+            builder: (context) => Consumer(
+              builder: (context, ref, _) => ElevatedButton(
+                onPressed: () => InviteActions.handleCancelInvite(
+                  context: context,
+                  ref: ref,
+                  userId: testUserId,
+                  room: mockRoom,
+                ),
+                child: const Text('Cancel Invite'),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.byType(ElevatedButton));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
+    });
+
+    testWidgets('handleCancelInvite with error', (tester) async {
+      final mockRoom = MockRoom(roomId: testRoomId);
+      final mockMember = MockMember();
+
+      // Make the kick method throw an exception
+      when(() => mockMember.kick(any())).thenThrow(Exception('Kick failed'));
 
       await tester.pumpProviderWidget(
         overrides: [

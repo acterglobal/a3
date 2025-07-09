@@ -189,6 +189,7 @@ class MockTask extends Mock implements Task {
   final String eventId;
   final bool hasInvitations;
   final List<String> invitedUsers;
+  final String? currentUserId;
   bool assignSelfCalled = false;
   bool unassignSelfCalled = false;
 
@@ -202,6 +203,7 @@ class MockTask extends Mock implements Task {
     this.eventId = 'event123',
     this.hasInvitations = false,
     this.invitedUsers = const [],
+    this.currentUserId,
   });
 
   @override
@@ -258,6 +260,7 @@ class MockTask extends Mock implements Task {
     return MockInvitationsManager(
       hasInvitations: hasInvitations,
       invitedUsers: invitedUsers,
+      currentUserId: currentUserId,
     );
   }
 
@@ -345,10 +348,12 @@ class MockFfiListTaskList extends Mock implements FfiListTaskList {
 class MockInvitationsManager extends Mock implements ObjectInvitationsManager {
   final bool _hasInvitations;
   final List<String> invitedUsers;
+  final String? currentUserId;
 
   MockInvitationsManager({
     bool hasInvitations = false,
     this.invitedUsers = const [],
+    this.currentUserId,
   }) : _hasInvitations = hasInvitations;
 
   @override
@@ -365,4 +370,12 @@ class MockInvitationsManager extends Mock implements ObjectInvitationsManager {
 
   @override
   Stream<bool> subscribeStream() => Stream.value(true);
+
+  @override
+  bool isInvited() {
+    if (!_hasInvitations || currentUserId == null) {
+      return false;
+    }
+    return invitedUsers.contains(currentUserId);
+  }
 }

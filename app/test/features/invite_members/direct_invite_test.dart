@@ -104,5 +104,39 @@ void main() {
       // Verify UserStateButton is shown
       expect(find.byType(UserStateButton), findsOneWidget);
     });
+
+    testWidgets('shows skeletonizer when room is null', (WidgetTester tester) async {
+      await createWidgetUnderTest(
+        tester: tester,
+        room: null,
+      );
+
+      // Verify Skeletonizer is shown when room is null
+      expect(find.text('Loading room'), findsOneWidget);
+      expect(find.byType(UserStateButton), findsNothing);
+    });
+
+    testWidgets('shows user ID when user is both invited and joined', (WidgetTester tester) async {
+      final mockMember = MockMember(
+        mockMemberId: testUserId,
+        mockRoomId: testRoomId,
+        mockMembershipStatusStr: 'invite',
+        mockCanString: true,
+      );
+
+      await createWidgetUnderTest(
+        tester: tester,
+        invitedMembers: [mockMember],
+        joinedMembers: [testUserId],
+      );
+
+      // Get the context and L10n instance
+      final BuildContext context = tester.element(find.byType(DirectInvite));
+      final lang = L10n.of(context);
+
+      // When user is both invited and joined, it should show the user ID, not the direct invite text
+      expect(find.text(testUserId), findsOneWidget);
+      expect(find.text(lang.directInviteUser(testUserId)), findsNothing);
+    });
   });
 }
