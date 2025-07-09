@@ -88,7 +88,7 @@ DateTime getActivityDate(int timestamp) {
   final activityDate = DateTime.fromMillisecondsSinceEpoch(timestamp).toLocal();
   return DateTime(activityDate.year, activityDate.month, activityDate.day);
 }
-      
+
 final activityDatesProvider = Provider<List<DateTime>>((ref) {
   final activities = ref.watch(allActivitiesProvider).valueOrNull ?? [];
 
@@ -98,8 +98,8 @@ final activityDatesProvider = Provider<List<DateTime>>((ref) {
   return uniqueDates.toList()..sort((a, b) => b.compareTo(a));
 });
 
-// Provider for consecutive grouped activities - uses the notifie r's state directly
-final consecutiveGroupedActivitiesProvider = Provider.family<List<RoomActivitiesInfo>, DateTime>((ref, date) {
+// Provider that filters and returns activities grouped by room for a specific date
+final activitiesByDateProvider = Provider.family<List<RoomActivitiesInfo>, DateTime>((ref, date) {
   final allGroups = ref.watch(allActivitiesProvider).valueOrNull ?? [];
   
   if (allGroups.isEmpty) return []; 

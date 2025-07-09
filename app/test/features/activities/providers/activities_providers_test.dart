@@ -167,7 +167,7 @@ void main() {
       expect(dates, isEmpty);
       
       final targetDate = DateTime(2024, 1, 15);
-      final groups = container.read(consecutiveGroupedActivitiesProvider(targetDate));
+      final groups = container.read(activitiesByDateProvider(targetDate));
       expect(groups, isEmpty); // No activities, so no groups
       
       container.dispose();
@@ -183,8 +183,8 @@ void main() {
       
       final date1 = DateTime(2024, 1, 15);
       final date2 = DateTime(2024, 2, 1);
-      container.read(consecutiveGroupedActivitiesProvider(date1));
-      container.read(consecutiveGroupedActivitiesProvider(date2));
+      container.read(activitiesByDateProvider(date1));
+      container.read(activitiesByDateProvider(date2));
       
       container.dispose();
       
@@ -203,9 +203,9 @@ void main() {
       final testDate2 = DateTime(2024, 2, 1);
       final testDate3 = DateTime(2024, 3, 1);
       
-      final groups1 = container.read(consecutiveGroupedActivitiesProvider(testDate1));
-      final groups2 = container.read(consecutiveGroupedActivitiesProvider(testDate2));
-      final groups3 = container.read(consecutiveGroupedActivitiesProvider(testDate3));
+      final groups1 = container.read(activitiesByDateProvider(testDate1));
+      final groups2 = container.read(activitiesByDateProvider(testDate2));
+      final groups3 = container.read(activitiesByDateProvider(testDate3));
       
       expect(groups1, isEmpty);
       expect(groups2, isEmpty);

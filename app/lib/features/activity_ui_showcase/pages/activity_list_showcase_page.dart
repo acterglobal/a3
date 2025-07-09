@@ -15,7 +15,7 @@ class ActivityListShowcasePage extends ConsumerWidget {
     return ProviderScope(
       overrides: [
         // Override real providers with mock ones
-        consecutiveGroupedActivitiesProvider.overrideWith((ref, date) {
+        activitiesByDateProvider.overrideWith((ref, date) {
           return ref.watch(mockConsecutiveGroupedActivitiesProvider(date));
         }),
       ],

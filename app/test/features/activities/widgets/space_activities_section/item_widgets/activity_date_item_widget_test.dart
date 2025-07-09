@@ -27,7 +27,7 @@ void main() {
       await tester.pumpProviderWidget(
         overrides: [
           if (groupedActivitiesList != null)
-            consecutiveGroupedActivitiesProvider(date).overrideWith(
+            activitiesByDateProvider(date).overrideWith(
               (ref) => groupedActivitiesList.cast<({String roomId, List<Activity> activities})>(),
             ),
         ],
