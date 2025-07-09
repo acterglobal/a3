@@ -232,18 +232,25 @@ void main() {
   });
 
   testWidgets('TaskItem handles task assignee', (tester) async {
+    final mockTaskWithAssignee = MockTask(
+      fakeTitle: 'Test Task',
+      roomId: 'room123',
+      eventId: 'event123',
+      assignees: ['test'], // Add an assignee to trigger avatar display
+    );
+
     await createWidgetUnderTest(
       tester: tester,
       showBreadCrumb: false,
       onDone: () {},
       onTap: () {},
-      mockTask: mockTask,
+      mockTask: mockTaskWithAssignee,
     );
 
     await tester.pumpAndSettle();
     expect(
       find.byType(ActerAvatar),
       findsOneWidget,
-    ); // Should not find room avatar widget
+    ); // Should find avatar widget for assignee
   });
 }

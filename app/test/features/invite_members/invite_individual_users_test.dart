@@ -175,6 +175,15 @@ void main() {
 
         expect(find.byType(DirectInvite), findsNWidgets(2));
       });
+
+      testWidgets('shows direct invite for username without @ prefix', (WidgetTester tester) async {
+        await createWidgetUnderTest(
+          tester: tester,
+          searchValue: 'testuser:matrix.org',
+        );
+
+        expect(find.byType(DirectInvite), findsOneWidget);
+      });
     });
   });
 }

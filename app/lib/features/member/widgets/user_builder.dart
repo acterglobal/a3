@@ -4,11 +4,12 @@ import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/features/member/actions/invite_actions.dart';
+import 'package:acter/features/member/providers/invite_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
@@ -87,6 +88,7 @@ class UserBuilder extends ConsumerWidget {
   final bool includeSharedRooms;
   final bool includeUserJoinState;
   final VoidCallback? onTap;
+  final Task? task;
 
   const UserBuilder({
     super.key,
@@ -96,6 +98,7 @@ class UserBuilder extends ConsumerWidget {
     this.onTap,
     this.includeSharedRooms = false,
     this.includeUserJoinState = true,
+    this.task,
   });
 
   @override
@@ -108,7 +111,7 @@ class UserBuilder extends ConsumerWidget {
         title: Text(displayName ?? userId),
         subtitle: (displayName == null) ? null : Text(userId),
         leading: ActerAvatar(options: AvatarOptions.DM(avatarInfo, size: 18)),
-        trailing: _renderTrailing(context, ref),
+        trailing: _renderTrailing(context, ref, task),
       ),
     );
     if (includeSharedRooms) {
@@ -117,11 +120,28 @@ class UserBuilder extends ConsumerWidget {
     return tile;
   }
 
-  Widget? _renderTrailing(BuildContext context, WidgetRef ref) {
+  Widget? _renderTrailing(BuildContext context, WidgetRef ref, Task? task) {
     if (!includeUserJoinState) return null;
     return roomId.map((rId) {
       final room = ref.watch(maybeRoomProvider(rId)).valueOrNull;
-      return room.map((r) => UserStateButton(userId: userId, room: r)) ??
+      return room.map((r) => UserStateButton(
+        userId: userId, 
+        room: r, 
+        onInvite: (userId) => InviteActions.handleInvite(
+          context: context,
+          ref: ref,
+          userId: userId,
+          room: r,
+          task: task,
+        ),
+        onCancelInvite: (userId) => InviteActions.handleCancelInvite(
+          context: context,
+          ref: ref,
+          userId: userId,
+          room: r,
+        ),
+        task: task,
+      )) ??
           const Skeletonizer(child: Text('user'));
     });
   }
@@ -207,53 +227,32 @@ class UserBuilder extends ConsumerWidget {
 class UserStateButton extends ConsumerWidget {
   final String userId;
   final Room room;
+  final Future<void> Function(String userId) onInvite;
+  final Future<void> Function(String userId) onCancelInvite;
+  final Task? task;
 
-  const UserStateButton({super.key, required this.room, required this.userId});
-
-  Future<void> _handleInvite(BuildContext context) async {
-    final lang = L10n.of(context);
-    EasyLoading.show(status: lang.invitingLoading(userId), dismissOnTap: false);
-    try {
-      await room.inviteUser(userId);
-      EasyLoading.dismiss();
-    } catch (e) {
-      // ignore: use_build_context_synchronously
-      EasyLoading.showToast(lang.invitingError(e, userId));
-    }
-  }
-
-  Future<void> _cancelInvite(BuildContext context, WidgetRef ref) async {
-    final lang = L10n.of(context);
-    EasyLoading.show(
-      status: lang.cancelInviteLoading(userId),
-      dismissOnTap: false,
-    );
-    try {
-      final member =
-          ref
-              .read(memberProvider((userId: userId, roomId: room.roomIdStr())))
-              .valueOrNull;
-      if (member != null) {
-        await member.kick('Cancel Invite');
-      }
-      EasyLoading.dismiss();
-    } catch (e) {
-      // ignore: use_build_context_synchronously
-      EasyLoading.showToast(lang.cancelInviteError(e, userId));
-    }
-  }
+  const UserStateButton({
+    super.key, 
+    required this.room, 
+    required this.userId, 
+    required this.onInvite,
+    required this.onCancelInvite,
+    this.task,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
     final colorScheme = Theme.of(context).colorScheme;
+    final disabledColor = Theme.of(context).disabledColor;
     final roomId = room.roomIdStr();
     final invited =
         ref.watch(roomInvitedMembersProvider(roomId)).valueOrNull ?? [];
     final joined = ref.watch(membersIdsProvider(roomId)).valueOrNull ?? [];
+    final isUserInvitedForTask = task != null ? ref.watch(taskUserInvitationProvider((task!, userId))).valueOrNull ?? false : false;
     if (isInvited(userId, invited)) {
       return InkWell(
-        onTap: () => _cancelInvite(context, ref),
+        onTap: () => onCancelInvite.call(userId),
         child: Chip(
           label: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 5),
@@ -269,7 +268,18 @@ class UserStateButton extends ConsumerWidget {
         ),
       );
     }
-    if (isJoined(userId, joined)) {
+    if (isUserInvitedForTask) {
+      return Chip(
+        label: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 5),
+          child: Text(lang.invited),
+        ),
+        backgroundColor: disabledColor,
+        side: BorderSide.none,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      );
+    }
+    if (isJoined(userId, joined) && task == null) {
       return Chip(
         label: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 5),
@@ -281,7 +291,7 @@ class UserStateButton extends ConsumerWidget {
       );
     }
     return InkWell(
-      onTap: () => _handleInvite(context),
+      onTap: () => onInvite.call(userId),
       child: Chip(
         label: Row(
           mainAxisSize: MainAxisSize.min,
@@ -295,7 +305,7 @@ class UserStateButton extends ConsumerWidget {
             ),
           ],
         ),
-        side: BorderSide(color: Theme.of(context).colorScheme.primary),
+        side: BorderSide(color: colorScheme.primary),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
     );

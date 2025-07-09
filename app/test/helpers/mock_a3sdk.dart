@@ -6,12 +6,15 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 
 import 'package:mocktail/mocktail.dart';
+import 'mock_tasks_providers.dart';
 
 /// Mocked version of ActerSdk
 class MockActerSdk extends Mock implements ActerSdk {}
 
 /// Mocked version of Acter Client
 class MockClient extends Mock implements Client {
+  bool shouldFail = false;
+
   @override
   Stream<bool> subscribeRoomStream(String topic) {
     return Stream.value(true); // Return a dummy stream
@@ -25,6 +28,22 @@ class MockClient extends Mock implements Client {
   @override
   Future<Convo> convoWithRetry(String roomId, [int attempt = 0]) async {
     return MockConvo(roomId: roomId);
+  }
+
+  @override
+  Future<TaskList> taskList(String taskListId, [int? timeout]) async {
+    if (shouldFail) {
+      throw Exception('Task list not found');
+    }
+    return MockTaskList();
+  }
+
+  @override
+  Stream<bool> subscribeSectionStream(String section) => Stream.value(true);
+
+  @override
+  Future<FfiListTaskList> taskLists() async {
+    return MockFfiListTaskList(taskLists: []);
   }
 }
 

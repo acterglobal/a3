@@ -3124,6 +3124,10 @@
   "@noTasks": {},
   "overdue": "Overdue",
   "@overdue": {},
+  "inviteSomeoneElse": "Invite someone else",
+  "@inviteSomeoneElse": {},
+  "noOneIsAssigned": "No one assigned",
+  "@noOneIsAssigned": {},
   "addLocation": "Add Location",
   "@addLocation": {},
   "updateLocation": "Update Location",
@@ -3190,5 +3194,7 @@
   "activityUIShowcase": "Activity UI Showcase",
   "@activityUIShowcase": {},
   "showcaseList": "Showcase List",
-  "@showcaseList": {}
+  "@showcaseList": {},
+  "invitedYouToTakeOverThisTask": "You are invited to take over this task",
+  "@invitedYouToTakeOverThisTask": {}
 }

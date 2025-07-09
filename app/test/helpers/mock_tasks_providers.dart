@@ -5,7 +5,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:riverpod/riverpod.dart';
-
+import '../helpers/mock_a3sdk.dart';
 import '../features/comments/mock_data/mock_message_content.dart';
 
 class SimpleReturningTasklists extends AsyncNotifier<List<TaskList>>
@@ -163,22 +163,48 @@ class FakeTaskList extends Fake implements TaskList {
   Future<Task> task(String taskId) async {
     if (shouldFail) {
       shouldFail = false;
-
       throw 'Expected fail';
     }
-
     return MockTask();
+  }
+
+  @override
+  Stream<bool> subscribeStream() => Stream.value(true);
+
+  @override
+  Future<FfiListTask> tasks() async {
+    return MockFfiListTask(tasks: []);
   }
 }
 
 class MockTaskList extends FakeTaskList with Mock {}
 
-class MockTask extends Fake implements Task {
+class MockTask extends Mock implements Task {
   final String fakeTitle;
   final String? date;
   final String desc;
+  final bool isAssigned;
+  final List<String> assignees;
+  final String roomId;
+  final String eventId;
+  final bool hasInvitations;
+  final List<String> invitedUsers;
+  final String? currentUserId;
+  bool assignSelfCalled = false;
+  bool unassignSelfCalled = false;
 
-  MockTask({this.fakeTitle = 'Fake Task', this.date, this.desc = ''});
+  MockTask({
+    this.fakeTitle = 'Fake Task',
+    this.date,
+    this.desc = '',
+    this.isAssigned = false,
+    this.assignees = const [],
+    this.roomId = 'room123',
+    this.eventId = 'event123',
+    this.hasInvitations = false,
+    this.invitedUsers = const [],
+    this.currentUserId,
+  });
 
   @override
   String taskListIdStr() => 'taskListId';
@@ -187,13 +213,13 @@ class MockTask extends Fake implements Task {
   bool isDone() => false;
 
   @override
-  String title() => 'Fake Task';
+  String title() => fakeTitle;
 
   @override
-  String eventIdStr() => 'eventId';
+  String eventIdStr() => eventId;
 
   @override
-  String roomIdStr() => 'roomId';
+  String roomIdStr() => roomId;
 
   @override
   String? dueDate() => date;
@@ -202,7 +228,7 @@ class MockTask extends Fake implements Task {
   MsgContent? description() => MockMsgContent(bodyText: desc);
 
   @override
-  bool isAssignedToMe() => false;
+  bool isAssignedToMe() => isAssigned;
 
   @override
   Future<AttachmentsManager> attachments() =>
@@ -213,19 +239,43 @@ class MockTask extends Fake implements Task {
 
   @override
   FfiListFfiString assigneesStr() {
-    final mockAssignees = MockFfiListFfiString();
-    // Adding dummy FfiString objects
-    mockAssignees.add(MockFfiString('user1'));
-    mockAssignees.add(MockFfiString('user2'));
+    final mockAssignees = MockFfiListFfiString(items: assignees);
     return mockAssignees;
   }
+
+  @override
+  Future<EventId> assignSelf() async {
+    assignSelfCalled = true;
+    return MockEventId(id: eventId);
+  }
+
+  @override
+  Future<EventId> unassignSelf() async {
+    unassignSelfCalled = true;
+    return MockEventId(id: eventId);
+  }
+
+  @override
+  Future<ObjectInvitationsManager> invitations() async {
+    return MockInvitationsManager(
+      hasInvitations: hasInvitations,
+      invitedUsers: invitedUsers,
+      currentUserId: currentUserId,
+    );
+  }
+
+  @override
+  Stream<bool> subscribeStream() => Stream.value(true);
+
+  @override
+  Future<Task> refresh() async => this;
 }
 
 class MockFfiListFfiString extends Mock implements FfiListFfiString {
-  final List<FfiString> _strings = [];
+  late final List<FfiString> _strings;
 
   MockFfiListFfiString({List<String> items = const []}) {
-    _strings.addAll(items.map((e) => MockFfiString(e)));
+    _strings = items.map((e) => MockFfiString(e)).toList();
   }
 
   @override
@@ -249,10 +299,19 @@ class MockFfiListFfiString extends Mock implements FfiListFfiString {
     return _strings[index];
   }
 
-  // Corrected to include the growable parameter
   @override
   List<FfiString> toList({bool growable = true}) {
     return List<FfiString>.from(_strings, growable: growable);
+  }
+
+  @override
+  Iterable<T> map<T>(T Function(FfiString) f) {
+    return _strings.map(f);
+  }
+
+  @override
+  bool any(bool Function(FfiString) test) {
+    return _strings.any(test);
   }
 }
 
@@ -266,4 +325,57 @@ class MockFfiString extends Mock implements FfiString {
 
   @override
   String toString() => value;
+}
+
+class MockFfiListTask extends Mock implements FfiListTask {
+  final List<Task> tasks;
+
+  MockFfiListTask({required this.tasks});
+
+  @override
+  List<Task> toList({bool growable = true}) => List.from(tasks, growable: growable);
+}
+
+class MockFfiListTaskList extends Mock implements FfiListTaskList {
+  final List<TaskList> taskLists;
+
+  MockFfiListTaskList({required this.taskLists});
+
+  @override
+  List<TaskList> toList({bool growable = true}) => List.from(taskLists, growable: growable);
+}
+
+class MockInvitationsManager extends Mock implements ObjectInvitationsManager {
+  final bool _hasInvitations;
+  final List<String> invitedUsers;
+  final String? currentUserId;
+
+  MockInvitationsManager({
+    bool hasInvitations = false,
+    this.invitedUsers = const [],
+    this.currentUserId,
+  }) : _hasInvitations = hasInvitations;
+
+  @override
+  Future<ObjectInvitationsManager> reload() async => this;
+
+  @override
+  FfiListFfiString invited() => MockFfiListFfiString(items: invitedUsers);
+
+  @override
+  bool hasInvitations() => _hasInvitations;
+
+  @override
+  Future<String> invite(String userId) async => userId;
+
+  @override
+  Stream<bool> subscribeStream() => Stream.value(true);
+
+  @override
+  bool isInvited() {
+    if (!_hasInvitations || currentUserId == null) {
+      return false;
+    }
+    return invitedUsers.contains(currentUserId);
+  }
 }

@@ -3,10 +3,13 @@ import 'dart:async';
 import 'package:acter/common/actions/redact_content.dart';
 import 'package:acter/common/actions/report_content.dart';
 import 'package:acter/common/extensions/options.dart';
-import 'package:acter/common/toolkit/buttons/user_chip.dart';
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/toolkit/errors/error_page.dart';
 import 'package:acter/common/toolkit/html/render_html.dart';
-import 'package:acter/common/toolkit/menu_item_widget.dart';
+import 'package:acter/features/member/providers/invite_providers.dart';
+import 'package:acter/features/tasks/widgets/accept_decline_task_invitation_widget.dart';
+import 'package:acter/features/tasks/widgets/task_assignment_widget.dart';
+import 'package:acter/features/tasks/widgets/task_invitations_widget.dart';
 import 'package:acter/router/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/acter_icon_picker/acter_icon_widget.dart';
@@ -36,7 +39,6 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 final _log = Logger('a3::tasks::task_item_details');
 
@@ -104,6 +106,8 @@ class _TaskItemBody extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final myUserId = ref.watch(myUserIdStrProvider);
+    final isUserInvitedForTask = ref.watch(taskUserInvitationProvider((task, myUserId))).valueOrNull ?? false;
     return Scaffold(
       appBar: _buildAppBar(context, ref),
       body: SingleChildScrollView(
@@ -116,7 +120,9 @@ class _TaskItemBody extends ConsumerWidget {
               _taskHeader(context, ref),
               const SizedBox(height: 10),
               _widgetTaskDate(context, ref),
-              _widgetTaskAssignment(context, ref),
+              if (isUserInvitedForTask) AcceptDeclineTaskInvitationWidget(task: task),
+              TaskAssignmentWidget(task: task),
+              TaskInvitationsWidget(task: task),
               ..._widgetDescription(context),
               const SizedBox(height: 40),
               AttachmentSectionWidget(
@@ -406,172 +412,6 @@ class _TaskItemBody extends ConsumerWidget {
       }
       EasyLoading.showError(
         lang.updatingDueFailed(e),
-        duration: const Duration(seconds: 3),
-      );
-    }
-  }
-
-  Future<void> assigneesAction(BuildContext context, WidgetRef ref) async {
-    final lang = L10n.of(context);
-    await showModalBottomSheet(
-      context: context,
-      showDragHandle: true,
-      enableDrag: true,
-      useSafeArea: true,
-      isScrollControlled: true,
-      isDismissible: true,
-      builder:
-          (context) => Padding(
-            padding: const EdgeInsets.all(10),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                AppBar(
-                  backgroundColor: Colors.transparent,
-                  automaticallyImplyLeading: false,
-                  title: Text(L10n.of(context).assignment),
-                ),
-                const SizedBox(height: 10),
-                if (task.isAssignedToMe())
-                  MenuItemWidget(
-                    onTap: () {
-                      onUnAssign(context, ref);
-                      Navigator.pop(context);
-                    },
-                    title: lang.removeYourself,
-                    titleStyles: Theme.of(context).textTheme.bodyMedium,
-                    iconData: PhosphorIconsLight.x,
-                    withMenu: false,
-                    iconColor: Theme.of(context).colorScheme.error,
-                  )
-                else
-                  MenuItemWidget(
-                    onTap: () {
-                      onAssign(context, ref);
-                      Navigator.pop(context);
-                    },
-                    title: lang.assignYourself,
-                    titleStyles: Theme.of(context).textTheme.bodyMedium,
-                    iconData: PhosphorIconsLight.plus,
-                    withMenu: false,
-                  ),
-              ],
-            ),
-          ),
-    );
-  }
-
-  Widget _widgetTaskAssignment(BuildContext context, WidgetRef ref) {
-    final lang = L10n.of(context);
-    final textTheme = Theme.of(context).textTheme;
-    final assignees = asDartStringList(task.assigneesStr());
-    final hasAssignees = assignees.isNotEmpty;
-    return ListTile(
-      onTap: () => assigneesAction(context, ref),
-      dense: true,
-      leading: const Padding(
-        padding: EdgeInsets.only(left: 15),
-        child: Icon(Atlas.business_man_thin),
-      ),
-      title:
-          hasAssignees
-              ? Text(lang.assignment, style: textTheme.bodySmall)
-              : Padding(
-                padding: const EdgeInsets.only(top: 5),
-                child: Text(
-                  lang.notAssigned,
-                  style: textTheme.bodyMedium?.copyWith(
-                    decoration: TextDecoration.underline,
-                    fontStyle: FontStyle.italic,
-                  ),
-                ),
-              ),
-      subtitle:
-          hasAssignees
-              ? buildAssignees(context, assignees, task.roomIdStr(), ref)
-              : null,
-      trailing:
-          hasAssignees
-              ? InkWell(
-                onTap: () => assigneesAction(context, ref),
-                child: const Icon(Icons.more_vert),
-              )
-              : null,
-    );
-  }
-
-  Widget buildAssignees(
-    BuildContext context,
-    List<String> assignees,
-    String roomId,
-    WidgetRef ref,
-  ) {
-    return Wrap(
-      direction: Axis.horizontal,
-      spacing: 5,
-      children:
-          assignees
-              .map(
-                (memberId) => UserChip(
-                  roomId: roomId,
-                  memberId: memberId,
-                  style: Theme.of(context).textTheme.bodyLarge,
-                  onTap:
-                      (
-                        context, {
-                        required bool isMe,
-                        required VoidCallback defaultOnTap,
-                      }) => isMe ? onUnAssign(context, ref) : defaultOnTap(),
-                  trailingBuilder:
-                      (context, {bool isMe = false, double fontSize = 12}) =>
-                          isMe
-                              ? Icon(PhosphorIconsLight.x, size: fontSize)
-                              : null,
-                ),
-              )
-              .toList(),
-    );
-  }
-
-  Future<void> onAssign(BuildContext context, WidgetRef ref) async {
-    final lang = L10n.of(context);
-    EasyLoading.show(status: lang.assigningSelf);
-    try {
-      await task.assignSelf();
-
-      await autosubscribe(ref: ref, objectId: task.eventIdStr(), lang: lang);
-      EasyLoading.showToast(lang.assignedYourself);
-    } catch (e, s) {
-      _log.severe('Failed to self-assign task', e, s);
-      if (!context.mounted) {
-        EasyLoading.dismiss();
-        return;
-      }
-      EasyLoading.showError(
-        lang.failedToAssignSelf(e),
-        duration: const Duration(seconds: 3),
-      );
-    }
-  }
-
-  Future<void> onUnAssign(BuildContext context, WidgetRef ref) async {
-    final lang = L10n.of(context);
-    EasyLoading.show(status: lang.unassigningSelf);
-    try {
-      await task.unassignSelf();
-
-      await autosubscribe(ref: ref, objectId: task.eventIdStr(), lang: lang);
-      EasyLoading.showToast(lang.assignmentWithdrawn);
-    } catch (e, s) {
-      _log.severe('Failed to self-unassign task', e, s);
-      if (!context.mounted) {
-        EasyLoading.dismiss();
-        return;
-      }
-      EasyLoading.showError(
-        lang.failedToUnassignSelf(e),
         duration: const Duration(seconds: 3),
       );
     }
