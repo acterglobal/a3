@@ -13,7 +13,7 @@ class ActivityDateItemWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // Fetch grouped activities for a given date
-    final groupedActivitiesList = ref.watch(consecutiveGroupedActivitiesProvider(activityDate));
+    final groupedActivitiesList = ref.watch(activitiesByDateProvider(activityDate));
 
     if (groupedActivitiesList.isEmpty) return const SizedBox.shrink();
 

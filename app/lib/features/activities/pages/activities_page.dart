@@ -1,4 +1,5 @@
 import 'package:acter/common/widgets/empty_state_widget.dart';
+import 'package:acter/features/activities/providers/activities_providers.dart';
 import 'package:acter/features/activities/widgets/invitation_section/invitation_section_widget.dart';
 import 'package:acter/features/activities/widgets/security_and_privacy_section/security_and_privacy_section_widget.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/space_activities_section_widget.dart';
@@ -28,6 +29,7 @@ class ActivitiesPage extends ConsumerWidget {
     if (securityWidget != null) {
       sectionWidgetList.add(securityWidget);
     }
+
     // Space Activities Section
     final spaceActivitiesWidget = buildSpaceActivitiesSectionWidget(
       context,
@@ -39,7 +41,7 @@ class ActivitiesPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: buildActivityAppBar(context),
-      body: buildActivityBody(context, sectionWidgetList),
+      body: buildActivityBody(context, ref, sectionWidgetList),
     );
   }
 
@@ -53,15 +55,41 @@ class ActivitiesPage extends ConsumerWidget {
 
   Widget buildActivityBody(
     BuildContext context,
+    WidgetRef ref,
     List<Widget> sectionWidgetList,
   ) {
-    final isActivityEmpty = sectionWidgetList.isEmpty;
-    if (isActivityEmpty) return buildEmptyStateWidget(context);
+    // Show empty state when no activities and no other sections
+    if (sectionWidgetList.isEmpty) return buildEmptyStateWidget(context);
 
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: sectionWidgetList,
+    final hasMore = ref.watch(allActivitiesProvider.notifier).hasMore;
+
+    return NotificationListener<ScrollNotification>(
+      onNotification: (scrollInfo) {
+        final pixels = scrollInfo.metrics.pixels;
+        final maxScroll = scrollInfo.metrics.maxScrollExtent;
+
+        if (maxScroll > 0 && pixels / maxScroll >= 0.98 && hasMore) {
+          ref.read(allActivitiesProvider.notifier).loadMoreActivities();
+        }
+
+        return false;
+      },
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ...sectionWidgetList,
+            // Show loading indicator when loading more data
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Center(
+                child: hasMore
+                    ? CircularProgressIndicator()
+                    : Text(L10n.of(context).noMoreActivities),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
