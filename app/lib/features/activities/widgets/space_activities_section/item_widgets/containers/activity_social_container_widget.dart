@@ -8,6 +8,7 @@ import 'package:acter/common/providers/room_providers.dart';
 
 class ActivitySocialContainerWidget extends ConsumerWidget {
   final ActivityObject? activityObject;
+  final VoidCallback? onTap;
   final IconData icon;
   final Color? iconColor;
   final String userId;
@@ -18,6 +19,7 @@ class ActivitySocialContainerWidget extends ConsumerWidget {
   const ActivitySocialContainerWidget({
     super.key,
     this.activityObject,
+    this.onTap,
     required this.icon,
     this.iconColor,
     required this.userId,
@@ -34,7 +36,9 @@ class ActivitySocialContainerWidget extends ConsumerWidget {
             .valueOrNull ??
         userId;
 
-    return Container(
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -44,6 +48,7 @@ class ActivitySocialContainerWidget extends ConsumerWidget {
           _buildTitleOrTime(context, displayName),
         ],
       ),
+    ),
     );
   }
 
