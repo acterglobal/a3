@@ -187,7 +187,6 @@ void main() {
       container.read(activitiesByDateProvider(date2));
       
       container.dispose();
-      
       await tester.pumpAndSettle();
     });
 
