@@ -68,7 +68,7 @@ class ActivitiesPage extends ConsumerWidget {
         final pixels = scrollInfo.metrics.pixels;
         final maxScroll = scrollInfo.metrics.maxScrollExtent;
 
-        if (maxScroll > 0 && pixels / maxScroll >= 0.8 && hasMore) {
+        if (maxScroll > 0 && pixels / maxScroll >= 0.98 && hasMore) {
           ref.read(allActivitiesProvider.notifier).loadMoreActivities();
         }
 
