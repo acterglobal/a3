@@ -7,7 +7,6 @@ use acter_matrix::{
 };
 use anyhow::Result;
 use futures::{stream::select, Stream};
-use log::{trace, warn};
 use ruma::OwnedRoomId;
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, StreamExt};
@@ -55,12 +54,13 @@ impl InvitationsManager {
     pub async fn room_invitations(&self) -> Result<Vec<RoomInvitation>> {
         let rooms = self.client.invited_rooms();
         let core = self.client.core.clone();
+        let sync_controller = self.client.sync_controller.clone();
         Ok(RUNTIME
             .spawn(async move {
                 let mut invites = vec![];
                 for room in rooms {
                     // Process each room invitation
-                    match RoomInvitation::parse(&core, room).await {
+                    match RoomInvitation::parse(&core, room, sync_controller.clone()).await {
                         Ok(invitation) => invites.push(invitation),
                         Err(err) => log::error!("Failed to parse room invitation: {}", err),
                     }

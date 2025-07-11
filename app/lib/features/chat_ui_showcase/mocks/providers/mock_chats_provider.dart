@@ -85,10 +85,14 @@ final mockRoomProvider = Provider.family<MockRoom?, String>(
   (ref, roomId) => ref.watch(mockChatProvider(roomId))?.mockRoom,
 );
 
-final mockLatestMessageProvider = Provider.family<TimelineItem?, String>(
-  (ref, roomId) =>
-      ref.watch(mockChatProvider(roomId))?.mockConvo.latestMessage(),
-);
+final mockLatestMessageProvider = FutureProvider.family<TimelineItem?, String>((
+  ref,
+  roomId,
+) async {
+  final convo = ref.watch(mockChatProvider(roomId))?.mockConvo;
+  final msg = await convo?.latestMessage();
+  return msg?.data();
+});
 
 final mockTypingUserNamesProvider = Provider.family<List<String>?, String>((
   ref,

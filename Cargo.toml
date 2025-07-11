@@ -78,7 +78,7 @@ default-features = false
 # version = "0.12.2"
 git = "https://github.com/ruma/ruma"
 rev = "a8fd1b0322649bf59e2a5cfc73ab4fe46b21edd7"
-features = ['unstable-msc4095']
+features = ["unstable-msc4095"]
 
 # - see comment above
 [workspace.dependencies.ruma-common]

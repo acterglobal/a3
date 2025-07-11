@@ -56,9 +56,11 @@ void main() {
         WidgetTester tester,
       ) async {
         final mockEventItemData =
-            profileEventDisplayNameChangedRoom36(
-              '@emily:acter.global',
-            ).mockConvo.mockTimelineItem?.mockTimelineEventItem;
+            profileEventDisplayNameChangedRoom36('@emily:acter.global')
+                .mockConvo
+                .mockOptionTimelineItem
+                ?.mockTimelineItem
+                ?.mockTimelineEventItem;
         final profileContent = mockEventItemData!.profileContent();
 
         await createWidgetUnderTest(
@@ -84,9 +86,11 @@ void main() {
         WidgetTester tester,
       ) async {
         final mockEventItemData =
-            profileEventDisplayNameChangedRoom36(
-              '@emily:acter.global',
-            ).mockConvo.mockTimelineItem?.mockTimelineEventItem;
+            profileEventDisplayNameChangedRoom36('@emily:acter.global')
+                .mockConvo
+                .mockOptionTimelineItem
+                ?.mockTimelineItem
+                ?.mockTimelineEventItem;
         final profileContent = mockEventItemData!.profileContent();
 
         await createWidgetUnderTest(
@@ -114,9 +118,11 @@ void main() {
         WidgetTester tester,
       ) async {
         final mockEventItemData =
-            profileEventDisplayNameSetRoom37(
-              '@emily:acter.global',
-            ).mockConvo.mockTimelineItem?.mockTimelineEventItem;
+            profileEventDisplayNameSetRoom37('@emily:acter.global')
+                .mockConvo
+                .mockOptionTimelineItem
+                ?.mockTimelineItem
+                ?.mockTimelineEventItem;
         final profileContent = mockEventItemData!.profileContent();
 
         await createWidgetUnderTest(
@@ -143,9 +149,11 @@ void main() {
         WidgetTester tester,
       ) async {
         final mockEventItemData =
-            profileEventDisplayNameSetRoom37(
-              '@emily:acter.global',
-            ).mockConvo.mockTimelineItem?.mockTimelineEventItem;
+            profileEventDisplayNameSetRoom37('@emily:acter.global')
+                .mockConvo
+                .mockOptionTimelineItem
+                ?.mockTimelineItem
+                ?.mockTimelineEventItem;
         final profileContent = mockEventItemData!.profileContent();
 
         await createWidgetUnderTest(
@@ -173,9 +181,11 @@ void main() {
         WidgetTester tester,
       ) async {
         final mockEventItemData =
-            profileEventDisplayNameUnsetRoom38(
-              '@emily:acter.global',
-            ).mockConvo.mockTimelineItem?.mockTimelineEventItem;
+            profileEventDisplayNameUnsetRoom38('@emily:acter.global')
+                .mockConvo
+                .mockOptionTimelineItem
+                ?.mockTimelineItem
+                ?.mockTimelineEventItem;
 
         await createWidgetUnderTest(
           tester: tester,
@@ -197,9 +207,11 @@ void main() {
         WidgetTester tester,
       ) async {
         final mockEventItemData =
-            profileEventDisplayNameUnsetRoom38(
-              '@emily:acter.global',
-            ).mockConvo.mockTimelineItem?.mockTimelineEventItem;
+            profileEventDisplayNameUnsetRoom38('@emily:acter.global')
+                .mockConvo
+                .mockOptionTimelineItem
+                ?.mockTimelineItem
+                ?.mockTimelineEventItem;
 
         await createWidgetUnderTest(
           tester: tester,
@@ -222,9 +234,11 @@ void main() {
     group('Avatar changed message', () {
       testWidgets('Avatar changed message - Mine', (WidgetTester tester) async {
         final mockEventItemData =
-            profileEventAvatarChangedRoom39(
-              '@emily:acter.global',
-            ).mockConvo.mockTimelineItem?.mockTimelineEventItem;
+            profileEventAvatarChangedRoom39('@emily:acter.global')
+                .mockConvo
+                .mockOptionTimelineItem
+                ?.mockTimelineItem
+                ?.mockTimelineEventItem;
 
         await createWidgetUnderTest(
           tester: tester,
@@ -246,9 +260,11 @@ void main() {
         WidgetTester tester,
       ) async {
         final mockEventItemData =
-            profileEventAvatarChangedRoom39(
-              '@emily:acter.global',
-            ).mockConvo.mockTimelineItem?.mockTimelineEventItem;
+            profileEventAvatarChangedRoom39('@emily:acter.global')
+                .mockConvo
+                .mockOptionTimelineItem
+                ?.mockTimelineItem
+                ?.mockTimelineEventItem;
 
         await createWidgetUnderTest(
           tester: tester,
@@ -270,9 +286,11 @@ void main() {
 
       testWidgets('Avatar set message - Mine', (WidgetTester tester) async {
         final mockEventItemData =
-            profileEventAvatarSetRoom40(
-              '@emily:acter.global',
-            ).mockConvo.mockTimelineItem?.mockTimelineEventItem;
+            profileEventAvatarSetRoom40('@emily:acter.global')
+                .mockConvo
+                .mockOptionTimelineItem
+                ?.mockTimelineItem
+                ?.mockTimelineEventItem;
 
         await createWidgetUnderTest(
           tester: tester,
@@ -292,9 +310,11 @@ void main() {
 
       testWidgets('Avatar set message - Other', (WidgetTester tester) async {
         final mockEventItemData =
-            profileEventAvatarSetRoom40(
-              '@emily:acter.global',
-            ).mockConvo.mockTimelineItem?.mockTimelineEventItem;
+            profileEventAvatarSetRoom40('@emily:acter.global')
+                .mockConvo
+                .mockOptionTimelineItem
+                ?.mockTimelineItem
+                ?.mockTimelineEventItem;
 
         await createWidgetUnderTest(
           tester: tester,
@@ -316,9 +336,11 @@ void main() {
 
       testWidgets('Avatar removed message - Mine', (WidgetTester tester) async {
         final mockEventItemData =
-            profileEventAvatarUnsetRoom41(
-              '@emily:acter.global',
-            ).mockConvo.mockTimelineItem?.mockTimelineEventItem;
+            profileEventAvatarUnsetRoom41('@emily:acter.global')
+                .mockConvo
+                .mockOptionTimelineItem
+                ?.mockTimelineItem
+                ?.mockTimelineEventItem;
 
         await createWidgetUnderTest(
           tester: tester,
@@ -340,9 +362,11 @@ void main() {
         WidgetTester tester,
       ) async {
         final mockEventItemData =
-            profileEventAvatarUnsetRoom41(
-              '@david:acter.global',
-            ).mockConvo.mockTimelineItem?.mockTimelineEventItem;
+            profileEventAvatarUnsetRoom41('@david:acter.global')
+                .mockConvo
+                .mockOptionTimelineItem
+                ?.mockTimelineItem
+                ?.mockTimelineEventItem;
 
         await createWidgetUnderTest(
           tester: tester,

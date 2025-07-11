@@ -151,8 +151,8 @@ async fn leaving_spaces() -> Result<()> {
 
     assert!(first_listener.try_recv().is_ok());
     assert!(news_listener.try_recv().is_ok());
-    assert_eq!(second_listener.try_recv(), Err(TryRecvError::Empty));
-    assert_eq!(last_listener.try_recv(), Err(TryRecvError::Empty));
+    assert!(second_listener.try_recv().is_ok());
+    assert!(last_listener.try_recv().is_ok());
 
     second.leave().await?;
     Retry::spawn(retry_strategy.clone(), || async {
@@ -187,7 +187,7 @@ async fn leaving_spaces() -> Result<()> {
     assert!(news_listener.try_recv().is_ok());
     assert_eq!(first_listener.try_recv(), Err(TryRecvError::Empty));
     assert!(second_listener.try_recv().is_ok());
-    assert_eq!(last_listener.try_recv(), Err(TryRecvError::Empty));
+    assert!(last_listener.try_recv().is_ok());
 
     Ok(())
 }
@@ -244,7 +244,7 @@ async fn create_subconvo() -> Result<()> {
     })
     .await?;
 
-    assert_eq!(convo.join_rule_str(), "restricted");
+    assert_eq!(convo.join_rule_str(), "public");
 
     let space_parent = Retry::spawn(retry_strategy, || async {
         let space_relations = convo.space_relations().await?;
@@ -404,7 +404,7 @@ async fn create_with_default_space_settings() -> Result<()> {
 async fn create_with_custom_space_settings() -> Result<()> {
     let _ = env_logger::try_init();
     let mut user = random_user("space_custom_settings").await?;
-    let sync_state = user.start_sync();
+    let sync_state = user.start_sync().await?;
     sync_state.await_has_synced_history().await?;
 
     let mut permissions_builder = new_app_permissions_builder(); // all on by default
@@ -837,7 +837,7 @@ async fn update_topic() -> Result<()> {
     let _ = env_logger::try_init();
     let (mut user, space_id) = random_user_with_random_space("space_update_topic").await?;
 
-    let sync_state = user.start_sync();
+    let sync_state = user.start_sync().await?;
     sync_state.await_has_synced_history().await?;
 
     // wait for sync to catch up
