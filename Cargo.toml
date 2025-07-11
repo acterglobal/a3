@@ -9,7 +9,7 @@ members = [
 default-members = ["native/acter"]
 
 [workspace.package]
-rust-version = "1.85"
+rust-version = "1.88"
 
 [workspace.dependencies.ffi-gen]
 git = "https://github.com/acterglobal/ffi-gen"
@@ -100,6 +100,8 @@ scc = "2"
 env_logger = "0.11.7"
 urlencoding = "2.1.3"
 eyeball-im = "0.7.0"
+
+tracing = { version = "0.1.40", features = ["log"] }
 
 [profile.release]
 panic = "unwind"

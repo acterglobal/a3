@@ -96,7 +96,7 @@ impl From<OriginalMessageLikeEvent<NewsEntryEventContent>> for NewsEntry {
                 room_id,
                 event_id,
                 sender,
-                origin_server_ts,
+                timestamp: origin_server_ts,
                 redacted: None,
             },
         }
@@ -154,7 +154,7 @@ impl From<OriginalMessageLikeEvent<NewsEntryUpdateEventContent>> for NewsEntryUp
                 room_id,
                 event_id,
                 sender,
-                origin_server_ts,
+                timestamp: origin_server_ts,
                 redacted: None,
             },
         }

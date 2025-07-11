@@ -18,6 +18,7 @@ dependencies = [
 name = "acter"
 version = "0.1.0"
 dependencies = [
+ "acter-core",
  "acter-matrix",
  "android_logger",
  "anyhow",
@@ -93,11 +94,26 @@ dependencies = [
 [[package]]
 name = "acter-core"
 version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "async-recursion",
+ "env_logger",
+ "eyeball-im",
+ "futures",
+ "scc",
+ "serde",
+ "serde_json",
+ "strum",
+ "thiserror 2.0.12",
+ "tokio",
+ "tracing",
+]
 
 [[package]]
 name = "acter-matrix"
 version = "0.1.0"
 dependencies = [
+ "acter-core",
  "anyhow",
  "async-recursion",
  "async-stream",
@@ -136,6 +152,7 @@ name = "acter-test"
 version = "0.1.0"
 dependencies = [
  "acter",
+ "acter-core",
  "acter-matrix",
  "anyhow",
  "chrono",

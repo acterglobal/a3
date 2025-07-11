@@ -26,7 +26,7 @@ async fn test_room_tombstone() -> Result<()> {
     // ensure it was sent
     let body = "This room was upgraded to the other version";
     let id = gen_id(18);
-    let replacement_room_id = format!("!{}:localhost", id);
+    let replacement_room_id = format!("!{id}:localhost");
     let tombstone_event_id = room
         .set_tombstone(body.to_owned(), replacement_room_id.clone())
         .await?;
@@ -54,7 +54,7 @@ async fn test_room_tombstone() -> Result<()> {
     assert_eq!(activity.event_id_str(), meta.event_id);
     assert_eq!(activity.room_id_str(), room_id);
     assert_eq!(activity.type_str(), "roomTombstone");
-    let ts: u64 = meta.origin_server_ts.get().into();
+    let ts: u64 = meta.timestamp.get().into();
     assert_eq!(activity.origin_server_ts(), ts);
 
     // check the content of activity
