@@ -2,7 +2,7 @@
 name = "acter"
 version = "0.1.0"
 edition = "2021"
-rust-version = "1.81"
+rust-version = "1.88"
 description = "SDK of the acter app"
 homepage = "https://acter.global"
 repository = "https://github.com/acterglobal/a3"
@@ -80,6 +80,10 @@ ruma-common = { workspace = true, features = ["client"] }
 [dependencies.acter-matrix]
 path = "../matrix"
 features = ["templates", "client"]
+
+[dependencies.acter-core]
+path = "../core"
+features = ["strum"]
 
 [dependencies.matrix-sdk]
 workspace = true

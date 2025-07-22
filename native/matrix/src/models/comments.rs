@@ -234,7 +234,7 @@ impl From<OriginalMessageLikeEvent<CommentEventContent>> for Comment {
                 room_id,
                 event_id,
                 sender,
-                origin_server_ts,
+                timestamp: origin_server_ts,
                 redacted: None,
             },
         }
@@ -291,7 +291,7 @@ impl From<OriginalMessageLikeEvent<CommentUpdateEventContent>> for CommentUpdate
                 room_id,
                 event_id,
                 sender,
-                origin_server_ts,
+                timestamp: origin_server_ts,
                 redacted: None,
             },
         }

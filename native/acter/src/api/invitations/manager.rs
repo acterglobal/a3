@@ -62,7 +62,7 @@ impl InvitationsManager {
                     // Process each room invitation
                     match RoomInvitation::parse(&core, room).await {
                         Ok(invitation) => invites.push(invitation),
-                        Err(err) => log::error!("Failed to parse room invitation: {}", err),
+                        Err(err) => log::error!("Failed to parse room invitation: {err}"),
                     }
                 }
                 invites

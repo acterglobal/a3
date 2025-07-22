@@ -176,7 +176,7 @@ impl From<OriginalMessageLikeEvent<TaskEventContent>> for Task {
                 room_id,
                 event_id,
                 sender,
-                origin_server_ts,
+                timestamp: origin_server_ts,
                 redacted: None,
             },
         }
@@ -234,7 +234,7 @@ impl From<OriginalMessageLikeEvent<TaskUpdateEventContent>> for TaskUpdate {
                 room_id,
                 event_id,
                 sender,
-                origin_server_ts,
+                timestamp: origin_server_ts,
                 redacted: None,
             },
         }
@@ -311,7 +311,7 @@ impl From<OriginalMessageLikeEvent<TaskSelfAssignEventContent>> for TaskSelfAssi
                 room_id,
                 event_id,
                 sender,
-                origin_server_ts,
+                timestamp: origin_server_ts,
                 redacted: None,
             },
         }
@@ -386,7 +386,7 @@ impl From<OriginalMessageLikeEvent<TaskSelfUnassignEventContent>> for TaskSelfUn
                 room_id,
                 event_id,
                 sender,
-                origin_server_ts,
+                timestamp: origin_server_ts,
                 redacted: None,
             },
         }

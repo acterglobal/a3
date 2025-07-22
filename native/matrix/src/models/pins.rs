@@ -105,7 +105,7 @@ impl From<OriginalMessageLikeEvent<PinEventContent>> for Pin {
                 room_id,
                 event_id,
                 sender,
-                origin_server_ts,
+                timestamp: origin_server_ts,
                 redacted: None,
             },
         }
@@ -163,7 +163,7 @@ impl From<OriginalMessageLikeEvent<PinUpdateEventContent>> for PinUpdate {
                 room_id,
                 event_id,
                 sender,
-                origin_server_ts,
+                timestamp: origin_server_ts,
                 redacted: None,
             },
         }
