@@ -42,6 +42,7 @@ function(APPLY_STANDARD_SETTINGS TARGET)
   # FIXME: workaround for tray_manager deprecation issue:
   # https://github.com/leanflutter/tray_manager/issues/67
   target_compile_options(${TARGET} PRIVATE -Wno-error=deprecated-declarations) # Allow deprecated warnings
+  target_compile_options(${TARGET} PRIVATE -Wno-error=deprecated-literal-operator) # Allow deprecated literal operator warnings
 endfunction()
 
 set(FLUTTER_MANAGED_DIR "${CMAKE_CURRENT_SOURCE_DIR}/flutter")
