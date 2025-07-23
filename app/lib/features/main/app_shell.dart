@@ -5,6 +5,7 @@ import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/tutorial_dialogs/bottom_navigation_tutorials/bottom_navigation_tutorials.dart';
 import 'package:acter/config/constants.dart';
 import 'package:acter/common/utils/device.dart';
+import 'package:acter/features/settings/providers/notifiers/locale_notifier.dart';
 import 'package:acter/router/routes.dart';
 import 'package:acter/config/notifications/init.dart';
 import 'package:acter/features/activities/providers/activities_providers.dart';
@@ -30,6 +31,7 @@ import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:jiffy/jiffy.dart';
 import 'package:logging/logging.dart';
 import 'package:matomo_tracker/matomo_tracker.dart';
 import 'package:screenshot/screenshot.dart';
@@ -94,11 +96,22 @@ class AppShellState extends ConsumerState<AppShell> {
     _initDeepLinking();
     // initalize main providers
     _initProviders();
-
     // these want to be sure to execute in order
     await _initNotifications();
     // calendar sync
     await _initCalendarSync();
+  }
+
+  void _initLocale() async {
+    final language = ref.watch(localeProvider);
+    final lang = L10n.of(context);
+    final localeRelativeDateTime = LocaleRelativeDateTime(lang);
+    await Jiffy.setLocale(
+      language,
+      startOfWeek: localeRelativeDateTime.startOfWeek(),
+      ordinals: localeRelativeDateTime.ordinals(),
+      relativeDateTime: localeRelativeDateTime,
+    );
   }
 
   Future<void> _initTracking() async {
@@ -182,6 +195,7 @@ class AppShellState extends ConsumerState<AppShell> {
 
   @override
   Widget build(BuildContext context) {
+    _initLocale();
     // get platform of context.
     if (ref.watch(clientProvider).valueOrNull == null) {
       // at the very startup we might not yet have a client loaded
@@ -211,7 +225,10 @@ class AppShellState extends ConsumerState<AppShell> {
           body: Screenshot(
             controller: screenshotController,
             child: Column(
-              children: [CrossSigning(), Expanded(child: buildBody(context))],
+              children: [
+                CrossSigning(),
+                Expanded(child: buildBody(context)),
+              ],
             ),
           ),
         ),
@@ -235,9 +252,8 @@ class AppShellState extends ConsumerState<AppShell> {
       config: <Breakpoint, SlotLayoutConfig?>{
         Breakpoints.mediumLargeAndUp: SlotLayout.from(
           key: const Key('primaryNavigation'),
-          builder:
-              (BuildContext context) =>
-                  SidebarWidget(navigationShell: widget.navigationShell),
+          builder: (BuildContext context) =>
+              SidebarWidget(navigationShell: widget.navigationShell),
         ),
       },
     );
@@ -261,19 +277,15 @@ class AppShellState extends ConsumerState<AppShell> {
           key: Keys.mainNav,
           inAnimation: AdaptiveScaffold.bottomToTop,
           outAnimation: AdaptiveScaffold.topToBottom,
-          builder:
-              (context) => BottomNavigationWidget(
-                navigationShell: widget.navigationShell,
-              ),
+          builder: (context) =>
+              BottomNavigationWidget(navigationShell: widget.navigationShell),
         ),
         Breakpoints.medium: SlotLayout.from(
           key: Keys.mainNav,
           inAnimation: AdaptiveScaffold.bottomToTop,
           outAnimation: AdaptiveScaffold.topToBottom,
-          builder:
-              (context) => BottomNavigationWidget(
-                navigationShell: widget.navigationShell,
-              ),
+          builder: (context) =>
+              BottomNavigationWidget(navigationShell: widget.navigationShell),
         ),
       },
     );
