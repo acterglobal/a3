@@ -1,1 +1,0 @@
-- [Fix] gray screens appearing on some locales we didn't have full support for
