@@ -134,7 +134,7 @@ dependencies:
   flutter_typeahead: ^5.2.0
   pinch_zoom_release_unzoom: ^2.0.0
   dotted_border: ^2.1.0
-  firebase_core: ^3.12.0
+  firebase_core: ^3.1.0
   scrolls_to_top: ^2.1.1
   scrollable_positioned_list: ^0.3.8
   diffutil_dart: ^4.0.1
