@@ -195,7 +195,10 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
         // Emoji Picker UI
         if (emojiPickerVisible)
           ChatEmojiPicker(
-            onSelect: (emoji) => mentionController?.selection.textAfter(emoji),
+            onSelect: (emoji) {
+              mentionController?.text =
+                  '${mentionController?.text ?? ""}$emoji';
+            },
           ),
       ],
     );
@@ -248,7 +251,7 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
             LogicalKeyboardKey.enter,
             LogicalKeyboardKey.shift,
           ): () =>
-              mentionController?.selection.textAfter('\n'),
+              mentionController?.text = '${mentionController?.text ?? ""}\n',
       },
       child: _renderEditor(context, hintText),
     );
