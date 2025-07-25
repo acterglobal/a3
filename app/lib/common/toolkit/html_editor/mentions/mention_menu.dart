@@ -148,14 +148,12 @@ class MentionMenu {
     // render based on mention type
     final Widget listWidget = switch (mentionType) {
       MentionType.user => UserMentionList(
-        editorState: editorState,
         onDismiss: dismiss,
         onShow: () => show(context),
         roomId: roomId,
         onSelected: _select,
       ),
       MentionType.room => RoomMentionList(
-        editorState: editorState,
         onDismiss: dismiss,
         onShow: () => show(context),
         roomId: roomId,
@@ -163,38 +161,35 @@ class MentionMenu {
       ),
     };
     _menuEntry = OverlayEntry(
-      builder:
-          (context) => Positioned(
-            top: max(0, bottom - maxHeight),
-            height: maxHeight.toDouble(),
-            left: isWide ? editorPosition.dx : 12,
-            right: isWide ? editorPosition.dx : 12,
-            child: Align(
-              alignment: Alignment.bottomLeft,
-              child: TapRegion(
-                behavior: HitTestBehavior.opaque,
-                onTapOutside: (event) => dismiss(),
-                child: Material(
-                  elevation: 8,
-                  borderRadius: BorderRadius.circular(8),
-                  child: Container(
-                    constraints: BoxConstraints(
-                      maxHeight: maxHeight.toDouble(),
-                    ),
-                    padding: const EdgeInsets.only(bottom: 12),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surface,
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(8),
-                        topRight: Radius.circular(8),
-                      ),
-                    ),
-                    child: listWidget,
+      builder: (context) => Positioned(
+        top: max(0, bottom - maxHeight),
+        height: maxHeight.toDouble(),
+        left: isWide ? editorPosition.dx : 12,
+        right: isWide ? editorPosition.dx : 12,
+        child: Align(
+          alignment: Alignment.bottomLeft,
+          child: TapRegion(
+            behavior: HitTestBehavior.opaque,
+            onTapOutside: (event) => dismiss(),
+            child: Material(
+              elevation: 8,
+              borderRadius: BorderRadius.circular(8),
+              child: Container(
+                constraints: BoxConstraints(maxHeight: maxHeight.toDouble()),
+                padding: const EdgeInsets.only(bottom: 12),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surface,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(8),
+                    topRight: Radius.circular(8),
                   ),
                 ),
+                child: listWidget,
               ),
             ),
           ),
+        ),
+      ),
     );
 
     Overlay.of(context).insert(_menuEntry!);

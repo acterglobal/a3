@@ -1,11 +1,9 @@
-import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/common/toolkit/html_editor/html_editor.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
+import 'package:acter/features/chat_ng/widgets/chat_editor/utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show MsgDraft;
-import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,7 +13,7 @@ import 'package:logging/logging.dart';
 
 // send chat message action
 Future<void> sendMessageAction({
-  required EditorState textEditorState,
+  required MarkedUpEditContent content,
   required String roomId,
   required BuildContext context,
   required WidgetRef ref,
@@ -27,9 +25,9 @@ Future<void> sendMessageAction({
   }
 
   final lang = L10n.of(context);
-  final body = textEditorState.intoMarkdown();
-  final html = textEditorState.intoHtml();
-  final mentions = textEditorState.extractMentions();
+  final body = content.plainText;
+  final html = content.htmlText;
+  final mentions = content.userMentions;
 
   if (!hasValidEditorContent(plainText: body, html: html)) {
     return;
@@ -72,20 +70,6 @@ Future<void> sendMessageAction({
     }
 
     ref.read(chatInputProvider.notifier).messageSent();
-    textEditorState.clear();
-
-    // also clear composed state
-    final convo = await ref.read(chatProvider(roomId).future);
-    final notifier = ref.read(chatEditorStateProvider.notifier);
-    notifier.unsetActions();
-    if (convo != null) {
-      await convo.saveMsgDraft(
-        textEditorState.intoMarkdown(),
-        null,
-        'new',
-        null,
-      );
-    }
   } catch (e, s) {
     log.severe('Sending chat message failed', e, s);
     EasyLoading.showError(
@@ -93,5 +77,6 @@ Future<void> sendMessageAction({
       duration: const Duration(seconds: 3),
     );
     ref.read(chatInputProvider.notifier).sendingFailed();
+    rethrow;
   }
 }

@@ -1,5 +1,4 @@
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/toolkit/html_editor/html_editor.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
 import 'package:acter/features/chat_ng/widgets/events/file_message_event.dart';
 import 'package:acter/features/chat_ng/widgets/events/image_message_event.dart';
@@ -8,7 +7,6 @@ import 'package:acter/features/chat_ng/widgets/events/video_message_event.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show TimelineEventItem;
-import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -19,14 +17,14 @@ import 'package:intl/intl.dart';
 class ChatEditorActionsPreview extends ConsumerWidget {
   static const closePreviewKey = Key('chat-editor-actions-close');
 
-  final EditorState textEditorState;
   final TimelineEventItem msgItem;
   final String roomId;
+  final Function()? onClear;
 
   const ChatEditorActionsPreview({
     super.key,
-    required this.textEditorState,
     required this.msgItem,
+    this.onClear,
     required this.roomId,
   });
 
@@ -91,17 +89,11 @@ class ChatEditorActionsPreview extends ConsumerWidget {
             final notifier = ref.read(chatEditorStateProvider.notifier);
             final isEdit = ref.read(chatEditorStateProvider).isEditing;
             if (isEdit) {
-              textEditorState.clear();
+              if (onClear != null) {
+                onClear!();
+              }
             }
             notifier.unsetActions();
-            // clear the text, but we still keep selection
-            final t = textEditorState.transaction;
-            final docChildren = textEditorState.document.root.children;
-            t.afterSelection = Selection.single(
-              path: docChildren.last.path,
-              startOffset: docChildren.last.delta?.length ?? 0,
-            );
-            textEditorState.apply(t);
           },
           child: const Icon(Atlas.xmark_circle),
         ),
