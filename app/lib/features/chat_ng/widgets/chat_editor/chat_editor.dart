@@ -390,15 +390,29 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
     );
   }
 
-  void _actionSubmit() {
-    sendMessageAction(
-      content: parseSimplyMentions(mentionController?.getMarkupText() ?? ''),
-      roomId: widget.roomId,
-      onTyping: widget.onTyping,
-      context: context,
-      ref: ref,
-      log: _log,
-    );
+  void _actionSubmit() async {
+    try {
+      sendMessageAction(
+        content: parseSimplyMentions(mentionController?.getMarkupText() ?? ''),
+        roomId: widget.roomId,
+        onTyping: widget.onTyping,
+        context: context,
+        ref: ref,
+        log: _log,
+      );
+
+      // cleaning the editor and states
+      mentionController?.clear();
+      // also clear composed state
+      final convo = await ref.read(chatProvider(widget.roomId).future);
+      final notifier = ref.read(chatEditorStateProvider.notifier);
+      notifier.unsetActions();
+      if (convo != null) {
+        await convo.saveMsgDraft('', null, 'new', null);
+      }
+    } catch (e) {
+      _log.severe('Error sending message', e);
+    }
   }
 
   Widget _renderSendBtn() => Padding(

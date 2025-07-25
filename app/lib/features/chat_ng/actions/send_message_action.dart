@@ -1,4 +1,3 @@
-import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
@@ -71,14 +70,6 @@ Future<void> sendMessageAction({
     }
 
     ref.read(chatInputProvider.notifier).messageSent();
-
-    // also clear composed state
-    final convo = await ref.read(chatProvider(roomId).future);
-    final notifier = ref.read(chatEditorStateProvider.notifier);
-    notifier.unsetActions();
-    if (convo != null) {
-      await convo.saveMsgDraft('', null, 'new', null);
-    }
   } catch (e, s) {
     log.severe('Sending chat message failed', e, s);
     EasyLoading.showError(
@@ -86,5 +77,6 @@ Future<void> sendMessageAction({
       duration: const Duration(seconds: 3),
     );
     ref.read(chatInputProvider.notifier).sendingFailed();
+    rethrow;
   }
 }
