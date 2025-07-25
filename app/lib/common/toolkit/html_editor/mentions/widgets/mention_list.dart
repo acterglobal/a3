@@ -5,11 +5,9 @@ import 'package:acter/common/toolkit/html_editor/mentions/selected_mention_provi
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
-import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class UserMentionList extends ConsumerWidget {
-  final EditorState editorState;
   final VoidCallback onDismiss;
   final VoidCallback onShow;
   final String roomId;
@@ -17,7 +15,6 @@ class UserMentionList extends ConsumerWidget {
 
   const UserMentionList({
     super.key,
-    required this.editorState,
     required this.onDismiss,
     required this.onShow,
     required this.roomId,
@@ -26,7 +23,6 @@ class UserMentionList extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) => MentionList(
     roomId: roomId,
-    editorState: editorState,
     onDismiss: onDismiss,
     onShow: onShow,
     // the actual provider
@@ -41,20 +37,18 @@ class UserMentionList extends ConsumerWidget {
     // the fields
     headerTitle: L10n.of(context).users,
     notFoundTitle: L10n.of(context).noUserFoundTitle,
-    onSelected:
-        (id, displayName) => onSelected(MentionType.user, id, displayName),
+    onSelected: (id, displayName) =>
+        onSelected(MentionType.user, id, displayName),
   );
 }
 
 class RoomMentionList extends StatelessWidget {
-  final EditorState editorState;
   final VoidCallback onDismiss;
   final VoidCallback onShow;
   final String roomId;
   final MentionSelectedFn onSelected;
   const RoomMentionList({
     super.key,
-    required this.editorState,
     required this.onDismiss,
     required this.onShow,
     required this.roomId,
@@ -63,7 +57,6 @@ class RoomMentionList extends StatelessWidget {
   @override
   Widget build(BuildContext context) => MentionList(
     roomId: roomId,
-    editorState: editorState,
     onDismiss: onDismiss,
     onShow: onShow,
     // the actual provider
@@ -76,8 +69,8 @@ class RoomMentionList extends StatelessWidget {
     headerTitle: L10n.of(context).chats,
     notFoundTitle: L10n.of(context).noChatsFound,
     selectedIndexProvider: selectedRoomMentionProvider(roomId),
-    onSelected:
-        (id, displayName) => onSelected(MentionType.room, id, displayName),
+    onSelected: (id, displayName) =>
+        onSelected(MentionType.room, id, displayName),
   );
 }
 
@@ -85,7 +78,6 @@ class MentionList extends ConsumerStatefulWidget {
   const MentionList({
     super.key,
     required this.roomId,
-    required this.editorState,
     required this.mentionsProvider,
     required this.avatarBuilder,
     required this.headerTitle,
@@ -97,7 +89,6 @@ class MentionList extends ConsumerStatefulWidget {
   });
 
   final String roomId;
-  final EditorState editorState;
   final ProviderBase<Map<String, String>?> mentionsProvider;
   final AvatarOptions Function(String matchId, WidgetRef ref) avatarBuilder;
   final String headerTitle;
@@ -152,12 +143,8 @@ class MentionHandlerState extends ConsumerState<MentionList> {
         shrinkWrap: true,
         controller: _scrollController,
         itemCount: filteredSuggestions.length,
-        separatorBuilder:
-            (context, index) => Divider(
-              indent: 70,
-              color: theme.unselectedWidgetColor,
-              height: 1,
-            ),
+        separatorBuilder: (context, index) =>
+            Divider(indent: 70, color: theme.unselectedWidgetColor, height: 1),
         itemBuilder: (context, index) {
           final mentionId = filteredSuggestions.keys.elementAt(index);
           final displayName = filteredSuggestions.values.elementAt(index);
@@ -167,9 +154,8 @@ class MentionHandlerState extends ConsumerState<MentionList> {
             displayName: displayName,
             avatarOptions: options(mentionId, ref),
             selected: index == ref.watch(widget.selectedIndexProvider),
-            onTap:
-                (String id, {String? displayName}) =>
-                    widget.onSelected(id, displayName),
+            onTap: (String id, {String? displayName}) =>
+                widget.onSelected(id, displayName),
           );
         },
       ),
