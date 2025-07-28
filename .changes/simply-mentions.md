@@ -1,0 +1,1 @@
+- Replace Chat Input Text field with a simplified editor that only support mentions, while we try to tackle all the problems the feature-rich editor is causing
