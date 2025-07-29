@@ -151,7 +151,7 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
       });
 
       final fallbackPlain = draft.plainText();
-      if (fallbackPlain.trim().isNotEmpty && context.mounted) {
+      if (mounted && fallbackPlain.trim().isNotEmpty) {
         mentionController?.setMarkupText(context, fallbackPlain);
       }
 
