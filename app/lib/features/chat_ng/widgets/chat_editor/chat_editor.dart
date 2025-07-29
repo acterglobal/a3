@@ -322,6 +322,7 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
             mentionController?.getSearchText() ?? '';
         _saveMsgContent();
         setState(() {});
+        _isInputEmptyNotifier.value = mentionController?.text.isEmpty ?? true;
       });
 
       WidgetsBinding.instance.addPostFrameCallback((_) {
