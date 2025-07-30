@@ -115,11 +115,9 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
 
   void _saveMsgContent() {
     final markedUp = mentionController?.getMarkupText();
-    if (markedUp == null || markedUp.isEmpty) {
-      return;
-    }
-    final parsed = parseSimplyMentions(markedUp);
-    saveMsgDraft(markedUp, parsed.htmlText, widget.roomId, ref);
+    final markedUpText = markedUp ?? '';
+    final parsed = parseSimplyMentions(markedUpText);
+    saveMsgDraft(markedUpText, parsed.htmlText, widget.roomId, ref);
   }
 
   // composer draft load state handler
@@ -153,7 +151,7 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
       });
 
       final fallbackPlain = draft.plainText();
-      if (fallbackPlain.trim().isNotEmpty && context.mounted) {
+      if (mounted && fallbackPlain.trim().isNotEmpty) {
         mentionController?.setMarkupText(context, fallbackPlain);
       }
 
@@ -258,8 +256,9 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
   }
 
   Widget _renderEditor(BuildContext context, String hintText) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 15),
+    return Container(
+      constraints: BoxConstraints(maxHeight: 150),
+      padding: const EdgeInsets.symmetric(vertical: 15),
       child: PortalTarget(
         visible: mentionController?.isMentioning() ?? false,
         portalFollower: _renderMentions(),
@@ -275,6 +274,8 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
         ),
         child: TextField(
           controller: mentionController,
+          textInputAction: TextInputAction.newline,
+          maxLines: null,
           decoration: InputDecoration(
             hintText: hintText,
             isDense: true,
@@ -322,6 +323,7 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
             mentionController?.getSearchText() ?? '';
         _saveMsgContent();
         setState(() {});
+        _isInputEmptyNotifier.value = mentionController?.text.isEmpty ?? true;
       });
 
       WidgetsBinding.instance.addPostFrameCallback((_) {
