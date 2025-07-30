@@ -1,1 +1,0 @@
-- Fix of the send button in the chat window not showing
