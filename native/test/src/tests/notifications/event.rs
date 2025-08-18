@@ -248,8 +248,8 @@ async fn event_rescheduled() -> Result<()> {
         obj_entry.event_id()
     );
 
-    assert_eq!(notification_item.utc_start(), Some(utc_start.clone()));
-    assert_eq!(notification_item.utc_end(), Some(utc_end.clone()));
+    assert_eq!(notification_item.utc_start(), Some(utc_start));
+    assert_eq!(notification_item.utc_end(), Some(utc_end));
     let title = format!(
         "From: {}, To: {}",
         utc_start.to_rfc3339(),

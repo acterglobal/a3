@@ -55,7 +55,7 @@ impl Reaction {
     }
 
     pub fn origin_server_ts(&self) -> u64 {
-        self.inner.meta.origin_server_ts.get().into()
+        self.inner.meta.timestamp.get().into()
     }
 
     pub fn relates_to(&self) -> String {
