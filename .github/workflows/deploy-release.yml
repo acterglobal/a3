@@ -48,8 +48,8 @@ on:
         required: false
         type: string
 
-  schedule:
-   - cron: 0 1 * * 4
+  # schedule:
+  #  - cron: 0 1 * * 4
 
 env:
   # Due to a typo the last needs to be prefixed with this
