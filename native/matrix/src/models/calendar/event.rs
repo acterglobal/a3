@@ -145,7 +145,7 @@ impl From<OriginalMessageLikeEvent<CalendarEventEventContent>> for CalendarEvent
                 room_id,
                 event_id,
                 sender,
-                origin_server_ts,
+                timestamp: origin_server_ts,
                 redacted: None,
             },
         }
@@ -203,7 +203,7 @@ impl From<OriginalMessageLikeEvent<CalendarEventUpdateEventContent>> for Calenda
                 room_id,
                 event_id,
                 sender,
-                origin_server_ts,
+                timestamp: origin_server_ts,
                 redacted: None,
             },
         }

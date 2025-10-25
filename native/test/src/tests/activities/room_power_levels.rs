@@ -47,7 +47,7 @@ async fn test_room_power_levels_ban() -> Result<()> {
     assert_eq!(activity.event_id_str(), meta.event_id);
     assert_eq!(activity.room_id_str(), room_id);
     assert_eq!(activity.type_str(), "roomPowerLevels");
-    let ts: u64 = meta.origin_server_ts.get().into();
+    let ts: u64 = meta.timestamp.get().into();
     assert_eq!(activity.origin_server_ts(), ts);
 
     // check the content of activity
@@ -121,7 +121,7 @@ async fn test_room_power_levels_events() -> Result<()> {
     assert_eq!(activity.event_id_str(), meta.event_id);
     assert_eq!(activity.room_id_str(), room_id);
     assert_eq!(activity.type_str(), "roomPowerLevels");
-    let ts: u64 = meta.origin_server_ts.get().into();
+    let ts: u64 = meta.timestamp.get().into();
     assert_eq!(activity.origin_server_ts(), ts);
 
     // check the content of activity
@@ -194,7 +194,7 @@ async fn test_room_power_levels_events_default() -> Result<()> {
     assert_eq!(activity.event_id_str(), meta.event_id);
     assert_eq!(activity.room_id_str(), room_id);
     assert_eq!(activity.type_str(), "roomPowerLevels");
-    let ts: u64 = meta.origin_server_ts.get().into();
+    let ts: u64 = meta.timestamp.get().into();
     assert_eq!(activity.origin_server_ts(), ts);
 
     // check the content of activity
@@ -265,7 +265,7 @@ async fn test_room_power_levels_invite() -> Result<()> {
     assert_eq!(activity.event_id_str(), meta.event_id);
     assert_eq!(activity.room_id_str(), room_id);
     assert_eq!(activity.type_str(), "roomPowerLevels");
-    let ts: u64 = meta.origin_server_ts.get().into();
+    let ts: u64 = meta.timestamp.get().into();
     assert_eq!(activity.origin_server_ts(), ts);
 
     // check the content of activity
@@ -336,7 +336,7 @@ async fn test_room_power_levels_kick() -> Result<()> {
     assert_eq!(activity.event_id_str(), meta.event_id);
     assert_eq!(activity.room_id_str(), room_id);
     assert_eq!(activity.type_str(), "roomPowerLevels");
-    let ts: u64 = meta.origin_server_ts.get().into();
+    let ts: u64 = meta.timestamp.get().into();
     assert_eq!(activity.origin_server_ts(), ts);
 
     // check the content of activity
@@ -407,7 +407,7 @@ async fn test_room_power_levels_redact() -> Result<()> {
     assert_eq!(activity.event_id_str(), meta.event_id);
     assert_eq!(activity.room_id_str(), room_id);
     assert_eq!(activity.type_str(), "roomPowerLevels");
-    let ts: u64 = meta.origin_server_ts.get().into();
+    let ts: u64 = meta.timestamp.get().into();
     assert_eq!(activity.origin_server_ts(), ts);
 
     // check the content of activity
@@ -482,7 +482,7 @@ async fn test_room_power_levels_state_default() -> Result<()> {
     assert_eq!(activity.type_str(), "roomPowerLevels");
     assert_eq!(
         activity.origin_server_ts(),
-        Into::<u64>::into(meta.origin_server_ts.get())
+        Into::<u64>::into(meta.timestamp.get())
     );
 
     // check the content of activity
@@ -555,7 +555,7 @@ async fn test_room_power_levels_users_default() -> Result<()> {
     assert_eq!(activity.event_id_str(), meta.event_id);
     assert_eq!(activity.room_id_str(), room_id);
     assert_eq!(activity.type_str(), "roomPowerLevels");
-    let ts: u64 = meta.origin_server_ts.get().into();
+    let ts: u64 = meta.timestamp.get().into();
     assert_eq!(activity.origin_server_ts(), ts);
 
     // check the content of activity
@@ -628,7 +628,7 @@ async fn test_room_power_levels_notifications() -> Result<()> {
     assert_eq!(activity.event_id_str(), meta.event_id);
     assert_eq!(activity.room_id_str(), room_id);
     assert_eq!(activity.type_str(), "roomPowerLevels");
-    let ts: u64 = meta.origin_server_ts.get().into();
+    let ts: u64 = meta.timestamp.get().into();
     assert_eq!(activity.origin_server_ts(), ts);
 
     // check the content of activity

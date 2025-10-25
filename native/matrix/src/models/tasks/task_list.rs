@@ -78,7 +78,7 @@ impl From<OriginalMessageLikeEvent<TaskListEventContent>> for TaskList {
                 room_id,
                 event_id,
                 sender,
-                origin_server_ts,
+                timestamp: origin_server_ts,
                 redacted: None,
             },
             task_stats: Default::default(),
@@ -182,7 +182,7 @@ impl From<OriginalMessageLikeEvent<TaskListUpdateEventContent>> for TaskListUpda
                 room_id,
                 event_id,
                 sender,
-                origin_server_ts,
+                timestamp: origin_server_ts,
                 redacted: None,
             },
         }

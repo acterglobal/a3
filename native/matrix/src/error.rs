@@ -2,6 +2,7 @@ use matrix_sdk_base::ruma::events::UnsignedRoomRedactionEvent;
 use std::sync::PoisonError;
 
 use crate::models::EventMeta;
+use acter_core::traits::StoreError;
 
 #[derive(Debug)]
 pub struct ModelRedactedDetails {
@@ -39,7 +40,7 @@ pub enum Error {
     #[error("Index not found.")]
     IndexNotFound,
 
-    #[error("Your Homeserver doesn’t have a hostname, that is required for this action.")]
+    #[error("Your Homeserver doesn't have a hostname, that is required for this action.")]
     HomeserverMissesHostname,
 
     #[error("The client must be logged in for this interaction.")]
@@ -75,5 +76,11 @@ pub type Result<T> = std::result::Result<T, Error>;
 impl From<matrix_sdk::HttpError> for Error {
     fn from(err: matrix_sdk::HttpError) -> Self {
         Self::HttpError(Box::new(err))
+    }
+}
+
+impl StoreError for Error {
+    fn is_not_found(&self) -> bool {
+        matches!(self, Error::ModelNotFound(_))
     }
 }

@@ -1,13 +1,14 @@
 #![warn(clippy::all)]
-#![feature(slice_as_chunks)]
 #![allow(refining_impl_trait)] // we are using enum_dispatch and need this for now
 #![allow(async_fn_in_trait)]
+#![feature(trait_alias)]
 
 pub use matrix_sdk;
 pub use matrix_sdk::ruma;
 
 pub mod activities;
 pub mod client;
+pub mod config;
 pub mod error;
 pub mod events;
 pub mod executor;

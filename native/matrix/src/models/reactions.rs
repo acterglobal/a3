@@ -312,7 +312,7 @@ impl From<OriginalMessageLikeEvent<ReactionEventContent>> for Reaction {
                 room_id,
                 event_id,
                 sender,
-                origin_server_ts,
+                timestamp: origin_server_ts,
                 redacted: None,
             },
         }

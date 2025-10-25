@@ -3,7 +3,6 @@ use super::calendar::{CalendarEvent, CalendarEventUpdate};
 use super::capabilities::Capability;
 use super::comments::{Comment, CommentUpdate};
 use super::conversion::ParseError;
-pub(crate) use super::execution::transition_tree;
 use super::invites::ExplicitInvite;
 use super::meta::EventMeta;
 use super::news::{NewsEntry, NewsEntryUpdate};
@@ -22,12 +21,14 @@ use matrix_sdk_base::ruma::{
     EventId, OwnedEventId, RoomId, UserId,
 };
 use serde::{Deserialize, Serialize};
+use std::borrow::Cow;
 use tracing::{error, trace, warn};
 
 #[cfg(any(test, feature = "testing"))]
 use super::test::TestModel;
 
 use crate::error::ModelRedactedDetails;
+use crate::models::execution::transition_tree;
 use crate::store::Store;
 use crate::{
     events::{
@@ -97,10 +98,10 @@ pub trait ActerModel: Debug {
             return store.save(redaction_model.into()).await;
         };
         let model: AnyActerModel = redaction_model.into();
-        trace!(event_id=?model.event_id(), ?belongs_to, "transitioning tree");
+        trace!(event_id=?ActerModel::event_id(&model), ?belongs_to, "transitioning tree");
         let mut models = transition_tree(store, belongs_to, &model).await?;
         models.push(model);
-        store.save_many(models).await
+        store.save_many(models.into_iter()).await
     }
 }
 
@@ -199,7 +200,10 @@ impl AnyActerModel {
                     reason,
                 } = *details;
                 trace!(?meta.room_id, model_type, ?meta.event_id, "redacted event");
-                if let Err(e) = executor.redact(model_type, meta, reason).await {
+                if let Err(e) = executor
+                    .redact(Cow::Owned(model_type), meta, Some(reason.into()))
+                    .await
+                {
                     error!("Failure redacting {:}", e);
                 }
             }

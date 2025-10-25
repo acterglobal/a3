@@ -34,7 +34,7 @@ async fn test_room_tombstone() -> Result<()> {
 
     let body = "This room was upgraded to the other version";
     let id = gen_id(18);
-    let replacement_room_id = format!("!{}:localhost", id);
+    let replacement_room_id = format!("!{id}:localhost");
     let tombstone_event_id = convo
         .set_tombstone(body.to_owned(), replacement_room_id.clone())
         .await?;

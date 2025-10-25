@@ -43,7 +43,7 @@ impl Activity {
     }
 
     pub fn origin_server_ts(&self) -> u64 {
-        self.inner.event_meta().origin_server_ts.get().into()
+        self.inner.event_meta().timestamp.get().into()
     }
 
     pub fn room_id_str(&self) -> String {

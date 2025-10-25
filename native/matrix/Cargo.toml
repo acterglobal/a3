@@ -3,7 +3,7 @@ name = "acter-matrix"
 authors = [ "ben@acter.global" ]
 version = "0.1.0"
 edition = "2021"
-rust-version = "1.70"
+rust-version = "1.88"
 description = "Matrix core transport implemenation of acter app"
 homepage = "https://acter.global"
 repository = "https://github.com/acterglobal/a3"
@@ -22,6 +22,7 @@ unstable-exhaustive-types = []
 testing = ['dep:uuid']
 
 [dependencies]
+acter-core = { path = "../core" }
 tokio = { version = "1", features = ["rt", "macros"] }
 async-recursion = "1"
 chrono = { version = "0.4", default-features = false, features = ["serde", "clock"] }
@@ -39,7 +40,7 @@ serde_json = "1"
 serde_repr = "0.1"
 strum = { workspace = true }
 thiserror = "2"
-tracing = { version = "0.1.40", features = ["log"] }
+tracing = { workspace = true }
 url = { workspace = true }
 urlencoding = { workspace = true }
 uuid = { version = "1.6.1", features = ["v4"], optional = true }
@@ -77,6 +78,7 @@ anyhow = "1.0.79"
 env_logger = { workspace = true }
 tracing = { version = "0.1.40", default-features = false, features = ["log"] }
 uuid = { version = "1.6.1", features = ["v4"] }
+acter-core = { path = "../core", features = ["testing"] }
 
 
 [dev-dependencies.matrix-sdk-base]

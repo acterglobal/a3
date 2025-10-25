@@ -97,7 +97,7 @@ async fn story_smoketest() -> Result<()> {
         .add_slide(Box::new(text_draft.into()))
         .send()
         .await?;
-    print!("draft sent event id: {}", event_id);
+    print!("draft sent event id: {event_id}");
 
     Ok(())
 }

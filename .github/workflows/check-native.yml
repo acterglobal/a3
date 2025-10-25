@@ -23,6 +23,9 @@ jobs:
           - name: Core
             package: acter-core
             clippy_extras: --tests
+          - name: Matrix Core
+            package: acter-matrix
+            clippy_extras: --tests
           - name: SDK
             package: acter
             needs_flutter: true
@@ -51,7 +54,8 @@ jobs:
         include:
           - name: Core
             package: acter-core
-            clippy_extras: --tests
+          - name: Matrix Core
+            package: acter-matrix
           # - name: file-event-cache
           #   package: matrix-sdk-store-file-event-cache
     steps:
@@ -81,9 +85,13 @@ jobs:
     strategy:
       matrix:
         include:
-          - name: SDK
+          - name: Matrix SDK
             package: acter
             needs_flutter: true
+          - name: Core on WASM
+            package: acter-core
+            cargo_flags: --target wasm32-unknown-unknown
+            needs_flutter: false
     steps:
       - uses: actions/checkout@v4
       - name: Install rust toolchain
@@ -94,7 +102,7 @@ jobs:
           flutter-version: '3.32'
           channel: 'stable'
       - name: Release Build
-        run: cargo build -p ${{matrix.package}} --release
+        run: cargo build -p ${{matrix.package}} --release ${{matrix.cargo_flags}}
 
 
   ffigen:

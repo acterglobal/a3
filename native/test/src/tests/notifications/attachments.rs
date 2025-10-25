@@ -116,7 +116,7 @@ async fn image_attachment_on_pin() -> Result<()> {
         *obj_entry.event_id()
     );
 
-    assert_eq!(notification_item.title(), format!("🖼️ \"{}\"", filename));
+    assert_eq!(notification_item.title(), format!("🖼️ \"{filename}\""));
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(
         notification_item.target_url(),
@@ -208,7 +208,7 @@ async fn file_attachment_on_event() -> Result<()> {
     );
 
     // notification_item.body().expect("found content");
-    assert_eq!(notification_item.title(), format!("📄 \"{}\"", filename));
+    assert_eq!(notification_item.title(), format!("📄 \"{filename}\""));
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(
         notification_item.target_url(),
@@ -300,7 +300,7 @@ async fn video_attachment_on_tasklist() -> Result<()> {
     );
 
     // notification_item.body().expect("found content");
-    assert_eq!(notification_item.title(), format!("🎥 \"{}\"", filename));
+    assert_eq!(notification_item.title(), format!("🎥 \"{filename}\""));
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(
         notification_item.target_url(),
